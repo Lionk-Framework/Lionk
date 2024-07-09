@@ -32,7 +32,7 @@ jobs:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION}}
     defaults:
       run:
-        working-directory: ${{ vars.DEV_PATH }}
+        working-directory: ${{ vars.SRC_PATH }}
     needs: build
     steps:
     - name: Checkout code
