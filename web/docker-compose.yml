@@ -1,17 +1,17 @@
 version: '3.8'
 
 services:
-  landing_page_lionk:
+  server_web:
     image: httpd:latest
-    container_name: apache_server
+    container_name: lionk_landing_page
     ports:
       - "8000:80"
     volumes:
       - ./html:/usr/local/apache2/htdocs/
 
-  ddns_lionk:
+  ddns:
     image: linuxserver/ddclient
-    container_name: ddclient
+    container_name: lionk_ddns
     environment:
       - PUID=1000 
       - PGID=1000
