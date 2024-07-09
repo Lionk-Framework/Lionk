@@ -2,13 +2,13 @@ name: Deploy to Web Server
 
 on:
   pull_request:
-    # types: [closed]
+    types: [closed]
     branches:
       - landing-page-deploy
 
 jobs:
   deploy:
-    # if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
