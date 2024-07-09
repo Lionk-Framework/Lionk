@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [closed]
     branches:
-      - ${{ vars.WEB_LANDING_DEPLOY_BRANCH }}
+      - landing-page-deploy
 
 jobs:
   deploy:
