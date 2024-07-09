@@ -2,11 +2,13 @@ name: Deploy to Web Server
 
 on:
   pull_request:
+    types: [closed]
     branches:
       - ${{ vars.WEB_LANDING_DEPLOY_BRANCH }}
 
 jobs:
   deploy:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
