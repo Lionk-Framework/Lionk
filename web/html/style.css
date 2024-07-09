@@ -28,3 +28,11 @@ header{
     color: white;
     text-decoration: none;
 }
+
+.btn{
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    border: solid 3px rgba(221, 221, 221, 0.849);
+}
