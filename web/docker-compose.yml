@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  web:
+  landing_page_lionk:
     image: httpd:latest
     container_name: apache_server
     ports:
@@ -9,7 +9,7 @@ services:
     volumes:
       - ./html:/usr/local/apache2/htdocs/
 
-  ddclient:
+  ddns_lionk:
     image: linuxserver/ddclient
     container_name: ddclient
     environment:
