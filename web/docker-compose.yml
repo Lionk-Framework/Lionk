@@ -8,3 +8,14 @@ services:
       - "8000:80"
     volumes:
       - ./html:/usr/local/apache2/htdocs/
+
+  ddclient:
+    image: linuxserver/ddclient
+    container_name: ddclient
+    environment:
+      - PUID=1000 
+      - PGID=1000
+      - TZ=Europe/Paris
+    volumes:
+      - ./ddclient:/config
+    restart: unless-stopped
