@@ -54,7 +54,7 @@ jobs:
 
     - name: Update .csproj version
       run: |
-        sed -i 's/<Version>.*<\/Version>/<Version>${{ steps.extract_version.outputs.version }}<\/Version>/' ${{ vars.SRC_PATH }}/YourProject.csproj
+        sed -i 's/<Version>.*<\/Version>/<Version>${{ steps.extract_version.outputs.version }}<\/Version>/' ${{ vars.CSPROJ_FILE_PATH }}
 
     - name: Create Release
       id: create_release
