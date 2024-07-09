@@ -29,10 +29,10 @@ jobs:
       run: dotnet build --no-restore
 
   test:
-    runs-on: ${{ vars.RUNNER_DISTRIBUTION}}
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
     defaults:
       run:
-        working-directory: ${{vars.DEV_PATH}}
+        working-directory: ${{ vars.DEV_PATH }}
     needs: build
     steps:
     - name: Checkout code
