@@ -36,3 +36,7 @@ header{
     border-radius: 20px;
     border: solid 3px rgba(221, 221, 221, 0.849);
 }
+
+.profile {
+    margin-bottom: 4em;
+}
