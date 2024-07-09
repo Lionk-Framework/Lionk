@@ -1,0 +1,43 @@
+name: CI Pipeline
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  build:
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION}}
+    defaults:
+      run:
+        working-directory: ${{ vars.SRC_PATH }}
+    steps:
+
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ vars.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore
+
+  test:
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION}}
+    defaults:
+      run:
+        working-directory: ${{ vars.SRC_PATH }}
+    needs: build
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Execute tests 
+      run: dotnet test --no-restore
+

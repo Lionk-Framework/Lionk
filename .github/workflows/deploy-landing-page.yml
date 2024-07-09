@@ -2,26 +2,31 @@ name: Deploy to Web Server
 
 on:
   pull_request:
+    types: [closed]
     branches:
-      - ${{ vars.WEB_LANDING_DEPLOY_BRANCH }}
+      - landing-page-deploy
 
 jobs:
   deploy:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.WEB_LANDING_KEY }}
+
+      - name: Add SSH key to known_hosts
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.WEB_LANDING_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan ${{ secrets.WEB_LANDING_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.WEB_LANDING_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy to Server
-        env:
-          HOST: ${{ secrets.WEB_LANDING_HOST }}
-          USERNAME: ${{ secrets.WEB_LANDING_USERNAME }}
+      - name: Deploy files
         run: |
-          rsync -avz --delete ./web/html ${{ env.USERNAME }}@${{ env.HOST }}:.
+          rsync -avz --delete ${{ vars.WEB_LANDING_LOCAL_PATH }} ${{ secrets.WEB_LANDING_USERNAME }}@${{ secrets.WEB_LANDING_HOST }}:${{ vars.WEB_LANDING_FTP_PATH }}
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.WEB_LANDING_KEY }}
