@@ -7,6 +7,16 @@ on:
 
 jobs:
 
+  check-pr-name:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check PR name
+      run: |
+        if [[ "${{ github.event.pull_request.title }}" != *"major"* ]] && [[ "${{ github.event.pull_request.title }}" != *"minor"* ]] && [[ "${{ github.event.pull_request.title }}" != *"patch"* ]]; then
+          echo "Invalid PR title for version increment. Must contain 'major', 'minor', or 'patch'."
+          exit 1
+        fi
+
   build:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION}}
     defaults:

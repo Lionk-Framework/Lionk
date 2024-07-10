@@ -1,50 +1,18 @@
-name: Test, Build and Release
+name: Release
 
 on:
   pull_request:
+    types: [closed]
     branches:
-      - release
+      - main
 
 jobs:
-#   build:
-#     runs-on: ${{ vars.RUNNER_DISTRIBUTION}}
-#     defaults:
-#       run:
-#         working-directory: ${{ vars.SRC_PATH }}
-#     steps:
-
-#     - name: Checkout code
-#       uses: actions/checkout@v3
-
-#     - name: Set up .NET
-#       uses: actions/setup-dotnet@v3
-#       with:
-#         dotnet-version: ${{ vars.DOTNET_VERSION }}
-
-#     - name: Restore dependencies
-#       run: dotnet restore
-
-#     - name: Build
-#       run: dotnet build --no-restore
-
-#   test:
-#     runs-on: ${{ vars.RUNNER_DISTRIBUTION}}
-#     defaults:
-#       run:
-#         working-directory: ${{ vars.SRC_PATH }}
-#     needs: build
-#     steps:
-#     - name: Checkout code
-#       uses: actions/checkout@v3
-
-#     - name: Execute tests 
-#       run: dotnet test --no-restore
 
   release:
+    if: github.event.pull_request.merged == true
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
     permissions:
       contents: write
-    # needs: test
 
     steps:
     - name: Checkout code
