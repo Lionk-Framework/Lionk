@@ -7,7 +7,6 @@ on:
       - main
 
 jobs:
-
   release:
     if: github.event.pull_request.merged == true
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
@@ -86,7 +85,6 @@ jobs:
         body: ${{ env.BODY }}
         draft: false
         prerelease: false
-
     - name: Build Docker image
       run: |
         docker build -t ghcr.io/${{ github.repository }}/${{ vars.APP_NAME}}:${{ env.NEW_VERSION }} .
