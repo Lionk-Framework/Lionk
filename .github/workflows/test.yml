@@ -6,7 +6,7 @@ on:
       - test
 
 jobs:
-  check-pr-title:
+  checkout-and-get-pr-title:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
 
     steps:
@@ -16,6 +16,20 @@ jobs:
       - name: Get pull request title
         id: get_pr_title
         run: echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
+
+      - name: Save PR title for next job
+        run: echo "PR_TITLE=${{ env.PR_TITLE }}" >> $GITHUB_ENV
+
+  process-pr-title:
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    needs: checkout-and-get-pr-title
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Load PR title from previous job
+        run: echo "PR_TITLE=${{ needs.checkout-and-get-pr-title.outputs.PR_TITLE }}" >> $GITHUB_ENV
 
       - name: Process PR title and check projects
         id: process_title
@@ -35,8 +49,6 @@ jobs:
           # Initialize arrays
           declare -a projects
           declare -a types
-          declare -a oldversions
-          declare -a newversions
 
           # Split projects and types into arrays
           while IFS= read -r pair; do
@@ -69,6 +81,31 @@ jobs:
           done
 
           echo "All project files exist."
+
+          # Save projects and types for next job
+          echo "projects=${projects[@]}" >> $GITHUB_ENV
+          echo "types=${types[@]}" >> $GITHUB_ENV
+
+  update-project-versions:
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    needs: process-pr-title
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Load projects and types from previous job
+        run: |
+          echo "projects=${{ needs.process-pr-title.outputs.projects }}" >> $GITHUB_ENV
+          echo "types=${{ needs.process-pr-title.outputs.types }}" >> $GITHUB_ENV
+
+      - name: Update project versions
+        run: |
+          projects=(${projects})
+          types=(${types})
+          SRC_PATH="./src_test/"
+          declare -a oldversions
+          declare -a newversions
 
           # Loop through each project and type to populate oldversions and newversions arrays
           for i in "${!projects[@]}"; do
