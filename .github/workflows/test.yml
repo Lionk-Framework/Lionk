@@ -226,7 +226,7 @@ jobs:
             # Create the release
             gh release create "$tag" --title "$tag" --notes "Release of version $newversion for $project"
         done
-        
+
   publish-nuget:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
     needs: create-tag-and-release
@@ -265,5 +265,5 @@ jobs:
             echo "Publishing $csproj as version $newversion"
 
             dotnet pack "$csproj" -p:PackageVersion="$newversion" -o ./output
-            dotnet nuget push "./output/$project.$newversion.nupkg" -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+            dotnet nuget push "./output/$project.$newversion.nupkg" -k ${{ secrets.NUGET_API_KEY }}
           done
