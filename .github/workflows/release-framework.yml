@@ -103,6 +103,7 @@ jobs:
         git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/AlexandreIorio/Lionk.git $NEW_VERSION
 
     - name: Create GitHub Release
+      id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -110,6 +111,9 @@ jobs:
         tag_name: ${{ steps.calculate-version.outputs.new_version }}
         release_name: Release ${{ steps.calculate-version.outputs.new_version }}
         body: |
-          Release of version ${{ steps.calculate-version.outputs.new_version }}.
+          # Changelog
+          ## Version ${{ steps.calculate-version.outputs.new_version }}
+          ${{ github.event.pull_request.body }}
         draft: false
         prerelease: false
+      
