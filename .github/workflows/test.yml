@@ -75,7 +75,7 @@ jobs:
             project=${projects[$i]}
             type=${types[$i]}
             csproj="$SRC_PATH/$project/$project.csproj"
-            oldversion=$(grep -oPm1 "(?<=<Version>)[^<]+" "$csproj")
+            oldversion=$(grep -oPm1 "(?<=<version>)[^<]+" "$csproj")
             oldversions+=("$oldversion")
             
             IFS='.' read -r -a version_parts <<< "$oldversion"
@@ -126,7 +126,7 @@ jobs:
             newversion=${newversions[$i]}
             csproj="$SRC_PATH/$project/$project.csproj"
             echo "Updating $csproj to version $newversion"
-            sed -i "s/<Version>.*<\/Version>/<Version>$newversion<\/Version>/g" "$csproj"
+            sed -i "s/<version>.*<\/version>/<Version>$newversion<\/version>/g" "$csproj"
           done
 
       - name: Commit and push changes
