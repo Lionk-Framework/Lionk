@@ -10,101 +10,111 @@ jobs:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Get pull request title
-        id: get_pr_title
-        run: echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
+    - name: Get pull request title
+      id: get_pr_title
+      run: echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
 
-      - name: Process PR title and check projects
-        id: process_title
-        run: |
-          PR_TITLE="${{ env.PR_TITLE }}"
-          SRC_PATH="./src_test/"
+    - name: Process PR title and check projects
+      id: process_title
+      run: |
+        PR_TITLE="${{ env.PR_TITLE }}"
+        SRC_PATH="./src_test/"
 
-          echo "Pull Request title: $PR_TITLE"
+        echo "Pull Request title: $PR_TITLE"
 
-          # Extract project names and version types from the PR title
-          pairs=$(echo "$PR_TITLE" | grep -oE '\b\w+\b (major|minor|patch)')
-          if [ -z "$pairs" ]; then
-            echo "Pull Request title does not contain version change indication (major, minor, patch)."
-            exit 0
-          fi
+        # Extract project names and version types from the PR title
+        pairs=$(echo "$PR_TITLE" | grep -oE '\b\w+\b (major|minor|patch)')
+        if [ -z "$pairs" ]; then
+        echo "Pull Request title does not contain version change indication (major, minor, patch)."
+        exit 0
+        fi
 
-          # Initialize arrays
-          declare -a projects
-          declare -a types
-          declare -a oldversions
-          declare -a newversions
+        # Initialize arrays
+        declare -a projects
+        declare -a types
+        declare -a oldversions
+        declare -a newversions
 
-          # Split projects and types into arrays
-          while IFS= read -r pair; do
-            project=$(echo "$pair" | awk '{print $1}')
-            type=$(echo "$pair" | awk '{print $2}')
-            projects+=("$project")
-            types+=("$type")
-          done <<< "$pairs"
+        # Split projects and types into arrays
+        while IFS= read -r pair; do
+        project=$(echo "$pair" | awk '{print $1}')
+        type=$(echo "$pair" | awk '{print $2}')
+        projects+=("$project")
+        types+=("$type")
+        done <<< "$pairs"
 
-          # Show projects and types
-          echo "Projects: ${projects[@]}"
-          echo "Types: ${types[@]}"
+        # Show projects and types
+        echo "Projects: ${projects[@]}"
+        echo "Types: ${types[@]}"
 
-          # Validate types
-          for type in "${types[@]}"; do
-            if [[ "$type" != "major" && "$type" != "minor" && "$type" != "patch" ]]; then
-              echo "Invalid version type: $type"
-              exit 1
-            fi
-          done
+        # Validate types
+        for type in "${types[@]}"; do
+        if [[ "$type" != "major" && "$type" != "minor" && "$type" != "patch" ]]; then
+            echo "Invalid version type: $type"
+            exit 1
+        fi
+        done
 
-          echo "All version types are valid."
+        echo "All version types are valid."
 
-          # Check if project file exists
-          for project in "${projects[@]}"; do
-            if [ ! -f "$SRC_PATH/$project/$project.csproj" ]; then
-              echo "Project file not found: $SRC_PATH/$project/$project.csproj"
-              exit 1
-            fi
-          done
+        # Check if project file exists
+        for project in "${projects[@]}"; do
+        if [ ! -f "$SRC_PATH/$project/$project.csproj" ]; then
+            echo "Project file not found: $SRC_PATH/$project/$project.csproj"
+            exit 1
+        fi
+        done
 
-          echo "All project files exist."
+        echo "All project files exist."
 
-          # Loop through each project and type to populate oldversions and newversions arrays
-          for i in "${!projects[@]}"; do
-            project=${projects[$i]}
-            type=${types[$i]}
-            csproj="$SRC_PATH/$project/$project.csproj"
-            oldversion=$(grep -oPm1 "(?<=<version>)[^<]+" "$csproj")
-            oldversions+=("$oldversion")
-            
-            IFS='.' read -r -a version_parts <<< "$oldversion"
-            major=${version_parts[0]}
-            minor=${version_parts[1]}
-            patch=${version_parts[2]}
+        # Loop through each project and type to populate oldversions and newversions arrays
+        for i in "${!projects[@]}"; do
+        project=${projects[$i]}
+        type=${types[$i]}
+        csproj="$SRC_PATH/$project/$project.csproj"
+        oldversion=$(grep -oPm1 "(?<=<version>)[^<]+" "$csproj")
+        oldversions+=("$oldversion")
+        
+        IFS='.' read -r -a version_parts <<< "$oldversion"
+        major=${version_parts[0]}
+        minor=${version_parts[1]}
+        patch=${version_parts[2]}
 
-            if [[ "$type" == "major" ]]; then
-              major=$((major + 1))
-              minor=0
-              patch=0
-            elif [[ "$type" == "minor" ]]; then
-              minor=$((minor + 1))
-              patch=0
-            elif [[ "$type" == "patch" ]]; then
-              patch=$((patch + 1))
-            fi
+        if [[ "$type" == "major" ]]; then
+            major=$((major + 1))
+            minor=0
+            patch=0
+        elif [[ "$type" == "minor" ]]; then
+            minor=$((minor + 1))
+            patch=0
+        elif [[ "$type" == "patch" ]]; then
+            patch=$((patch + 1))
+        fi
 
-            newversion="$major.$minor.$patch"
-            newversions+=("$newversion")
+        newversion="$major.$minor.$patch"
+        newversions+=("$newversion")
 
-            echo "$project old version: $oldversion, new version: $newversion"
-          done
+        echo "$project old version: $oldversion, new version: $newversion"
+        done
 
-          # Save data for the next job
-          echo "projects=${projects[@]}" >> $GITHUB_ENV
-          echo "types=${types[@]}" >> $GITHUB_ENV
-          echo "oldversions=${oldversions[@]}" >> $GITHUB_ENV
-          echo "newversions=${newversions[@]}" >> $GITHUB_ENV
+        # Save data to artifact
+        echo "${projects[@]}" > projects.txt
+        echo "${types[@]}" > types.txt
+        echo "${oldversions[@]}" > oldversions.txt
+        echo "${newversions[@]}" > newversions.txt
+
+    - name: Upload project data artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: project-data
+        path: |
+          projects.txt
+          types.txt
+          oldversions.txt
+          newversions.txt
 
   update-csproj:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
@@ -114,14 +124,15 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Load project data from previous job
-      run: |
-        echo "Loaded project data:"
-        echo "projects=${{env.projects}}"
-        echo "newversions=${{env.newversions}}"
+    - name: Download project data artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: project-data
 
-        projects=(${{env.projects}})
-        newversions=(${{env.newversions}})
+    - name: Load project data
+      run: |
+        projects=($(cat projects.txt))
+        newversions=($(cat newversions.txt))
         SRC_PATH="./src_test/"
 
         # Update the .csproj files with new versions
