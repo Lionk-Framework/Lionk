@@ -73,6 +73,6 @@ jobs:
             project=${projects[$i]}
             type=${types[$i]}
             csproj="$SRC_PATH/$project/$project.csproj"
-            VERSION=$(grep -oPm1 "(?<=<Version>)[^<]+" "$csproj")
+            VERSION=$(grep -oPm1 "(?<=<version>)[^<]+" "$csproj")
             echo "$project has a $type update to version $VERSION"
           done
