@@ -1,4 +1,4 @@
-name: Check PR Title and Echo Project Versions
+name: Check PR Title and Update Project Versions
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
       - test
 
 jobs:
-  checkout-and-get-pr-title:
+  check-pr-title:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
 
     steps:
@@ -16,20 +16,6 @@ jobs:
       - name: Get pull request title
         id: get_pr_title
         run: echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
-
-      - name: Save PR title for next job
-        run: echo "PR_TITLE=${{ env.PR_TITLE }}" >> $GITHUB_ENV
-
-  process-pr-title:
-    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
-    needs: checkout-and-get-pr-title
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Load PR title from previous job
-        run: echo "PR_TITLE=${{ needs.checkout-and-get-pr-title.outputs.PR_TITLE }}" >> $GITHUB_ENV
 
       - name: Process PR title and check projects
         id: process_title
@@ -49,6 +35,8 @@ jobs:
           # Initialize arrays
           declare -a projects
           declare -a types
+          declare -a oldversions
+          declare -a newversions
 
           # Split projects and types into arrays
           while IFS= read -r pair; do
@@ -82,37 +70,12 @@ jobs:
 
           echo "All project files exist."
 
-          # Save projects and types for next job
-          echo "projects=${projects[@]}" >> $GITHUB_ENV
-          echo "types=${types[@]}" >> $GITHUB_ENV
-
-  update-project-versions:
-    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
-    needs: process-pr-title
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Load projects and types from previous job
-        run: |
-          echo "projects=${{ needs.process-pr-title.outputs.projects }}" >> $GITHUB_ENV
-          echo "types=${{ needs.process-pr-title.outputs.types }}" >> $GITHUB_ENV
-
-      - name: Update project versions
-        run: |
-          projects=(${projects})
-          types=(${types})
-          SRC_PATH="./src_test/"
-          declare -a oldversions
-          declare -a newversions
-
           # Loop through each project and type to populate oldversions and newversions arrays
           for i in "${!projects[@]}"; do
             project=${projects[$i]}
             type=${types[$i]}
             csproj="$SRC_PATH/$project/$project.csproj"
-            oldversion=$(grep -oPm1 "(?<=<version>)[^<]+" "$csproj")
+            oldversion=$(grep -oPm1 "(?<=<Version>)[^<]+" "$csproj")
             oldversions+=("$oldversion")
             
             IFS='.' read -r -a version_parts <<< "$oldversion"
@@ -137,11 +100,40 @@ jobs:
             echo "$project old version: $oldversion, new version: $newversion"
           done
 
-          # Loop through each project and type
+          # Save data for the next job
+          echo "projects=${projects[@]}" >> $GITHUB_ENV
+          echo "types=${types[@]}" >> $GITHUB_ENV
+          echo "oldversions=${oldversions[@]}" >> $GITHUB_ENV
+          echo "newversions=${newversions[@]}" >> $GITHUB_ENV
+
+  update-csproj:
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    needs: check-pr-title
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Load project data from previous job
+        run: |
+          projects=(${env.projects})
+          newversions=(${env.newversions})
+          SRC_PATH="./src_test/"
+
+          # Update the .csproj files with new versions
           for i in "${!projects[@]}"; do
             project=${projects[$i]}
-            type=${types[$i]}
-            oldversion=${oldversions[$i]}
             newversion=${newversions[$i]}
-            echo "$project apply a $type update to version $oldversion and it will be updated to $newversion"
+            csproj="$SRC_PATH/$project/$project.csproj"
+            echo "Updating $csproj to version $newversion"
+            sed -i "s/<Version>.*<\/Version>/<Version>$newversion<\/Version>/g" "$csproj"
           done
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git checkout -b update-versions
+          git add $SRC_PATH/*.csproj
+          git commit -m "Update project versions"
+          git push origin update-versions
