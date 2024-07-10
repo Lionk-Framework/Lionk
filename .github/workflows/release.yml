@@ -10,7 +10,6 @@ jobs:
   use-calculate-version:
       uses: ./utils/get-version.yml
 
-
   release:
     if: github.event.pull_request.merged == true
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
