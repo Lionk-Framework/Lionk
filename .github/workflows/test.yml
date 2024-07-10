@@ -119,7 +119,7 @@ jobs:
           projects=(${{env.projects}})
           newversions=(${{env.newversions}})
           SRC_PATH="./src_test/"
-
+  
           # Update the .csproj files with new versions
           for i in "${!projects[@]}"; do
             project=${projects[$i]}
@@ -127,7 +127,9 @@ jobs:
             csproj="$SRC_PATH/$project/$project.csproj"
             echo "Updating $csproj to version $newversion"
             sed -i "s/<version>.*<\/version>/<version>$newversion<\/version>/g" "$csproj"
-          done
+            echo "Updated $csproj content:"
+            cat "$csproj"
+          donee
 
       - name: Commit and push changes
         run: |
