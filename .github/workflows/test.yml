@@ -116,6 +116,10 @@ jobs:
 
     - name: Load project data from previous job
       run: |
+        echo "Loaded project data:"
+        echo "projects=${{env.projects}}"
+        echo "newversions=${{env.newversions}}"
+
         projects=(${{env.projects}})
         newversions=(${{env.newversions}})
         SRC_PATH="./src_test/"
@@ -125,8 +129,21 @@ jobs:
           project=${projects[$i]}
           newversion=${newversions[$i]}
           csproj="$SRC_PATH/$project/$project.csproj"
+          temp_csproj="$SRC_PATH/$project/temp_$project.csproj"
           echo "Updating $csproj to version $newversion"
-          sed -i "s/<version>.*<\/version>/<version>$newversion<\/version>/g" "$csproj"
+          
+          # Copy to a temporary file
+          cp "$csproj" "$temp_csproj"
+          
+          # Update the version in the temporary file
+          awk -v newversion="$newversion" '
+          BEGIN { FS = OFS = "" }
+          /<version>/ { $0 = gensub(/<version>.*<\/version>/, "<version>" newversion "</version>", 1) }
+          { print }
+          ' "$temp_csproj" > "$csproj"
+          
+          rm "$temp_csproj"
+
           echo "Updated $csproj content:"
           cat "$csproj"
         done
