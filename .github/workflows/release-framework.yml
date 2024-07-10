@@ -1,0 +1,98 @@
+name: Test, Build and Release
+
+on:
+  push:
+    branches:
+      - release
+  pull_request:
+    branches:
+      - release
+
+jobs:
+  build_and_test:
+    runs-on: ${{ RUNNER_DISTRIBUTION }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: ${{ DOTNET_VERSION }} # Spécifiez la version de .NET que vous utilisez
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release
+
+    - name: Run tests
+      run: dotnet test --no-build --verbosity normal
+
+  release:
+    runs-on: ${{ RUNNER_DISTRIBUTION }}
+    needs: build_and_test
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: ${{ DOTNET_VERSION }}
+
+    - name: Calculate new version
+      id: calculate-version
+      run: |
+       LAST_TAG=$(git tag -l "v[0-9]*.[0-9]*.[0-9]*" --sort=-v:refname | head -n 1)
+        echo "Last tag: $LAST_TAG"
+
+        if [ -z "$LAST_TAG" ]; then
+          echo "No tags found that match the pattern."
+          exit 1
+        fi
+
+        # Extract the version components
+        IFS='.' read -r -a VERSION_PARTS <<< "${LAST_TAG//v/}"
+        MAJOR=${VERSION_PARTS[0]}
+        MINOR=${VERSION_PARTS[1]}
+        PATCH=${VERSION_PARTS[2]}
+
+        # Determine the new version based on PR title
+        if [[ "${{ github.event.pull_request.title }}" == *"major"* ]]; then
+          MAJOR=$((MAJOR + 1))
+          MINOR=0
+          PATCH=0
+        elif [[ "${{ github.event.pull_request.title }}" == *"minor"* ]]; then
+          MINOR=$((MINOR + 1))
+          PATCH=0
+        elif [[ "${{ github.event.pull_request.title }}" == *"patch"* ]]; then
+          PATCH=$((PATCH + 1))
+        else
+          echo "Invalid PR title for version increment. Must contain 'major', 'minor', or 'patch'."
+          exit 1
+        fi
+
+        NEW_VERSION="v${MAJOR}.${MINOR}.${PATCH}"
+        echo "New version: $NEW_VERSION"
+        echo "::set-output name=new_version::$NEW_VERSION"
+
+    - name: Create new tag
+      run: |
+        NEW_VERSION=${{ steps.calculate-version.outputs.new_version }}
+        git tag $NEW_VERSION
+        git push origin $NEW_VERSION
+
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.calculate-version.outputs.new_version }}
+        release_name: Release ${{ steps.calculate-version.outputs.new_version }}
+        body: |
+          Release of version ${{ steps.calculate-version.outputs.new_version }}.
+        draft: false
+        prerelease: false
