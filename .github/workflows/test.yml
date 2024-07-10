@@ -135,9 +135,16 @@ jobs:
 
     - name: Load project data
       run: |
-        projects=($(cat projects.txt))
-        newversions=($(cat newversions.txt))
-        SRC_PATH="src_test/"
+        echo "PROJECTS=$(cat projects.txt)" >> $GITHUB_ENV
+        echo "NEW_VERSION=$(cat newversions.txt)" >> $GITHUB_ENV
+        echo "SRC_PATH=src_test/" >> $GITHUB_ENV
+
+    - name: Update .csproj files
+      run: |
+
+        projects=(${{ env.PROJECTS }})
+        newversions=(${{ env.NEW_VERSION }})
+        SRC_PATH=(${{ env.SRC_PATH }})
 
         # Update the .csproj files with new versions
         for i in "${!projects[@]}"; do
@@ -165,7 +172,10 @@ jobs:
 
     - name: Commit and push changes
       run: |
-        projects=($(cat projects.txt))
+        projects=(${{ env.PROJECTS }})
+        newversions=(${{ env.NEW_VERSION }})
+        SRC_PATH=(${{ env.SRC_PATH }})
+
         git config --global user.name '${{ vars.BOT_NAME}}'
         git config --global user.email '${{ vars.BOT_MAIL}}'
         for project in "${projects[@]}"; do
