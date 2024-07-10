@@ -92,6 +92,8 @@ jobs:
         echo "::set-output name=new_version::$NEW_VERSION"
 
     - name: Create new tag
+      env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       run: |
         NEW_VERSION=${{ steps.calculate-version.outputs.new_version }}
         git tag $NEW_VERSION
