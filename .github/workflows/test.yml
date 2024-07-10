@@ -56,6 +56,8 @@ jobs:
             fi
           done
 
+          echo "All version types are valid."
+
           # Check if project file exists
           for project in "${projects[@]}"; do
             if [ ! -f "$SRC_PATH/$project/$project.csproj" ]; then
@@ -63,6 +65,8 @@ jobs:
               exit 1
             fi
           done
+
+          echo "All project files exist."
 
           # Loop through each project and type
           for i in "${!projects[@]}"; do
