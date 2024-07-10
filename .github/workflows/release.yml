@@ -59,16 +59,21 @@ jobs:
 
         NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
         echo "New version: $NEW_VERSION"
-        echo "::set-output name=new_version::$NEW_VERSION"
+        echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
     - name: Create and push new tag
-
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       run: |
-        NEW_VERSION=${{ steps.calculate-version.outputs.new_version }}
+        NEW_VERSION=${{ env.NEW_VERSION }}
         git tag $NEW_VERSION
         git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/AlexandreIorio/Lionk.git $NEW_VERSION
+
+
+    - name: Create release information
+      run: |
+        echo "BODY=# Changelog\n## Version ${{ env.NEW_VERSION }}\n${{ github.event.pull_request.body }}" >> $GITHUB_ENV
+        echo "TITLE=Release ${{ env.NEW_VERSION }} >> $GITHUB_ENV    
 
     - name: Create GitHub Release
       id: create_release
@@ -76,12 +81,20 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.calculate-version.outputs.new_version }}
-        release_name: Release ${{ steps.calculate-version.outputs.new_version }}
-        body: |
-          # Changelog
-          ## Version ${{ steps.calculate-version.outputs.new_version }}
-          ${{ github.event.pull_request.body }}
+        tag_name: ${{ env.NEW_VERSION }}
+        release_name: ${{ env.TITLE }}
+        body: ${{ env.BODY }}
         draft: false
         prerelease: false
-      
+
+    - name: Build Docker image
+      run: |
+        docker build -t ghcr.io/${{ github.repository }}/${{ vars.APP_NAME}}:${{ env.NEW_VERSION }} .
+
+    - name: Log in to GitHub Container Registry
+      run: echo "${{ secrets.GH_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+    - name: Push Docker image
+      run: |
+        docker push ghcr.io/${{ github.repository }}/${{ vars.APP_NAME}}:${{ env.NEW_VERSION }}
+        docker push ghcr.io/${{ github.repository }}/${{ vars.APP_NAME}}:latest
