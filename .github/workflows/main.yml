@@ -8,7 +8,7 @@ on:
 jobs:
 
   check-pr-name:
-    runs-on: ${{ RUNNER_DISTRIBUTION }}
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
     steps:
     - name: Check PR name
       run: |
