@@ -35,6 +35,8 @@ jobs:
           # Initialize arrays
           declare -a projects
           declare -a types
+          declare -a oldversions
+          declare -a newversions
 
           # Split projects and types into arrays
           while IFS= read -r pair; do
@@ -68,11 +70,41 @@ jobs:
 
           echo "All project files exist."
 
-          # Loop through each project and type
+          # Loop through each project and type to populate oldversions and newversions arrays
           for i in "${!projects[@]}"; do
             project=${projects[$i]}
             type=${types[$i]}
             csproj="$SRC_PATH/$project/$project.csproj"
-            VERSION=$(grep -oPm1 "(?<=<version>)[^<]+" "$csproj")
-            echo "$project has a $type update to version $VERSION"
+            oldversion=$(grep -oPm1 "(?<=<version>)[^<]+" "$csproj")
+            oldversions+=("$oldversion")
+            
+            IFS='.' read -r -a version_parts <<< "$oldversion"
+            major=${version_parts[0]}
+            minor=${version_parts[1]}
+            patch=${version_parts[2]}
+
+            if [[ "$type" == "major" ]]; then
+              major=$((major + 1))
+              minor=0
+              patch=0
+            elif [[ "$type" == "minor" ]]; then
+              minor=$((minor + 1))
+              patch=0
+            elif [[ "$type" == "patch" ]]; then
+              patch=$((patch + 1))
+            fi
+
+            newversion="$major.$minor.$patch"
+            newversions+=("$newversion")
+
+            echo "$project old version: $oldversion, new version: $newversion"
+          done
+
+          # Loop through each project and type
+          for i in "${!projects[@]}"; do
+            project=${projects[$i]}
+            type=${types[$i]}
+            oldversion=${oldversions[$i]}
+            newversion=${newversions[$i]}
+            echo "$project apply a $type update to version $oldversion and it will be updated to $newversion"
           done
