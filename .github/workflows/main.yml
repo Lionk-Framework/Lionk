@@ -12,7 +12,9 @@ jobs:
     steps:
     - name: Check PR name
       run: |
-        if [[ "${{ github.event.pull_request.title }}" != *"major"* ]] && [[ "${{ github.event.pull_request.title }}" != *"minor"* ]] && [[ "${{ github.event.pull_request.title }}" != *"patch"* ]]; then
+        title="${{ github.event.pull_request.title }}"
+        lower_title=$(echo "$title" | tr '[:upper:]' '[:lower:]')
+        if [[ "$lower_title" != *"major"* ]] && [[ "$lower_title" != *"minor"* ]] && [[ "$lower_title" != *"patch"* ]]; then
           echo "Invalid PR title for version increment. Must contain 'major', 'minor', or 'patch'."
           exit 1
         fi
