@@ -42,6 +42,8 @@ jobs:
 
   release:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    permissions:
+      contents: write
     # needs: test
 
     steps:
@@ -92,6 +94,7 @@ jobs:
         echo "::set-output name=new_version::$NEW_VERSION"
 
     - name: Create and push new tag
+
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       run: |
