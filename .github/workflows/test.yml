@@ -26,38 +26,37 @@ jobs:
           echo "Pull Request title: $PR_TITLE"
 
           # Extract project names and version types from the PR title
-          projects_and_types=$(echo "$PR_TITLE" | grep -oE '\b\w+\b (major|minor|patch)')
-          if [ -z "$projects_and_types" ]; then
+          pairs=$(echo "$PR_TITLE" | grep -oE '\b\w+\b (major|minor|patch)')
+          if [ -z "$pairs" ]; then
             echo "Pull Request title does not contain version change indication (major, minor, patch)."
             exit 0
           fi
 
-          # Split projects and types into arrays
-          IFS=', ' read -r -a pairs <<< "$projects_and_types"
+          # Initialize arrays
           declare -a projects
           declare -a types
 
-          # create arrays of projects and types
-          for pair in "${pairs[@]}"; do
-            project=$(echo $pair | awk '{print $1}')
-            type=$(echo $pair | awk '{print $2}')
+          # Split projects and types into arrays
+          while IFS= read -r pair; do
+            project=$(echo "$pair" | awk '{print $1}')
+            type=$(echo "$pair" | awk '{print $2}')
             projects+=("$project")
             types+=("$type")
-          done
+          done <<< "$pairs"
 
-          #show projects and types
-            echo "Projects: ${projects[@]}"
-            echo "Types: ${types[@]}"
+          # Show projects and types
+          echo "Projects: ${projects[@]}"
+          echo "Types: ${types[@]}"
 
-          # Validate types and projects
+          # Validate types
           for type in "${types[@]}"; do
             if [[ "$type" != "major" && "$type" != "minor" && "$type" != "patch" ]]; then
               echo "Invalid version type: $type"
               exit 1
             fi
           done
-          
-          # check if project file exists
+
+          # Check if project file exists
           for project in "${projects[@]}"; do
             if [ ! -f "$SRC_PATH/$project/$project.csproj" ]; then
               echo "Project file not found: $SRC_PATH/$project/$project.csproj"
