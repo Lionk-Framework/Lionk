@@ -5,6 +5,10 @@ VisualStudioVersion = 17.9.34616.47
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lionk", "Lionk\Lionk.csproj", "{B86EEAC9-8A4E-4C6C-9FEB-F37290D30B84}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "core", "..\..\src_test\core\core.csproj", "{C2938D82-F056-4F13-8665-D1A13475CA6C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "auth", "..\..\src_test\auth\auth.csproj", "{854BF42C-0E3E-40A4-9F53-05FC20988D5F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{B86EEAC9-8A4E-4C6C-9FEB-F37290D30B84}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B86EEAC9-8A4E-4C6C-9FEB-F37290D30B84}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B86EEAC9-8A4E-4C6C-9FEB-F37290D30B84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2938D82-F056-4F13-8665-D1A13475CA6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2938D82-F056-4F13-8665-D1A13475CA6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2938D82-F056-4F13-8665-D1A13475CA6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2938D82-F056-4F13-8665-D1A13475CA6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{854BF42C-0E3E-40A4-9F53-05FC20988D5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{854BF42C-0E3E-40A4-9F53-05FC20988D5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{854BF42C-0E3E-40A4-9F53-05FC20988D5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{854BF42C-0E3E-40A4-9F53-05FC20988D5F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

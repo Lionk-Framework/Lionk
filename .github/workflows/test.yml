@@ -1,0 +1,47 @@
+name: Check Commit and Echo Project Versions
+
+on:
+  push:
+    branches:
+      - test
+
+jobs:
+  check-commit:
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ vars.DOTNET_VERSION }}
+
+      - name: Get commit message
+        id: get_commit_message
+        run: echo "::set-output name=commit_message::$(git log -1 --pretty=%B)"
+
+      - name: Check for .csproj modifications and echo versions
+        id: check_projects
+        run: |
+          COMMIT_MESSAGE="${{ steps.get_commit_message.outputs.commit_message }}"
+          SRC_PATH="./src_test/"
+
+          echo "Commit message: $COMMIT_MESSAGE"
+
+          # Extract project names and version types from the commit message
+          projects=$(echo "$COMMIT_MESSAGE" | grep -oE '\b\w+\b (major|minor|patch)')
+          if [ -z "$projects" ]; then
+            echo "Commit message does not contain version change indication (major, minor, patch)."
+            exit 0
+          fi
+
+          # Loop through each project and type
+          echo "$projects" | while read -r project type; do
+            for csproj in $(find $SRC_PATH -name "$project.csproj"); do
+              PROJECT_NAME=$(basename $csproj .csproj)
+              VERSION=$(grep -oPm1 "(?<=<Version>)[^<]+" $csproj)
+              echo "$PROJECT_NAME has a $type update to version $VERSION"
+            done
+          done
