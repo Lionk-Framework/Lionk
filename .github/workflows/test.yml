@@ -17,8 +17,8 @@ jobs:
         id: get_pr_title
         run: echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
 
-      - name: Check for .csproj modifications and echo versions
-        id: check_projects
+      - name: Process PR title and check projects
+        id: process_title
         run: |
           PR_TITLE="${{ env.PR_TITLE }}"
           SRC_PATH="./src_test/"
@@ -26,17 +26,44 @@ jobs:
           echo "Pull Request title: $PR_TITLE"
 
           # Extract project names and version types from the PR title
-          projects=$(echo "$PR_TITLE" | grep -oE '\b\w+\b (major|minor|patch)')
-          if [ -z "$projects" ]; then
+          projects_and_types=$(echo "$PR_TITLE" | grep -oE '\b\w+\b (major|minor|patch)')
+          if [ -z "$projects_and_types" ]; then
             echo "Pull Request title does not contain version change indication (major, minor, patch)."
             exit 0
           fi
 
+          # Split projects and types into arrays
+          IFS=', ' read -r -a pairs <<< "$projects_and_types"
+          declare -a projects
+          declare -a types
+
+          for pair in "${pairs[@]}"; do
+            project=$(echo $pair | awk '{print $1}')
+            type=$(echo $pair | awk '{print $2}')
+            projects+=("$project")
+            types+=("$type")
+          done
+
+          # Validate types and projects
+          for type in "${types[@]}"; do
+            if [[ "$type" != "major" && "$type" != "minor" && "$type" != "patch" ]]; then
+              echo "Invalid version type: $type"
+              exit 1
+            fi
+          done
+
+          for project in "${projects[@]}"; do
+            if [ ! -f "$SRC_PATH/$project/$project.csproj" ]; then
+              echo "Project file not found: $SRC_PATH/$project/$project.csproj"
+              exit 1
+            fi
+          done
+
           # Loop through each project and type
-          echo "$projects" | while read -r project type; do
-            for csproj in $(find $SRC_PATH -name "$project.csproj"); do
-              PROJECT_NAME=$(basename $csproj .csproj)
-              VERSION=$(grep -oPm1 "(?<=<Version>)[^<]+" $csproj)
-              echo "$PROJECT_NAME has a $type update to version $VERSION"
-            done
+          for i in "${!projects[@]}"; do
+            project=${projects[$i]}
+            type=${types[$i]}
+            csproj="$SRC_PATH/$project.csproj"
+            VERSION=$(grep -oPm1 "(?<=<Version>)[^<]+" "$csproj")
+            echo "$project has a $type update to version $VERSION"
           done
