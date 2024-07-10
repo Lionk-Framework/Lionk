@@ -116,8 +116,8 @@ jobs:
 
       - name: Load project data from previous job
         run: |
-          projects=(${env.projects})
-          newversions=(${env.newversions})
+          projects=(${{env.projects}})
+          newversions=(${{env.newversions}})
           SRC_PATH="./src_test/"
 
           # Update the .csproj files with new versions
@@ -126,7 +126,7 @@ jobs:
             newversion=${newversions[$i]}
             csproj="$SRC_PATH/$project/$project.csproj"
             echo "Updating $csproj to version $newversion"
-            sed -i "s/<version>.*<\/version>/<Version>$newversion<\/version>/g" "$csproj"
+            sed -i "s/<version>.*<\/version>/<version>$newversion<\/version>/g" "$csproj"
           done
 
       - name: Commit and push changes
