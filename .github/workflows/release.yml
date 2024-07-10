@@ -71,8 +71,6 @@ jobs:
 
     - name: Create release information
       run: |
-        echo "BODY=# Changelog
-        ## Version ${{ env.NEW_VERSION }}
         echo "BODY=# Changelog\n## Version ${{ env.NEW_VERSION }}\n${{ github.event.pull_request.body }}" | sed ':a;N;$!ba;s/\n/\\n/g' >> $GITHUB_ENV
         echo "TITLE=Release ${{ env.NEW_VERSION }}" >> $GITHUB_ENV    
 
