@@ -7,7 +7,6 @@ on:
       - main
 
 jobs:
-
   release:
     if: github.event.pull_request.merged == true
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
