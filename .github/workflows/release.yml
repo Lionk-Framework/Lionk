@@ -1,0 +1,65 @@
+name: Release
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  use-calculate-version:
+      uses: ./utils/get-version.yml
+
+
+  release:
+    if: github.event.pull_request.merged == true
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    needs: use-calculate-version
+    permissions:
+      contents: write
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: ${{ vars.DOTNET_VERSION }}
+
+    - name: Download artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: new-version
+        path: ./artifacts
+          
+    - name: Read version and set as environment variable
+      id: set-version
+      run: |
+        NEW_VERSION=$(cat ./artifacts/new_version.txt)
+        echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+        echo "New version: ${{ env.NEW_VERSION }}"
+
+    - name: Create and push new tag
+
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      run: |
+        git tag ${{ env.NEW_VERSION }}
+        git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/AlexandreIorio/Lionk.git $NEW_VERSION
+
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ env.NEW_VERSION }}
+        release_name: Release ${{ env.NEW_VERSION }}
+        body: |
+          # Changelog
+          ## Version ${{ env.NEW_VERSION }}
+          ${{ github.event.pull_request.body }}
+        draft: false
+        prerelease: false
+      

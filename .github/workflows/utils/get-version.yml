@@ -1,0 +1,57 @@
+name: Get version
+
+on:
+  workflow_call:
+
+jobs:
+  calculate-version:
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Calculate new version
+        id: calculate-version
+        run: |
+          git fetch --tags
+          LAST_TAG=$(git tag -l "[0-9]*.[0-9]*.[0-9]*" --sort=-v:refname)
+          echo "Commande : $(git tag -l "[0-9]*.[0-9]*.[0-9]*" --sort=-v:refname)"
+          echo "Last tag: $LAST_TAG"
+
+          if [ -z "$LAST_TAG" ]; then
+            echo "No tags found that match the pattern."
+            exit 1
+          fi
+
+          # Extract the version components
+          IFS='.' read -r -a VERSION_PARTS <<< "${LAST_TAG//v/}"
+          MAJOR=${VERSION_PARTS[0]}
+          MINOR=${VERSION_PARTS[1]}
+          PATCH=${VERSION_PARTS[2]}
+
+          # Determine the new version based on PR title
+          if [[ "${{ github.event.pull_request.title }}" == *"major"* ]]; then
+            MAJOR=$((MAJOR + 1))
+            MINOR=0
+            PATCH=0
+          elif [[ "${{ github.event.pull_request.title }}" == *"minor"* ]]; then
+            MINOR=$((MINOR + 1))
+            PATCH=0
+          elif [[ "${{ github.event.pull_request.title }}" == *"patch"* ]]; then
+            PATCH=$((PATCH + 1))
+          else
+            echo "Invalid PR title for version increment. Must contain 'major', 'minor', or 'patch'."
+            exit 1
+          fi
+
+          NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+          echo "New version: $NEW_VERSION"
+          echo "::set-output name=new_version::$NEW_VERSION"
+
+      - name: Create artifact with new version
+        uses: actions/upload-artifact@v2
+        with:
+          name: new-version
+          path: |
+            new_version.txt
+        run: echo $NEW_VERSION > new_version.txt
