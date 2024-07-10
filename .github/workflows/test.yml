@@ -188,6 +188,9 @@ jobs:
       run: |
         projects=($(cat projects.txt))
         newversions=($(cat newversions.txt))
+        # Show projects and types
+        echo "Projects: ${projects[@]}"
+        echo "new versions: ${newversions[@]}"
 
     - name: Create tags and releases
       env:
