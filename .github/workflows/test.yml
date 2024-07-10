@@ -226,3 +226,44 @@ jobs:
             # Create the release
             gh release create "$tag" --title "$tag" --notes "Release of version $newversion for $project"
         done
+        
+  publish-nuget:
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    needs: create-tag-and-release
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download project data artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: project-data
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Load project data
+        run: |
+          echo "PROJECTS=$(cat projects.txt)" >> $GITHUB_ENV
+          echo "NEW_VERSION=$(cat newversions.txt)" >> $GITHUB_ENV
+          echo "SRC_PATH=src_test/" >> $GITHUB_ENV
+
+      - name: Publish NuGet packages
+        run: |
+          projects=(${{ env.PROJECTS }})
+          newversions=(${{ env.NEW_VERSION }})
+          SRC_PATH=${{ env.SRC_PATH }}
+
+          for i in "${!projects[@]}"; do
+            project=${projects[$i]}
+            newversion=${newversions[$i]}
+            csproj="$SRC_PATH/$project/$project.csproj"
+
+            echo "Publishing $csproj as version $newversion"
+
+            dotnet pack "$csproj" -p:PackageVersion="$newversion" -o ./output
+            dotnet nuget push "./output/$project.$newversion.nupkg" -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+          done
