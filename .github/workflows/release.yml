@@ -79,9 +79,9 @@ jobs:
         release_name: "Release ${{ env.NEW_VERSION }}"
         body: |
           # Changelog
-          ## Version $ ${{ env.NEW_VERSION }}
+          ## Version ${{ env.NEW_VERSION }}
           ${{ github.event.pull_request.body }}
-          
+
         draft: false
         prerelease: false
 
@@ -96,4 +96,6 @@ jobs:
     - name: Push Docker image
       run: |
         docker push ghcr.io/${{ vars.PACKAGE_DESTINATION }}/${{ vars.APP_NAME}}:${{ env.NEW_VERSION }}
+        docker tag ghcr.io/${{ vars.PACKAGE_DESTINATION }}/${{ vars.APP_NAME}}:${{ env.NEW_VERSION }} ghcr.io/${{ vars.PACKAGE_DESTINATION }}/${{ vars.APP_NAME}}:latest
         docker push ghcr.io/${{ vars.PACKAGE_DESTINATION }}/${{ vars.APP_NAME}}:latest
+
