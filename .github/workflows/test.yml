@@ -136,7 +136,7 @@ jobs:
           git checkout -b update-versions
           for i in "${!projects[@]}"; do
             project=${projects[$i]}
-            echo "Adding $SRC_PATH/$project/$project.csproj to commit"
+            echo "Adding $SRC_PATH/$project/$project.csproj to commit "
             git add "$SRC_PATH/$project/$project.csproj"
           done
           git commit -m "Update project versions"
