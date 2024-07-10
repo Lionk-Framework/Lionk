@@ -7,7 +7,7 @@ on:
 
 jobs:
   build_and_test:
-    runs-on: ${{ RUNNER_DISTRIBUTION }}
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
 
     steps:
     - name: Checkout code
@@ -28,7 +28,7 @@ jobs:
       run: dotnet test --no-build --verbosity normal
 
   release:
-    runs-on: ${{ RUNNER_DISTRIBUTION }}
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
     needs: build_and_test
 
     steps:
