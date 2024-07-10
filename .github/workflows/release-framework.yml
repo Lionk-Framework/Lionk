@@ -6,30 +6,43 @@ on:
       - release
 
 jobs:
-  build_and_test:
-    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
-
+  build:
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION}}
+    defaults:
+      run:
+        working-directory: ${{ vars.SRC_PATH }}
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v2
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: ${{ vars.DOTNET_VERSION }} # Spécifiez la version de .NET que vous utilisez
+        dotnet-version: ${{ vars.DOTNET_VERSION }}
 
     - name: Restore dependencies
       run: dotnet restore
 
     - name: Build
-      run: dotnet build --configuration Release
+      run: dotnet build --no-restore
 
-    - name: Run tests
-      run: dotnet test --no-build --verbosity normal
+  test:
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION}}
+    defaults:
+      run:
+        working-directory: ${{ vars.SRC_PATH }}
+    needs: build
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Execute tests 
+      run: dotnet test --no-restore
 
   release:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
-    needs: build_and_test
+    needs: test
 
     steps:
     - name: Checkout code
