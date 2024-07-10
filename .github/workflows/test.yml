@@ -1,4 +1,4 @@
-name: Check Commit and Echo Project Versions
+name: Check PR Title and Echo Project Versions
 
 on:
   pull_request:
@@ -6,34 +6,29 @@ on:
       - test
 
 jobs:
-  check-commit:
+  check-pr-title:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: ${{ vars.DOTNET_VERSION }}
-
-      - name: Get commit message
-        id: get_commit_message
-        run: echo "::set-output name=commit_message::$(git log -1 --pretty=%B)"
+      - name: Get pull request title
+        id: get_pr_title
+        run: echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
 
       - name: Check for .csproj modifications and echo versions
         id: check_projects
         run: |
-          COMMIT_MESSAGE="${{ steps.get_commit_message.outputs.commit_message }}"
+          PR_TITLE="${{ env.PR_TITLE }}"
           SRC_PATH="./src_test/"
 
-          echo "Commit message: $COMMIT_MESSAGE"
+          echo "Pull Request title: $PR_TITLE"
 
-          # Extract project names and version types from the commit message
-          projects=$(echo "$COMMIT_MESSAGE" | grep -oE '\b\w+\b (major|minor|patch)')
+          # Extract project names and version types from the PR title
+          projects=$(echo "$PR_TITLE" | grep -oE '\b\w+\b (major|minor|patch)')
           if [ -z "$projects" ]; then
-            echo "Commit message does not contain version change indication (major, minor, patch)."
+            echo "Pull Request title does not contain version change indication (major, minor, patch)."
             exit 0
           fi
 
