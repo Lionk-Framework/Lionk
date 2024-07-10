@@ -133,7 +133,7 @@ jobs:
       run: |
         projects=($(cat projects.txt))
         newversions=($(cat newversions.txt))
-        SRC_PATH="./src_test/"
+        SRC_PATH="src_test/"
 
         # Update the .csproj files with new versions
         for i in "${!projects[@]}"; do
