@@ -8,8 +8,7 @@ on:
 
 jobs:
   use-calculate-version:
-      uses: ./utils/get-version.yml
-
+      uses: ./.github/workflows/utils/get-version.yml
 
   release:
     if: github.event.pull_request.merged == true
