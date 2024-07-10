@@ -37,12 +37,17 @@ jobs:
           declare -a projects
           declare -a types
 
+          # create arrays of projects and types
           for pair in "${pairs[@]}"; do
             project=$(echo $pair | awk '{print $1}')
             type=$(echo $pair | awk '{print $2}')
             projects+=("$project")
             types+=("$type")
           done
+
+          #show projects and types
+            echo "Projects: ${projects[@]}"
+            echo "Types: ${types[@]}"
 
           # Validate types and projects
           for type in "${types[@]}"; do
@@ -51,7 +56,8 @@ jobs:
               exit 1
             fi
           done
-
+          
+          # check if project file exists
           for project in "${projects[@]}"; do
             if [ ! -f "$SRC_PATH/$project/$project.csproj" ]; then
               echo "Project file not found: $SRC_PATH/$project/$project.csproj"
@@ -63,7 +69,7 @@ jobs:
           for i in "${!projects[@]}"; do
             project=${projects[$i]}
             type=${types[$i]}
-            csproj="$SRC_PATH/$project.csproj"
+            csproj="$SRC_PATH/$project/$project.csproj"
             VERSION=$(grep -oPm1 "(?<=<Version>)[^<]+" "$csproj")
             echo "$project has a $type update to version $VERSION"
           done
