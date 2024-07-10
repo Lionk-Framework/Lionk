@@ -167,7 +167,9 @@ jobs:
       run: |
         git config --global user.name '${{ vars.BOT_NAME}}'
         git config --global user.email '${{ vars.BOT_MAIL}}'
-        git add .
+        for project in "${projects[@]}"; do
+          git add "$SRC_PATH/$project/$project.csproj"
+        done
         git commit -m "Update project versions"
         git push origin HEAD:${{ github.head_ref }}
 
@@ -197,19 +199,19 @@ jobs:
         echo "new versions: ${newversions[@]}"
 
         for i in "${!projects[@]}"; do
-        project=${projects[$i]}
-        newversion=${newversions[$i]}
-        tag="${project}_v${newversion}"
+            project=${projects[$i]}
+            newversion=${newversions[$i]}
+            tag="${project}_v${newversion}"
 
-        echo "Creating tag $tag"
+            echo "Creating tag $tag"
 
-        git config --global user.name '${{ vars.BOT_NAME}}'
-        git config --global user.email '${{ vars.BOT_MAIL}}'
+            git config --global user.name '${{ vars.BOT_NAME}}'
+            git config --global user.email '${{ vars.BOT_MAIL}}'
 
-        # Create the tag
-        git tag -a "$tag" -m "Release $tag"
-        git push origin "$tag"
+            # Create the tag
+            git tag -a "$tag" -m "Release $tag"
+            git push origin "$tag"
 
-        # Create the release
-        gh release create "$tag" --title "$tag" --notes "Release of version $newversion for $project"
+            # Create the release
+            gh release create "$tag" --title "$tag" --notes "Release of version $newversion for $project"
         done
