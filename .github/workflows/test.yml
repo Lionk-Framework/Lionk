@@ -134,6 +134,9 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git checkout -b update-versions
-          git add $./src_test/*.csproj
+          for i in "${!projects[@]}"; do
+            project=${projects[$i]}
+            git add "$SRC_PATH/$project/$project.csproj"
+          done
           git commit -m "Update project versions"
           git push origin update-versions
