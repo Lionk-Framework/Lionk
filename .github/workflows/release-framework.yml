@@ -16,7 +16,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: ${{ DOTNET_VERSION }} # Spécifiez la version de .NET que vous utilisez
+        dotnet-version: ${{ vars.DOTNET_VERSION }} # Spécifiez la version de .NET que vous utilisez
 
     - name: Restore dependencies
       run: dotnet restore
@@ -38,7 +38,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: ${{ DOTNET_VERSION }}
+        dotnet-version: ${{ vars.DOTNET_VERSION }}
 
     - name: Calculate new version
       id: calculate-version
