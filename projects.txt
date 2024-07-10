@@ -1,1 +1,1 @@
-core auth logger
+logger core auth
