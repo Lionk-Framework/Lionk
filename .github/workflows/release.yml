@@ -69,20 +69,6 @@ jobs:
         git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/AlexandreIorio/Lionk.git $NEW_VERSION
 
 
-    - name: Create release information
-      run: |
-        echo "BODY=# Changelog\n## Version ${{ env.NEW_VERSION }}\n${{ github.event.pull_request.body }}" | sed ':a;N;$!ba;s/\n/\\n/g' >> $GITHUB_ENV
-        echo "TITLE=Release ${{ env.NEW_VERSION }}" >> $GITHUB_ENV    
-
-
-    - name: Create artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: release-info
-        path: |
-          $GITHUB_ENV
-          $NEW_VERSION
-
     - name: Create GitHub Release
       id: create_release
       uses: actions/create-release@v1
@@ -90,25 +76,14 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ env.NEW_VERSION }}
-        release_name: ${{ env.TITLE }}
-        body: ${{ env.BODY }}
+        release_name: "Release ${{ env.NEW_VERSION }}"
+        body: |
+          # Changelog
+          ## Version $ ${{ env.NEW_VERSION }}
+          ${{ github.event.pull_request.body }}
+          
         draft: false
         prerelease: false
-
-  build_and_push_docker:
-    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
-    needs: release
-
-    steps:
-    - name: Download artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: release-info
-        path: ./
-
-    - name: Load environment variables
-      run: |
-        source $GITHUB_ENV
 
     - name: Build Docker image
       working-directory: ${{ vars.SRC_PATH }}
