@@ -165,6 +165,7 @@ jobs:
 
     - name: Commit and push changes
       run: |
+        projects=($(cat projects.txt))
         git config --global user.name '${{ vars.BOT_NAME}}'
         git config --global user.email '${{ vars.BOT_MAIL}}'
         for project in "${projects[@]}"; do
