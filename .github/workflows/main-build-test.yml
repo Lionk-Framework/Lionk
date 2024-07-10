@@ -18,6 +18,7 @@ jobs:
         fi
 
   build:
+    needs: check-pr-name
     runs-on: ${{ vars.RUNNER_DISTRIBUTION}}
     defaults:
       run:
