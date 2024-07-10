@@ -253,17 +253,17 @@ jobs:
 
       - name: Publish NuGet packages
         run: |
-          projects=(${{ env.PROJECTS }})
-          newversions=(${{ env.NEW_VERSION }})
-          SRC_PATH=${{ env.SRC_PATH }}
-
-          for i in "${!projects[@]}"; do
-            project=${projects[$i]}
-            newversion=${newversions[$i]}
-            csproj="$SRC_PATH/$project/$project.csproj"
-
-            echo "Publishing $csproj as version $newversion"
-
-            dotnet pack "$csproj" -p:PackageVersion="$newversion" -o ./output
-            dotnet nuget push "./output/$project.$newversion.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
-          done
+            projects=(${{ env.PROJECTS }})
+            newversions=(${{ env.NEW_VERSION }})
+            SRC_PATH=${{ env.SRC_PATH }}
+    
+            for i in "${!projects[@]}"; do
+              project=${projects[$i]}
+              newversion=${newversions[$i]}
+              csproj="$SRC_PATH/$project/$project.csproj"
+    
+              echo "Publishing $csproj as version $newversion"
+    
+              dotnet pack "$csproj" -p:PackageVersion="$newversion" -o ./output
+              dotnet nuget push "./output/$project.$newversion.nupkg" -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+            done
