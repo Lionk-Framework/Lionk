@@ -56,7 +56,8 @@ jobs:
     - name: Calculate new version
       id: calculate-version
       run: |
-       LAST_TAG=$(git tag -l "[0-9]*.[0-9]*.[0-9]*" --sort=-v:refname)
+        LAST_TAG=$(git tag -l "[0-9]*.[0-9]*.[0-9]*" --sort=-v:refname)
+        echo $(git tag -l "[0-9]*.[0-9]*.[0-9]*" --sort=-v:refname)
         echo "Last tag: $LAST_TAG"
 
         if [ -z "$LAST_TAG" ]; then
