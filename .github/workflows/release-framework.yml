@@ -91,13 +91,13 @@ jobs:
         echo "New version: $NEW_VERSION"
         echo "::set-output name=new_version::$NEW_VERSION"
 
-    - name: Create new tag
+    - name: Create and push new tag
       env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       run: |
         NEW_VERSION=${{ steps.calculate-version.outputs.new_version }}
         git tag $NEW_VERSION
-        git push origin $NEW_VERSION
+        git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/AlexandreIorio/Lionk.git $NEW_VERSION
 
     - name: Create GitHub Release
       uses: actions/create-release@v1
