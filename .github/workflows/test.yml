@@ -184,7 +184,9 @@ jobs:
       with:
         name: project-data
 
-    - name: Load project data
+    - name: Create tags and releases
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         projects=($(cat projects.txt))
         newversions=($(cat newversions.txt))
@@ -192,10 +194,6 @@ jobs:
         echo "Projects: ${projects[@]}"
         echo "new versions: ${newversions[@]}"
 
-    - name: Create tags and releases
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
         for i in "${!projects[@]}"; do
         project=${projects[$i]}
         newversion=${newversions[$i]}
