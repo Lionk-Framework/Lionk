@@ -2,7 +2,7 @@ name: Release
 
 on:
   pull_request:
-    types: [closed]
+    # types: [closed]
     branches:
       - main
 
@@ -72,7 +72,7 @@ jobs:
     - name: Create release information
       run: |
         echo "BODY=# Changelog\n## Version ${{ env.NEW_VERSION }}\n${{ github.event.pull_request.body }}" >> $GITHUB_ENV
-        echo "TITLE=Release ${{ env.NEW_VERSION }} >> $GITHUB_ENV    
+        echo "TITLE=Release ${{ env.NEW_VERSION }}" >> $GITHUB_ENV    
 
     - name: Create GitHub Release
       id: create_release
