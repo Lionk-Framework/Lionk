@@ -117,6 +117,8 @@ jobs:
           newversions.txt
 
   update-csproj:
+    permissions:
+      contents: write
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
     needs: check-pr-title
 
