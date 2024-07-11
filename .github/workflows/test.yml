@@ -49,46 +49,46 @@ jobs:
 
 
 
-  # publish-nuget:
-  #   runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
-  #   needs: check-pr-title
+  publish-nuget:
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    needs: check-pr-title
 
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v3
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-  #     - name: Download project data artifact
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: project-data
+      - name: Download project data artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: project-data
 
-  #     - name: Setup .NET Core
-  #       uses: actions/setup-dotnet@v3
-  #       with:
-  #         dotnet-version: ${{ vars.DOTNET_VERSION }}
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ vars.DOTNET_VERSION }}
 
-  #     - name: Load project data
-  #       run: |
-  #         echo "PROJECTS=$(cat projects.txt)" >> $GITHUB_ENV
-  #         echo "NEW_VERSION=$(cat newversions.txt)" >> $GITHUB_ENV
-  #         echo "SRC_PATH=src_test/" >> $GITHUB_ENV
+      - name: Load project data
+        run: |
+          echo "PROJECTS=$(cat projects.txt)" >> $GITHUB_ENV
+          echo "NEW_VERSION=$(cat newversions.txt)" >> $GITHUB_ENV
+          echo "SRC_PATH=src_test/" >> $GITHUB_ENV
 
-  #     - name: Publish NuGet packages
-  #       run: |
-  #           projects=(${{ env.PROJECTS }})
-  #           newversions=(${{ env.NEW_VERSION }})
-  #           SRC_PATH=${{ env.SRC_PATH }}
+      - name: Publish NuGet packages
+        run: |
+            projects=(${{ env.PROJECTS }})
+            newversions=(${{ env.NEW_VERSION }})
+            SRC_PATH=${{ env.SRC_PATH }}
     
-  #           for i in "${!projects[@]}"; do
-  #             project=${projects[$i]}
-  #             newversion=${newversions[$i]}
-  #             csproj="$SRC_PATH/$project/$project.csproj"
+            for i in "${!projects[@]}"; do
+              project=${projects[$i]}
+              newversion=${newversions[$i]}
+              csproj="$SRC_PATH/$project/$project.csproj"
     
-  #             echo "Publishing $csproj as version $newversion"
+              echo "Publishing $csproj as version $newversion"
     
-  #             dotnet pack "$csproj" -p:PackageVersion="$newversion" -o ./output
-  #             dotnet nuget push "./output/$project.$newversion.nupkg" -k ${{ secrets.GH_TOKEN }} -s "https://nuget.pkg.github.com/alexandreiorio/index.json"
-  #           done
+              dotnet pack "$csproj" -p:PackageVersion="$newversion" -o ./output
+              dotnet nuget push "./output/$project.$newversion.nupkg" -k ${{ secrets.GH_TOKEN }} -s "https://nuget.pkg.github.com/alexandreiorio/index.json"
+            done
 
   # update-csproj:
   #   permissions:
