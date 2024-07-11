@@ -5,7 +5,7 @@ import json
 def main():
     PR_TITLE = os.getenv('PR_TITLE')
     PR_BODY = os.getenv('PR_BODY')
-    SRC_PATH = os.getenv('SRC_PATH')
+    SRC_PATH = './src_test/'
 
     print(f'Pull Request title: {PR_TITLE}')
     print(f'Pull Request body: {PR_BODY}')
@@ -24,9 +24,14 @@ def main():
 
     # Split projects and types into arrays, and remove spaces from project names
     for pair in pairs:
-        project, type = pair.split()
-        projects.append(project.replace(' ', ''))
-        types.append(type)
+        parts = pair.split()
+        if len(parts) == 2:
+            project, type = parts
+            projects.append(project.replace(' ', ''))
+            types.append(type)
+        else:
+            print(f'Invalid pair: {pair}')
+            exit(1)
 
     # Show projects and types
     print(f'Projects: {projects}')
