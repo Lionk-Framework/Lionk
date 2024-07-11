@@ -87,17 +87,19 @@ jobs:
 
           for project in "${projects[@]:1}"; do
             changelog=$(echo "$body" | awk -v proj="$project" '
-              BEGIN { in_project = 0; }
-              {
-                if ($0 ~ proj && $0 !~ /^- /) {
-                  in_project = 1;
-                } else if ($0 !~ /^- /) {
-                  in_project = 0;
-                }
-                if (in_project && $0 ~ /^- /) {
-                  print;
-                }
-              }')
+              BEGIN { RS=""; FS="\n" }
+              $0 ~ proj {
+                in_project = 1
+                next
+              }
+              in_project && /^- / {
+                print
+                next
+              }
+              in_project && !/^-/ {
+                in_project = 0
+              }
+            ')
             project_changelogs+=("$changelog")
           done
 
@@ -118,7 +120,7 @@ jobs:
           project=${projects[$i]}
           type=${types[$i]}
           csproj="$SRC_PATH/$project/$project.csproj"
-          oldversion=$(grep -oPm1 "(?<=<version>)[^<]+" "$csproj")
+          oldversion=$(grep -oPm1 "(?<=<Version>)[^<]+" "$csproj")
           oldversions+=("$oldversion")
           
           IFS='.' read -r -a version_parts <<< "$oldversion"
@@ -148,7 +150,7 @@ jobs:
         echo "${types[@]}" > types.txt
         echo "${oldversions[@]}" > oldversions.txt
         echo "${newversions[@]}" > newversions.txt
-        echo "${changelogs_array[@]}" > changelogs.txt
+        printf "%s\n" "${changelogs_array[@]}" > changelogs.txt
 
     - name: Upload project data artifact
       uses: actions/upload-artifact@v3
