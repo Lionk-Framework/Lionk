@@ -16,14 +16,18 @@ jobs:
     - name: Get pull request title and body
       id: get_pr_info
       run: |
-        echo "PR_TITLE=$(echo "${{ github.event.pull_request.title }}" | jq -R -s '.' )" >> $GITHUB_ENV
-        echo "PR_BODY=$(echo "${{ github.event.pull_request.body }}" | jq -R -s '.' )" >> $GITHUB_ENV
+        echo "PR_TITLE<<EOF" >> $GITHUB_ENV
+        echo "${{ github.event.pull_request.title }}" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+        echo "PR_BODY<<EOF" >> $GITHUB_ENV
+        echo "${{ github.event.pull_request.body }}" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
 
     - name: Process PR title, body, and check projects
       id: process_title_body
       run: |
-        PR_TITLE=$(echo ${{ env.PR_TITLE }} | jq -r .)
-        PR_BODY=$(echo ${{ env.PR_BODY }} | jq -r .)
+        PR_TITLE="${{ env.PR_TITLE }}"
+        PR_BODY="${{ env.PR_BODY }}"
         SRC_PATH="./src_test/"
 
         echo "Pull Request title: $PR_TITLE"
@@ -77,7 +81,7 @@ jobs:
 
         # Extract changelogs from PR body
         for project in "${projects[@]}"; do
-          changelog=$(echo "$PR_BODY" | awk -v proj="$project" 'BEGIN { RS="\n\n" } $1 == proj {gsub(/^- /, "  - ", $0); print}')
+          changelog=$(echo "$PR_BODY" | awk -v proj="$project" 'BEGIN { RS="\n\n" } $1 == proj {gsub(/^- /, "- ", $0); print}')
           changelogs+=("$changelog")
         done
 
@@ -134,6 +138,7 @@ jobs:
           oldversions.txt
           newversions.txt
           changelogs.txt
+
 
 
 
