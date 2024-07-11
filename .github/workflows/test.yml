@@ -46,9 +46,9 @@ jobs:
         declare -a oldversions
         declare -a newversions
 
-        # Split projects and types into arrays
+        # Split projects and types into arrays, and remove spaces from project names
         while IFS= read -r pair; do
-          project=$(echo "$pair" | awk '{print $1}')
+          project=$(echo "$pair" | awk '{print $1}' | tr -d ' ')
           type=$(echo "$pair" | awk '{print $2}')
           projects+=("$project")
           types+=("$type")
@@ -86,17 +86,18 @@ jobs:
             continue
           fi
           if [[ ! "$line" =~ ^- ]]; then
-            # It's a project name, check if it exists in the projects array
+            # It's a project name, clean spaces and check if it exists in the projects array
+            project_clean=$(echo "$line" | tr -d ' ')
             project_found=false
             for project in "${projects[@]}"; do
-              if [[ "$project" == "$line" ]]; then
+              if [[ "$project" == "$project_clean" ]]; then
                 project_found=true
                 break
               fi
             done
 
             if [[ "$project_found" == false ]]; then
-              echo "Project $line not found in the PR title."
+              echo "Project $project_clean not found in the PR title."
               exit 1
             fi
 
