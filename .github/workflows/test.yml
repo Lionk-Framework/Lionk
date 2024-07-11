@@ -13,23 +13,27 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Get pull request title
-      id: get_pr_title
-      run: echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
+    - name: Get pull request title and body
+      id: get_pr_info
+      run: |
+        echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
+        echo "PR_BODY=${{ github.event.pull_request.body }}" >> $GITHUB_ENV
 
     - name: Process PR title and check projects
-      id: process_title
+      id: process_title_body
       run: |
         PR_TITLE="${{ env.PR_TITLE }}"
+        PR_BODY="${{ env.PR_BODY }}"
         SRC_PATH="./src_test/"
 
         echo "Pull Request title: $PR_TITLE"
+        echo "Pull Request body: $PR_BODY"
 
         # Extract project names and version types from the PR title
         pairs=$(echo "$PR_TITLE" | grep -oE '\b\w+\b (major|minor|patch)')
         if [ -z "$pairs" ]; then
-        echo "Pull Request title does not contain version change indication (major, minor, patch)."
-        exit 0
+          echo "Pull Request title does not contain version change indication (major, minor, patch)."
+          exit 0
         fi
 
         # Initialize arrays
@@ -37,13 +41,14 @@ jobs:
         declare -a types
         declare -a oldversions
         declare -a newversions
+        declare -a changelogs
 
         # Split projects and types into arrays
         while IFS= read -r pair; do
-        project=$(echo "$pair" | awk '{print $1}')
-        type=$(echo "$pair" | awk '{print $2}')
-        projects+=("$project")
-        types+=("$type")
+          project=$(echo "$pair" | awk '{print $1}')
+          type=$(echo "$pair" | awk '{print $2}')
+          projects+=("$project")
+          types+=("$type")
         done <<< "$pairs"
 
         # Show projects and types
@@ -52,52 +57,64 @@ jobs:
 
         # Validate types
         for type in "${types[@]}"; do
-        if [[ "$type" != "major" && "$type" != "minor" && "$type" != "patch" ]]; then
+          if [[ "$type" != "major" && "$type" != "minor" && "$type" != "patch" ]]; then
             echo "Invalid version type: $type"
             exit 1
-        fi
+          fi
         done
 
         echo "All version types are valid."
 
         # Check if project file exists
         for project in "${projects[@]}"; do
-        if [ ! -f "$SRC_PATH/$project/$project.csproj" ]; then
+          if [ ! -f "$SRC_PATH/$project/$project.csproj" ]; then
             echo "Project file not found: $SRC_PATH/$project/$project.csproj"
             exit 1
-        fi
+          fi
         done
 
         echo "All project files exist."
 
+        # Extract changelogs from PR body
+        for project in "${projects[@]}"; do
+          changelog=$(echo "$PR_BODY" | sed -n "/$project/,/^$/p" | sed '1d;$d')
+          changelogs+=("$changelog")
+        done
+
+        # Show changelogs
+        for i in "${!projects[@]}"; do
+          echo "Changelog for ${projects[$i]}:"
+          echo "${changelogs[$i]}"
+        done
+
         # Loop through each project and type to populate oldversions and newversions arrays
         for i in "${!projects[@]}"; do
-        project=${projects[$i]}
-        type=${types[$i]}
-        csproj="$SRC_PATH/$project/$project.csproj"
-        oldversion=$(grep -oPm1 "(?<=<version>)[^<]+" "$csproj")
-        oldversions+=("$oldversion")
-        
-        IFS='.' read -r -a version_parts <<< "$oldversion"
-        major=${version_parts[0]}
-        minor=${version_parts[1]}
-        patch=${version_parts[2]}
+          project=${projects[$i]}
+          type=${types[$i]}
+          csproj="$SRC_PATH/$project/$project.csproj"
+          oldversion=$(grep -oPm1 "(?<=<version>)[^<]+" "$csproj")
+          oldversions+=("$oldversion")
+          
+          IFS='.' read -r -a version_parts <<< "$oldversion"
+          major=${version_parts[0]}
+          minor=${version_parts[1]}
+          patch=${version_parts[2]}
 
-        if [[ "$type" == "major" ]]; then
+          if [[ "$type" == "major" ]]; then
             major=$((major + 1))
             minor=0
             patch=0
-        elif [[ "$type" == "minor" ]]; then
+          elif [[ "$type" == "minor" ]]; then
             minor=$((minor + 1))
             patch=0
-        elif [[ "$type" == "patch" ]]; then
+          elif [[ "$type" == "patch" ]]; then
             patch=$((patch + 1))
-        fi
+          fi
 
-        newversion="$major.$minor.$patch"
-        newversions+=("$newversion")
+          newversion="$major.$minor.$patch"
+          newversions+=("$newversion")
 
-        echo "$project old version: $oldversion, new version: $newversion"
+          echo "$project old version: $oldversion, new version: $newversion"
         done
 
         # Save data to artifact
@@ -105,6 +122,7 @@ jobs:
         echo "${types[@]}" > types.txt
         echo "${oldversions[@]}" > oldversions.txt
         echo "${newversions[@]}" > newversions.txt
+        echo "${changelogs[@]}" > changelogs.txt
 
     - name: Upload project data artifact
       uses: actions/upload-artifact@v3
@@ -115,156 +133,158 @@ jobs:
           types.txt
           oldversions.txt
           newversions.txt
+          changelogs.txt
 
-  publish-nuget:
-    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
-    needs: check-pr-title
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+  # publish-nuget:
+  #   runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+  #   needs: check-pr-title
 
-      - name: Download project data artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: project-data
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
 
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: ${{ vars.DOTNET_VERSION }}
+  #     - name: Download project data artifact
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: project-data
 
-      - name: Load project data
-        run: |
-          echo "PROJECTS=$(cat projects.txt)" >> $GITHUB_ENV
-          echo "NEW_VERSION=$(cat newversions.txt)" >> $GITHUB_ENV
-          echo "SRC_PATH=src_test/" >> $GITHUB_ENV
+  #     - name: Setup .NET Core
+  #       uses: actions/setup-dotnet@v3
+  #       with:
+  #         dotnet-version: ${{ vars.DOTNET_VERSION }}
 
-      - name: Publish NuGet packages
-        run: |
-            projects=(${{ env.PROJECTS }})
-            newversions=(${{ env.NEW_VERSION }})
-            SRC_PATH=${{ env.SRC_PATH }}
+  #     - name: Load project data
+  #       run: |
+  #         echo "PROJECTS=$(cat projects.txt)" >> $GITHUB_ENV
+  #         echo "NEW_VERSION=$(cat newversions.txt)" >> $GITHUB_ENV
+  #         echo "SRC_PATH=src_test/" >> $GITHUB_ENV
+
+  #     - name: Publish NuGet packages
+  #       run: |
+  #           projects=(${{ env.PROJECTS }})
+  #           newversions=(${{ env.NEW_VERSION }})
+  #           SRC_PATH=${{ env.SRC_PATH }}
     
-            for i in "${!projects[@]}"; do
-              project=${projects[$i]}
-              newversion=${newversions[$i]}
-              csproj="$SRC_PATH/$project/$project.csproj"
+  #           for i in "${!projects[@]}"; do
+  #             project=${projects[$i]}
+  #             newversion=${newversions[$i]}
+  #             csproj="$SRC_PATH/$project/$project.csproj"
     
-              echo "Publishing $csproj as version $newversion"
+  #             echo "Publishing $csproj as version $newversion"
     
-              dotnet pack "$csproj" -p:PackageVersion="$newversion" -o ./output
-              dotnet nuget push "./output/$project.$newversion.nupkg" -k ${{ secrets.GH_TOKEN }} -s "https://nuget.pkg.github.com/alexandreiorio/index.json"
-            done
+  #             dotnet pack "$csproj" -p:PackageVersion="$newversion" -o ./output
+  #             dotnet nuget push "./output/$project.$newversion.nupkg" -k ${{ secrets.GH_TOKEN }} -s "https://nuget.pkg.github.com/alexandreiorio/index.json"
+  #           done
 
-  update-csproj:
-    permissions:
-      contents: write
-    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
-    needs: publish-nuget
+  # update-csproj:
+  #   permissions:
+  #     contents: write
+  #   runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+  #   needs: publish-nuget
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        ref: ${{ github.head_ref }}
+  #   steps:
+  #   - name: Checkout repository
+  #     uses: actions/checkout@v3
+  #     with:
+  #       ref: ${{ github.head_ref }}
 
-    - name: Download project data artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: project-data
+  #   - name: Download project data artifact
+  #     uses: actions/download-artifact@v3
+  #     with:
+  #       name: project-data
 
-    - name: Load project data
-      run: |
-        echo "PROJECTS=$(cat projects.txt)" >> $GITHUB_ENV
-        echo "NEW_VERSION=$(cat newversions.txt)" >> $GITHUB_ENV
-        echo "SRC_PATH=src_test/" >> $GITHUB_ENV
+  #   - name: Load project data
+  #     run: |
+  #       echo "PROJECTS=$(cat projects.txt)" >> $GITHUB_ENV
+  #       echo "NEW_VERSION=$(cat newversions.txt)" >> $GITHUB_ENV
+  #       echo "SRC_PATH=src_test/" >> $GITHUB_ENV
 
-    - name: Update .csproj files
-      run: |
+  #   - name: Update .csproj files
+  #     run: |
 
-        projects=(${{ env.PROJECTS }})
-        newversions=(${{ env.NEW_VERSION }})
-        SRC_PATH=(${{ env.SRC_PATH }})
+  #       projects=(${{ env.PROJECTS }})
+  #       newversions=(${{ env.NEW_VERSION }})
+  #       SRC_PATH=(${{ env.SRC_PATH }})
 
-        # Update the .csproj files with new versions
-        for i in "${!projects[@]}"; do
-          project=${projects[$i]}
-          newversion=${newversions[$i]}
-          csproj="$SRC_PATH/$project/$project.csproj"
-          temp_csproj="$SRC_PATH/$project/temp_$project.csproj"
-          echo "Updating $csproj to version $newversion"
+  #       # Update the .csproj files with new versions
+  #       for i in "${!projects[@]}"; do
+  #         project=${projects[$i]}
+  #         newversion=${newversions[$i]}
+  #         csproj="$SRC_PATH/$project/$project.csproj"
+  #         temp_csproj="$SRC_PATH/$project/temp_$project.csproj"
+  #         echo "Updating $csproj to version $newversion"
           
-          # Copy to a temporary file
-          cp "$csproj" "$temp_csproj"
+  #         # Copy to a temporary file
+  #         cp "$csproj" "$temp_csproj"
           
-          # Update the version in the temporary file
-          awk -v newversion="$newversion" '
-          BEGIN { FS = OFS = "" }
-          /<version>/ { $0 = gensub(/<version>.*<\/version>/, "<version>" newversion "</version>", 1) }
-          { print }
-          ' "$temp_csproj" > "$csproj"
+  #         # Update the version in the temporary file
+  #         awk -v newversion="$newversion" '
+  #         BEGIN { FS = OFS = "" }
+  #         /<version>/ { $0 = gensub(/<version>.*<\/version>/, "<version>" newversion "</version>", 1) }
+  #         { print }
+  #         ' "$temp_csproj" > "$csproj"
           
-          rm "$temp_csproj"
+  #         rm "$temp_csproj"
 
-          echo "Updated $csproj content:"
-          cat "$csproj"
-        done
+  #         echo "Updated $csproj content:"
+  #         cat "$csproj"
+  #       done
 
-    - name: Commit and push changes
-      run: |
-        projects=(${{ env.PROJECTS }})
-        newversions=(${{ env.NEW_VERSION }})
-        SRC_PATH=(${{ env.SRC_PATH }})
+  #   - name: Commit and push changes
+  #     run: |
+  #       projects=(${{ env.PROJECTS }})
+  #       newversions=(${{ env.NEW_VERSION }})
+  #       SRC_PATH=(${{ env.SRC_PATH }})
 
-        git config --global user.name '${{ vars.BOT_NAME}}'
-        git config --global user.email '${{ vars.BOT_MAIL}}'
-        for project in "${projects[@]}"; do
-          git add "$SRC_PATH/$project/$project.csproj"
-        done
-        git commit -m "Update project versions"
-        git push origin HEAD:${{ github.head_ref }}
+  #       git config --global user.name '${{ vars.BOT_NAME}}'
+  #       git config --global user.email '${{ vars.BOT_MAIL}}'
+  #       for project in "${projects[@]}"; do
+  #         git add "$SRC_PATH/$project/$project.csproj"
+  #       done
+  #       git commit -m "Update project versions"
+  #       git push origin HEAD:${{ github.head_ref }}
 
-  create-tag-and-release:
-    permissions:
-      contents: write
-    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
-    needs: update-csproj
+  # create-tag-and-release:
+  #   permissions:
+  #     contents: write
+  #   runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+  #   needs: update-csproj
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+  #   steps:
+  #   - name: Checkout repository
+  #     uses: actions/checkout@v3
 
-    - name: Download project data artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: project-data
+  #   - name: Download project data artifact
+  #     uses: actions/download-artifact@v3
+  #     with:
+  #       name: project-data
 
-    - name: Create tags and releases
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        projects=($(cat projects.txt))
-        newversions=($(cat newversions.txt))
-        # Show projects and types
-        echo "Projects: ${projects[@]}"
-        echo "new versions: ${newversions[@]}"
+  #   - name: Create tags and releases
+  #     env:
+  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #     run: |
+  #       projects=($(cat projects.txt))
+  #       newversions=($(cat newversions.txt))
+  #       # Show projects and types
+  #       echo "Projects: ${projects[@]}"
+  #       echo "new versions: ${newversions[@]}"
 
-        for i in "${!projects[@]}"; do
-            project=${projects[$i]}
-            newversion=${newversions[$i]}
-            tag="${project}_v${newversion}"
+  #       for i in "${!projects[@]}"; do
+  #           project=${projects[$i]}
+  #           newversion=${newversions[$i]}
+  #           tag="${project}_v${newversion}"
 
-            echo "Creating tag $tag"
+  #           echo "Creating tag $tag"
 
-            git config --global user.name '${{ vars.BOT_NAME}}'
-            git config --global user.email '${{ vars.BOT_MAIL}}'
+  #           git config --global user.name '${{ vars.BOT_NAME}}'
+  #           git config --global user.email '${{ vars.BOT_MAIL}}'
 
-            # Create the tag
-            git tag -a "$tag" -m "Release $tag"
-            git push origin "$tag"
+  #           # Create the tag
+  #           git tag -a "$tag" -m "Release $tag"
+  #           git push origin "$tag"
 
-            # Create the release
-            gh release create "$tag" --title "$tag" --notes "Release of version $newversion for $project"
-        done
+  #           # Create the release
+  #           gh release create "$tag" --title "$tag" --notes "Release of version $newversion for $project"
+  #       done
 
