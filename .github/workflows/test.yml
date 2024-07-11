@@ -86,11 +86,20 @@ jobs:
             continue
           fi
           if [[ ! "$line" =~ ^- ]]; then
-            # It's a project name
-            if [[ ! " ${projects[@]} " =~ " ${line} " ]]; then
+            # It's a project name, check if it exists in the projects array
+            project_found=false
+            for project in "${projects[@]}"; do
+              if [[ "$project" == "$line" ]]; then
+                project_found=true
+                break
+              fi
+            done
+
+            if [[ "$project_found" == false ]]; then
               echo "Project $line not found in the PR title."
               exit 1
             fi
+
             if [[ -n "$current_project" ]]; then
               changelogs_json="${changelogs_json%,}],"  # Remove the trailing comma and close the array
             fi
