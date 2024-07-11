@@ -17,14 +17,14 @@ def main():
     newversions = []
 
     # Split projects and types into arrays, and remove spaces from project names
-    for pair in pairs:
-        parts = pair.split()
-        if len(parts) == 2:
-            project, type = parts
+
+    for part in PR_TITLE.split(','):
+        if len(part) == 2:
+            project, type = part
             projects.append(project.replace(' ', ''))
             types.append(type.replace(' ', ''))
         else:
-            print(f'Invalid pair: {pair}')
+            print(f'Invalid part of pull request title: {part}')
             exit(1)
 
     # Show projects and types
