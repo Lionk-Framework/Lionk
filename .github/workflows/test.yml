@@ -22,7 +22,7 @@ jobs:
         echo "PR_BODY<<EOF" >> $GITHUB_ENV
         echo "${{ github.event.pull_request.body }}" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
-        echi "SRC_PATH=./src_test/" >> $GITHUB_ENV
+        echo "SRC_PATH=./src_test/" >> $GITHUB_ENV
 
     - name: Set up Python
       uses: actions/setup-python@v3
