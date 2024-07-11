@@ -80,15 +80,37 @@ jobs:
         echo "All project files exist."
 
         # Extract changelogs from PR body
-        for project in "${projects[@]}"; do
-          changelog=$(echo "$PR_BODY" | awk -v proj="$project" 'BEGIN { RS="\n\n" } $1 == proj {gsub(/^- /, "- ", $0); print}')
-          changelogs+=("$changelog")
-        done
+        extract_changelogs() {
+          local body="$1"
+          local projects=("$@")
+          local project_changelogs=()
+
+          for project in "${projects[@]:1}"; do
+            changelog=$(echo "$body" | awk -v proj="$project" '
+              BEGIN { in_project = 0; }
+              {
+                if ($0 ~ proj && $0 !~ /^- /) {
+                  in_project = 1;
+                } else if ($0 !~ /^- /) {
+                  in_project = 0;
+                }
+                if (in_project && $0 ~ /^- /) {
+                  print;
+                }
+              }')
+            project_changelogs+=("$changelog")
+          done
+
+          echo "${project_changelogs[@]}"
+        }
+
+        changelogs=$(extract_changelogs "$PR_BODY" "${projects[@]}")
 
         # Show changelogs
+        IFS=$'\n' read -rd '' -a changelogs_array <<<"$changelogs"
         for i in "${!projects[@]}"; do
           echo "Changelog for ${projects[$i]}:"
-          echo "${changelogs[$i]}"
+          echo "${changelogs_array[$i]}"
         done
 
         # Loop through each project and type to populate oldversions and newversions arrays
@@ -126,7 +148,7 @@ jobs:
         echo "${types[@]}" > types.txt
         echo "${oldversions[@]}" > oldversions.txt
         echo "${newversions[@]}" > newversions.txt
-        echo "${changelogs[@]}" > changelogs.txt
+        echo "${changelogs_array[@]}" > changelogs.txt
 
     - name: Upload project data artifact
       uses: actions/upload-artifact@v3
@@ -138,6 +160,7 @@ jobs:
           oldversions.txt
           newversions.txt
           changelogs.txt
+
 
 
 
