@@ -5,10 +5,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>1.0.0</Version>
-    <Authors>alexandreiorio</Authors>
-    <PackageDescription>logger for lionk</PackageDescription>
-    <RepositoryUrl>https://github.com/alexandreiorio/lionk</RepositoryUrl>
+    <version>0.0.4</version>
   </PropertyGroup>
 
 </Project>
