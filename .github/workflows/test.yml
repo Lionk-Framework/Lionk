@@ -80,6 +80,7 @@ jobs:
 
         # Extract changelogs from PR body and convert to JSON
         changelogs_json="{"
+        current_project=""
         while IFS= read -r line; do
           if [[ -z "$line" ]]; then
             continue
@@ -99,7 +100,11 @@ jobs:
         done <<< "$PR_BODY"
 
         # Close the last project array and the JSON object
-        changelogs_json="${changelogs_json%,}]}"
+        if [[ -n "$current_project" ]]; then
+          changelogs_json="${changelogs_json%,}]}"
+        else
+          changelogs_json+="}"
+        fi
 
         echo "Changelogs JSON: $changelogs_json"
 
