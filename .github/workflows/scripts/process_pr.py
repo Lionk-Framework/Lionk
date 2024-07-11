@@ -10,12 +10,6 @@ def main():
     print(f'Pull Request title: {PR_TITLE}')
     print(f'Pull Request body: {PR_BODY}')
 
-    # Extract project names and version types from the PR title
-    pairs = re.findall(r'\b\w+\b (major|minor|patch)', PR_TITLE)
-    if not pairs:
-        print('Pull Request title does not contain version change indication (major, minor, patch).')
-        exit(0)
-
     # Initialize arrays
     projects = []
     types = []
@@ -28,7 +22,7 @@ def main():
         if len(parts) == 2:
             project, type = parts
             projects.append(project.replace(' ', ''))
-            types.append(type)
+            types.append(type.replace(' ', ''))
         else:
             print(f'Invalid pair: {pair}')
             exit(1)
