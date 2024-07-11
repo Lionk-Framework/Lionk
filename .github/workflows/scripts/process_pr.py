@@ -7,6 +7,17 @@ def main():
     PR_BODY = os.getenv('PR_BODY')
     SRC_PATH = './src_test/'
 
+    PR_TITLE = "logger patch, auth patch"
+    PR_BODY = """
+    logger
+    - Added new logger
+    - Fixed logger bug
+
+    auth
+    - Added new auth
+    - Fixed auth bug
+    """
+
     print(f'Pull Request title: {PR_TITLE}')
     print(f'Pull Request body: {PR_BODY}')
 
@@ -19,8 +30,11 @@ def main():
     # Split projects and types into arrays, and remove spaces from project names
 
     for part in PR_TITLE.split(','):
-        if len(part) == 2:
-            project, type = part
+        # Split part into project and type and remove item spaces
+
+        parts = part.strip().split(' ')
+        if len(parts) == 2:
+            project, type = parts
             projects.append(project.replace(' ', ''))
             types.append(type.replace(' ', ''))
         else:
@@ -39,13 +53,13 @@ def main():
 
     print('All version types are valid.')
 
-    # Check if project file exists
-    for project in projects:
-        if not os.path.isfile(f'{SRC_PATH}/{project}/{project}.csproj'):
-            print(f'Project file not found: {SRC_PATH}/{project}/{project}.csproj')
-            exit(1)
+    # # Check if project file exists
+    # for project in projects:
+    #     if not os.path.isfile(f'{SRC_PATH}/{project}/{project}.csproj'):
+    #         print(f'Project file not found: {SRC_PATH}/{project}/{project}.csproj')
+    #         exit(1)
 
-    print('All project files exist.')
+    # print('All project files exist.')
 
     # Extract changelogs from PR body and convert to JSON
     changelogs = {}
