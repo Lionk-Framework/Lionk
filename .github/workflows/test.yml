@@ -87,6 +87,10 @@ jobs:
           fi
           if [[ ! "$line" =~ ^- ]]; then
             # It's a project name
+            if [[ ! " ${projects[@]} " =~ " ${line} " ]]; then
+              echo "Project $line not found in the PR title."
+              exit 1
+            fi
             if [[ -n "$current_project" ]]; then
               changelogs_json="${changelogs_json%,}],"  # Remove the trailing comma and close the array
             fi
