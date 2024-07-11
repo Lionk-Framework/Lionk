@@ -97,6 +97,9 @@ jobs:
 
         # Close the last project array and the JSON object
         changelogs_json="${changelogs_json%,}]}"
+        
+        # Replace newlines with spaces to avoid JSON formatting issues
+        changelogs_json=$(echo "$changelogs_json" | tr '\n' ' ')
 
         echo "Changelogs JSON: $changelogs_json"
 
