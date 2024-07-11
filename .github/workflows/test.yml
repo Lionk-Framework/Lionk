@@ -154,7 +154,7 @@ jobs:
               echo "Publishing $csproj as version $newversion"
     
               dotnet pack "$csproj" -p:PackageVersion="$newversion" -o ./output
-              dotnet nuget push "./output/$project.$newversion.nupkg" -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+              dotnet nuget push "./output/$project.$newversion.nupkg" -k ${{ secrets.GITHUB_TOKEN }} -s "github"
             done
 
   update-csproj:
