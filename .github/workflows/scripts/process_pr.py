@@ -5,18 +5,9 @@ import json
 def main():
     PR_TITLE = os.getenv('PR_TITLE')
     PR_BODY = os.getenv('PR_BODY')
-    SRC_PATH = './src_test/'
+    SRC_PATH = os.getenv('SRC_PATH')
+     
 
-    PR_TITLE = "logger patch, auth patch"
-    PR_BODY = """
-    logger
-    - Added new logger
-    - Fixed logger bug
-
-    auth
-    - Added new auth
-    - Fixed auth bug
-    """
 
     print(f'Pull Request title: {PR_TITLE}')
     print(f'Pull Request body: {PR_BODY}')
@@ -40,6 +31,9 @@ def main():
         else:
             print(f'Invalid part of pull request title: {part}')
             exit(1)
+    
+    # set types to lowercase
+    types = [type.lower() for type in types]
 
     # Show projects and types
     print(f'Projects: {projects}')
@@ -53,20 +47,20 @@ def main():
 
     print('All version types are valid.')
 
-    # # Check if project file exists
-    # for project in projects:
-    #     if not os.path.isfile(f'{SRC_PATH}/{project}/{project}.csproj'):
-    #         print(f'Project file not found: {SRC_PATH}/{project}/{project}.csproj')
-    #         exit(1)
+    # Check if project file exists
+    for project in projects:
+        if not os.path.isfile(f'{SRC_PATH}/{project}/{project}.csproj'):
+            print(f'Project file not found: {SRC_PATH}/{project}/{project}.csproj')
+            exit(1)
 
-    # print('All project files exist.')
+    print('All project files exist.')
 
     # Extract changelogs from PR body and convert to JSON
     changelogs = {}
     current_project = None
     for line in PR_BODY.splitlines():
         line = line.strip()
-        if not line:
+        if not line or line.startswith('//'):
             continue
         if not line.startswith('-'):
             # It's a project name, clean spaces and check if it exists in the projects array
