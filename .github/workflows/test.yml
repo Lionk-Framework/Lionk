@@ -22,142 +22,21 @@ jobs:
         echo "PR_BODY<<EOF" >> $GITHUB_ENV
         echo "${{ github.event.pull_request.body }}" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
+        echi "SRC_PATH=./src_test/" >> $GITHUB_ENV
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        pip install -r .github/workflows/scripts/requirements.txt
 
     - name: Process PR title, body, and check projects
       id: process_title_body
       run: |
-        PR_TITLE="${{ env.PR_TITLE }}"
-        PR_BODY="${{ env.PR_BODY }}"
-        SRC_PATH="./src_test/"
-
-        echo "Pull Request title: $PR_TITLE"
-        echo "Pull Request body: $PR_BODY"
-
-        # Extract project names and version types from the PR title
-        pairs=$(echo "$PR_TITLE" | grep -oE '\b\w+\b (major|minor|patch)')
-        if [ -z "$pairs" ]; then
-          echo "Pull Request title does not contain version change indication (major, minor, patch)."
-          exit 0
-        fi
-
-        # Initialize arrays
-        declare -a projects
-        declare -a types
-        declare -a oldversions
-        declare -a newversions
-
-        # Split projects and types into arrays, and remove spaces from project names
-        while IFS= read -r pair; do
-          project=$(echo "$pair" | awk '{print $1}' | tr -d ' ')
-          type=$(echo "$pair" | awk '{print $2}')
-          projects+=("$project")
-          types+=("$type")
-        done <<< "$pairs"
-
-        # Show projects and types
-        echo "Projects: ${projects[@]}"
-        echo "Types: ${types[@]}"
-
-        # Validate types
-        for type in "${types[@]}"; do
-          if [[ "$type" != "major" && "$type" != "minor" && "$type" != "patch" ]]; then
-            echo "Invalid version type: $type"
-            exit 1
-          fi
-        done
-
-        echo "All version types are valid."
-
-        # Check if project file exists
-        for project in "${projects[@]}"; do
-          if [ ! -f "$SRC_PATH/$project/$project.csproj" ]; then
-            echo "Project file not found: $SRC_PATH/$project/$project.csproj"
-            exit 1
-          fi
-        done
-
-        echo "All project files exist."
-
-        # Extract changelogs from PR body and convert to JSON
-        changelogs_json="{"
-        current_project=""
-        while IFS= read -r line; do
-          if [[ -z "$line" ]]; then
-            continue
-          fi
-          if [[ ! "$line" =~ ^- ]]; then
-            # It's a project name, clean spaces and check if it exists in the projects array
-            project_clean=$(echo "$line" | tr -d ' ')
-            project_found=false
-            for project in "${projects[@]}"; do
-              if [[ "$project" == "$project_clean" ]]; then
-                project_found=true
-                break
-              fi
-            done
-
-            if [[ "$project_found" == false ]]; then
-              echo "Project $project_clean not found in the PR title."
-              exit 1
-            fi
-
-            if [[ -n "$current_project" ]]; then
-              changelogs_json="${changelogs_json%,}],"  # Remove the trailing comma and close the array
-            fi
-            current_project=$(echo "$line" | xargs)  # Trim whitespace
-            changelogs_json+="\"$current_project\":["
-          else
-            # It's a changelog item
-            changelog=$(echo "$line" | sed 's/^- //')
-            changelogs_json+="\"$changelog\","
-          fi
-        done <<< "$PR_BODY"
-
-        # Close the last project array and the JSON object
-        if [[ -n "$current_project" ]]; then
-          changelogs_json="${changelogs_json%,}]}"
-        else
-          changelogs_json+="}"
-        fi
-
-        echo "Changelogs JSON: $changelogs_json"
-
-        # Loop through each project and type to populate oldversions and newversions arrays
-        for i in "${!projects[@]}"; do
-          project=${projects[$i]}
-          type=${types[$i]}
-          csproj="$SRC_PATH/$project/$project.csproj"
-          oldversion=$(grep -oPm1 "(?<=<Version>)[^<]+" "$csproj")
-          oldversions+=("$oldversion")
-          
-          IFS='.' read -r -a version_parts <<< "$oldversion"
-          major=${version_parts[0]}
-          minor=${version_parts[1]}
-          patch=${version_parts[2]}
-
-          if [[ "$type" == "major" ]]; then
-            major=$((major + 1))
-            minor=0
-            patch=0
-          elif [[ "$type" == "minor" ]]; then
-            minor=$((minor + 1))
-            patch=0
-          elif [[ "$type" == "patch" ]]; then
-            patch=$((patch + 1))
-          fi
-
-          newversion="$major.$minor.$patch"
-          newversions+=("$newversion")
-
-          echo "$project old version: $oldversion, new version: $newversion"
-        done
-
-        # Save data to artifact
-        echo "${projects[@]}" > projects.txt
-        echo "${types[@]}" > types.txt
-        echo "${oldversions[@]}" > oldversions.txt
-        echo "${newversions[@]}" > newversions.txt
-        echo "$changelogs_json" > changelogs.json
+        python .github/workflows/scripts/process_pr.py
 
     - name: Upload project data artifact
       uses: actions/upload-artifact@v3
