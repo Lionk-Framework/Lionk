@@ -81,6 +81,9 @@ jobs:
         # Extract changelogs from PR body and convert to JSON
         changelogs_json="{"
         while IFS= read -r line; do
+          if [[ -z "$line" ]]; then
+            continue
+          fi
           if [[ ! "$line" =~ ^- ]]; then
             # It's a project name
             if [[ -n "$current_project" ]]; then
@@ -97,9 +100,6 @@ jobs:
 
         # Close the last project array and the JSON object
         changelogs_json="${changelogs_json%,}]}"
-        
-        # Replace newlines with spaces to avoid JSON formatting issues
-        changelogs_json=$(echo "$changelogs_json" | tr '\n' ' ')
 
         echo "Changelogs JSON: $changelogs_json"
 
