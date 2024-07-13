@@ -84,7 +84,7 @@ def main():
         changelogs[current_project] = changelogs.get(current_project, [])
 
     changelogs_json = json.dumps(changelogs)
-    print(f'Changelogs JSON: {changelogs_json}')
+    print(f'Changelog JSON: {changelogs_json}')
 
     # Loop through each project and type to populate oldversions and newversions arrays
     for project, type in zip(projects, types):
@@ -122,7 +122,7 @@ def main():
         f.write(' '.join(oldversions))
     with open('newversions.txt', 'w') as f:
         f.write(' '.join(newversions))
-    with open('changelogs.json', 'w') as f:
+    with open('changelog.json', 'w') as f:
         f.write(changelogs_json)
 
 if __name__ == "__main__":

@@ -29,25 +29,16 @@ def update_or_add_element(container, name, value):
         new_element.text = value
 
 
-# Récupérer les variables d'environnement
-authors = os.getenv('AUTHORS', 'Author Name')
-company = os.getenv('COMPANY', 'Company Name')
 
-# Lire les fichiers
-with open('path.txt', 'r') as file:
-    SRC_PATH = file.read().strip()
-with open('projects.txt', 'r') as file:
-    projects = file.read().strip().split()
-with open('newversions.txt', 'r') as file:
-    newversions = file.read().strip().split()
-with open('changelogs.json', 'r') as file:
-    changelogs = json.load(file)
-
-
+# get environment variables
+src_path = os.getenv("SRC_PATH")
+projects = os.getenv("PROJECTS").split().strip()
+newversions = os.getenv("NEWVERSIONS").split().strip()
+changelogs = json.loads(os.getenv("CHANGELOGS"))
 
 # Parcourir les projets et mettre à jour les fichiers .csproj
 for project in projects:
-    project_path = os.path.join(SRC_PATH, project)
+    project_path = os.path.join(src_path, project)
     csproj_file = os.path.join(project_path, f"{project}.csproj")
     new_version = newversions[projects.index(project)]
     readme_file = os.path.join(project_path, "README.md")
@@ -73,12 +64,12 @@ for project in projects:
     root = tree.getroot()
     property_group = root.find('PropertyGroup')
 
-    # Mettre à jour les éléments Version et ChangeLog
+    # update or add Version and Description elements
     update_or_add_element(property_group ,"Version", new_version)
     update_or_add_element(property_group ,"Description", description)
 
     indent(root)
     tree.write(csproj_file, encoding="utf-8", xml_declaration=True)
 
-    # Affichage du contenu XML généré (facultatif)
+    # show the updated csproj file
     ET.dump(root)
