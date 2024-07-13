@@ -9,8 +9,8 @@ with open("projects.txt", "r") as file:
 
 # backup each project file
 for project in projects:
-    src_file = os.path.join(src_path, f"{project}.csproj")
-    backup_file = os.path.join(src_path, f"{project}.csproj.bkp")
+    src_file = os.path.join(src_path, project, f"{project}.csproj")
+    backup_file = os.path.join(src_path, project, f"{project}.csproj.bkp")
 
     with open(src_file, "rb") as src:
         content = src.read()
