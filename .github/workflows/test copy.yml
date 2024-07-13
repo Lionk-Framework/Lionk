@@ -73,6 +73,7 @@ jobs:
         run: |
           projects=${{ env.PROJECTS }}
           for project in "${projects[@]}"; do
+            echo " path: ${{env.SRC_PATH}}/$project/$project.csproj"
             cp "${{env.SRC_PATH}}/$project/$project.csproj" "${{env.SRC_PATH}}/$project/$project.csproj.bak"
           done    
 
