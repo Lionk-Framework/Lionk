@@ -45,7 +45,7 @@ for project in projects:
    
 
     if project in changelogs:
-        description = f"\n\n## Change Log for version \n{new_version}"
+        description = f"\n\n## Change Log"
         for change in changelogs[project]:
             description += f"\n- {change}"
         description += "\n\n"
