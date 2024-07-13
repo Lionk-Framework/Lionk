@@ -22,7 +22,7 @@ jobs:
         echo "PR_BODY<<EOF" >> $GITHUB_ENV
         echo "${{ github.event.pull_request.body }}" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
-        echo "SRC_PATH=./src_test/" >> $GITHUB_ENV
+        echo "SRC_PATH=${{vars.SRC_PATH}}" >> $GITHUB_ENV
 
     - name: Set up Python
       uses: actions/setup-python@v3
@@ -63,7 +63,7 @@ jobs:
           name: project-data
 
       - name: setup environnement variables
-        run: echo "SRC_PATH=./src_test/" >> $GITHUB_ENV
+        run: echo "SRC_PATH=${{vars.SRC_PATH}}" >> $GITHUB_ENV
         
         
       - name: backup csproj files
@@ -90,7 +90,7 @@ jobs:
           git config --global user.name '${{ vars.BOT_NAME}}'
           git config --global user.email '${{ vars.BOT_MAIL}}'
           for project in "${projects[@]}"; do
-            git add "$SRC_PATH/$project/$project.csproj"
+            git add "${{env.SRC_PATH}}/$project/$project.csproj"
           done
           git commit -m "Update project versions"
           git push origin HEAD:${{ github.head_ref }}
@@ -151,7 +151,7 @@ jobs:
         name: project-data
 
     - name: setup environnement variables
-      run: echo "SRC_PATH=./src_test/" >> $GITHUB_ENV
+      run: echo "SRC_PATH=${{vars.SRC_PATH}}" >> $GITHUB_ENV
 
     - name: Create tags and releases
       env:
