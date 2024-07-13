@@ -7,6 +7,5 @@
     <Nullable>enable</Nullable>
     <Version>5.0.1</Version>
     <ChangeLog>Added new auth;Fixed auth bug</ChangeLog>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 </Project>
