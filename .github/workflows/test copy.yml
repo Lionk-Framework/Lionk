@@ -120,7 +120,11 @@ jobs:
 
       - name: Publish NuGet packages
         run: |
+        
           projects=($(cat projects.txt))
+          newversions=($(cat newversions.txt))
+
+          tree ${{vars.SRC_PATH}}
 
           if [ ${#projects[@]} -eq 0 ]; then
             echo "No projects to publish"
