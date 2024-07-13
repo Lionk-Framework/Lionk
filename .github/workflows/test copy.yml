@@ -63,12 +63,15 @@ jobs:
           name: project-data
 
       - name: setup environnement variables
-        run: echo "SRC_PATH=${{vars.SRC_PATH}}" >> $GITHUB_ENV
+        run: |
+          echo "SRC_PATH=${{vars.SRC_PATH}}" >> $GITHUB_ENV
+          echo "PROJECTS=$(cat projects.txt)" >> $GITHUB_ENV
+
         
         
       - name: backup csproj files
         run: |
-          projects=($(cat projects.txt))
+          projects=${{ env.PROJECTS }}
           for project in "${projects[@]}"; do
             cp "${{env.SRC_PATH}}/$project/$project.csproj" "$SRC_PATH/$project/$project.csproj.bak"
           done    
