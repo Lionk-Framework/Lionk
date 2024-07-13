@@ -77,14 +77,6 @@ jobs:
           echo "BOT_MAIL=${{ vars.BOT_MAIL}}" >> $GITHUB_ENV
           echo "HEAD_REF=${{ github.head_ref }}" >> $GITHUB_ENV
 
-          #show environnement variables
-          echo "SRC_PATH=${{env.SRC_PATH}}"
-          echo "PROJECTS=${{env.PROJECTS}}"
-          echo "NEW_VERSION=${{env.NEW_VERSION}}"
-          echo "CHANGELOG=${{env.CHANGELOG}}"
-          echo "BOT_NAME=${{env.BOT_NAME}}"
-          echo "BOT_MAIL=${{env.BOT_MAIL}}"
-          echo "HEAD_REF=${{env.HEAD_REF}}"
 
       - name: backup csproj files
         run: |
