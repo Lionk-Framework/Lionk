@@ -3,7 +3,7 @@ name: Check PR Title and Update Project Versions
 on:
   pull_request:
     branches:
-      - test
+      - testtest
 
 jobs:
   check-pr-title:
@@ -45,6 +45,25 @@ jobs:
           newversions.txt
           changelogs.json
 
+  process-csproj:
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    needs: check-pr-title
+
+    steps:
+      - name : Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download project data artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: project-data
+
+      - name: setup python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+
+      
 
 
 

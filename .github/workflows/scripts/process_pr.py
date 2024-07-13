@@ -111,6 +111,9 @@ def main():
         print(f'{project} old version: {oldversion}, new version: {newversion}')
 
     # Save data to artifact
+
+    with open('path.txt', 'w') as f:
+        f.write(SRC_PATH)
     with open('projects.txt', 'w') as f:
         f.write(' '.join(projects))
     with open('types.txt', 'w') as f:

@@ -1,0 +1,209 @@
+name: Check PR Title and Update Project Versions
+
+on:
+  pull_request:
+    branches:
+      - test
+
+jobs:
+  check-pr-title:
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Get pull request title and body
+      id: get_pr_info
+      run: |
+        echo "PR_TITLE<<EOF" >> $GITHUB_ENV
+        echo "${{ github.event.pull_request.title }}" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+        echo "PR_BODY<<EOF" >> $GITHUB_ENV
+        echo "${{ github.event.pull_request.body }}" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+        echo "SRC_PATH=./src_test/" >> $GITHUB_ENV
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+
+    - name: Process PR title, body, and check projects
+      id: process_title_body
+      run: |
+        python .github/workflows/scripts/process_pr.py
+
+    - name: Upload project data artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: project-data
+        path: |
+          projects.txt
+          types.txt
+          oldversions.txt
+          newversions.txt
+          changelogs.json
+          path.txt
+
+
+  process-csproj:
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    needs: check-pr-title
+
+    steps:
+      - name : Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download project data artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: project-data
+
+      - name: setup environnement variables
+        run: echo "SRC_PATH=./src_test/" >> $GITHUB_ENV
+        
+        
+      - name: backup csproj files
+        run: |
+          projects=($(cat projects.txt))
+          for project in "${projects[@]}"; do
+            cp "${{env.SRC_PATH}}/$project/$project.csproj" "$SRC_PATH/$project/$project.csproj.bak"
+          done    
+
+      - name: setup python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+
+      - name: process csproj files
+        run: |
+          python .github/workflows/scripts/process_csproj.py
+  
+
+  publish-nuget:
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    needs: check-pr-title
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download project data artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: project-data
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ vars.DOTNET_VERSION }}
+
+      - name: Load project data
+        run: |
+          echo "PROJECTS=$(cat projects.txt)" >> $GITHUB_ENV
+          echo "SRC_PATH=src_test/" >> $GITHUB_ENV
+
+      - name: Publish NuGet packages
+        run: |
+            projects=(${{ env.PROJECTS }})
+            newversions=(${{ env.NEW_VERSION }})
+            SRC_PATH=${{ env.SRC_PATH }}
+    
+            for i in "${!projects[@]}"; do
+              project=${projects[$i]}
+              newversion=${newversions[$i]}
+              csproj="$SRC_PATH/$project/$project.csproj"
+    
+              echo "Publishing $csproj as version $newversion"
+    
+              dotnet pack "$csproj" -p:PackageVersion="$newversion" -o ./output
+              dotnet nuget push "./output/$project.$newversion.nupkg" -k ${{ secrets.GH_TOKEN }} -s "${{ vars.NUGET_REGISTRY}}"
+            done
+
+  update-csproj:
+    permissions:
+      contents: write
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    needs: publish-nuget
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}
+
+    - name: Download project data artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: project-data
+
+    - name: Load project data
+      run: |
+        echo "PROJECTS=$(cat projects.txt)" >> $GITHUB_ENV
+        echo "SRC_PATH=src_test/" >> $GITHUB_ENV
+
+    - name: Commit and push changes
+      run: |
+        projects=(${{ env.PROJECTS }})
+        SRC_PATH=(${{ env.SRC_PATH }})
+
+        git config --global user.name '${{ vars.BOT_NAME}}'
+        git config --global user.email '${{ vars.BOT_MAIL}}'
+        for project in "${projects[@]}"; do
+          git add "$SRC_PATH/$project/$project.csproj"
+        done
+        git commit -m "Update project versions"
+        git push origin HEAD:${{ github.head_ref }}
+
+  create-tag-and-release:
+    permissions:
+      contents: write
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    needs: update-csproj
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Download project data artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: project-data
+
+    - name: setup environnement variables
+      run: echo "SRC_PATH=./src_test/" >> $GITHUB_ENV
+
+    - name: Create tags and releases
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        projects=($(cat projects.txt))
+        newversions=($(cat newversions.txt))
+        # Show projects and types
+        echo "Projects: ${projects[@]}"
+        echo "new versions: ${newversions[@]}"
+
+        for i in "${!projects[@]}"; do
+            project=${projects[$i]}
+            newversion=${newversions[$i]}
+            tag="${project}_${newversion}"
+
+            echo "Creating tag $tag"
+
+            git config --global user.name '${{ vars.BOT_NAME}}'
+            git config --global user.email '${{ vars.BOT_MAIL}}'
+
+            # Create the tag
+            git tag -a "$tag" -m "Release $tag"
+            git push origin "$tag"
+
+            # Extract description from .csproj file
+            description=$(awk '/<Description>/,/<\/Description>/' "${{env.SRC_PATH}}/$project/$project.csproj" | sed -e 's/<\/\?Description>//g' | tr -d '\n')
+
+            echo "Description for $project: $description"
+
+            # Create the release with the description
+            gh release create "$tag" --title "$tag" --notes "$description" --prerelease
+        done
+
