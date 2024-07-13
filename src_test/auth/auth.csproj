@@ -8,29 +8,5 @@
     <Version>5.0.1</Version>
     <ChangeLog>Added new auth;Fixed auth bug</ChangeLog>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Description>
-
-## Change Log for version 
-5.0.1
-- Added new auth
-- Fixed auth bug
-
-</Description>
-    <PackageDescription>
-
-## Change Log for version 
-5.0.1
-- Added new auth
-- Fixed auth bug
-
-</PackageDescription>
-    <PackageReleaseNotes>
-
-## Change Log for version 
-5.0.1
-- Added new auth
-- Fixed auth bug
-
-</PackageReleaseNotes>
   </PropertyGroup>
 </Project>
