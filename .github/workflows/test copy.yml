@@ -83,7 +83,7 @@ jobs:
 
   publish-nuget:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
-    needs: check-pr-title
+    needs: process-csproj
 
     steps:
       - name: Checkout repository
