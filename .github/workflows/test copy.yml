@@ -200,7 +200,7 @@ jobs:
             echo "Description for $project: $description"
 
             # Create the release with the description
-            gh release create "$tag" --title "$tag" --notes "$description" --prerelease
+            gh release create "$tag" --title "$tag" --notes "$description"
         done
 
            
