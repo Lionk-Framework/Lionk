@@ -106,6 +106,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: csproj-data
+          path: ${{ vars.SRC_PATH }}
 
       - name: Download project data artifact
         uses: actions/download-artifact@v3
@@ -124,7 +125,7 @@ jobs:
           projects=($(cat projects.txt))
           newversions=($(cat newversions.txt))
 
-          tree ${{vars.SRC_PATH}}
+          ls -R ${{vars.SRC_PATH}}
 
           if [ ${#projects[@]} -eq 0 ]; then
             echo "No projects to publish"
