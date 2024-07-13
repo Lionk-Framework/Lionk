@@ -141,6 +141,10 @@ jobs:
           done
 
 
+      - name: Checkout repository
+        if : failure()  
+        uses: actions/checkout@v3    
+      
       - name: Setup Python if failure
         if: failure()
         uses: actions/setup-python@v3
