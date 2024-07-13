@@ -73,7 +73,7 @@ jobs:
         run: |
           projects=${{ env.PROJECTS }}
           for project in "${projects[@]}"; do
-            cp "${{env.SRC_PATH}}/$project/$project.csproj" "$SRC_PATH/$project/$project.csproj.bak"
+            cp "${{env.SRC_PATH}}/$project/$project.csproj" "${{env.SRC_PATH}}/$project/$project.csproj.bak"
           done    
 
       - name: setup python
