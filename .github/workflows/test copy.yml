@@ -117,7 +117,7 @@ jobs:
     
               echo "Publishing $csproj as version $newversion"
     
-              dotnet pack "$csproj" -p:PackageVersion="$newversion" -o ./output
+              dotnet pack "$csproj" -o ./output
               dotnet nuget push "./output/$project.$newversion.nupkg" -k ${{ secrets.GH_TOKEN }} -s "${{ vars.NUGET_REGISTRY}}"
             done
 
