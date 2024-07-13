@@ -62,25 +62,14 @@ jobs:
         with:
           name: project-data
 
-      - name: setup environnement variables
-        run: |
-          echo "SRC_PATH=${{vars.SRC_PATH}}" >> $GITHUB_ENV
-          echo "PROJECTS=$(cat projects.txt)" >> $GITHUB_ENV
-
-        
-        
-      - name: backup csproj files
-        run: |
-          projects=${{ env.PROJECTS }}
-          for project in "${projects[@]}"; do
-            echo " path: ${{env.SRC_PATH}}/$project/$project.csproj"
-            cp "${{env.SRC_PATH}}/$project/$project.csproj" "${{env.SRC_PATH}}/$project/$project.csproj.bak"
-          done    
-
       - name: setup python
         uses: actions/setup-python@v3
         with:
-          python-version: '3.x'
+          python-version: '3.x'    
+        
+      - name: backup csproj files
+        run: |
+          python .github/workflows/scripts/backup_csproj.py
 
       - name: process csproj files
         run: |
@@ -88,13 +77,15 @@ jobs:
   
       - name: Commit and push changes
         run: |
-          projects=($(cat projects.txt))
-          SRC_PATH=(${{ env.SRC_PATH }})
+          echo "BOT_NAME=${{ vars.BOT_NAME}}" >> $GITHUB_ENV
+          echo "BOT_MAIL=${{ vars.BOT_MAIL}}" >> $GITHUB_ENV
+          echo "HEAD_REF=${{ github.head_ref }}" >> $GITHUB_ENV
+          echo "SRC_PATH=${{vars.SRC_PATH}}" >> $GITHUB_ENV
 
           git config --global user.name '${{ vars.BOT_NAME}}'
           git config --global user.email '${{ vars.BOT_MAIL}}'
           for project in "${projects[@]}"; do
-            git add "${{env.SRC_PATH}}/$project/$project.csproj"
+            git add "${{ vars.SRC_PATH }}/$project/$project.csproj"
           done
           git commit -m "Update project versions"
           git push origin HEAD:${{ github.head_ref }}
@@ -120,7 +111,7 @@ jobs:
       - name: Load project data
         run: |
           echo "PROJECTS=$(cat projects.txt)" >> $GITHUB_ENV
-          echo "SRC_PATH=src_test/" >> $GITHUB_ENV
+          echo "SRC_PATH=${{vars.SRC_PATH}}" >> $GITHUB_ENV
 
       - name: Publish NuGet packages
         run: |
