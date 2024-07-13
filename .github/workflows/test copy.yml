@@ -46,7 +46,6 @@ jobs:
           changelogs.json
           path.txt
 
-
   process-csproj:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
     needs: check-pr-title
@@ -80,10 +79,44 @@ jobs:
         run: |
           python .github/workflows/scripts/process_csproj.py
   
+  update-csproj:
+    permissions:
+      contents: write
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    needs: process-csproj
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}
+
+    - name: Download project data artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: project-data
+
+    - name: Load project data
+      run: |
+        echo "PROJECTS=$(cat projects.txt)" >> $GITHUB_ENV
+        echo "SRC_PATH=src_test/" >> $GITHUB_ENV
+
+    - name: Commit and push changes
+      run: |
+        projects=(${{ env.PROJECTS }})
+        SRC_PATH=(${{ env.SRC_PATH }})
+
+        git config --global user.name '${{ vars.BOT_NAME}}'
+        git config --global user.email '${{ vars.BOT_MAIL}}'
+        for project in "${projects[@]}"; do
+          git add "$SRC_PATH/$project/$project.csproj"
+        done
+        git commit -m "Update project versions"
+        git push origin HEAD:${{ github.head_ref }}
 
   publish-nuget:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
-    needs: process-csproj
+    needs: update-csproj
 
     steps:
       - name: Checkout repository
@@ -120,41 +153,6 @@ jobs:
               dotnet pack "$csproj" -o ./output
               dotnet nuget push "./output/$project.$newversion.nupkg" -k ${{ secrets.GH_TOKEN }} -s "${{ vars.NUGET_REGISTRY}}"
             done
-
-  update-csproj:
-    permissions:
-      contents: write
-    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
-    needs: publish-nuget
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        ref: ${{ github.head_ref }}
-
-    - name: Download project data artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: project-data
-
-    - name: Load project data
-      run: |
-        echo "PROJECTS=$(cat projects.txt)" >> $GITHUB_ENV
-        echo "SRC_PATH=src_test/" >> $GITHUB_ENV
-
-    - name: Commit and push changes
-      run: |
-        projects=(${{ env.PROJECTS }})
-        SRC_PATH=(${{ env.SRC_PATH }})
-
-        git config --global user.name '${{ vars.BOT_NAME}}'
-        git config --global user.email '${{ vars.BOT_MAIL}}'
-        for project in "${projects[@]}"; do
-          git add "$SRC_PATH/$project/$project.csproj"
-        done
-        git commit -m "Update project versions"
-        git push origin HEAD:${{ github.head_ref }}
 
   create-tag-and-release:
     permissions:
