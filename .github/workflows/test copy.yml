@@ -102,10 +102,15 @@ jobs:
     needs: process-csproj
 
     steps:
-      - name: Download project data artifact
+      - name: Download csproj data artifact
         uses: actions/download-artifact@v3
         with:
           name: csproj-data
+
+      - name: Download project data artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: project-data
 
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v3
@@ -115,17 +120,23 @@ jobs:
 
       - name: Publish NuGet packages
         run: |
-    
-            for i in "${!projects[@]}"; do
-              project=${projects[$i]}
-              newversion=${newversions[$i]}
-              csproj="${{vars.SRC_PATH}}/$project/$project.csproj"
-    
-              echo "Publishing $csproj as version $newversion"
-    
-              dotnet pack "$csproj" -o ./output
-              dotnet nuget push "./output/$project.$newversion.nupkg" -k ${{ secrets.GH_TOKEN }} -s "${{ vars.NUGET_REGISTRY}}"
-            done
+          projects=($(cat projects.txt))
+
+          if [ ${#projects[@]} -eq 0 ]; then
+            echo "No projects to publish"
+            exit 1
+          fi
+
+          for i in "${!projects[@]}"; do
+            project=${projects[$i]}
+            newversion=${newversions[$i]}
+            csproj="${{vars.SRC_PATH}}/$project/$project.csproj"
+  
+            echo "Publishing $csproj as version $newversion"
+  
+            dotnet pack "$csproj" -o ./output
+            dotnet nuget push "./output/$project.$newversion.nupkg" -k ${{ secrets.GH_TOKEN }} -s "${{ vars.NUGET_REGISTRY}}"
+          done
 
   create-tag-and-release:
     permissions:
