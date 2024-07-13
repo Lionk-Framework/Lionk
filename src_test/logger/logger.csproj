@@ -5,14 +5,14 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>0.0.0</Version>
+    <Version>0.0.1</Version>
     <Description>
 
 ## Change Log for version 
-0.0.6
-- Added new logger
-- Fixed logger bug
+0.0.1
+- changelog 1 for logger
+- changelog 2 for logger
 
-</Description>
+# Readme file for the logger module</Description>
   </PropertyGroup>
 </Project>

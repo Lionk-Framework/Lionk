@@ -5,7 +5,17 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>5.0.1</Version>
+    <Version>5.0.2</Version>
     <ChangeLog>Added new auth;Fixed auth bug</ChangeLog>
+    <Description>
+
+## Change Log for version 
+5.0.2
+- changelog 1 for auth
+- changelog 2 for auth
+- changelog 3 for auth
+- changelog 4 for auth
+
+# Readme file for the auth module</Description>
   </PropertyGroup>
 </Project>
