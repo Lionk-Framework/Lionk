@@ -114,16 +114,13 @@ jobs:
           echo "NEW_VERSION=$(cat newversions.txt)" >> $GITHUB_ENV
           echo "SRC_PATH=${{vars.SRC_PATH}}" >> $GITHUB_ENV
 
-          # Show environnement variables
-          echo "PROJECTS=${{env.PROJECTS}}"
-          echo "NEW_VERSION=${{env.NEW_VERSION}}"
-          echo "SRC_PATH=${{env.SRC_PATH}}"
-
       - name: Publish NuGet packages
         run: |
             projects=(${{ env.PROJECTS }})
             newversions=(${{ env.NEW_VERSION }})
             SRC_PATH=${{ env.SRC_PATH }}
+
+            git pull
     
             for i in "${!projects[@]}"; do
               project=${projects[$i]}
