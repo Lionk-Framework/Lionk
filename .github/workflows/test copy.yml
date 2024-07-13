@@ -87,7 +87,7 @@ jobs:
   
       - name: Commit and push changes
         run: |
-          projects=(${{ env.PROJECTS }})
+          projects=($(cat projects.txt))
           SRC_PATH=(${{ env.SRC_PATH }})
 
           git config --global user.name '${{ vars.BOT_NAME}}'
