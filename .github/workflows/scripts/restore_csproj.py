@@ -26,9 +26,6 @@ run_command(["git", "config", "--global", "user.email", bot_email])
 # Fetch the latest changes
 run_command(["git", "fetch", "origin", github_head_ref])
 
-# checkout
-run_command(["git", "checkout", f"{github_head_ref}"])
-
 # Get project names from projects.txt
 with open("projects.txt", "r") as file:
     projects = file.read().strip().split()

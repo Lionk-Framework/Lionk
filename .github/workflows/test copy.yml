@@ -57,6 +57,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Download project data artifact
         uses: actions/download-artifact@v3
@@ -101,8 +103,10 @@ jobs:
     needs: process-csproj
 
     steps:
-      - name: Checkout repository on failure
-        uses: actions/checkout@v3  
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Download csproj data artifact
         uses: actions/download-artifact@v3
@@ -115,7 +119,7 @@ jobs:
         with:
           name: project-data
         
-      - name: Setup Python on failure
+      - name: Setup Python
         uses: actions/setup-python@v3
         with:
           python-version: '3.x' 
