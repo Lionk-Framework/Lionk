@@ -7,7 +7,6 @@ def read_file_to_list(filename):
         return [line.strip() for line in file.readlines()]
 
 def main(gh_token):
-    src_path = os.getenv('SRC_PATH')
     nuget_registry = os.getenv('NUGET_REGISTRY')
 
     projects = read_file_to_list('projects.txt')
