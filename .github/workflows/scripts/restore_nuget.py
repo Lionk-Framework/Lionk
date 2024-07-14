@@ -36,5 +36,5 @@ for i, project in enumerate(projects):
 
     # Suppression du package NuGet       
     run_command(['nuget', 'delete', project, newversion, 
-                    '-apikey', gh_token, '-Source', nuget_registry, '--non-interactive'])
+                    '-apikey', gh_token, '-Source', nuget_registry])
 
