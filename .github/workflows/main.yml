@@ -3,7 +3,7 @@ name: Check PR Title and Update Project Versions
 on:
   pull_request:
     branches:
-      - test
+      - main
     types: [opened, edited, synchronize]
 
 jobs:
