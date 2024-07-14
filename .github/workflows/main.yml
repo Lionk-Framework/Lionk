@@ -12,16 +12,20 @@ jobs:
       contents: write
     if: contains(github.event.pull_request.title, 'app:')
     uses: ./.github/workflows/app.yml
+    secrets: inherit
 
   nuget_workflow:
     permissions:
       contents: write
     if: contains(github.event.pull_request.title, 'nuget:')
     uses: ./.github/workflows/nuget.yml
+    secrets: inherit
 
   default_workflow:
     if: ${{ !contains(github.event.pull_request.title, 'app:') && !contains(github.event.pull_request.title, 'nuget:') }}
     runs-on: ubuntu-latest
     steps:
      - name: Error message
-       run: echo "This job is running because the PR title does not contain 'app:' or 'nuget:'. Please, look at the PR title guidelines here -> https://github.com/Lionk-Framework/Lionk/blob/main/docs/Workflow/README.md"
+       run: | 
+        echo "This job is running because the PR title does not contain 'app:' or 'nuget:'. Please, look at the PR title guidelines here -> https://github.com/Lionk-Framework/Lionk/blob/main/docs/Workflow/README.md"
+        exit 1

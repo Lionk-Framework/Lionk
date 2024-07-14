@@ -94,7 +94,11 @@ def main():
         csproj = f'{SRC_PATH}/{project}/{project}.csproj'
         with open(csproj, 'r') as f:
             content = f.read()
-            oldversion = re.search(r'<Version>(.*?)</Version>', content).group(1)
+            # if content contains <Version> tag, extract the version
+            if '<Version>' in content:
+                oldversion = re.search(r'<Version>(.*?)</Version>', content).group(1)
+            else:
+                oldversion = "0.0.0"
             oldversions.append(oldversion)
 
         major, minor, patch = map(int, oldversion.split('.'))
