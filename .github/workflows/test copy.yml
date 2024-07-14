@@ -141,15 +141,21 @@ jobs:
           done
 
 
-      - name: Checkout repository
-        if : failure()  
+      - name: Checkout repository on failure
+        if:  failure()  
         uses: actions/checkout@v3    
       
-      - name: Setup Python if failure
+      - name: Setup Python on failure
         if: failure()
         uses: actions/setup-python@v3
         with:
           python-version: '3.x' 
+
+      - name: Restore csproj files on failure
+        if: failure()
+        run: python .github/workflows/scripts/restore_csproj.py
+
+
 
       
   create-tag-and-release:
@@ -203,5 +209,15 @@ jobs:
             # Create the release with the description
             gh release create "$tag" --title "$tag" --notes "$description"
         done
+
+    - name: Setup Python on failure
+      if: failure()
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x' 
+
+    - name: Restore csproj files on failure
+      if: failure()
+      run: python .github/workflows/scripts/restore_csproj.py
 
            
