@@ -95,6 +95,12 @@ jobs:
         with:
           name: csproj-data
           path: ${{ vars.SRC_PATH }}
+      
+      - name: Create description artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: description
+          path: description.txt
 
   publish-nuget:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
@@ -165,6 +171,11 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: project-data
+
+    - name: Download description artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: description
 
     - name: Setup environment variables
       run: | 
