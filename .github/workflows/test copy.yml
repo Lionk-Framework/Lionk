@@ -124,6 +124,8 @@ jobs:
         run: |
           echo "SRC_PATH=${{vars.SRC_PATH}}" >> $GITHUB_ENV
           echo "NUGET_REGISTRY=${{ vars.NUGET_REGISTRY}}" >> $GITHUB_ENV    
+          echo "BOT_NAME=${{ vars.BOT_NAME}}" >> $GITHUB_ENV
+          echo "BOT_MAIL=${{ vars.BOT_MAIL}}" >> $GITHUB_ENV
 
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v3
