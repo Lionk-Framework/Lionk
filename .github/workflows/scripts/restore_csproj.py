@@ -1,13 +1,11 @@
 import os
 import subprocess
 
-
 def run_command(command):
     result = subprocess.run(command, check=True, capture_output=True, text=True)
     print(result.stdout.strip())
     print(result.stderr.strip())
     return result
-
 
 # Get environment variables
 bot_name = os.getenv("BOT_NAME")
@@ -45,11 +43,15 @@ for project in projects:
         project.write(content)
     run_command(["git", "add", project_file])
 
-# Reset to the previous commit
-print("Resetting to the previous commit")
+# Check if there is a previous commit
 try:
-    result =run_command(["git", "reset", "--hard", "HEAD~1"])
+    print("Checking for previous commits")
+    run_command(["git", "rev-parse", "HEAD~1"])
+    # Reset to the previous commit
+    print("Resetting to the previous commit")
+    run_command(["git", "reset", "--hard", "HEAD~1"])
 except subprocess.CalledProcessError as e:
+    print("No previous commit found or unable to reset.")
     print(e.stderr)
     raise e
 
