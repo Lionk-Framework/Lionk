@@ -33,4 +33,4 @@ for project in projects:
 run_command(["git", "commit", "-m", "Update project versions"])
 
 # Push changes
-run_command(["git", "push", "origin", f"HEAD:{github_head_ref}"])
+run_command(["git", "push"])
