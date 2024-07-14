@@ -159,6 +159,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}
 
     - name: Download project data artifact
       uses: actions/download-artifact@v3
