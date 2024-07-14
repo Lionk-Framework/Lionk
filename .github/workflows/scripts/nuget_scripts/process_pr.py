@@ -18,6 +18,9 @@ def main():
     oldversions = []
     newversions = []
 
+    #remove nuget: from PR_TITLE
+    PR_TITLE = PR_TITLE.replace('nuget:', '')
+
     # Split projects and types into arrays, and remove spaces from project names
 
     for part in PR_TITLE.split(','):

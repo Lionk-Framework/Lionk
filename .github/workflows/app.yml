@@ -1,0 +1,11 @@
+name: Workflow for app
+
+on: workflow_call
+
+jobs:
+  check-pr-title:
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+
+    steps:
+    - name: message
+      run: echo "This job is running because the PR title contains 'app:'"
