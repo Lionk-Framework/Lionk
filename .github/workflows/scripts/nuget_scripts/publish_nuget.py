@@ -21,31 +21,30 @@ def read_file_to_list(filename):
         print(f"File not found: {filename}")
         sys.exit(1)
 
-def main():
-    src_path = os.getenv('SRC_PATH')
-    nuget_registry = os.getenv('NUGET_REGISTRY')
-    gh_token = os.getenv('GITHUB_TOKEN')
 
-    print(f"SRC_PATH: {src_path}")
-    print(f"NUGET_REGISTRY: {nuget_registry}")
-    print(f"GITHUB_TOKEN: {'*****' if gh_token else None}")
+src_path = os.getenv('SRC_PATH')
+nuget_registry = os.getenv('NUGET_REGISTRY')
+gh_token = os.getenv('GITHUB_TOKEN')
 
-    projects = read_file_to_list('projects.txt')
-    newversions = read_file_to_list('newversions.txt')
+print(f"SRC_PATH: {src_path}")
+print(f"NUGET_REGISTRY: {nuget_registry}")
+print(f"GITHUB_TOKEN: {'******' if gh_token else None}")
 
-    if len(projects) == 0:
-        print("No projects to publish")
-        sys.exit(1)
+projects = read_file_to_list('projects.txt')
+newversions = read_file_to_list('newversions.txt')
 
-    for i, project in enumerate(projects):
-        newversion = newversions[i]
-        csproj = f"{src_path}/{project}/{project}.csproj"
+if len(projects) == 0:
+    print("No projects to publish")
+    sys.exit(1)
 
-        print(f"Publishing {csproj} as version {newversion}")
+for i, project in enumerate(projects):
+    newversion = newversions[i]
+    csproj = f"{src_path}/{project}/{project}.csproj"
 
-        run_command(['dotnet', 'pack', csproj, '-o', './output'])
-        run_command(['dotnet', 'nuget', 'push', f"./output/{project}.{newversion}.nupkg", 
-                     '-k', gh_token, '-s', nuget_registry])
+    print(f"Publishing {csproj} as version {newversion}")
 
-if __name__ == "__main__":
-    main()
+    run_command(['dotnet', 'pack', csproj, '-o', './output'])
+    run_command(['dotnet', 'nuget', 'push', f"./output/{project}.{newversion}.nupkg", 
+                    '-k', gh_token, '-s', nuget_registry])
+
+
