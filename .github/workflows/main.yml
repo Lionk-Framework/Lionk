@@ -8,10 +8,14 @@ on:
 
 jobs:
   app_workflow:
+    permissions:
+      contents: write
     if: contains(github.event.pull_request.title, 'app:')
     uses: ./.github/workflows/app.yml
 
   nuget_workflow:
+    permissions:
+      contents: write
     if: contains(github.event.pull_request.title, 'nuget:')
     uses: ./.github/workflows/nuget.yml
 
