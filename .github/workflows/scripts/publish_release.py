@@ -22,8 +22,6 @@ def read_file_to_list(filename):
 src_path = os.getenv('SRC_PATH')
 bot_name = os.getenv('BOT_NAME')
 bot_mail = os.getenv('BOT_MAIL')
-gh_token = os.getenv('GITHUB_TOKEN')
-
 
 projects = read_file_to_list('projects.txt')
 newversions = read_file_to_list('newversions.txt')
@@ -69,5 +67,4 @@ for i, project in enumerate(projects):
 
     # Create the release with the description
     run_command(['gh', 'release', 'create', tag, '--title', tag, '--notes', description])
-
 

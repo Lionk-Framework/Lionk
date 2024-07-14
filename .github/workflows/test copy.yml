@@ -183,7 +183,9 @@ jobs:
 
     - name: Create tags and releases
       run: |
-        python .github/workflows/scripts/publish_release.py ${{ secrets.GITHUB_TOKEN }}
+        python .github/workflows/scripts/publish_release.py
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
     - name: On failur - Download csproj data artifact
       if: failure()
