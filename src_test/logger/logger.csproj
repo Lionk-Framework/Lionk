@@ -5,13 +5,11 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>1.0.0</Version>
+    <Version>0.0.28</Version>
     <Description>
 
 ## Change Log
-- edit workflow
-- set on failed
-- create restore script
+- modif workflow
 
 # Readme file for the logger module</Description>
   </PropertyGroup>
