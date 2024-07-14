@@ -145,7 +145,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Restore
+      - name: On failur - Restore
         if: failure()
         run: | 
           python .github/workflows/scripts/restore_csproj.py
@@ -183,10 +183,19 @@ jobs:
       run: |
         python .github/workflows/scripts/publish_release.py ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Restore
+    - name: On failur - Download csproj data artifact
+      if: failure()
+      uses: actions/download-artifact@v3
+      with:
+        name: csproj-data
+        path: ${{ vars.SRC_PATH }}
+
+    - name: On failur - Restore
       if: failure()
       run: | 
         python .github/workflows/scripts/restore_csproj.py
-        python .github/workflows/scripts/restore_nuget.py ${{ secrets.GITHUB_TOKEN }}
+        python .github/workflows/scripts/restore_nuget.py 
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
            

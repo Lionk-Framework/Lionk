@@ -8,6 +8,7 @@ def read_file_to_list(filename):
 
 def main(gh_token):
     nuget_registry = os.getenv('NUGET_REGISTRY')
+    gh_token = os.getenv('GITHUB_TOKEN')
 
     projects = read_file_to_list('projects.txt')
     newversions = read_file_to_list('newversions.txt')
@@ -26,10 +27,3 @@ def main(gh_token):
         subprocess.run(['dotnet', 'nuget', 'delete', project, newversion, 
                         '-k', gh_token, '-s', nuget_registry, '--non-interactive'], check=True)
 
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python delete_packages.py <GH_TOKEN>")
-        sys.exit(1)
-
-    gh_token = sys.argv[1]
-    main(gh_token)
