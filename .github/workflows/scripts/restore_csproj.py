@@ -13,6 +13,7 @@ def run_command(command):
         print("STDERR:", e.stderr)
         sys.exit(1)
 
+run_command(["ls", "-la"])
 
 # Get environment variables
 bot_name = os.getenv("BOT_NAME")
@@ -38,6 +39,10 @@ run_command(["git", "fetch", "origin", github_head_ref])
 # Get project names from projects.txt
 with open("projects.txt", "r") as file:
     projects = file.read().strip().split()
+
+if len(projects) == 0:
+    print("No projects to process")
+    sys.exit(1)
 
 # Add each project file
 for project in projects:
