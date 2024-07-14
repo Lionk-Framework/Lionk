@@ -6,6 +6,7 @@ def run_command(command):
     result = subprocess.run(command, check=True, capture_output=True, text=True)
     print(result.stdout.strip())
     print(result.stderr.strip())
+    return result
 
 
 # Get environment variables
@@ -51,4 +52,9 @@ run_command(["git", "commit", "-m", "Restore project versions"])
 
 # Push changes
 print("Pushing changes")
-run_command(["git", "push"])
+try:
+    result = run_command(["git", "push"])
+except subprocess.CalledProcessError as e:
+    print(e.stderr)
+    raise e
+
