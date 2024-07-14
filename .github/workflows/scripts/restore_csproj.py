@@ -27,7 +27,7 @@ run_command(["git", "config", "--global", "user.email", bot_email])
 run_command(["git", "fetch", "origin", github_head_ref])
 
 # checkout
-run_command(["git", "checkout", f"origin/{github_head_ref}"])
+run_command(["git", "checkout", f"{github_head_ref}"])
 
 # Get project names from projects.txt
 with open("projects.txt", "r") as file:
@@ -35,11 +35,18 @@ with open("projects.txt", "r") as file:
 
 # Add each project file
 for project in projects:
-    project_file = os.path.join(src_path, project, f"{project}.csproj.bkp")
+
+# replace project.csproj with project.csproj.bkp    
+    project_file = os.path.join(src_path, project, f"{project}.csproj")
+    backup_file = os.path.join(src_path, project, f"{project}.csproj.bkp")
+    with open(backup_file, "rb") as backup:
+        content = backup.read()
+    with open(project_file, "wb") as project:
+        project.write(content)
     run_command(["git", "add", project_file])
 
 # Commit changes
-run_command(["git", "commit", "-m", "Update project versions"])
+run_command(["git", "commit", "-m", "Restore project versions"])
 
 # Push changes
 run_command(["git", "push", "origin", f"HEAD:{github_head_ref}"])
