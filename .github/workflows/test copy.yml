@@ -141,7 +141,9 @@ jobs:
 
       - name: Publish NuGet packages
         run: |
-          python .github/workflows/scripts/publish_nuget.py ${{ secrets.GITHUB_TOKEN }}
+          python .github/workflows/scripts/publish_nuget.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Restore
         if: failure()

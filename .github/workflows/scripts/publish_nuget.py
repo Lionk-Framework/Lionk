@@ -9,6 +9,7 @@ def read_file_to_list(filename):
 def main(gh_token):
     src_path = os.getenv('SRC_PATH')
     nuget_registry = os.getenv('NUGET_REGISTRY')
+    gh_token = os.getenv('GITHUB_TOKEN')
 
     projects = read_file_to_list('projects.txt')
     newversions = read_file_to_list('newversions.txt')
@@ -26,11 +27,3 @@ def main(gh_token):
         subprocess.run(['dotnet', 'pack', csproj, '-o', './output'], check=True)
         subprocess.run(['dotnet', 'nuget', 'push', f"./output/{project}.{newversion}.nupkg", 
                         '-k', gh_token, '-s', nuget_registry], check=True)
-
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python script.py <GH_TOKEN>")
-        sys.exit(1)
-
-    gh_token = sys.argv[1]
-    main(gh_token)
