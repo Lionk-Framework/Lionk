@@ -21,10 +21,12 @@ print(f"src_path: {src_path}")
 print(f"github_head_ref: {github_head_ref}")
 
 # Config git
+print("Configuring git")
 run_command(["git", "config", "--global", "user.name", bot_name])
 run_command(["git", "config", "--global", "user.email", bot_email])
 
 # Fetch the latest changes
+print("Fetching latest changes")
 run_command(["git", "fetch", "origin", github_head_ref])
 
 # Get project names from projects.txt
@@ -43,8 +45,10 @@ for project in projects:
         project.write(content)
     run_command(["git", "add", project_file])
 
-# Commit changes
+# Commit changes 
+print("Committing changes")
 run_command(["git", "commit", "-m", "Restore project versions"])
 
 # Push changes
+print("Pushing changes")
 run_command(["git", "push"])
