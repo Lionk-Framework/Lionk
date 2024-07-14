@@ -19,7 +19,7 @@ jobs:
         echo "PR_BODY<<EOF" >> $GITHUB_ENV
         echo "${{ github.event.pull_request.body }}" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
-        echo "SRC_PATH=${{vars.SRC_PATH}}" >> $GITHUB_ENV
+        echo "SRC_PATH=${{vars.SRC_PATH}}/Lib" >> $GITHUB_ENV
 
     - name: Set up Python
       uses: actions/setup-python@v3
@@ -68,7 +68,7 @@ jobs:
           
       - name: Setup environment variables
         run: |
-          echo "SRC_PATH=${{vars.SRC_PATH}}" >> $GITHUB_ENV
+          echo "SRC_PATH=${{vars.SRC_PATH}}/Lib" >> $GITHUB_ENV
           echo "PROJECTS=$(cat projects.txt)" >> $GITHUB_ENV
           echo "NEW_VERSION=$(cat newversions.txt)" >> $GITHUB_ENV
           echo "CHANGELOG=$(cat changelog.json)" >> $GITHUB_ENV
@@ -125,7 +125,7 @@ jobs:
 
       - name: Setup environment variables
         run: |
-          echo "SRC_PATH=${{vars.SRC_PATH}}" >> $GITHUB_ENV
+          echo "SRC_PATH=${{vars.SRC_PATH}}/Lib" >> $GITHUB_ENV
           echo "NUGET_REGISTRY=${{ vars.NUGET_REGISTRY}}" >> $GITHUB_ENV    
           echo "BOT_NAME=${{ vars.BOT_NAME}}" >> $GITHUB_ENV
           echo "BOT_MAIL=${{ vars.BOT_MAIL}}" >> $GITHUB_ENV
@@ -166,7 +166,7 @@ jobs:
 
     - name: Setup environment variables
       run: | 
-        echo "SRC_PATH=${{vars.SRC_PATH}}" >> $GITHUB_ENV
+        echo "SRC_PATH=${{vars.SRC_PATH}}/Lib" >> $GITHUB_ENV
         echo "BOT_NAME=${{ vars.BOT_NAME}}" >> $GITHUB_ENV
         echo "BOT_MAIL=${{ vars.BOT_MAIL}}" >> $GITHUB_ENV
         echo "NUGET_REGISTRY=${{ vars.NUGET_REGISTRY}}" >> $GITHUB_ENV
