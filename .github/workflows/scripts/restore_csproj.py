@@ -13,8 +13,6 @@ def run_command(command):
         print("STDERR:", e.stderr)
         sys.exit(1)
 
-run_command(["ls", "-la"])
-
 # Get environment variables
 bot_name = os.getenv("BOT_NAME")
 bot_email = os.getenv("BOT_MAIL")
