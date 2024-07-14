@@ -6,7 +6,6 @@ def run_command(command):
     result = subprocess.run(command, check=True, capture_output=True, text=True)
     print(result.stdout.strip())
     print(result.stderr.strip())
-    return result
 
 
 # Get environment variables
@@ -36,7 +35,8 @@ with open("projects.txt", "r") as file:
 
 # Add each project file
 for project in projects:
-    # replace project.csproj with project.csproj.bkp    
+
+# replace project.csproj with project.csproj.bkp    
     project_file = os.path.join(src_path, project, f"{project}.csproj")
     backup_file = os.path.join(src_path, project, f"{project}.csproj.bkp")
     with open(backup_file, "rb") as backup:
@@ -45,14 +45,10 @@ for project in projects:
         project.write(content)
     run_command(["git", "add", project_file])
 
-# Reset to the previous commit
-print("Resetting to the previous commit")
-run_command(["git", "reset", "--hard", "HEAD~1"])
+# Commit changes 
+print("Committing changes")
+run_command(["git", "commit", "-m", "Restore project versions"])
 
 # Push changes
 print("Pushing changes")
-try:
-    result = run_command(["git", "push", "--force"])
-except subprocess.CalledProcessError as e:
-    print(e.stderr)
-    raise e
+run_command(["git", "push"])
