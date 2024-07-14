@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - test
+    types: [opened, edited, synchronize]
 
 jobs:
   check-pr-title:
