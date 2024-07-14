@@ -47,7 +47,11 @@ for project in projects:
 
 # Reset to the previous commit
 print("Resetting to the previous commit")
-run_command(["git", "reset", "--hard", "HEAD~1"])
+try:
+    result =run_command(["git", "reset", "--hard", "HEAD~1"])
+except subprocess.CalledProcessError as e:
+    print(e.stderr)
+    raise e
 
 # Push changes
 print("Pushing changes")
