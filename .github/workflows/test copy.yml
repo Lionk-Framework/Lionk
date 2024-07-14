@@ -94,71 +94,52 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: csproj-data
-          path: ${{ vars.SRC_PATH }}
+          path: ${{ vars.SRC_PATH }}_artifact
 
   publish-nuget:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
     needs: process-csproj
 
     steps:
+      - name: Checkout repository on failure
+        uses: actions/checkout@v3  
+
       - name: Download csproj data artifact
         uses: actions/download-artifact@v3
         with:
           name: csproj-data
-          path: ${{ vars.SRC_PATH }}
+          path: ${{ vars.SRC_PATH }}_artifact
 
       - name: Download project data artifact
         uses: actions/download-artifact@v3
         with:
           name: project-data
+        
+      - name: Setup Python on failure
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x' 
+
+      - name: Setup environment variables
+        run: |
+          echo "SRC_PATH=${{vars.SRC_PATH}}_artifact" >> $GITHUB_ENV
+          echo "NUGET_REGISTRY=${{ vars.NUGET_REGISTRY}}" >> $GITHUB_ENV    
 
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ vars.DOTNET_VERSION }}
 
-
       - name: Publish NuGet packages
         run: |
-          projects=($(cat projects.txt))
-          newversions=($(cat newversions.txt))
+          python .github/workflows/scripts/publish_nuget.py ${{ secrets.GITHUB_TOKEN }}
 
-          ls -R ${{vars.SRC_PATH}}
-
-          if [ ${#projects[@]} -eq 0 ]; then
-            echo "No projects to publish"
-            exit 1
-          fi
-
-          for i in "${!projects[@]}"; do
-            project=${projects[$i]}
-            newversion=${newversions[$i]}
-            csproj="${{vars.SRC_PATH}}/$project/$project.csproj"
-  
-            echo "Publishing $csproj as version $newversion"
-  
-            dotnet pack "$csproj" -o ./output
-            dotnet nuget push "./output/$project.$newversion.nupkg" -k ${{ secrets.GH_TOKEN }} -s "${{ vars.NUGET_REGISTRY}}"
-          done
-
-
-      - name: Checkout repository on failure
-        if:  failure()  
-        uses: actions/checkout@v3    
-      
-      - name: Setup Python on failure
+      - name: Restore
         if: failure()
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.x' 
+        run: | 
+          python .github/workflows/scripts/restore_csproj.py
+          python .github/workflows/scripts/restore_nuget.py
 
-      - name: Restore csproj files on failure
-        if: failure()
-        run: python .github/workflows/scripts/restore_csproj.py
-
-
-
-      
   create-tag-and-release:
     permissions:
       contents: write
@@ -169,56 +150,34 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+
+
     - name: Download project data artifact
       uses: actions/download-artifact@v3
       with:
         name: project-data
 
     - name: Setup environment variables
-      run: echo "SRC_PATH=${{vars.SRC_PATH}}" >> $GITHUB_ENV
+      run: | 
+        echo "SRC_PATH=${{vars.SRC_PATH}}" >> $GITHUB_ENV
+        echo "BOT_NAME=${{ vars.BOT_NAME}}" >> $GITHUB_ENV
+        echo "BOT_MAIL=${{ vars.BOT_MAIL}}" >> $GITHUB_ENV
 
-    - name: Create tags and releases
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        projects=($(cat projects.txt))
-        newversions=($(cat newversions.txt))
-        # Show projects and types
-        echo "Projects: ${projects[@]}"
-        echo "new versions: ${newversions[@]}"
-
-        for i in "${!projects[@]}"; do
-            project=${projects[$i]}
-            newversion=${newversions[$i]}
-            tag="${project}_${newversion}"
-
-            echo "Creating tag $tag"
-
-            git config --global user.name '${{ vars.BOT_NAME}}'
-            git config --global user.email '${{ vars.BOT_MAIL}}'
-
-            # Create the tag
-            git tag -a "$tag" -m "Release $tag"
-            git push origin "$tag"
-
-            # Extract description from .csproj file
-            description=$(awk '/<Description>/,/<\/Description>/' "${SRC_PATH}/$project/$project.csproj" \
-                   | sed -e 's/<\/\?Description>//g' -e 's/^[ \t]*//')
-
-            echo "Description for $project: $description"
-
-            # Create the release with the description
-            gh release create "$tag" --title "$tag" --notes "$description"
-        done
 
     - name: Setup Python on failure
-      if: failure()
       uses: actions/setup-python@v3
       with:
         python-version: '3.x' 
 
-    - name: Restore csproj files on failure
+    - name: Create tags and releases
+      run: |
+        python .github/workflows/scripts/publish_release.py ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Restore
       if: failure()
-      run: python .github/workflows/scripts/restore_csproj.py
+      run: | 
+        python .github/workflows/scripts/restore_csproj.py
+        python .github/workflows/scripts/restore_nuget.py ${{ secrets.GITHUB_TOKEN }}
+        python .github/workflows/scripts/restore_release.py ${{ secrets.GITHUB_TOKEN }}
 
            
