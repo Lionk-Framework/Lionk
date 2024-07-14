@@ -30,11 +30,11 @@ if len(projects) == 0:
 
 for i, project in enumerate(projects):
     newversion = newversions[i]
-    package_id = f"{project}.{newversion}"
 
-    print(f"Deleting {package_id} from {nuget_registry}")
+
+    print(f"Deleting {project} version {newversion} from {nuget_registry}")
 
     # Suppression du package NuGet       
-    run_command(['dotnet', 'nuget', 'delete', package_id, newversion, 
+    run_command(['nuget', 'delete', project, newversion, 
                     '-k', gh_token, '-s', nuget_registry, '--non-interactive'])
 
