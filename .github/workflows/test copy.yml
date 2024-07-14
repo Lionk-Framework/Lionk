@@ -94,7 +94,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: csproj-data
-          path: ${{ vars.SRC_PATH }}_artifact
+          path: ${{ vars.SRC_PATH }}
 
   publish-nuget:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
@@ -108,7 +108,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: csproj-data
-          path: ${{ vars.SRC_PATH }}_artifact
+          path: ${{ vars.SRC_PATH }}
 
       - name: Download project data artifact
         uses: actions/download-artifact@v3
