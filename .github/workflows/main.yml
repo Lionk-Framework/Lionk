@@ -1,20 +1,210 @@
-name: PR Name validation
+name: Check PR Title and Update Project Versions
 
 on:
   pull_request:
     branches:
-      - main
+      - test
+    types: [opened, edited, synchronize]
 
 jobs:
-
-  check-pr-name:
+  check-pr-title:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+
     steps:
-    - name: Check PR name
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Get pull request title and body
+      id: get_pr_info
       run: |
-        title="${{ github.event.pull_request.title }}"
-        lower_title=$(echo "$title" | tr '[:upper:]' '[:lower:]')
-        if [[ "$lower_title" != *"major"* ]] && [[ "$lower_title" != *"minor"* ]] && [[ "$lower_title" != *"patch"* ]]; then
-          echo "Invalid PR title for version increment. Must contain 'major', 'minor', or 'patch'."
-          exit 1
-        fi
+        echo "PR_TITLE<<EOF" >> $GITHUB_ENV
+        echo "${{ github.event.pull_request.title }}" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+        echo "PR_BODY<<EOF" >> $GITHUB_ENV
+        echo "${{ github.event.pull_request.body }}" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+        echo "SRC_PATH=${{vars.SRC_PATH}}" >> $GITHUB_ENV
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+
+    - name: Process PR title, body, and check projects
+      id: process_title_body
+      run: |
+        python .github/workflows/scripts/process_pr.py
+
+    - name: Upload project data artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: project-data
+        path: |
+          projects.txt
+          types.txt
+          oldversions.txt
+          newversions.txt
+          changelog.json
+          path.txt
+
+  process-csproj:
+    permissions:
+      contents: write
+
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    needs: check-pr-title
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Download project data artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: project-data
+
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'   
+          
+      - name: Setup environment variables
+        run: |
+          echo "SRC_PATH=${{vars.SRC_PATH}}" >> $GITHUB_ENV
+          echo "PROJECTS=$(cat projects.txt)" >> $GITHUB_ENV
+          echo "NEW_VERSION=$(cat newversions.txt)" >> $GITHUB_ENV
+          echo "CHANGELOG=$(cat changelog.json)" >> $GITHUB_ENV
+          echo "BOT_NAME=${{ vars.BOT_NAME}}" >> $GITHUB_ENV
+          echo "BOT_MAIL=${{ vars.BOT_MAIL}}" >> $GITHUB_ENV
+          echo "HEAD_REF=${{ github.head_ref }}" >> $GITHUB_ENV
+
+      - name: Backup csproj files
+        run: |
+          python .github/workflows/scripts/backup_csproj.py
+
+      - name: Process csproj files
+        run: |
+          python .github/workflows/scripts/process_csproj.py
+  
+      - name: Commit and push changes
+        run: |
+          python .github/workflows/scripts/commit_csproj.py
+
+      - name: Create csproj data artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: csproj-data
+          path: ${{ vars.SRC_PATH }}
+
+  publish-nuget:
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    needs: process-csproj
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Download csproj data artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: csproj-data
+          path: ${{ vars.SRC_PATH }}
+
+      - name: Download project data artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: project-data
+        
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x' 
+
+      - name: Setup environment variables
+        run: |
+          echo "SRC_PATH=${{vars.SRC_PATH}}" >> $GITHUB_ENV
+          echo "NUGET_REGISTRY=${{ vars.NUGET_REGISTRY}}" >> $GITHUB_ENV    
+          echo "BOT_NAME=${{ vars.BOT_NAME}}" >> $GITHUB_ENV
+          echo "BOT_MAIL=${{ vars.BOT_MAIL}}" >> $GITHUB_ENV
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ vars.DOTNET_VERSION }}
+
+      - name: Publish NuGet packages
+        run: |
+          python .github/workflows/scripts/publish_nuget.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: On failur - Restore
+        if: failure()
+        run: | 
+          python .github/workflows/scripts/restore_csproj.py
+
+  create-tag-and-release:
+    permissions:
+      contents: write
+
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    needs: publish-nuget
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}
+
+    - name: Download project data artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: project-data
+
+    - name: Setup environment variables
+      run: | 
+        echo "SRC_PATH=${{vars.SRC_PATH}}" >> $GITHUB_ENV
+        echo "BOT_NAME=${{ vars.BOT_NAME}}" >> $GITHUB_ENV
+        echo "BOT_MAIL=${{ vars.BOT_MAIL}}" >> $GITHUB_ENV
+        echo "NUGET_REGISTRY=${{ vars.NUGET_REGISTRY}}" >> $GITHUB_ENV
+
+
+    - name: Setup Python on failure
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x' 
+
+    - name: Create tags and releases
+      run: |
+        python .github/workflows/scripts/publish_release.py
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+    - name: On failur - Download csproj data artifact
+      if: failure()
+      uses: actions/download-artifact@v3
+      with:
+        name: csproj-data
+        path: ${{ vars.SRC_PATH }}
+
+    - name: On failur - Restore
+      if: failure()
+      run: | 
+        python .github/workflows/scripts/restore_csproj.py
+        python .github/workflows/scripts/restore_nuget.py
+        python .github/workflows/scripts/restore_release.py
+      
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        GH_API_URL: ${{ vars.GH_API_URL }}
+
+
+  
+           
