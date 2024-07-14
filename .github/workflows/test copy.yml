@@ -200,7 +200,7 @@ jobs:
       
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        GH_API_URL: ${{ secrets.GH_API_URL }}
+        GH_API_URL: ${{ vars.GH_API_URL }}
 
 
   
