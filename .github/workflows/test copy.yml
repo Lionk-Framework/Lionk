@@ -153,6 +153,7 @@ jobs:
   create-tag-and-release:
     permissions:
       contents: write
+
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
     needs: publish-nuget
 
@@ -195,8 +196,12 @@ jobs:
       if: failure()
       run: | 
         python .github/workflows/scripts/restore_csproj.py
-        python .github/workflows/scripts/restore_nuget.py 
+        python .github/workflows/scripts/restore_nuget.py
+      
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        GH_API_URL: ${{ secrets.GH_API_URL }}
 
+
+  
            
