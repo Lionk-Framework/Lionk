@@ -2,6 +2,17 @@ import subprocess
 import sys
 import os
 
+def run_command(command):
+    try:
+        result = subprocess.run(command, check=True, capture_output=True, text=True)
+        print("STDOUT:", result.stdout.strip())
+        print("STDERR:", result.stderr.strip())
+    except subprocess.CalledProcessError as e:
+        print(f"Error running command {command}: {e}")
+        print("STDOUT:", e.stdout)
+        print("STDERR:", e.stderr)
+        sys.exit(1)
+
 def read_file_to_list(filename):
     with open(filename, 'r') as file:
         return [line.strip() for line in file.readlines()]
@@ -23,7 +34,7 @@ def main(gh_token):
 
         print(f"Deleting {package_id} from {nuget_registry}")
 
-        # Suppression du package NuGet
-        subprocess.run(['dotnet', 'nuget', 'delete', project, newversion, 
-                        '-k', gh_token, '-s', nuget_registry, '--non-interactive'], check=True)
+        # Suppression du package NuGet       
+        run_command(['dotnet', 'nuget', 'delete', package_id, newversion, 
+                     '-k', gh_token, '-s', nuget_registry, '--non-interactive'])
 

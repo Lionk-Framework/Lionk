@@ -2,6 +2,18 @@ import subprocess
 import sys
 import os
 
+
+def run_command(command):
+    try:
+        result = subprocess.run(command, check=True, capture_output=True, text=True)
+        print("STDOUT:", result.stdout.strip())
+        print("STDERR:", result.stderr.strip())
+    except subprocess.CalledProcessError as e:
+        print(f"Error running command {command}: {e}")
+        print("STDOUT:", e.stdout)
+        print("STDERR:", e.stderr)
+        sys.exit(1)
+
 def read_file_to_list(filename):
     with open(filename, 'r') as file:
         return [line.strip() for line in file.readlines()]
@@ -21,8 +33,8 @@ def main(github_token):
         print("No projects to process")
         sys.exit(1)
 
-    subprocess.run(['git', 'config', '--global', 'user.name', bot_name], check=True)
-    subprocess.run(['git', 'config', '--global', 'user.email', bot_mail], check=True)
+    run_command(['git', 'config', '--global', 'user.name', bot_name])
+    run_command(['git', 'config', '--global', 'user.email', bot_mail])
 
     for i, project in enumerate(projects):
         newversion = newversions[i]
@@ -31,8 +43,9 @@ def main(github_token):
         print(f"Creating tag {tag}")
 
         # Create the tag
-        subprocess.run(['git', 'tag', '-a', tag, '-m', f"Release {tag}"], check=True)
-        subprocess.run(['git', 'push', 'origin', tag], check=True)
+
+        run_command(['git', 'tag', '-a', tag, '-m', f"Release {tag}"])
+        run_command(['git', 'push', 'origin', tag])
 
         # Extract description from .csproj file
         csproj_path = f"{src_path}/{project}/{project}.csproj"
@@ -53,7 +66,7 @@ def main(github_token):
         print(f"Description for {project}: {description}")
 
         # Create the release with the description
-        subprocess.run(['gh', 'release', 'create', tag, '--title', tag, '--notes', description], check=True)
+        run_command(['gh', 'release', 'create', tag, '--title', tag, '--notes', description])
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
