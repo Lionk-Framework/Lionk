@@ -4,7 +4,8 @@ import subprocess
 
 def run_command(command):
     result = subprocess.run(command, check=True, capture_output=True, text=True)
-    return result.stdout.strip()
+    print(result.stdout.strip())
+    print(result.stderr.strip())
 
 
 # Get environment variables
