@@ -199,6 +199,7 @@ jobs:
       run: | 
         python .github/workflows/scripts/restore_csproj.py
         python .github/workflows/scripts/restore_nuget.py
+        python .github/workflows/scripts/restore_release.py
       
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

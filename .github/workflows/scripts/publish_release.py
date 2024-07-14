@@ -67,4 +67,5 @@ for i, project in enumerate(projects):
 
     # Create the release with the description
     run_command(['gh', 'release', 'create', tag, '--title', tag, '--notes', description])
+    exit(1)
 
