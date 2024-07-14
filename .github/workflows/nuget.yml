@@ -16,8 +16,10 @@ jobs:
         echo "PR_TITLE<<EOF" >> $GITHUB_ENV
         echo "${{ github.event.pull_request.title }}" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
+        
         echo "PR_BODY<<EOF" >> $GITHUB_ENV
         echo "${{ github.event.pull_request.body }}" >> $GITHUB_ENV
+        echo ${{ env.PR_BODY}}
         echo "EOF" >> $GITHUB_ENV
         echo "SRC_PATH=${{vars.SRC_PATH}}/Lib" >> $GITHUB_ENV
 
