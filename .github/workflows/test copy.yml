@@ -122,7 +122,7 @@ jobs:
 
       - name: Setup environment variables
         run: |
-          echo "SRC_PATH=${{vars.SRC_PATH}}_artifact" >> $GITHUB_ENV
+          echo "SRC_PATH=${{vars.SRC_PATH}}" >> $GITHUB_ENV
           echo "NUGET_REGISTRY=${{ vars.NUGET_REGISTRY}}" >> $GITHUB_ENV    
 
       - name: Setup .NET Core

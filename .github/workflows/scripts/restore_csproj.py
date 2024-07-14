@@ -13,6 +13,12 @@ bot_email = os.getenv("BOT_MAIL")
 src_path = os.getenv("SRC_PATH")
 github_head_ref = os.getenv("GITHUB_HEAD_REF")
 
+# print environment variables
+print(f"bot_name: {bot_name}")
+print(f"bot_email: {bot_email}")
+print(f"src_path: {src_path}")
+print(f"github_head_ref: {github_head_ref}")
+
 # Config git
 run_command(["git", "config", "--global", "user.name", bot_name])
 run_command(["git", "config", "--global", "user.email", bot_email])
