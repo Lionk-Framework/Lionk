@@ -67,7 +67,7 @@ def main():
 
     if not api_token or not api_url:
         print("Environment variables GITHUB_TOKEN and GH_API_URL must be set.")
-        return
+        exit(1)
 
     projects = get_projects('projects.txt')
     versions = get_versions('newversions.txt')

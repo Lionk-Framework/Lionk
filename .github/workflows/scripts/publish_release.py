@@ -18,60 +18,56 @@ def read_file_to_list(filename):
     with open(filename, 'r') as file:
         return [line.strip() for line in file.readlines()]
 
-def main(github_token):
-    src_path = os.getenv('SRC_PATH')
-    bot_name = os.getenv('BOT_NAME')
-    bot_mail = os.getenv('BOT_MAIL')
 
-    projects = read_file_to_list('projects.txt')
-    newversions = read_file_to_list('newversions.txt')
+src_path = os.getenv('SRC_PATH')
+bot_name = os.getenv('BOT_NAME')
+bot_mail = os.getenv('BOT_MAIL')
+gh_token = os.getenv('GITHUB_TOKEN')
 
-    print(f"Projects: {projects}")
-    print(f"New versions: {newversions}")
 
-    if len(projects) == 0:
-        print("No projects to process")
-        sys.exit(1)
+projects = read_file_to_list('projects.txt')
+newversions = read_file_to_list('newversions.txt')
 
-    run_command(['git', 'config', '--global', 'user.name', bot_name])
-    run_command(['git', 'config', '--global', 'user.email', bot_mail])
+print(f"Projects: {projects}")
+print(f"New versions: {newversions}")
 
-    for i, project in enumerate(projects):
-        newversion = newversions[i]
-        tag = f"{project}_{newversion}"
+if len(projects) == 0:
+    print("No projects to process")
+    sys.exit(1)
 
-        print(f"Creating tag {tag}")
+run_command(['git', 'config', '--global', 'user.name', bot_name])
+run_command(['git', 'config', '--global', 'user.email', bot_mail])
 
-        # Create the tag
+for i, project in enumerate(projects):
+    newversion = newversions[i]
+    tag = f"{project}_{newversion}"
 
-        run_command(['git', 'tag', '-a', tag, '-m', f"Release {tag}"])
-        run_command(['git', 'push', 'origin', tag])
+    print(f"Creating tag {tag}")
 
-        # Extract description from .csproj file
-        csproj_path = f"{src_path}/{project}/{project}.csproj"
-        description = ""
-        with open(csproj_path, 'r') as file:
-            in_description = False
-            for line in file:
-                if '<Description>' in line:
-                    in_description = True
-                    description += line.replace('<Description>', '').strip() + " "
-                elif '</Description>' in line:
-                    in_description = False
-                    description += line.replace('</Description>', '').strip()
-                elif in_description:
-                    description += line.strip() + " "
+    # Create the tag
 
-        description = description.strip()
-        print(f"Description for {project}: {description}")
+    run_command(['git', 'tag', '-a', tag, '-m', f"Release {tag}"])
+    run_command(['git', 'push', 'origin', tag])
 
-        # Create the release with the description
-        run_command(['gh', 'release', 'create', tag, '--title', tag, '--notes', description])
+    # Extract description from .csproj file
+    csproj_path = f"{src_path}/{project}/{project}.csproj"
+    description = ""
+    with open(csproj_path, 'r') as file:
+        in_description = False
+        for line in file:
+            if '<Description>' in line:
+                in_description = True
+                description += line.replace('<Description>', '').strip() + " "
+            elif '</Description>' in line:
+                in_description = False
+                description += line.replace('</Description>', '').strip()
+            elif in_description:
+                description += line.strip() + " "
 
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python create_releases.py <GITHUB_TOKEN>")
-        sys.exit(1)
+    description = description.strip()
+    print(f"Description for {project}: {description}")
 
-    github_token = sys.argv[1]
-    main(github_token)
+    # Create the release with the description
+    run_command(['gh', 'release', 'create', tag, '--title', tag, '--notes', description])
+
+
