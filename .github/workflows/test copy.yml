@@ -172,6 +172,7 @@ jobs:
         echo "SRC_PATH=${{vars.SRC_PATH}}" >> $GITHUB_ENV
         echo "BOT_NAME=${{ vars.BOT_NAME}}" >> $GITHUB_ENV
         echo "BOT_MAIL=${{ vars.BOT_MAIL}}" >> $GITHUB_ENV
+        echo "NUGET_REGISTRY=${{ vars.NUGET_REGISTRY}}" >> $GITHUB_ENV
 
 
     - name: Setup Python on failure
