@@ -11,6 +11,11 @@ jobs:
       with:
         ref: ${{ github.head_ref }}
 
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+
     - name: process_pr
       run: python .github/workflows/scripts/app_scripts/process_pr.py
       env: 
