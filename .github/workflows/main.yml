@@ -24,7 +24,7 @@ jobs:
   Doc_workflow:
       permissions:
         contents: write
-      if: contains(github.event.pull_request.title, 'nuget:')
+      if: contains(github.event.pull_request.title, 'doc:')
       uses: ./.github/workflows/nuget.yml
       secrets: inherit
 
