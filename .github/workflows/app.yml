@@ -6,6 +6,10 @@ jobs:
   check-pr:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}
 
     - name: process_pr
       run: python .github/workflows/scripts/app_scripts/process_pr.py
