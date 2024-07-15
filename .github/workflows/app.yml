@@ -44,6 +44,7 @@ jobs:
         APP_PATH: ${{ vars.APP_PATH }}
   
   process-csproj:
+    needs: [build-test, check-pr]
     permissions:
       contents: write
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
@@ -92,6 +93,7 @@ jobs:
         GITHUB_HEAD_REF: ${{ github.head_ref }}
 
   tag_and_release:
+    needs: process-csproj
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
     steps:
 
