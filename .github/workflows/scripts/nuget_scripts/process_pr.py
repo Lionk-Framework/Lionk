@@ -52,7 +52,7 @@ def main():
 
     # Check if project file exists
     for project in projects:
-        if not os.path.isfile(f'{SRC_PATH}/{project}/{project}.csproj'):
+        if not os.path.isfile(f'{SRC_PATH}/Lib/{project}/{project}.csproj'):
             print(f'Project file not found: {SRC_PATH}/{project}/{project}.csproj')
             exit(1)
 
