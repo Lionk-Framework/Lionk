@@ -1,0 +1,31 @@
+name: Documentation Workflow
+
+on: workflow_call
+
+jobs:
+  check-docs:
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Get environment variables
+      id: environment_variables
+      run: |
+        echo "CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }})" >> $GITHUB_ENV
+        echo "PR_BODY<<EOF" >> $GITHUB_ENV
+        echo '${{ github.event.pull_request.body }}' >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+
+
+    - name: Check if only accepted files are changed
+      id: verifiy_files
+      run: |
+        echo "CHANGED_FILES: ${{ env.CHANGED_FILES }}"
+        python verifiy_files.py
