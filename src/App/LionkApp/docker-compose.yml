@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  lionkapp:
+    image: lionkapp:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8088:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - lionkapp-network
+
+networks:
+  lionkapp-network:
+    driver: bridge

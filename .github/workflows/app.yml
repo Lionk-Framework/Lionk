@@ -3,9 +3,255 @@ name: Workflow for app
 on: workflow_call
 
 jobs:
-  check-pr-title:
+  check-pr:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
-
     steps:
-    - name: message
-      run: echo "This job is running because the PR title contains 'app:'"
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+
+    - name: process_pr
+      run: python .github/workflows/scripts/app_scripts/process_pr.py
+      env: 
+        APP_PATH: ${{ vars.APP_PATH }}
+        PR_TITLE: ${{ github.event.pull_request.title }}
+        PR_BODY: ${{ github.event.pull_request.body }}
+
+    - name: Save project datas Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: project-datas    
+        path: |
+          oldversion.txt
+          newversion.txt
+          changelog.txt
+   
+  build-test:
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}
+
+    - name: Set up DotNet
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ vars.DOTNET_VERSION }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+    
+    - name: build and test app
+      run: python .github/workflows/scripts/app_scripts/build_test.py
+      env: 
+        APP_PATH: ${{ vars.APP_PATH }}
+  
+  process-csproj:
+    needs: [build-test, check-pr]
+    permissions:
+      contents: write
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+
+    - name: Download project datas Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: project-datas  
+
+    - name: Set up environment
+      run: |
+        echo "APP_PATH=${{ vars.APP_PATH }}" >> $GITHUB_ENV
+        echo "NEW_VERSION=$(cat newversion.txt)" >> $GITHUB_ENV
+        echo "CHANGELOG=$(cat changelog.txt)" >> $GITHUB_ENV
+      
+
+    - name: Backup csproj
+      run: python .github/workflows/scripts/app_scripts/backup_csproj.py
+      env: 
+        APP_PATH: ${{ vars.APP_PATH }}  
+
+    - name: Process csproj
+      run: python .github/workflows/scripts/app_scripts/process_csproj.py
+      env: 
+        APP_PATH: ${{ vars.APP_PATH }}
+        NEW_VERSION: ${{ env.NEW_VERSION }}
+        CHANGELOG: ${{ env.CHANGELOG }}
+
+    - name: Commit csproj
+      run: python .github/workflows/scripts/app_scripts/commit_csproj.py
+      env: 
+        APP_PATH: ${{ vars.APP_PATH }}
+        BOT_NAME: ${{ vars.BOT_NAME }}
+        BOT_MAIL: ${{ vars.BOT_MAIL }}
+        GITHUB_HEAD_REF: ${{ github.head_ref }}
+
+    - name: Save csproj Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: csproj    
+        path: |
+          ${{ vars.APP_PATH }}
+          ${{ vars.APP_PATH }}.bkp
+
+    - name: Save description Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: description    
+        path: |
+          description.txt
+    
+
+  tag_and_release:
+    needs: process-csproj
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    steps:
+
+    - name: Chekout repository
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}   
+        
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+
+    - name: Download project datas Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: project-datas
+
+    - name: Download description Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: description   
+
+
+    - name: Set up environment
+      run: |
+        echo "APP_PATH=${{ vars.APP_PATH }}" >> $GITHUB_ENV
+        echo "NEW_VERSION=$(cat newversion.txt)" >> $GITHUB_ENV
+        echo "CHANGELOG=$(cat changelog.txt)" >> $GITHUB_ENV
+    
+    - name: Tag and Release
+      run: python .github/workflows/scripts/app_scripts/publish_release.py
+      env: 
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        APP_PATH: ${{ vars.APP_PATH }}
+        APP_NAME: ${{ vars.APP_NAME }}
+        BOT_NAME: ${{ vars.BOT_NAME }}
+        BOT_MAIL: ${{ vars.BOT_MAIL }}
+
+
+    - name: On Failure Download csproj
+      if: failure()
+      uses: actions/download-artifact@v3
+      with:
+        name: csproj     
+
+    - name: On Failure restore csproj
+      if: failure()
+      run: python .github/workflows/scripts/app_scripts/restore_csproj.py
+      env: 
+        APP_PATH: ${{ vars.APP_PATH }}
+        APP_NAME: ${{ vars.APP_NAME }}
+        BOT_NAME: ${{ vars.BOT_NAME }}
+        BOT_MAIL: ${{ vars.BOT_MAIL }}
+        GITHUB_HEAD_REF: ${{ github.head_ref }}
+
+  publish_package:
+    needs: tag_and_release
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    steps:
+
+    - name: Chekout repository
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}   
+        
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+
+    - name: Download project datas Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: project-datas
+
+    - name: Download description Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: description
+
+    - name: Set up environment
+      run: |
+        echo "APP_PATH=${{ vars.APP_PATH }}" >> $GITHUB_ENV
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GH_TOKEN }}
+
+    - name: Publish package
+      run: python .github/workflows/scripts/app_scripts/publish_package.py
+      env: 
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        APP_PATH: ${{ vars.APP_PATH }}
+        APP_NAME: ${{ vars.APP_NAME }}
+        BOT_NAME: ${{ vars.BOT_NAME }}
+        BOT_MAIL: ${{ vars.BOT_MAIL }}
+        DOCKER_REGISTRY: ${{ vars.DOCKER_REGISTRY }}
+
+    - name: On Failure Download csproj
+      if: failure()
+      uses: actions/download-artifact@v3
+      with:
+        name: csproj
+        
+    - name: On Failure restore csproj
+      if: failure()
+      run: python .github/workflows/scripts/app_scripts/restore_csproj.py
+      env: 
+        APP_PATH: ${{ vars.APP_PATH }}
+        APP_NAME: ${{ vars.APP_NAME }}
+        BOT_NAME: ${{ vars.BOT_NAME }}
+        BOT_MAIL: ${{ vars.BOT_MAIL }}
+        GITHUB_HEAD_REF: ${{ github.head_ref }}
+
+    - name: On failure Restore Tag and release
+      if: failure()
+      run: python .github/workflows/scripts/app_scripts/restore_release.py
+      env: 
+        APP_NAME: ${{ vars.APP_NAME }}
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+  
+
+
+    
+
+
+    

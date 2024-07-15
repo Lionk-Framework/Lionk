@@ -1,10 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>0.0.1</Version>
-  </PropertyGroup>
+    <Version>0.0.5</Version>
+    <Description>
 
+## Change Log
+- test
+
+# Lionk App
+
+This is the Lionk App README file.
+</Description>
+  </PropertyGroup>
 </Project>
