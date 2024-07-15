@@ -3,7 +3,7 @@ name: Workflow for app
 on: workflow_call
 
 jobs:
-  build_and_test:
+  build_test_publish:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
 
     steps:

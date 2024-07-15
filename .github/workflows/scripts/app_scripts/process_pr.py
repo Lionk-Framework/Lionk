@@ -25,13 +25,6 @@ def main():
         print(f'Invalid version type: {type}')
         exit(1)
 
-    # Check if project file exists
-   
-    if not os.path.isfile(f'{SRC_PATH}/App/{project}/{project}.csproj'):
-        print(f'Project file not found: {SRC_PATH}/App/{project}/{project}.csproj')
-        exit(1)
-
-
     # Extract changelogs from PR body and convert to JSON
     changelogs = []
     for line in PR_BODY.splitlines():
