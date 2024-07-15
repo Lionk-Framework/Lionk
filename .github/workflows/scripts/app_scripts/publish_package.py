@@ -27,7 +27,7 @@ with open('description.txt', 'r') as file:
 print(f"Publishing {app_name} as version {newversion}")
 
 # Construire l'image Docker avec une étiquette de description
-run_command(['docker', 'build', '-t', f"{docker_registry}/{app_name}:{newversion}", '--label', f"description={description}", app_path])
+run_command(['docker', 'build', '-t', f"{docker_registry}/{app_name.lower()}:{newversion}", '--label', f"description={description}", app_path])
 
 # Se connecter au registre Docker
 run_command(['echo', gh_token, '|', 'docker', 'login', docker_registry, '-u', 'USERNAME', '--password-stdin'])
