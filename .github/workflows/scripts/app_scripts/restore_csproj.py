@@ -37,8 +37,6 @@ print("Fetching latest changes")
 run_command(["git", "fetch", "origin", github_head_ref])
 
 
-# replace project.csproj with project.csproj.bkp    
-
 backup_file = app_name + ".csproj.bkp"
 with open(backup_file, "rb") as backup:
     content = backup.read()
