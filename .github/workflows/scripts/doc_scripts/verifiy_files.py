@@ -1,18 +1,29 @@
 import os
 import sys
-import requests
+import subprocess
+import json
 
 def get_changed_files(token, repo_name, pr_number):
     url = f"https://api.github.com/repos/{repo_name}/pulls/{pr_number}/files"
-    headers = {
-        'Authorization': f'token {token}',
-        'Accept': 'application/vnd.github.v3+json'
-    }
+    headers = [
+        f'Authorization: token {token}',
+        'Accept: application/vnd.github.v3+json'
+    ]
 
-    response = requests.get(url, headers=headers)
-    response.raise_for_status()
+    # Construire la commande curl
+    curl_command = ['curl', '-s']
+    for header in headers:
+        curl_command += ['-H', header]
+    curl_command.append(url)
 
-    files = response.json()
+    # Exécuter la commande curl et capturer la sortie
+    result = subprocess.run(curl_command, capture_output=True, text=True)
+    
+    if result.returncode != 0:
+        print(f"Error: Failed to fetch changed files. {result.stderr}")
+        sys.exit(1)
+
+    files = json.loads(result.stdout)
     changed_files = [file['filename'] for file in files]
     return changed_files
 
@@ -51,7 +62,6 @@ def main():
     changed_files = get_changed_files(token, repo_name, pr_number)
     print(f"changed files : {changed_files}")
 
-    
     if not changed_files:
         print("Error: No changed files detected.")
         sys.exit(1)
