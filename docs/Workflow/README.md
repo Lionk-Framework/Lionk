@@ -6,26 +6,106 @@
 
 ## 1. Workflow Steps
 
-### 1.1 Create a Branch from dev
-- When a new feature or bug fix needs to be developed, start by creating a new branch from the `dev` branch.
+### 1.1 Create your branch 
+- When a new feature or bug fix needs to be developed, create a new branch from the `main` branch.
 
-### 1.2 Make Changes and Create a Pull Request on dev
-- Make the necessary changes on the new branch.
-- Create a **Pull Request** to the `dev` branch.
-- As long as the tests defined in the `dev.yml` file do not pass, **continue making commits on the branch** to fix the issues.
-- Once the tests pass successfully, the branch is merged into `dev`.
+### 1.2 Make Changes and Create a Pull Request with specific Pull Request name and body
+For each type of modification, like `App`, `Lib`, `Doc` , use specific Pull Request names and bodies.
 
-### 1.3 Create a Pull Request from dev to main
-- From the `dev` branch, create a new Pull Request to the `main` branch.
-- The name of this PR **should be** one of the following terms: `patch`, `minor`, or `major`, depending on the nature of the update.
-- In the body of the Pull Request, add the changelog in the following format:
-    ```
-    - changelog 1
-    - changelog 2
-    - changelog 3
-    - ...
-    ```
+`<version type>` will be `patch`, `minor`, or `major`
 
-### 1.4 Verification and Merging the Pull Request
-- Once the title and changelog are verified, merge the Pull Request.
-- At this point, a new release will be automatically created, executing the tasks defined in the `release.yml` file.
+**For code changes:**
+The version is automatically updated by the CI/CD pipeline. The `.csproj` file is updated with the new version number, changlog and description.
+
+Keep in mind that the pull request workflow creates a commit of .csproj files. Even if it fails, the commit is overwritten by another commit. In any case, you must pull the latest modifications before making a new commit, until the tests have been passed.
+
+#### 1.2.1 If you want to merge application features or bug fixes
+PR name: `App: <version type> `
+PR body: 
+```
+- feature or bug fix 1
+- feature or bug fix 2
+- feature or bug fix 3
+```
+
+**example:**
+
+PR name: `App: patch`
+PR body: 
+```
+- fix mainwindows bug
+- fix dependency injection bug
+```
+
+#### 1.2.2 If you want to merge nuget library features or bug fixes
+
+PR name: `Lib: project1 <version type>, project2 <version type>, project3 <version type>, ...  `
+PR body: 
+```
+project1
+- feature or bug fix 1
+- feature or bug fix 2
+
+project2
+- feature or bug fix 1
+
+project3
+- feature or bug fix 1
+- feature or bug fix 2
+- feature or bug fix 3
+```
+
+**example:**
+
+PR name: `Lib: Logger patch, Authentification minor, Core major`
+PR body: 
+```
+Logger
+- fix write file bug
+
+Authentification
+- fix login bug
+- Add pink logout button because it's cool
+
+Core
+- Change the way to get the user
+- Replace API Urls
+```
+
+#### 1.2.3 If you want to merge documentation
+
+To merge documentation, it is important that the code is **not** modified, which is why tests are performed on file extensions. By default, a list of extensions is defined as documentation. If you want to add other extensions, you need to list them in the body in this way:
+```
+- docx
+- xlsx
+```
+(no dot)
+
+Default extensions that do not need to be entered in the PR body:
+```
+- md
+- txt
+- drawio
+- png
+- jpg
+- jpeg
+- gif
+- svg
+```
+
+
+PR name: `Doc: <Name or text> [optional]`
+PR body: 
+```
+- <authored file extension>
+- <authored file extension>
+- <authored file extension>
+```
+
+### 1.3 Check failed
+
+If the check fails, look at the error message in the action tab https://github.com/Lionk-Framework/Lionk/actions
+
+Then, if the check fails because the PR title or body is not correct, the PR will just be closed and re-opened. You don't need to create a new PR.
+
+If the check fails because the tests are not passed, you must correct the code and push again until the check passes.
