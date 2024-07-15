@@ -102,6 +102,13 @@ jobs:
         path: |
           ${{ vars.APP_PATH }}
           ${{ vars.APP_PATH }}.bkp
+
+    - name: Save description Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: description    
+        path: |
+          description.txt
     
 
   tag_and_release:
@@ -118,6 +125,11 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: project-datas
+
+    - name: Download description Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: description   
 
 
     - name: Set up environment
@@ -140,10 +152,6 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: csproj     
-
-    - name: On Failure list files recursively
-      if: failure()
-      run: ls -R    
 
     - name: On Failure restore csproj
       if: failure()
