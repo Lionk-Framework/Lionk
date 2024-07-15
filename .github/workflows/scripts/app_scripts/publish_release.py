@@ -37,6 +37,7 @@ tag = f"{app_name}_{newversion}"
 
 print(f"Creating tag {tag}")
 
+
 # Create the tag
 
 run_command(['git', 'tag', '-a', tag, '-m', f"Release {tag}"])
