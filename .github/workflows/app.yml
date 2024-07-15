@@ -101,6 +101,7 @@ jobs:
         name: csproj    
         path: |
           ${{ vars.APP_PATH }}
+          ${{ vars.APP_PATH }}.bkp
     
     
 
@@ -119,6 +120,8 @@ jobs:
       with:
         name: project-datas  
 
+
+
     - name: Set up environment
       run: |
         echo "APP_PATH=${{ vars.APP_PATH }}" >> $GITHUB_ENV
@@ -129,8 +132,16 @@ jobs:
       run: python .github/workflows/scripts/app_scripts/publish_release.py
       env: 
         APP_PATH: ${{ vars.APP_PATH }}
-        NEW_VERSION: ${{ env.NEW_VERSION }}
-        CHANGELOG: ${{ env.CHANGELOG }}
+        APP_NAME: ${{ vars.APP_NAME }}
+        BOT_NAME: ${{ vars.BOT_NAME }}
+        BOT_MAIL: ${{ vars.BOT_MAIL }}
+
+
+    - name: On Failure Download csproj
+      if: failure()
+      uses: actions/download-artifact@v3
+      with:
+        name: project-datas      
 
     - name: On Failure restore csproj
       if: failure()
