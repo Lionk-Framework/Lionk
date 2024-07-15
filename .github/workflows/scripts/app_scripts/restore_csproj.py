@@ -37,13 +37,13 @@ run_command(["git", "fetch", "origin", github_head_ref])
 
 
 # replace project.csproj with project.csproj.bkp    
-project_file = os.path.join(app_path, ".csproj")
-backup_file = os.path.join(project_file, ".bkp")
+
+backup_file = app_path + ".bkp"
 with open(backup_file, "rb") as backup:
     content = backup.read()
-with open(project_file, "wb") as project:
+with open(app_path, "wb") as project:
     project.write(content)
-run_command(["git", "add", project_file])
+run_command(["git", "add", app_path])
 
 # Commit changes 
 print("Committing changes")

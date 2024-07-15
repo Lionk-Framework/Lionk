@@ -2,7 +2,7 @@ import os
 # get environment variables
 app_path = os.getenv("APP_PATH")
 
-backup_file = os.path.join(app_path,".bkp")
+backup_file = app_path + ".bkp"
 
 with open(app_path, "rb") as src:
     content = src.read()
