@@ -15,6 +15,7 @@ def run_command(command):
 
 # Get environment variables
 app_path = os.getenv("APP_PATH")
+app_name = os.getenv("APP_NAME")
 bot_name = os.getenv("BOT_NAME")
 bot_email = os.getenv("BOT_MAIL")
 src_path = os.getenv("SRC_PATH")
@@ -38,7 +39,7 @@ run_command(["git", "fetch", "origin", github_head_ref])
 
 # replace project.csproj with project.csproj.bkp    
 
-backup_file = app_path + ".bkp"
+backup_file = app_name + ".csproj.bkp"
 with open(backup_file, "rb") as backup:
     content = backup.read()
 with open(app_path, "wb") as project:
