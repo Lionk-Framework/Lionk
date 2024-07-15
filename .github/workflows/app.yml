@@ -141,6 +141,7 @@ jobs:
     - name: Tag and Release
       run: python .github/workflows/scripts/app_scripts/publish_release.py
       env: 
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
         APP_PATH: ${{ vars.APP_PATH }}
         APP_NAME: ${{ vars.APP_NAME }}
         BOT_NAME: ${{ vars.BOT_NAME }}
