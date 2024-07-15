@@ -216,6 +216,7 @@ jobs:
         APP_NAME: ${{ vars.APP_NAME }}
         BOT_NAME: ${{ vars.BOT_NAME }}
         BOT_MAIL: ${{ vars.BOT_MAIL }}
+        DOCKER_REGISTRY: ${{ vars.DOCKER_REGISTRY }}
 
     - name: On Failure Download csproj
       if: failure()
@@ -235,7 +236,7 @@ jobs:
 
     - name: On failure Restore Tag and release
       if: failure()
-      run: python .github/workflows/scripts/app_scripts/restore_tag_release.py
+      run: python .github/workflows/scripts/app_scripts/restore_release.py
       env: 
         APP_NAME: ${{ vars.APP_NAME }}
         GH_TOKEN: ${{ secrets.GH_TOKEN }}

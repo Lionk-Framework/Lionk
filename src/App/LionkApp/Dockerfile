@@ -1,29 +1,22 @@
-# Utiliser l'image de base officielle de Microsoft pour .NET 6.0 SDK
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-
-# Définir le répertoire de travail
-WORKDIR /src
-
-# Copier le fichier de solution et restaurer les dépendances
-COPY LionkApp.sln ./
-COPY LionkApp.csproj ./Lionk/
-RUN dotnet restore
-
-# Copier tous les autres fichiers et construire l'application
-COPY . ./
-RUN dotnet publish -c Release -o /app
-
-# Utiliser l'image de base officielle de Microsoft pour .NET 6.0 Runtime
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
-
-# Définir le répertoire de travail
+# Utiliser l'image officielle .NET en version 7.0 pour la construction
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
-# Copier les fichiers publiés depuis l'étape de build
-COPY --from=build /app .
+# Copier les fichiers .csproj et restaurer les dépendances
+COPY *.csproj ./
+RUN dotnet restore
 
-# Exposer le port 5000
+# Copier le reste des fichiers du projet et publier l'application
+COPY . ./
+RUN dotnet publish -c Release -o out
+
+# Utiliser l'image runtime .NET en version 7.0 pour exécuter l'application
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /app
+COPY --from=build-env /app/out .
+
+# Exposer le port utilisé par l'application
 EXPOSE 5000
 
-# Définir le point d'entrée pour l'application
+# Définir le point d'entrée de l'application
 ENTRYPOINT ["dotnet", "LionkApp.dll"]
