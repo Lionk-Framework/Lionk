@@ -92,7 +92,7 @@ jobs:
       env: 
         APP_PATH: ${{ vars.APP_PATH }}
         BOT_NAME: ${{ vars.BOT_NAME }}
-        BOT_EMAIL: ${{ vars.BOT_EMAIL }}
+        BOT_MAIL: ${{ vars.BOT_MAIL }}
         GITHUB_HEAD_REF: ${{ github.head_ref }}
 
     - name: Save csproj Artifact
@@ -138,7 +138,7 @@ jobs:
       env: 
         APP_PATH: ${{ vars.APP_PATH }}
         BOT_NAME: ${{ vars.BOT_NAME }}
-        BOT_EMAIL: ${{ vars.BOT_EMAIL }}
+        BOT_MAIL: ${{ vars.BOT_MAIL }}
         GITHUB_HEAD_REF: ${{ github.head_ref }}
 
     
