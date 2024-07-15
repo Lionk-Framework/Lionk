@@ -102,9 +102,6 @@ jobs:
         path: |
           ${{ vars.APP_PATH }}
           ${{ vars.APP_PATH }}.bkp
-
-    - name: list files recursively
-      run: ls -R 
     
 
   tag_and_release:
@@ -121,8 +118,6 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: project-datas
-
-
 
 
     - name: Set up environment
@@ -144,7 +139,8 @@ jobs:
       if: failure()
       uses: actions/download-artifact@v3
       with:
-        name: csproj      
+        name: csproj     
+        path: ${{ vars.APP_FOLDER }} 
 
     - name: On Failure list files recursively
       if: failure()
