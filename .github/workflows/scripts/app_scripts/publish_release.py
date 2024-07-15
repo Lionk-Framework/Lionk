@@ -19,39 +19,33 @@ def read_file_to_list(filename):
         return [line.strip() for line in file.readlines()]
 
 
-src_path = os.getenv('SRC_PATH')
+app_path = os.getenv('APP_PATH')
+app_name = os.getenv('APP_NAME')
 bot_name = os.getenv('BOT_NAME')
 bot_mail = os.getenv('BOT_MAIL')
 
-projects = read_file_to_list('projects.txt')
-newversions = read_file_to_list('newversions.txt')
 
-print(f"Projects: {projects}")
-print(f"New versions: {newversions}")
+newversion = read_file_to_list('newversion.txt')
 
-if len(projects) == 0:
-    print("No projects to process")
-    sys.exit(1)
 
 run_command(['git', 'config', '--global', 'user.name', bot_name])
 run_command(['git', 'config', '--global', 'user.email', bot_mail])
 
-for i, project in enumerate(projects):
-    newversion = newversions[i]
-    tag = f"{project}_{newversion}"
 
-    print(f"Creating tag {tag}")
+tag = f"{app_name}_{newversion}"
 
-    # Create the tag
+print(f"Creating tag {tag}")
 
-    run_command(['git', 'tag', '-a', tag, '-m', f"Release {tag}"])
-    run_command(['git', 'push', 'origin', tag])
+# Create the tag
 
-    # Extract description from description.txt
-    description = ""
-    with open("description.txt", 'r') as file:
-        description = file.read()
+run_command(['git', 'tag', '-a', tag, '-m', f"Release {tag}"])
+run_command(['git', 'push', 'origin', tag])
 
-    # Create the release with the description
-    run_command(['gh', 'release', 'create', tag, '--title', tag, '--notes', description])
+# Extract description from description.txt
+description = ""
+with open("description.txt", 'r') as file:
+    description = file.read()
+
+# Create the release with the description
+run_command(['gh', 'release', 'create', tag, '--title', tag, '--notes', description])
 

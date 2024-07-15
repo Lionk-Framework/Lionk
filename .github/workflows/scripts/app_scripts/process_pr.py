@@ -5,9 +5,6 @@ import json
 def main():
     PR_TITLE = os.getenv('PR_TITLE')
     PR_BODY = os.getenv('PR_BODY')
-    SRC_PATH = os.getenv('SRC_PATH')
-     
-
 
     print(f'Pull Request title: {PR_TITLE}')
     print(f'Pull Request body: {PR_BODY}')
@@ -71,9 +68,9 @@ def main():
     # Save data to artifact
 
     with open('oldversion.txt', 'w') as f:
-        f.write(' '.join(oldversion))
+        f.write(oldversion)
     with open('newversion.txt', 'w') as f:
-        f.write(' '.join(newversion))
+        f.write(newversion)
     with open('changelog.txt', 'w') as f:
         f.write(changelog)
 

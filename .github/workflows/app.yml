@@ -3,12 +3,9 @@ name: Workflow for app
 on: workflow_call
 
 jobs:
-  build_test_publish:
+  check-pr:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
 
     - name: process_pr
       run: python .github/workflows/scripts/app_scripts/process_pr.py
@@ -16,6 +13,20 @@ jobs:
         APP_PATH: ${{ vars.APP_PATH }}
         PR_TITLE: ${{ github.event.pull_request.title }}
         PR_BODY: ${{ github.event.pull_request.body }}
+
+    - name: Save project datas Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: project-datas    
+
+  build-test:
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}
 
     - name: Set up DotNet
       uses: actions/setup-dotnet@v3
@@ -31,6 +42,22 @@ jobs:
       run: python .github/workflows/scripts/app_scripts/build_test.py
       env: 
         APP_PATH: ${{ vars.APP_PATH }}
+  
+  process-csproj:
+    permissions:
+      contents: write
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}
+
+    - name: Download project datas Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: project-datas  
 
     - name: Set up environment
       run: |
@@ -38,12 +65,64 @@ jobs:
         echo "NEW_VERSION=$(cat newversion.txt)" >> $GITHUB_ENV
         echo "CHANGELOG=$(cat changelog.txt)" >> $GITHUB_ENV
       
+
+    - name: Backup csproj
+      run: python .github/workflows/scripts/app_scripts/backup_csproj.py
+      env: 
+        APP_PATH: ${{ vars.APP_PATH }}  
+
+    - name: Save csproj Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: csproj    
+
     - name: Process csproj
       run: python .github/workflows/scripts/app_scripts/process_csproj.py
       env: 
         APP_PATH: ${{ vars.APP_PATH }}
         NEW_VERSION: ${{ env.NEW_VERSION }}
         CHANGELOG: ${{ env.CHANGELOG }}
+
+    - name: Commit csproj
+      run: python .github/workflows/scripts/app_scripts/commit_csproj.py
+      env: 
+        APP_PATH: ${{ vars.APP_PATH }}
+        BOT_NAME: ${{ vars.BOT_NAME }}
+        BOT_EMAIL: ${{ vars.BOT_EMAIL }}
+        GITHUB_HEAD_REF: ${{ github.head_ref }}
+
+  tag_and_release:
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    steps:
+
+    - name: Download project datas Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: project-datas  
+
+    - name: Set up environment
+      run: |
+        echo "APP_PATH=${{ vars.APP_PATH }}" >> $GITHUB_ENV
+        echo "NEW_VERSION=$(cat newversion.txt)" >> $GITHUB_ENV
+        echo "CHANGELOG=$(cat changelog.txt)" >> $GITHUB_ENV
+    
+    - name: Tag and Release
+      run: python .github/workflows/scripts/app_scripts/publish_release.py
+      env: 
+        APP_PATH: ${{ vars.APP_PATH }}
+        NEW_VERSION: ${{ env.NEW_VERSION }}
+        CHANGELOG: ${{ env.CHANGELOG }}
+
+    - name: On Failure restore csproj
+      if: failure()
+      run: python .github/workflows/scripts/app_scripts/restore_csproj.py
+      env: 
+        APP_PATH: ${{ vars.APP_PATH }}
+        BOT_NAME: ${{ vars.BOT_NAME }}
+        BOT_EMAIL: ${{ vars.BOT_EMAIL }}
+        GITHUB_HEAD_REF: ${{ github.head_ref }}
+
+    
 
 
     

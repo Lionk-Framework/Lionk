@@ -12,7 +12,6 @@ def run_command(command):
 app_path = os.getenv("APP_PATH")
 bot_name = os.getenv("BOT_NAME")
 bot_email = os.getenv("BOT_MAIL")
-src_path = os.getenv("SRC_PATH")
 github_head_ref = os.getenv("GITHUB_HEAD_REF")
 
 # Config git
