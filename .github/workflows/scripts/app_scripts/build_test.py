@@ -26,7 +26,7 @@ if __name__ == "__main__":
     app_path = os.environ['APP_PATH']
 
     # Construire le projet
-    build_dotnet_project(project_path)
+    build_dotnet_project(app_path)
 
     # Tester le projet
-    test_dotnet_project(project_path)
+    test_dotnet_project(app_path)
