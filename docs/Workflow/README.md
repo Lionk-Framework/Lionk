@@ -10,7 +10,7 @@
 - When a new feature or bug fix needs to be developed, create a new branch from the `main` branch.
 
 ### 1.2 Make Changes and Create a Pull Request with specific Pull Request name and body
-For each type of modification, like `app`, `lib`, `doc` ,`wof` , use specific Pull Request names and bodies.
+For each type of modification, like `app`, `nuget`, `doc` ,`wof` , use specific Pull Request names and bodies.
 
 `<version type>` will be `patch`, `minor`, or `major`
 
@@ -39,7 +39,7 @@ PR body:
 
 #### 1.2.2 If you want to merge nuget library features or bug fixes
 
-PR name: `lib: project1 <version type>, project2 <version type>, project3 <version type>, ...  `
+PR name: `nuget: project1 <version type>, project2 <version type>, project3 <version type>, ...  `
 PR body: 
 ```
 project1
@@ -57,7 +57,7 @@ project3
 
 **example:**
 
-PR name: `lib: Logger patch, Authentification minor, Core major`
+PR name: `nuget: Logger patch, Authentification minor, Core major`
 PR body: 
 ```
 Logger
