@@ -80,11 +80,6 @@ jobs:
       env: 
         APP_PATH: ${{ vars.APP_PATH }}  
 
-    - name: Save csproj Artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: csproj    
-
     - name: Process csproj
       run: python .github/workflows/scripts/app_scripts/process_csproj.py
       env: 
@@ -100,10 +95,24 @@ jobs:
         BOT_EMAIL: ${{ vars.BOT_EMAIL }}
         GITHUB_HEAD_REF: ${{ github.head_ref }}
 
+    - name: Save csproj Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: csproj    
+        path: |
+          ${{ vars.APP_PATH }}
+    
+    
+
   tag_and_release:
     needs: process-csproj
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
     steps:
+
+    - name: Chekout repository
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}      
 
     - name: Download project datas Artifact
       uses: actions/download-artifact@v3
