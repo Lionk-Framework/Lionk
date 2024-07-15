@@ -22,7 +22,11 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: project-datas    
-
+        path: |
+          oldversion.txt
+          newversion.txt
+          changelog.txt
+   
   build-test:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
     steps:
