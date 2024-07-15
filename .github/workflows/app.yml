@@ -68,6 +68,11 @@ jobs:
       with:
         ref: ${{ github.head_ref }}
 
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+
     - name: Download project datas Artifact
       uses: actions/download-artifact@v3
       with:
@@ -124,7 +129,12 @@ jobs:
     - name: Chekout repository
       uses: actions/checkout@v3
       with:
-        ref: ${{ github.head_ref }}      
+        ref: ${{ github.head_ref }}   
+        
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
 
     - name: Download project datas Artifact
       uses: actions/download-artifact@v3
