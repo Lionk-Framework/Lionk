@@ -39,7 +39,6 @@ tag = f"{app_name}_{newversion}"
 tags = run_command(['git', 'tag', '-l']).split('\n')
 print(f"Current tags: {tags}")
 
-
 print(f"Creating tag {tag}")
 
 if tag_exists(tag):
