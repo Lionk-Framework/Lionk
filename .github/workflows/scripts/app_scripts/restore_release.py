@@ -3,7 +3,7 @@ import sys
 import os
 
 app_name = os.getenv('APP_NAME')
-github_token = os.getenv('GITHUB_TOKEN')
+github_token = os.getenv('GH_TOKEN')
 
 with open('newversion.txt', 'r') as file:
     newversion = file.read().strip()
