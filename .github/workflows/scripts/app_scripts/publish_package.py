@@ -25,7 +25,7 @@ with open('newversion.txt', 'r') as file:
     newversion = file.read().strip()
 
 with open('description.txt', 'r') as file:
-    description = file.read().strip()
+    description = file.read()
 
 print(f"Publishing {app_name} as version {newversion}")
 
