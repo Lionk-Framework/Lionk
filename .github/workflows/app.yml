@@ -7,9 +7,11 @@ jobs:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
 
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
     - name: Set up DotNet
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ vars.DOTNET_VERSION }}
 
