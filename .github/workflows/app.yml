@@ -102,7 +102,9 @@ jobs:
         path: |
           ${{ vars.APP_PATH }}
           ${{ vars.APP_PATH }}.bkp
-    
+
+    - name: list files recursively
+      run: ls -R 
     
 
   tag_and_release:
@@ -118,7 +120,8 @@ jobs:
     - name: Download project datas Artifact
       uses: actions/download-artifact@v3
       with:
-        name: project-datas  
+        name: project-datas
+
 
 
 
@@ -141,7 +144,7 @@ jobs:
       if: failure()
       uses: actions/download-artifact@v3
       with:
-        name: project-datas      
+        name: csproj      
 
     - name: On Failure restore csproj
       if: failure()

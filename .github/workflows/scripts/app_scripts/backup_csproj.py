@@ -14,5 +14,5 @@ print(f"Backup of {app_path} created in {backup_file}")
 
 print("Files in the directory:")
 
-for file in os.listdir():
+for file in os.listdir(os.path.dirname(app_path)):
     print(file)
