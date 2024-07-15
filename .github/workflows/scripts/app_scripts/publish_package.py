@@ -18,6 +18,9 @@ app_name = os.getenv('APP_NAME')
 docker_registry = os.getenv('DOCKER_REGISTRY')
 gh_token = os.getenv('GH_TOKEN')
 
+
+context = os.path.dirname(app_path)
+
 with open('newversion.txt', 'r') as file:
     newversion = file.read().strip()
 
@@ -27,7 +30,7 @@ with open('description.txt', 'r') as file:
 print(f"Publishing {app_name} as version {newversion}")
 
 # Construire l'image Docker avec une étiquette de description
-run_command(['docker', 'build', '-t', f"{docker_registry}/{app_name.lower()}:{newversion}", '--label', f"description={description}", app_path])
+run_command(['docker', 'build', '-t', f"{docker_registry}/{app_name.lower()}:{newversion}", '--label', f"description={description}", context])
 
 # Se connecter au registre Docker
 run_command(['echo', gh_token, '|', 'docker', 'login', docker_registry, '-u', 'USERNAME', '--password-stdin'])
