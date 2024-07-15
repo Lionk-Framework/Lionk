@@ -102,3 +102,10 @@ PR body:
 - <authored file extension>
 ```
 
+### 1.3 Check failed
+
+If the check fails, look at the error message in the action tab https://github.com/Lionk-Framework/Lionk/actions
+
+Then, if the check fails because the PR title or body is not correct, the PR will just be closed and re-opened. You don't need to create a new PR.
+
+If the check fails because the tests are not passed, you must correct the code and push again until the check passes.
