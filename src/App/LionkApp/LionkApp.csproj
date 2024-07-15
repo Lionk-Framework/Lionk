@@ -4,12 +4,15 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>0.0.3</Version>
+    <Version>0.0.4</Version>
     <Description>
 
 ## Change Log
 - test
 
+# Lionk App
+
+This is the Lionk App README file.
 </Description>
   </PropertyGroup>
 </Project>
