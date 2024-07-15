@@ -27,7 +27,7 @@ jobs:
     - name: Check if only accepted files are changed
       id: verifiy_files
       run: |
-        python verifiy_files.py
+        python .github/workflows/scripts/doc_scripts/verify_files.py
       env:
         PR_NUMBER: ${{ github.event.pull_request.number }}
         REPO_NAME: ${{ github.repository }}
