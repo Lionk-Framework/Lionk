@@ -14,6 +14,8 @@ jobs:
       run: python .github/workflows/scripts/app_scripts/process_pr.py
       env: 
         APP_PATH: ${{ vars.APP_PATH }}
+        PR_TITLE: ${{ github.event.pull_request.title }}
+        PR_BODY: ${{ github.event.pull_request.body }}
 
     - name: Set up DotNet
       uses: actions/setup-dotnet@v3
