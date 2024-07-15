@@ -3,7 +3,7 @@ name: Conditional Workflow on PR
 on:
   pull_request:
     branches:
-      - test-workflow
+      - main
     types: [opened, synchronize, reopened]
 
 jobs:
