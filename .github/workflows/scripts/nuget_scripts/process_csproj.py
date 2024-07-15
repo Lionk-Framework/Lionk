@@ -68,6 +68,9 @@ for project in projects:
     update_or_add_element(property_group ,"Version", new_version)
     update_or_add_element(property_group ,"Description", description)
 
+    with open("description.txt", "w") as file:
+        file.write(description)
+
     indent(root)
     tree.write(csproj_file, encoding="utf-8", xml_declaration=True)
 

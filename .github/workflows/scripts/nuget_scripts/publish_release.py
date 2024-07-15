@@ -47,23 +47,10 @@ for i, project in enumerate(projects):
     run_command(['git', 'tag', '-a', tag, '-m', f"Release {tag}"])
     run_command(['git', 'push', 'origin', tag])
 
-    # Extract description from .csproj file
-    csproj_path = f"{src_path}/{project}/{project}.csproj"
+    # Extract description from description.txt
     description = ""
-    with open(csproj_path, 'r') as file:
-        in_description = False
-        for line in file:
-            if '<Description>' in line:
-                in_description = True
-                description += line.replace('<Description>', '').strip() + " "
-            elif '</Description>' in line:
-                in_description = False
-                description += line.replace('</Description>', '').strip()
-            elif in_description:
-                description += line.strip() + " "
-
-    description = description.strip()
-    print(f"Description for {project}: {description}")
+    with open("description.txt", 'r') as file:
+        description = file.read()
 
     # Create the release with the description
     run_command(['gh', 'release', 'create', tag, '--title', tag, '--notes', description])
