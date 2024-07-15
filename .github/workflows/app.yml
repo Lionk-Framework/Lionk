@@ -179,6 +179,70 @@ jobs:
         BOT_MAIL: ${{ vars.BOT_MAIL }}
         GITHUB_HEAD_REF: ${{ github.head_ref }}
 
+  publish_package:
+    needs: tag_and_release
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    steps:
+
+    - name: Chekout repository
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}   
+        
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+
+    - name: Download project datas Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: project-datas
+
+    - name: Download description Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: description
+
+    - name: Set up environment
+      run: |
+        echo "APP_PATH=${{ vars.APP_PATH }}" >> $GITHUB_ENV
+
+    - name: Publish package
+      run: python .github/workflows/scripts/app_scripts/publish_package.py
+      env: 
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        APP_PATH: ${{ vars.APP_PATH }}
+        APP_NAME: ${{ vars.APP_NAME }}
+        BOT_NAME: ${{ vars.BOT_NAME }}
+        BOT_MAIL: ${{ vars.BOT_MAIL }}
+
+    - name: On Failure Download csproj
+      if: failure()
+      uses: actions/download-artifact@v3
+      with:
+        name: csproj
+        
+    - name: On Failure restore csproj
+      if: failure()
+      run: python .github/workflows/scripts/app_scripts/restore_csproj.py
+      env: 
+        APP_PATH: ${{ vars.APP_PATH }}
+        APP_NAME: ${{ vars.APP_NAME }}
+        BOT_NAME: ${{ vars.BOT_NAME }}
+        BOT_MAIL: ${{ vars.BOT_MAIL }}
+        GITHUB_HEAD_REF: ${{ github.head_ref }}
+
+    - name: On failure Restore Tag and release
+      if: failure()
+      run: python .github/workflows/scripts/app_scripts/restore_tag_release.py
+      env: 
+        APP_NAME: ${{ vars.APP_NAME }}
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+  
+
+
     
 
 
