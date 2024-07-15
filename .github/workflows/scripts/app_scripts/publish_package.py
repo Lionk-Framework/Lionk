@@ -30,7 +30,7 @@ with open(f'{context}/README.md', 'r') as file:
 print(f"Publishing {app_name} as version {newversion}")
 
 # Construire l'image Docker avec une étiquette de description
-run_command(['docker', 'build', '-t', f"{docker_registry}/{app_name.lower()}:{newversion}", '-t',f"{docker_registry}/{app_name.lower()}:latest", '--label', f"org.opencontainers.image.description={description}", context])
+run_command(['docker', 'build', '-t', f"{docker_registry}/{app_name.lower()}:{newversion}", '-t',f"{docker_registry}/{app_name.lower()}:latest", context])
 
 
 # Pousser l'image Docker au registre
