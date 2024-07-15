@@ -19,7 +19,7 @@ jobs:
         python-version: '3.x'
     
     - name: build and test app
-      run: python .github/workflows/scripts/app_scripts/build_and_test.py 
+      run: python .github/workflows/scripts/app_scripts/build_test.py
       env: 
         APP_PATH: ${{ vars.APP_PATH }}
     
