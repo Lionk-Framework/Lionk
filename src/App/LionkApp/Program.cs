@@ -1,4 +1,4 @@
-using App.Components;
+using LionkApp.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 

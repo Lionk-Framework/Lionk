@@ -10,6 +10,7 @@ def build_dotnet_project(project_path):
     except subprocess.CalledProcessError as e:
         print("Erreur lors du build:")
         print(e.stderr)
+        exit(1)
 
 def test_dotnet_project(project_path):
     try:
@@ -20,6 +21,7 @@ def test_dotnet_project(project_path):
     except subprocess.CalledProcessError as e:
         print("Erreur lors des tests:")
         print(e.stderr)
+        exit(1)
 
 if __name__ == "__main__":
     # Chemin du projet .NET
