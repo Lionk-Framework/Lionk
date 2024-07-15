@@ -27,8 +27,9 @@ jobs:
     - name: Check if only accepted files are changed
       id: verifiy_files
       run: |
-        echo "CHANGED_FILES: ${{ env.CHANGED_FILES }}"
         python verifiy_files.py
       env:
-        CHANGED_FILES: ${{ env.CHANGED_FILES }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        REPO_NAME: ${{ github.repository }}
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         PR_BODY: ${{ env.PR_BODY }}
