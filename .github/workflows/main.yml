@@ -25,7 +25,7 @@ jobs:
       permissions:
         contents: write
       if: contains(github.event.pull_request.title, 'doc:')
-      uses: ./.github/workflows/nuget.yml
+      uses: ./.github/workflows/doc.yml
       secrets: inherit
 
   default_workflow:
