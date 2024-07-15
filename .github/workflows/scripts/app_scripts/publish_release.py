@@ -25,7 +25,8 @@ bot_name = os.getenv('BOT_NAME')
 bot_mail = os.getenv('BOT_MAIL')
 
 
-newversion = read_file_to_list('newversion.txt')
+with open("newversion.txt", 'r') as file:
+    newversion = file.read().strip()
 
 
 run_command(['git', 'config', '--global', 'user.name', bot_name])

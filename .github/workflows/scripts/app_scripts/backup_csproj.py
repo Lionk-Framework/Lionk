@@ -9,3 +9,10 @@ with open(app_path, "rb") as src:
 
 with open(backup_file, "wb") as bkp:
     bkp.write(content)
+
+print(f"Backup of {app_path} created in {backup_file}")
+
+print("Files in the directory:")
+
+for file in os.listdir():
+    print(file)
