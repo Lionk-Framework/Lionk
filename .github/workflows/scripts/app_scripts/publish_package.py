@@ -36,6 +36,6 @@ run_command(['docker', 'build', '-t', f"{docker_registry}/{app_name.lower()}:{ne
 run_command(['echo', gh_token, '|', 'docker', 'login', docker_registry, '-u', 'USERNAME', '--password-stdin'])
 
 # Pousser l'image Docker au registre
-run_command(['docker', 'push', f"{docker_registry}/{app_name}:{newversion}"])
-run_command(['docker', 'push', f"{docker_registry}/{app_name}:latest"])
+run_command(['docker', 'push', f"{docker_registry}/{app_name.lower()}:{newversion}"])
+run_command(['docker', 'push', f"{docker_registry}/{app_name.lower()}:latest"])
 exit(1)
