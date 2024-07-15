@@ -8,15 +8,17 @@ def run_command(command):
         result = subprocess.run(command, check=True, capture_output=True, text=True)
         print("STDOUT:", result.stdout.strip())
         print("STDERR:", result.stderr.strip())
+        return result.stdout.strip()
     except subprocess.CalledProcessError as e:
         print(f"Error running command {command}: {e}")
         print("STDOUT:", e.stdout)
         print("STDERR:", e.stderr)
         sys.exit(1)
 
-def read_file_to_list(filename):
-    with open(filename, 'r') as file:
-        return [line.strip() for line in file.readlines()]
+
+def tag_exists(tag):
+    result = run_command(['git', 'tag', '-l', tag])
+    return tag in result
 
 
 app_path = os.getenv('APP_PATH')
@@ -37,6 +39,9 @@ tag = f"{app_name}_{newversion}"
 
 print(f"Creating tag {tag}")
 
+if tag_exists(tag):
+    print(f"Tag {tag} already exists. Exiting.")
+    sys.exit(1)
 
 # Create the tag
 
@@ -50,4 +55,3 @@ with open("description.txt", 'r') as file:
 
 # Create the release with the description
 run_command(['gh', 'release', 'create', tag, '--title', tag, '--notes', description])
-
