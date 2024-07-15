@@ -146,6 +146,10 @@ jobs:
       with:
         name: csproj      
 
+    - name: On Failure list files recursively
+      if: failure()
+      run: ls -R    
+
     - name: On Failure restore csproj
       if: failure()
       run: python .github/workflows/scripts/app_scripts/restore_csproj.py
