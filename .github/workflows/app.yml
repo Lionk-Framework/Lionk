@@ -3,9 +3,23 @@ name: Workflow for app
 on: workflow_call
 
 jobs:
-  check-pr-title:
+  build_and_test:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
 
     steps:
-    - name: message
-      run: echo "This job is running because the PR title contains 'app:'"
+
+    - name: Set up DotNet
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ vars.DOTNET_VERSION }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+    
+    - name: build and test app
+      run: python .github/workflows/scripts/app_scripts/build_and_test.py 
+      env: 
+        APP_PATH: ${{ vars.APP_PATH }}
+    
