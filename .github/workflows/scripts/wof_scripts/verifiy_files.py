@@ -57,7 +57,7 @@ def main():
         print("Error: PR body is missing.")
         sys.exit(1)
 
-    default_accepted_extensions = ["md", "txt", "drawio", "png", "jpg", "jpeg", "gif", "svg"]
+    default_accepted_extensions = ["yml", "py", "sh"]
     
     changed_files = get_changed_files(token, repo_name, pr_number)
     print(f"changed files : {changed_files}")
