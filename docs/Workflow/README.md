@@ -6,10 +6,10 @@
 
 ## 1. Workflow Steps
 
-### 1.1 Create your branch 
+### 1.1. Create your branch 
 - When a new feature or bug fix needs to be developed, create a new branch from the `main` branch.
 
-### 1.2 Make Changes and Create a Pull Request with specific Pull Request name and body
+### 1.2. Make Changes and Create a Pull Request with specific Pull Request name and body
 For each type of modification, like `app`, `nuget`, `doc` ,`wof` , use specific Pull Request names and bodies.
 
 `<version type>` will be `patch`, `minor`, or `major`
@@ -19,7 +19,7 @@ The version is automatically updated by the CI/CD pipeline. The `.csproj` file i
 
 Keep in mind that the pull request workflow creates a commit of .csproj files. Even if it fails, the commit is overwritten by another commit. In any case, you must pull the latest modifications before making a new commit, until the tests have been passed.
 
-#### 1.2.1 If you want to merge application features or bug fixes
+#### 1.2.1. If you want to merge application features or bug fixes
 PR name: `app: <version type> `
 PR body: 
 ```
@@ -37,7 +37,7 @@ PR body:
 - fix dependency injection bug
 ```
 
-#### 1.2.2 If you want to merge nuget library features or bug fixes
+#### 1.2.2. If you want to merge nuget library features or bug fixes
 
 PR name: `nuget: project1 <version type>, project2 <version type>, project3 <version type>, ...  `
 PR body: 
@@ -72,7 +72,7 @@ Core
 - Replace API Urls
 ```
 
-#### 1.2.3 If you want to merge documentation
+#### 1.2.3. If you want to merge documentation
 
 To merge documentation, it is important that the code is **not** modified, which is why tests are performed on file extensions. By default, a list of extensions is defined as documentation. If you want to add other extensions, you need to list them in the body in this way:
 ```
@@ -102,7 +102,7 @@ PR body:
 - <authored file extension>
 ```
 
-#### 1.2.4 If you want to merge workflow
+#### 1.2.4. If you want to merge workflow
 to merge a workflow, the procedure is similar to the documentation merge procedure, with the exception of the default file extensions 
 
 Default extensions that do not need to be entered in the PR body:
@@ -120,10 +120,103 @@ PR body:
 - <authored file extension>
 ``` 
 
-### 1.3 Check failed
+### 1.3. Check failed
 
 If the check fails, look at the error message in the action tab https://github.com/Lionk-Framework/Lionk/actions
 
 Then, if the check fails because the PR title or body is not correct, the PR will just be closed and re-opened. You don't need to create a new PR.
 
 If the check fails because the tests are not passed, you must correct the code and push again until the check passes.
+
+# 2. Workflow runnner
+
+if you want to use your own runner, you need to modify the GitHub action variable named RUNNER_DISTRIBUTION. 
+- To use your own runner: `self-hosted`.
+- To use Github runners: `ubunutu-latest`
+
+# 2.1 Self-hosted runner
+
+When using a self-hosted runner, pull-requests from external contributors should **never** be validated, as they may result in malicious code or secret leaks.
+
+To guarantee security, I suggest using docker-based runners to compartmentalize the application and, above all, shut it down once it's no longer needed.
+
+To get a token for a self-hosted runner, you need to folow this instructions:
+- Go here: https://github.com/organizations/Lionk-Framework/settings/actions/runners 
+- Click on the button `Add runner`
+- Look at the configuration section
+- Copy the token that is displayed after `--token`
+
+here a docker-compose file to run a self-hosted runner:
+
+```yaml
+version: '2.3'
+
+services:
+  runner:
+    image: myoung34/github-runner:latest
+    environment:
+      REPO_URL: https://github.com/votre-utilisateur/votre-repo
+      RUNNER_NAME: <runner name>
+      RUNNER_TOKEN: <the token you copied>
+      RUNNER_WORKDIR: /tmp/github-runner
+      RUNNER_LABELS: <custom labels>
+    volumes:
+      - ./runner:/tmp/github-runner
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
+```
+
+**example:**
+
+```yaml
+version: '2.3'
+
+services:
+  runner:
+    image: myoung34/github-runner:latest
+    environment:
+      REPO_URL: https://github.com/Lionk-Framework/Lionk
+      RUNNER_NAME: Alex-lionk-runner
+      RUNNER_TOKEN: <the token you copied>
+      RUNNER_LABELS: linux,x64,ubuntu
+    volumes:
+      - ./runner:/tmp/github-runner
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
+```
+
+# 2.2 Workflow parallelization
+
+If your workflow has parallel tasks, you can set up self-hosted runners in a simple way, by adding many other services to the docker-compose file.
+You need to change the folder name of the volumes to `./runner1`, `./runner2`, `./runner3`, ... and change the `RUNNER_NAME`.
+The token can be the same for all runners.
+
+```yaml
+version: '2.3'
+
+services:
+    runner1:
+        image: myoung34/github-runner:latest
+        environment:
+            REPO_URL: https://github.com/Lionk-Framework/Lionk
+            RUNNER_NAME: Alex-lionk-runner-1
+            RUNNER_TOKEN: <the token you copied>
+            RUNNER_LABELS: linux,x64,ubuntu
+        volumes:
+        - ./runner1:/tmp/github-runner
+        - /var/run/docker.sock:/var/run/docker.sock
+        restart: always
+
+
+    runner2:
+        image: myoung34/github-runner:latest
+        environment:
+            REPO_URL: https://github.com/Lionk-Framework/Lionk
+            RUNNER_NAME: Alex-lionk-runner-2
+            RUNNER_TOKEN: <the token you copied>
+            RUNNER_LABELS: linux,x64,ubuntu
+        volumes:
+        - ./runner2:/tmp/github-runner
+        - /var/run/docker.sock:/var/run/docker.sock
+        restart: always    
+```

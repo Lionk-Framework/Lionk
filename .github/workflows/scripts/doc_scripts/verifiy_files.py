@@ -53,10 +53,6 @@ def main():
         print("Error: Missing required environment variables.")
         sys.exit(1)
 
-    if not pr_body:
-        print("Error: PR body is missing.")
-        sys.exit(1)
-
     default_accepted_extensions = ["md", "txt", "drawio", "png", "jpg", "jpeg", "gif", "svg"]
     
     changed_files = get_changed_files(token, repo_name, pr_number)
