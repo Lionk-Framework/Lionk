@@ -51,6 +51,8 @@ Ce projet permettra aux utilisateurs de concevoir des systèmes flexibles et rob
 
 ## 2. Exigences fonctionnelles et non fonctionnelles
 
+### 2.1 Exigences fonctionnelles
+
 **Consultation des Données via le Dashboard**
 - Les utilisateurs doivent pouvoir consulter en continu les données spécifiques aux composants via un tableau de bord mis à jour en temps réel.
 
@@ -94,7 +96,7 @@ Ce projet permettra aux utilisateurs de concevoir des systèmes flexibles et rob
 - Des alertes doivent être envoyées en cas de panne du système ou si les températures dépassent certains seuils.
 - Les utilisateurs doivent connaître la quantité d'énergie stockée pour déterminer la pertinence d'allumer la cheminée de salon.
 
-# Exigences Non Fonctionnelles
+### 2.2 Exigences non fonctionnelles
 
 **Modularité et Extensibilité**
 - La plateforme doit être modulaire et permettre l'intégration facile de nouveaux plugins pour ajouter des fonctionnalités ou des composants supplémentaires.
