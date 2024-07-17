@@ -89,13 +89,6 @@ Ce projet permettra aux utilisateurs de concevoir des systèmes flexibles et rob
 **Déploiement de Plugins**
 - Les développeurs doivent pouvoir transmettre leurs plugins à l'administrateur pour qu'ils soient intégrés dans le système sous la forme de `dll`.
 
-**Cas d'Utilisation Exemple: Intégration du Contrôle de la Chaufferie**
-- Les administrateurs doivent pouvoir gérer le stockage de l'énergie produite par une cheminée.
-- Le système doit optimiser le flux de chaleur en fonction des températures de stockage via une vanne 3 voies.
-- Le système doit s'autoréguler en fonction des températures de la cheminée.
-- Des alertes doivent être envoyées en cas de panne du système ou si les températures dépassent certains seuils.
-- Les utilisateurs doivent connaître la quantité d'énergie stockée pour déterminer la pertinence d'allumer la cheminée de salon.
-
 ### 2.2 Exigences non fonctionnelles
 
 **Modularité et Extensibilité**
