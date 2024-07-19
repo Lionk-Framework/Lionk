@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION}}
     defaults:
       run:
-        working-directory: ${{ vars.SRC_PATH }}
+        working-directory: ${{ vars.SLN_PATH }}
     steps:
 
     - name: Checkout code
@@ -32,7 +32,7 @@ jobs:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION}}
     defaults:
       run:
-        working-directory: ${{ vars.SRC_PATH }}
+        working-directory: ${{ vars.SLN_PATH }}
     needs: build
     steps:
     - name: Checkout code
