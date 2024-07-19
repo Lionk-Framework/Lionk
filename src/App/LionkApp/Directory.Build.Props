@@ -1,0 +1,30 @@
+<Project>
+ <PropertyGroup>
+        <SmartAssemblyIsEnabled>false</SmartAssemblyIsEnabled>
+        <Copyright>© Lionk Project. All rights reserved.</Copyright>
+        <Authors>Lionk Project</Authors>
+        <Company>Lionk Project</Company>
+        <Owners>Lionk Project</Owners>
+        <Nullable>enable</Nullable>
+        <Platforms>AnyCPU;x86;x64</Platforms>
+        <PackageProjectUrl>https://github.com/Lionk-Framework/Lionk</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/Lionk-Framework/Lionk</RepositoryUrl>
+        <NeutralLanguage>en</NeutralLanguage>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <PackageIcon>lionk_logo_64x64.png</PackageIcon>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+      </PropertyGroup>
+      <ItemGroup>
+        <None Include="..\..\resources\lionk_logo_64x64.png">
+          <Pack>True</Pack>
+          <PackagePath>\</PackagePath>
+        </None>
+      </ItemGroup>
+      <ItemGroup>
+        <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556" PrivateAssets="All" />
+      </ItemGroup>
+      <ItemGroup>
+        <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" />
+      </ItemGroup>
+</Project>
