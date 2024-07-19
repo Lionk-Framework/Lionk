@@ -1,8 +1,11 @@
 // Copyright © 2024 Lionk Project
 
+using System.Text;
 using LionkApp.Components;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+StringBuilder sb = new();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
