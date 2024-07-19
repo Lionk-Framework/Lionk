@@ -1,4 +1,4 @@
-name: Conditional Workflow on PR
+name: Preprocessing PR data
 
 on:
   pull_request:
