@@ -25,11 +25,12 @@ jobs:
       - shell: bash
         run: |
           if [[ "${{ github.event.pull_request.title }}" == *"app:"* ]]; then
-            python .github/workflows/scripts/app_scripts/process_pr.py
+            echo "app"
           elif [[ "${{ github.event.pull_request.title }}" == *"nuget:"* ]]; then
-            python .github/workflows/scripts/nuget_scripts/process_pr.py
+            echo "nuget"
           else
             echo "Nothing to pre-process"
+            
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}
