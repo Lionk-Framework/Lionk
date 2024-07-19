@@ -4,11 +4,10 @@ on:
   pull_request:
     branches:
       - main
-    types: [open, synchronize, reopened]
 
 jobs:
   check_pr_title:
-    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    runs-on: ${{RUNNER_DISTRIBUTION}}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
