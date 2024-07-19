@@ -4,10 +4,22 @@ on:
   pull_request:
     branches:
       - main
-    types: [opened, synchronize, reopened]
+    types: [closed]
 
 jobs:
+  check_state:
+    runs-on: ${{RUNNER_DISTRIBUTION}}
+    steps:
+      - name: Check PR state and source branch
+        run: |
+          if [ "${{ github.event.pull_request.merged }}" == "true" ] && [ "${{ github.event.pull_request.base.ref }}" == "dev" ]; then
+            echo "PR is merged and comes from the dev branch"
+          else
+            exit 1
+          fi
+
   app_workflow:
+    needs: check_state
     permissions:
       contents: write
     if: contains(github.event.pull_request.title, 'app:')
@@ -15,6 +27,7 @@ jobs:
     secrets: inherit
 
   nuget_workflow:
+    needs: check_state
     permissions:
       contents: write
     if: contains(github.event.pull_request.title, 'nuget:')
@@ -22,13 +35,15 @@ jobs:
     secrets: inherit
 
   Doc_workflow:
-      permissions:
-        contents: write
-      if: contains(github.event.pull_request.title, 'doc:')
-      uses: ./.github/workflows/doc.yml
-      secrets: inherit
+    needs: check_state
+    permissions:
+      contents: write
+    if: contains(github.event.pull_request.title, 'doc:')
+    uses: ./.github/workflows/doc.yml
+    secrets: inherit
 
   default_workflow:
+    needs: check_state
     if: ${{ !(contains(github.event.pull_request.title, 'app:') || contains(github.event.pull_request.title, 'nuget:') || contains(github.event.pull_request.title, 'doc:'))}}
     runs-on: ubuntu-latest
     steps:
