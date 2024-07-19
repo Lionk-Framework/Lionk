@@ -1,0 +1,34 @@
+name: Conditional Workflow on PR
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [open, synchronize, reopened]
+
+jobs:
+  check_pr_title:
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+
+      - name: Process PR title and body
+        id: process_title_body
+        run: |
+          if [[ "${{ github.event.pull_request.title }}" == *"app:"* ]]; then
+            python .github/workflows/scripts/app_scripts/process_pr.py
+          elif [[ "${{ github.event.pull_request.title }}" == *"nuget:"* ]]; then
+            python .github/workflows/scripts/nuget_scripts/process_pr.py
+          else
+            echo "Nothing to pre-process"
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
