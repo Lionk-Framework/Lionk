@@ -6,16 +6,18 @@ This document describes the mockup of **Lionk application**. The mockup is a vis
 
 ## 1. Dashboard
 
-Just after logging in, the user arrives on the application's homepage. This page features a left sidebar navigation menu that allows the user to navigate between different sections of the application. The homepage also displays a dashboard with information about imported plugins.
+Just after logging in, the user arrives on the application's homepage. This page features a left sidebar navigation menu that allows the user to navigate between different sections of the application. The homepage also displays a dashboard with information about imported plugins.  
+
+
 ![dashboard](dashboard.png)
 
 The right part is a window that displays the different pages of the application. We are currently on the `Dashboard` page.
 
-This page shows all the plugins imported by the user. There are currently none. By clicking the `Add Plugin` button in the center of the window, the user can import a plugin.
+This page shows all the plugins imported by the user. There are currently none. By clicking the `Add Plugin Button` in the center of the window, the user can import a plugin.
 
 ## 2. Add Plugin
 
-After clicking the `+` button, a modal window opens. This window allows the user to import a plugin from the plugins listed in the system. The user names the plugin to import and clicks `Add`.
+After clicking the `Add Plugin Button`, a modal window opens. This window allows the user to import a plugin from the plugins listed in the system. The user names the plugin to import and clicks `Add`.
 
 ![add plugin](addplugin.png)
 
@@ -37,7 +39,7 @@ Now let's add another plugin.
 
 ## 5. Rpi Plugin
 
-As our application is hosted on a `Raspberry Pi`, we have developed a plugin to access the `GPIO` of the `Raspberry Pi` and read `DS18B20` type temperature sensors.
+As our application is hosted on a `Raspberry Pi`, we have developed a plugin to access the `GPIO` of the `Raspberry Pi` and read `DS18B20` type temperature sensors, which we named `RPItemp`.
 
 ![add rpi](addrpi.png)
 
@@ -63,11 +65,11 @@ In our case, we have enabled notifications for the `Chimney` sensor via the `Dis
 
 But we also want to receive emails. We will add a plugin for this.
 
-By pressing the `+` button next to the channels, a modal window opens with a list of the system's channels. We will select `Email` and give it a name.
+By pressing the `+` button next to the channels, a modal window opens with a list of the system's channels. We will select `Mail` and give it a name.
 
 ![select channel](selectchannel.png)
 
-We now have a new `Email` channel that we will configure.
+We now have a new `Mail` channel that we will configure.
 
 ![email config](emailconfig.png)
 
