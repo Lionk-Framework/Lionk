@@ -27,6 +27,14 @@ As an end user, I want:
 - to be able to integrate third-party plugins into the application.
 - to be able to enable/disable plugins.
 
+**User Story 5: Component management**
+As an end user, I want:
+- to be able to configure the behavior of components.
+- to be able to view the status of components.
+- to be able to configure alarms and notifications for components.
+- to be able to configure the data collection frequency for components.
+- to be able to add or delete components.
+
 **User Story 6: User Management**
 As an end user, I want:
 - to be able to add/remove users.

@@ -52,6 +52,7 @@ This project will enable users to design flexible and robust systems by combinin
 ---
 
 ## 2. Functional and Non-Functional Requirements
+this chapter is based on the user stories available here : [User Stories](userStories.md)
 
 ### 2.1 Functional Requirements
 
