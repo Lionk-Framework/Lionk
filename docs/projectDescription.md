@@ -77,6 +77,13 @@ Inherits all operator needs.
 - Administrators should be able to integrate third-party plugins into the application.
 - Administrators should be able to enable or disable plugins.
 
+**Component management**
+- Administrators should be able to configure the behavior of components.
+- Administrators should be able to view the status of components.
+- Administrators should be able to configure alarms and notifications for components.
+- Administrators should be able to configure the data collection frequency for components.
+- Administrators should be able to add or delete components.
+
 **User Management**
 - Administrators should be able to add or remove users.
 - Administrators should be able to assign roles to users.
