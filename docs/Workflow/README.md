@@ -4,6 +4,13 @@
 
 ![workflow diagram](workflow.svg "workflow diagram").
 
+The workflow is divided into 3 main branches: `main`, `dev`, and `feature branches`.
+The main branch is the production branch, the dev branch is the development branch, and the feature branches are the branches where the features are developed. Anybody can create new feature branches from the dev branch. When the feature is ready, a pull request is created from the feature branch to the dev branch. The CI/CD pipeline will run tests and build the project. If the tests are passed, the PR will be merged to the dev branch after reviews. Once the dev branch is ready to be released, a pull request is created from the dev branch to the main branch. The CI/CD pipeline will run tests and build the project. If the tests are passed, the PR will be merged to the main branch after reviews. 
+
+Once the PR is merged, the CI/CD pipeline will deploy the release. The artifacts deployed depend on the modifications made in the PR. The version is automatically updated by the CI/CD pipeline. The `.csproj` file is updated with the new version number, changelog, and description. The PR title and body must be specific to the type of modification made. If the PR title or body is not correct, the PR will just be closed and re-opened. If the tests are not passed, the PR must be corrected and pushed again until the tests are passed.
+
+When the PR is finally merged into main, new NuGet package versions are created and published to the NuGet repository if needed. If the base app is modified, a new docker image is created and published to the Docker Hub repository. If the documentation is modified, the documentation is updated and published to the GitHub Pages repository. If the workflow is modified, the workflow is updated and published to the GitHub repository.
+
 ## 1. Workflow Steps
 
 ### 1.1. Create your branch 
