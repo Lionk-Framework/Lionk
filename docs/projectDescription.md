@@ -1,26 +1,41 @@
 # .NET Plugin Architecture Project Description
 
-## 1. Objective
+## 1. Problem Statement
+### 👀 Problem
+Managing a diverse set of home and industrial components in an integrated and efficient manner is challenging. Existing solutions often lack flexibility, requiring significant customization and redevelopment when integrating new components. This inflexibility can lead to increased costs and reduced system efficiency.
+
+Additionally, many existing systems are not designed to handle real-time data exchange and monitoring efficiently, leading to delays and potential errors in critical operations. There is also a need for a secure, user-friendly interface that allows administrators and operators to supervise and control the system easily.
+
+### 💭 Proposition
+We propose developing Li/onk Core, a modular, plugin-based platform in .NET, to address these challenges. Our solution will provide:
+
+- **Real-Time Data Handling:** Utilizing SignalR for efficient, real-time communication between components and the user interface.
+- **Extensibility:** A robust plugin architecture allowing easy addition of new components without needing to recompile the core application.
+- **User-Friendly Interface:** A web-based interface using Blazor Server, providing a seamless user experience for both administrators and operators.
+- **Cross-Architecture Support:** The application will be compiled to run on both ARM and x86 architectures with a docker image, ensuring wide compatibility and deployment flexibility.
+This approach will reduce integration time and costs, improve system efficiency, and provide a scalable and secure solution for managing diverse components in home and industrial environments.
+
+## 2. Objective
 The project aims to create a modular architecture in the form of plugins in .NET, allowing the connection of various installation components to form an integrated system.
 
-### 1.1. Project Components
+### 2.1. Project Components
 
-#### 1.1.1. System Base
+#### 2.1.1. System Base
 - **Core Framework**: Provides the basic functionalities and necessary interfaces for loading and managing plugins.
 - **Plugin Management**: Mechanism for discovering, loading, and executing plugins.
 
-#### 1.1.2. Plugins
+#### 2.1.2. Plugins
 - **Installation Components**: Each plugin represents a specific component or several components of an installation (e.g., sensors, clocks, actuators, alarms, etc.).
 - **Standardized Interfaces**: Define common interfaces to ensure interoperability between plugins.
 
-#### 1.1.3. Connectivity and Communication
+#### 2.1.3. Connectivity and Communication
 - **Component Utilization**: Use the communication protocol of the component directly within the plugin (e.g., HomeMatic IP via Python lib, DS18B20 sensors via GPIO, etc.).
 
-#### 1.1.4. Supervision and Control
+#### 2.1.4. Supervision and Control
 - **User Interface (UI)**: Provide an interface for system supervision and control. May include graphical visualizations, dashboards, and diagnostic tools. Each plugin will implement its own user interface that will be represented in the main interface.
 - **Logs and Monitoring**: Logging and monitoring system to track system performance and potential errors, with a monitoring interface available for plugin implementation.
 
-#### 1.1.5. Security
+#### 2.1.5. Security
 - **Authentication and Authorization**: Mechanisms to control access to different components and system functionalities.
 - **Roles**: Definition of roles for users and plugins.
 
@@ -51,10 +66,10 @@ This project will enable users to design flexible and robust systems by combinin
 
 ---
 
-## 2. Functional and Non-Functional Requirements
+## 3. Functional and Non-Functional Requirements
 this chapter is based on the user stories available here : [User Stories](userStories.md)
 
-### 2.1 Functional Requirements
+### 3.1 Functional Requirements
 
 #### User: Operator
 
@@ -102,7 +117,7 @@ Inherits all operator needs.
 **Plugin Deployment**
 - Developers should be able to submit their plugins to the administrator for integration into the system as `dll`.
 
-### 2.2 Non-Functional Requirements
+### 3.2 Non-Functional Requirements
 
 **Modularity, Extensibility, and Maintenance**
 - The system should be designed to facilitate the addition of new components and plugins without requiring major modifications to the existing architecture.
