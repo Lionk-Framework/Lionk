@@ -33,11 +33,13 @@ The project aims to create a modular architecture in the form of plugins in .NET
 
 #### Technologies Used
 
-- **.NET Core/5+**: To ensure performance, reliability, and portability.
+- **.NET Core/8+**: To ensure performance, reliability, and portability.
 - **C#**: Main language for plugin and core framework development.
 - **Entity Framework Core**: For data management if necessary.
 - **ASP.NET Core**: For creating the web user interface.
 - **SignalR**: For real-time communication between components and the user interface.
+
+refers to : [Technical Specification](technicalSpecification.md)
 
 #### Use Cases
 
