@@ -50,6 +50,7 @@ def main():
 
     print('All version types are valid.')
 
+
     # Check if project file exists
     for project in projects:
         if not os.path.isfile(f'{LIB_PATH}/{project}/{project}.csproj'):
