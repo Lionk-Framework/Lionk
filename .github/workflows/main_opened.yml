@@ -24,14 +24,12 @@ jobs:
         id: process_title_body
         shell: bash
         run: |
-          
           if [[ "${{env.PR_TITLE}}" == *"app:"* ]]; then
             python .github/workflows/scripts/app_scripts/process_pr.py
           elif [[ "${{env.PR_TITLE}}" == *"nuget:"* ]]; then
             python .github/workflows/scripts/nuget_scripts/process_pr.py
           elif [[ "${{env.PR_TITLE}}" == *"doc:"* ]]; then
             python .github/workflows/scripts/doc_scripts/verify_files.py
-
           elif [[ "${{env.PR_TITLE}}" == *"wof:"* ]]; then
             python .github/workflows/scripts/wof_scripts/verify_files.py
           else
