@@ -1,0 +1,57 @@
+name: Preprocessing PR data
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check_pr_title:
+    runs-on: ${{ vars.RUNNER_DISTRIBUTION}}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+
+      - name: Process PR title and body
+        id: process_title_body
+        shell: bash
+        run: |
+          if [[ "${{env.PR_TITLE}}" == *"app:"* ]]; then
+            echo "Application workflow started"
+            python .github/workflows/scripts/app_scripts/process_pr.py
+
+          elif [[ "${{env.PR_TITLE}}" == *"nuget:"* ]]; then
+            echo "Nuget workflow started"
+            python .github/workflows/scripts/nuget_scripts/process_pr.py
+
+          elif [[ "${{env.PR_TITLE}}" == *"doc:"* ]]; then
+            echo "Doc workflow started"
+            echo "CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }})" >> $GITHUB_ENV
+            python .github/workflows/scripts/doc_scripts/verify_files.py
+
+          elif [[ "${{env.PR_TITLE}}" == *"wof:"* ]]; then
+            echo "Wof workflow started"
+            echo "CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }})" >> $GITHUB_ENV
+            python .github/workflows/scripts/wof_scripts/verify_files.py
+          else
+            echo "Pre processing not found"
+            exit 1
+          fi
+                      
+        env:
+          APP_PATH: ${{ vars.APP_PATH }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          LIB_PATH: ${{ vars.LIB_PATH }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO_NAME: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+

@@ -5,12 +5,11 @@ import json
 def main():
     PR_TITLE = os.getenv('PR_TITLE')
     PR_BODY = os.getenv('PR_BODY')
-    SRC_PATH = os.getenv('SRC_PATH')
+    LIB_PATH = os.getenv('LIB_PATH')
      
-
-
     print(f'Pull Request title: {PR_TITLE}')
     print(f'Pull Request body: {PR_BODY}')
+    print(f'library path: {LIB_PATH}')
 
     # Initialize arrays
     projects = []
@@ -50,10 +49,11 @@ def main():
 
     print('All version types are valid.')
 
+
     # Check if project file exists
     for project in projects:
-        if not os.path.isfile(f'{SRC_PATH}/{project}/{project}.csproj'):
-            print(f'Project file not found: {SRC_PATH}/{project}/{project}.csproj')
+        if not os.path.isfile(f'{LIB_PATH}/{project}/{project}.csproj'):
+            print(f'Project file not found: {LIB_PATH}/{project}/{project}.csproj')
             exit(1)
 
     print('All project files exist.')
@@ -91,7 +91,7 @@ def main():
 
     # Loop through each project and type to populate oldversions and newversions arrays
     for project, type in zip(projects, types):
-        csproj = f'{SRC_PATH}/{project}/{project}.csproj'
+        csproj = f'{LIB_PATH}/{project}/{project}.csproj'
         with open(csproj, 'r') as f:
             content = f.read()
             # if content contains <Version> tag, extract the version
@@ -119,8 +119,6 @@ def main():
 
     # Save data to artifact
 
-    with open('path.txt', 'w') as f:
-        f.write(SRC_PATH)
     with open('projects.txt', 'w') as f:
         f.write(' '.join(projects))
     with open('types.txt', 'w') as f:

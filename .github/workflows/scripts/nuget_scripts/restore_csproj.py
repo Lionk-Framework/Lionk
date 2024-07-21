@@ -16,13 +16,13 @@ def run_command(command):
 # Get environment variables
 bot_name = os.getenv("BOT_NAME")
 bot_email = os.getenv("BOT_MAIL")
-src_path = os.getenv("SRC_PATH")
+LIB_PATH = os.getenv("LIB_PATH")
 github_head_ref = os.getenv("GITHUB_HEAD_REF")
 
 # print environment variables
 print(f"bot_name: {bot_name}")
 print(f"bot_email: {bot_email}")
-print(f"src_path: {src_path}")
+print(f"LIB_PATH: {LIB_PATH}")
 print(f"github_head_ref: {github_head_ref}")
 
 # Config git
@@ -46,8 +46,8 @@ if len(projects) == 0:
 for project in projects:
 
 # replace project.csproj with project.csproj.bkp    
-    project_file = os.path.join(src_path, project, f"{project}.csproj")
-    backup_file = os.path.join(src_path, project, f"{project}.csproj.bkp")
+    project_file = os.path.join(LIB_PATH, project, f"{project}.csproj")
+    backup_file = os.path.join(LIB_PATH, project, f"{project}.csproj.bkp")
     with open(backup_file, "rb") as backup:
         content = backup.read()
     with open(project_file, "wb") as project:

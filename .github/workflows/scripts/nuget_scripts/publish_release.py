@@ -18,8 +18,6 @@ def read_file_to_list(filename):
     with open(filename, 'r') as file:
         return [line.strip() for line in file.readlines()]
 
-
-src_path = os.getenv('SRC_PATH')
 bot_name = os.getenv('BOT_NAME')
 bot_mail = os.getenv('BOT_MAIL')
 

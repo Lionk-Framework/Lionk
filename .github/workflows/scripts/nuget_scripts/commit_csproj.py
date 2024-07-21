@@ -11,7 +11,7 @@ def run_command(command):
 # Get environment variables
 bot_name = os.getenv("BOT_NAME")
 bot_email = os.getenv("BOT_MAIL")
-src_path = os.getenv("SRC_PATH")
+LIB_PATH = os.getenv("LIB_PATH")
 github_head_ref = os.getenv("GITHUB_HEAD_REF")
 
 # Config git
@@ -27,7 +27,7 @@ with open("projects.txt", "r") as file:
 
 # Add each project file
 for project in projects:
-    project_file = os.path.join(src_path, project, f"{project}.csproj")
+    project_file = os.path.join(LIB_PATH, project, f"{project}.csproj")
     run_command(["git", "add", project_file])
 
 # Commit changes
