@@ -2,10 +2,7 @@ version: '3.8'
 
 services:
   lionkapp:
-    image: lionkapp:latest
-    build:
-      context: .  
-      dockerfile: Dockerfile
+    image: ghcr.io/lionk-framework/lionkapp:latest
     ports:
       - "8088:8080"
     environment:
@@ -16,3 +13,4 @@ services:
 networks:
   lionkapp-network:
     driver: bridge
+    
