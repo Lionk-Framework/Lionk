@@ -12,19 +12,6 @@ jobs:
       with:
         ref: ${{ github.head_ref }}
 
-    - name: Get pull request title and body
-      id: get_pr_info
-      run: |
-        echo "PR_TITLE<<EOF" >> $GITHUB_ENV
-        echo '${{ github.event.pull_request.title }}' >> $GITHUB_ENV
-        echo "EOF" >> $GITHUB_ENV
-        
-        echo "PR_BODY<<EOF" >> $GITHUB_ENV
-        echo '${{ github.event.pull_request.body }}' >> $GITHUB_ENV
-        echo "EOF" >> $GITHUB_ENV
-
-        echo "SRC_PATH=${{ vars.SRC_PATH }}/Lib" >> $GITHUB_ENV
-
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
@@ -34,6 +21,11 @@ jobs:
       id: process_title_body
       run: |
         python .github/workflows/scripts/nuget_scripts/process_pr.py
+      env:
+        LIB_PATH: ${{ vars.LIB_PATH }}
+        PR_TITLE: ${{ github.event.pull_request.title }}
+        PR_BODY: ${{ github.event.pull_request.body }}
+
 
     - name: Upload project data artifact
       uses: actions/upload-artifact@v3
@@ -72,7 +64,7 @@ jobs:
           
       - name: Setup environment variables
         run: |
-          echo "SRC_PATH=${{vars.SRC_PATH}}/Lib" >> $GITHUB_ENV
+          echo "LIB_PATH=${{vars.LIB_PATH}}" >> $GITHUB_ENV
           echo "PROJECTS=$(cat projects.txt)" >> $GITHUB_ENV
           echo "NEW_VERSION=$(cat newversions.txt)" >> $GITHUB_ENV
           echo "CHANGELOG=$(cat changelog.json)" >> $GITHUB_ENV
@@ -96,7 +88,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: csproj-data
-          path: ${{ vars.SRC_PATH }}
+          path: ${{ vars.LIB_PATH }}
       
       - name: Create description artifact
         uses: actions/upload-artifact@v3
@@ -121,7 +113,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: csproj-data
-          path: ${{ vars.SRC_PATH }}
+          path: ${{ vars.LIB_PATH }}
 
       - name: Download project data artifact
         uses: actions/download-artifact@v3
@@ -135,7 +127,7 @@ jobs:
 
       - name: Setup environment variables
         run: |
-          echo "SRC_PATH=${{vars.SRC_PATH}}/Lib" >> $GITHUB_ENV
+          echo "LIB_PATH=${{vars.LIB_PATH}}" >> $GITHUB_ENV
           echo "NUGET_REGISTRY=${{ vars.NUGET_REGISTRY}}" >> $GITHUB_ENV    
           echo "BOT_NAME=${{ vars.BOT_NAME}}" >> $GITHUB_ENV
           echo "BOT_MAIL=${{ vars.BOT_MAIL}}" >> $GITHUB_ENV
@@ -181,7 +173,7 @@ jobs:
 
     - name: Setup environment variables
       run: | 
-        echo "SRC_PATH=${{vars.SRC_PATH}}/Lib" >> $GITHUB_ENV
+        echo "LIB_PATH=${{vars.LIB_PATH}}" >> $GITHUB_ENV
         echo "BOT_NAME=${{ vars.BOT_NAME}}" >> $GITHUB_ENV
         echo "BOT_MAIL=${{ vars.BOT_MAIL}}" >> $GITHUB_ENV
         echo "NUGET_REGISTRY=${{ vars.NUGET_REGISTRY}}" >> $GITHUB_ENV
@@ -203,7 +195,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: csproj-data
-        path: ${{ vars.SRC_PATH }}
+        path: ${{ vars.LIB_PATH }}
 
     - name: On failur - Restore
       if: failure()
