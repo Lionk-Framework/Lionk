@@ -32,8 +32,13 @@ def update_or_add_element(container, name, value):
 # get environment variables
 
 app_path = os.getenv('APP_PATH')
-newversion = os.getenv("NEW_VERSION")
-changelogs = os.getenv("CHANGELOG").split()
+
+with open("changelog.txt", "r") as file:
+    changelogs = file.read().splitlines()
+
+with open("newversion.txt", "r") as file:
+    newversion = file.read()
+
 #get folder of APP_PATH
 app_folder = os.path.dirname(app_path)
 readme_file = os.path.join(app_folder, "README.md")
