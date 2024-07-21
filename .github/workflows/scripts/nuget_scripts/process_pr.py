@@ -5,7 +5,7 @@ import json
 def main():
     PR_TITLE = os.getenv('PR_TITLE')
     PR_BODY = os.getenv('PR_BODY')
-    SRC_PATH = os.getenv('SRC_PATH')
+    LIB_PATH = os.getenv('LIB_PATH')
      
 
 

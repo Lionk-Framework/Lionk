@@ -25,12 +25,19 @@ jobs:
         shell: bash
         run: |
           if [[ "${{env.PR_TITLE}}" == *"app:"* ]]; then
+            echo "Application workflow started"
             python .github/workflows/scripts/app_scripts/process_pr.py
+
           elif [[ "${{env.PR_TITLE}}" == *"nuget:"* ]]; then
+            echo "Nuget workflow started"
             python .github/workflows/scripts/nuget_scripts/process_pr.py
+
           elif [[ "${{env.PR_TITLE}}" == *"doc:"* ]]; then
+            echo "Doc workflow started"
             python .github/workflows/scripts/doc_scripts/verify_files.py
+
           elif [[ "${{env.PR_TITLE}}" == *"wof:"* ]]; then
+            echo "Wof workflow started"
             python .github/workflows/scripts/wof_scripts/verify_files.py
           else
             echo "Pre processing not found"
