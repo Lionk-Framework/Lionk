@@ -3,18 +3,18 @@ import re
 import json
 
 def main():
+
     PR_TITLE = os.getenv('PR_TITLE')
     PR_BODY = os.getenv('PR_BODY')
+
 
     print(f'Pull Request title: {PR_TITLE}')
     print(f'Pull Request body: {PR_BODY}')
 
     #remove nuget: from PR_TITLE
-    type = PR_TITLE.replace('app:', '').lower().strip()
     app_path = os.getenv('APP_PATH')
 
-
-
+    type = PR_TITLE.replace('app:', '').lower().strip()
     print(f'Type: {type}')
 
 
@@ -72,7 +72,8 @@ def main():
     with open('newversion.txt', 'w') as f:
         f.write(newversion)
     with open('changelog.txt', 'w') as f:
-        f.write(changelog)
+        for changelog in changelogs:
+            f.write(f'{changelog}\n')
 
 if __name__ == "__main__":
     main()

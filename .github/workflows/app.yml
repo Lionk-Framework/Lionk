@@ -81,9 +81,7 @@ jobs:
     - name: Set up environment
       run: |
         echo "APP_PATH=${{ vars.APP_PATH }}" >> $GITHUB_ENV
-        echo "NEW_VERSION=$(cat newversion.txt)" >> $GITHUB_ENV
-        echo "CHANGELOG=$(cat changelog.txt)" >> $GITHUB_ENV
-      
+     
 
     - name: Backup csproj
       run: python .github/workflows/scripts/app_scripts/backup_csproj.py
