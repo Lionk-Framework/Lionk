@@ -14,7 +14,7 @@ jobs:
 
       - name: Check PR state and source branch
         run: |
-          if [ "${{ github.event.pull_request.merged }}" == "true" ] && [ "${{ github.event.pull_request.base.ref }}" == "dev" ]; then
+          if [ "${{ github.event.pull_request.merged }}" == "true" ] && [ "${{ github.event.pull_request.base.ref }}" == "wof-test" ]; then
             echo "PR is merged and comes from the dev branch"
           else
             echo "PR must be merged and come from the dev branch"
