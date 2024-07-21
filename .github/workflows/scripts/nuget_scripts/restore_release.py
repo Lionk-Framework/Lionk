@@ -7,7 +7,6 @@ def read_file_to_list(filename):
         return [line.strip() for line in file.readlines()]
 
 
-src_path = os.getenv('SRC_PATH')
 github_token = os.getenv('GITHUB_TOKEN')
 
 projects = read_file_to_list('projects.txt')

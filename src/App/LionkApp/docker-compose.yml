@@ -4,7 +4,7 @@ services:
   lionkapp:
     image: lionkapp:latest
     build:
-      context: .
+      context: .  
       dockerfile: Dockerfile
     ports:
       - "8088:8080"
