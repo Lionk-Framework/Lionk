@@ -38,7 +38,7 @@ changelogs = json.loads(os.getenv("CHANGELOG"))
 
 # Parcourir les projets et mettre à jour les fichiers .csproj
 for project in projects:
-    project_path = os.path.join(src_path, project)
+    project_path = os.path.join(LIB_PATH, project)
     csproj_file = os.path.join(project_path, f"{project}.csproj")
     new_version = newversions[projects.index(project)]
     readme_file = os.path.join(project_path, "README.md")
