@@ -7,10 +7,9 @@ def main():
     PR_BODY = os.getenv('PR_BODY')
     LIB_PATH = os.getenv('LIB_PATH')
      
-
-
     print(f'Pull Request title: {PR_TITLE}')
     print(f'Pull Request body: {PR_BODY}')
+    print(f'library path: {LIB_PATH}')
 
     # Initialize arrays
     projects = []
