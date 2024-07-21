@@ -41,7 +41,7 @@ jobs:
             python .github/workflows/scripts/wof_scripts/verify_files.py
           else
             echo "Pre processing not found"
-            exit(1)
+            exit 1
           fi
                       
         env:
