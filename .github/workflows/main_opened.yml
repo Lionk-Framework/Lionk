@@ -3,7 +3,7 @@ name: Preprocessing PR data
 on:
   pull_request:
     branches:
-      - wof-test
+      - main
     types: [opened, synchronize, reopened]
 
 jobs:
