@@ -1,0 +1,16 @@
+﻿@using Microsoft.Fast.Components.FluentUI
+
+<FluentCard>
+    <h2>@Title</h2>
+    <FluentButton Appearance="@Appearance.Accent" @onclick="OnButtonClick">Click Me</FluentButton>
+</FluentCard>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = "Hello World!";
+
+    private void OnButtonClick()
+    {
+        Console.WriteLine("Button clicked!");
+    }
+}
