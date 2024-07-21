@@ -33,7 +33,8 @@ jobs:
           elif [[ "${{env.PR_TITLE}}" == *"wof:"* ]]; then
             python .github/workflows/scripts/wof_scripts/verify_files.py
           else
-            echo "Nothing to pre-process"
+            echo "Pre-processing not found"
+            exit(1)
           fi
                       
         env:
