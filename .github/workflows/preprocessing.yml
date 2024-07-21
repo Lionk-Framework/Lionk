@@ -22,7 +22,7 @@ jobs:
 
       - name: Process PR title and body
         id: process_title_body
-      - shell: bash
+        shell: bash
         run: |
           if [[ "${{ github.event.pull_request.title }}" == *"app:"* ]]; then
             echo "app"
