@@ -34,10 +34,12 @@ jobs:
 
           elif [[ "${{env.PR_TITLE}}" == *"doc:"* ]]; then
             echo "Doc workflow started"
+            echo "CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }})" >> $GITHUB_ENV
             python .github/workflows/scripts/doc_scripts/verify_files.py
 
           elif [[ "${{env.PR_TITLE}}" == *"wof:"* ]]; then
             echo "Wof workflow started"
+            echo "CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }})" >> $GITHUB_ENV
             python .github/workflows/scripts/wof_scripts/verify_files.py
           else
             echo "Pre processing not found"
