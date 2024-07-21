@@ -48,4 +48,5 @@ jobs:
           APP_PATH: ${{ vars.APP_PATH }}
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}
+          LIB_PATH: ${{ vars.LIB_PATH }}
 
