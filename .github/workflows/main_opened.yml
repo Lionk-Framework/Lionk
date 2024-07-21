@@ -3,7 +3,7 @@ name: Preprocessing PR data
 on:
   pull_request:
     branches:
-      - main
+      - wof-test
     types: [opened, synchronize, reopened]
 
 jobs:
@@ -24,13 +24,22 @@ jobs:
         id: process_title_body
         shell: bash
         run: |
-          if [[ "${{ github.event.pull_request.title }}" == *"app:"* ]]; then
-            echo "app"
-          elif [[ "${{ github.event.pull_request.title }}" == *"nuget:"* ]]; then
-            echo "nuget"
+          
+          if [[ "${{env.PR_TITLE}}" == *"app:"* ]]; then
+            python .github/workflows/scripts/app_scripts/process_pr.py
+          elif [[ "${{env.PR_TITLE}}" == *"nuget:"* ]]; then
+            python .github/workflows/scripts/nuget_scripts/process_pr.py
+          elif [[ "${{env.PR_TITLE}}" == *"doc:"* ]]; then
+            python .github/workflows/scripts/doc_scripts/verify_files.py
+
+          elif [[ "${{env.PR_TITLE}}" == *"wof:"* ]]; then
+            python .github/workflows/scripts/wof_scripts/verify_files.py
           else
             echo "Nothing to pre-process"
-            
+          fi
+                      
         env:
+          APP_PATH: ${{ vars.APP_PATH }}
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}
+

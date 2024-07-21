@@ -31,7 +31,7 @@ def update_or_add_element(container, name, value):
 
 
 # get environment variables
-src_path = os.getenv("SRC_PATH")
+LIB_PATH = os.getenv("LIB_PATH")
 projects = os.getenv("PROJECTS").split()
 newversions = os.getenv("NEW_VERSION").split()
 changelogs = json.loads(os.getenv("CHANGELOG"))
