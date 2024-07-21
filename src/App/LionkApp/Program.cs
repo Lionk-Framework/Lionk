@@ -10,7 +10,6 @@ StringBuilder sb = new();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-builder.Services.AddBlazorBootstrap();
 
 WebApplication app = builder.Build();
 
