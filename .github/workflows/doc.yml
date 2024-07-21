@@ -23,7 +23,6 @@ jobs:
         echo '${{ github.event.pull_request.body }}' >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
 
-
     - name: Check if only accepted files are changed
       id: verifiy_files
       run: |
