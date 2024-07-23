@@ -1,5 +1,6 @@
 ﻿@page "/floatingButton"
 @rendermode InteractiveServer
+@inject IDialogService DialogService
 @using MudBlazor
 
 <style>
@@ -11,4 +12,13 @@
     }
 </style>
 
-<MudFab Class="fixed-bottom-right" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Add" Size="Size.Large" />
+<MudFab @onclick="OpenDialogAsync" Class="fixed-bottom-right" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Add" Size="Size.Large" />
+
+@code {
+    private Task OpenDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true };
+
+        return DialogService.ShowAsync<PluginSelector>("Styling Example Dialog", options);
+    }
+}
