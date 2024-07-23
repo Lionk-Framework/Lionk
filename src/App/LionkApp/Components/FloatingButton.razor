@@ -1,42 +1,14 @@
 ﻿@page "/floatingButton"
 @rendermode InteractiveServer
-
-<a href="#" class="float" @onclick="OnButtonClick">
-    <span class="my-float">+</span>
-</a>
+@using MudBlazor
 
 <style>
-    .float {
+    .fixed-bottom-right {
         position: fixed;
-        width: 60px;
-        height: 60px;
-        bottom: 40px;
-        right: 40px;
-        background-color: #1b2a4e;
-        color: #FFF;
-        border-radius: 50px;
-        text-align: center;
-        box-shadow: 2px 2px 3px #999;
-        font-size: 24px;
-        line-height: 60px;
-        transition: background-color 0.3s;
-    }
-
-        .float:hover {
-            background-color: #3f2052;
-            color: #FFF;
-        }
-
-    .my-float {
-        margin-top: 0;
-        display: inline-block;
-        vertical-align: middle;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
     }
 </style>
 
-@code {
-    private void OnButtonClick()
-    {
-        Console.WriteLine("Bouton flottant cliqué !");
-    }
-}
+<MudFab Class="fixed-bottom-right" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Add" Size="Size.Large" />

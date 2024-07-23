@@ -2,6 +2,7 @@
 
 using System.Text;
 using LionkApp.Components;
+using MudBlazor.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,7 @@ StringBuilder sb = new();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddMudServices();
 
 WebApplication app = builder.Build();
 
