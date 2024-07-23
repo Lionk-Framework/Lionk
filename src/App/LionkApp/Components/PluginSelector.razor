@@ -1,29 +1,16 @@
-﻿<MudDialog Class="blur dialog-background custom-dialog-width" TitleClass="blur dialog-background-title" ContentClass="dialog-background-surface py-10" ActionsClass="dialog-background-surface">
-    <DialogContent>
-        Dialog Content
-    </DialogContent>
-    <DialogActions>
-        <MudButton Color="Color.Error" OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
-    </DialogActions>
-</MudDialog>
-
-<style>
+﻿<style>
     .blur {
         backdrop-filter: blur(10px);
     }
 
-    .dialog-background {
-        background-color: transparent;
-    }
 
     .dialog-background-title {
-        background: rgb(from var(--mud-palette-info-lighten) r g b / 50%);
+        background: rgba(var(--mud-palette-info-lighten-rgb), 0.5);
         color: var(--mud-palette-white);
     }
 
     .dialog-background-surface {
-        background: rgb(from var(--mud-palette-surface) r g b / 75%);
+        background: rgba(var(--mud-palette-surface-rgb), 0.75);
     }
 
     .custom-dialog-width {
@@ -32,7 +19,25 @@
     }
 </style>
 
+<MudDialog Class="blur dialog-background custom-dialog-width" TitleClass="blur dialog-background-title" ContentClass="dialog-background-surface py-10" ActionsClass="dialog-background-surface">
+    <DialogContent>
+        <MudForm>
+            <MudText Typo="Typo.h6" Align="Align.Center">Select plugin</MudText>
+            <MudSelect @bind-Value="SelectedPlugin" Label="Select plugin" Variant="Variant.Outlined" Class="my-4">
+            </MudSelect>
+            <MudTextField @bind-Value="PluginName" Label="Plugin name" Variant="Variant.Outlined" Placeholder="My Clock" Class="my-4" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Error" OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Add</MudButton>
+    </DialogActions>
+</MudDialog>
+
 @code {
+    private string SelectedPlugin { get; set; } = "Clock.dll";
+    private string PluginName { get; set; } = "My Clock";
+
     [CascadingParameter]
     private MudDialogInstance? MudDialog { get; set; }
 
