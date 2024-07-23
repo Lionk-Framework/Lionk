@@ -8,13 +8,16 @@ on:
 
 jobs:
   check_state:
+    if: github.event.pull_request.merged == true
     runs-on: ${{vars.RUNNER_DISTRIBUTION}}
     steps:
+
       - name: Check PR state and source branch
         run: |
-          if [ "${{ github.event.pull_request.merged }}" == "true" ] && [ "${{ github.event.pull_request.base.ref }}" == "dev" ]; then
+          if [ "${{ github.event.pull_request.merged }}" == "true" ] && [ "${{ github.event.pull_request.base.ref }}" == "main" ]; then
             echo "PR is merged and comes from the dev branch"
           else
+            echo "PR must be merged and come from the dev branch"
             exit 1
           fi
 
@@ -39,12 +42,28 @@ jobs:
     permissions:
       contents: write
     if: contains(github.event.pull_request.title, 'doc:')
-    uses: ./.github/workflows/doc.yml
-    secrets: inherit
+    runs-on: ${{vars.RUNNER_DISTRIBUTION}}
+    steps:
+
+      - name: Display info
+        run: |
+          echo "Doc merged"
+
+  Wof_Workflow:
+    needs: check_state
+    permissions:
+      contents: write
+    if: contains(github.event.pull_request.title, 'wof:')
+    runs-on: ${{vars.RUNNER_DISTRIBUTION}}
+    steps:
+
+      - name: Display info
+        run: |
+          echo "Wof merged"
 
   default_workflow:
     needs: check_state
-    if: ${{ !(contains(github.event.pull_request.title, 'app:') || contains(github.event.pull_request.title, 'nuget:') || contains(github.event.pull_request.title, 'doc:'))}}
+    if: ${{ !(contains(github.event.pull_request.title, 'app:') || contains(github.event.pull_request.title, 'nuget:') || contains(github.event.pull_request.title, 'doc:') || contains(github.event.pull_request.title, 'wof:'))}}
     runs-on: ubuntu-latest
     steps:
      - name: Error message

@@ -22,11 +22,11 @@ def read_file_to_list(filename):
         sys.exit(1)
 
 
-src_path = os.getenv('SRC_PATH')
+LIB_PATH = os.getenv('LIB_PATH')
 nuget_registry = os.getenv('NUGET_REGISTRY')
 gh_token = os.getenv('GITHUB_TOKEN')
 
-print(f"SRC_PATH: {src_path}")
+print(f"LIB_PATH: {LIB_PATH}")
 print(f"NUGET_REGISTRY: {nuget_registry}")
 print(f"GITHUB_TOKEN: {'******' if gh_token else None}")
 
@@ -39,7 +39,7 @@ if len(projects) == 0:
 
 for i, project in enumerate(projects):
     newversion = newversions[i]
-    csproj = f"{src_path}/{project}/{project}.csproj"
+    csproj = f"{LIB_PATH}/{project}/{project}.csproj"
 
     print(f"Publishing {csproj} as version {newversion}")
 

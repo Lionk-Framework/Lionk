@@ -5,7 +5,7 @@
    - **Creating the Product Backlog**: Compile all necessary features, tasks, and improvements into a product backlog. Use user stories to describe features from the end-users' perspective.
 
 ### 2. **Iterative Development with SCRUM**
-   - **Sprints**: Divide the development process into 1- to 2-week sprints. Each sprint begins with a planning meeting where the team selects tasks from the backlog to complete during the sprint.
+   - **Sprints**: Divide the development process into 1- to 2-week sprints. Each sprint begins with a planning meeting where the team selects tasks from the backlog to complete during the sprint. As an example, the first sprint is planned using github project, issues and Kanban. It's available here : [Project](https://github.com/orgs/Lionk-Framework/projects/1)
    - **Continuous Development and Testing**: Apply pair programming and continuous integration to maintain code quality and respond quickly to changes. Encourage test-first programming to ensure each feature is properly tested before integration.
    - **Sprint Review and Retrospective**: At the end of each sprint, hold a sprint review with stakeholders to demonstrate developed features and receive direct feedback. Follow this with a sprint retrospective to identify process improvements.
 
