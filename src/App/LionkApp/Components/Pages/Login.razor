@@ -21,13 +21,11 @@
 
     [Inject] private NavigationManager? Navigation { get; set; }
 
-    private async Task HandleValidSubmit()
+    private void HandleValidSubmit()
     {
-        await Task.Delay(1);
-
         if (Email == "toto@gmail.com" && Password == "toto")
         {
-            Navigation?.NavigateTo("/");
+            Navigation?.NavigateTo("/dashboard");
         }
         else
         {
