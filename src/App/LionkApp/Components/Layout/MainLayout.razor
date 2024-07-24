@@ -24,7 +24,7 @@
                     <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Primary" />
                 </MudItem>
                 <MudItem>
-                    <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Primary" OnClick="Logout"/>
+                    <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Primary"/>
                 </MudItem>
             </MudGrid>
         </MudContainer>
@@ -111,13 +111,4 @@
         true => Icons.Material.Rounded.AutoMode,
         false => Icons.Material.Outlined.DarkMode,
     };
-
-    [Inject] NavigationManager? NavigationManager { get; set; }
-
-    private void Logout()
-    {
-        NavigationManager?.NavigateTo("/login");
-    }
 }
-
-
