@@ -18,6 +18,16 @@
             <MudNavLink Href="/notifications" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Notifications">Notifications</MudNavLink>
             <MudNavLink Href="/plugins" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AddBox">Plugins</MudNavLink>
         </MudNavMenu>
+        <MudContainer Class="mt-auto pa-2">
+            <MudGrid Justify="Justify.SpaceBetween">
+                <MudItem>
+                    <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Primary" />
+                </MudItem>
+                <MudItem>
+                    <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Primary" OnClick="Logout"/>
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
     </MudDrawer>
     <MudMainContent Class="mt-16 pa-4">
         @Body
@@ -46,7 +56,6 @@
                 LayoutProperties = new LayoutProperties()
             };
     }
-
 
     private void DrawerToggle()
     {
@@ -102,6 +111,13 @@
         true => Icons.Material.Rounded.AutoMode,
         false => Icons.Material.Outlined.DarkMode,
     };
+
+    [Inject] NavigationManager? NavigationManager { get; set; }
+
+    private void Logout()
+    {
+        NavigationManager?.NavigateTo("/login");
+    }
 }
 
 
