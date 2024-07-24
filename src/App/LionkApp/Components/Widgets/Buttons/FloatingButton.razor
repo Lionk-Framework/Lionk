@@ -1,24 +1,13 @@
 ﻿@rendermode InteractiveServer
 @inject IDialogService DialogService
 @using LionkApp.Components.Widgets.Dialogs
-@using MudBlazor
 
-<style>
-    .fixed-bottom-right {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 1000;
-    }
-</style>
-
-<MudFab @onclick="OpenDialogAsync" Class="fixed-bottom-right" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Add" Size="Size.Large" />
+<MudFab @onclick="OpenDialogAsync" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Add" Size="Size.Large" Style="position: fixed; bottom: 20px; right: 20px;" />
 
 @code {
     private Task OpenDialogAsync()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true };
-
         return DialogService.ShowAsync<PluginSelector>("Plugin selection", options);
     }
 }
