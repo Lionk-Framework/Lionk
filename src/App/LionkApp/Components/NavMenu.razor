@@ -1,0 +1,29 @@
+﻿<MudNavMenu>
+    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Dashboard</MudNavLink>
+    <MudNavLink Href="/notifications" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Notifications">Notifications</MudNavLink>
+    <MudNavLink Href="/plugins" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AddBox">Plugins</MudNavLink>
+</MudNavMenu>
+<MudContainer Class="mt-auto pa-2">
+    <MudGrid Justify="Justify.SpaceBetween">
+        <MudItem>
+            <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Primary" OnClick="OnProfilePressed" />
+        </MudItem>
+        <MudItem>
+            <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Primary" OnClick="OnLogoutPressed" />
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    [Inject] NavigationManager? NavigationManager { get; set; }
+
+    private void OnProfilePressed()
+    {
+        NavigationManager?.NavigateTo("/profile");
+    }
+
+    private void OnLogoutPressed()
+    {
+        NavigationManager?.NavigateTo("/login");
+    }
+}

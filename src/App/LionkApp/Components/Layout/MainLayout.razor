@@ -13,21 +13,7 @@
         <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <MudNavMenu>
-            <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Dashboard</MudNavLink>
-            <MudNavLink Href="/notifications" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Notifications">Notifications</MudNavLink>
-            <MudNavLink Href="/plugins" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AddBox">Plugins</MudNavLink>
-        </MudNavMenu>
-        <MudContainer Class="mt-auto pa-2">
-            <MudGrid Justify="Justify.SpaceBetween">
-                <MudItem>
-                    <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Primary" />
-                </MudItem>
-                <MudItem>
-                    <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Primary"/>
-                </MudItem>
-            </MudGrid>
-        </MudContainer>
+        <NavMenu />
     </MudDrawer>
     <MudMainContent Class="mt-16 pa-4">
         @Body
