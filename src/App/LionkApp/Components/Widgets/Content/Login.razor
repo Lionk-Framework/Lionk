@@ -1,0 +1,28 @@
+﻿<MudPaper Class="pa-4 flex-column" MaxWidth="680px">
+    <MudTextField @bind-Value="Email" Label="Email" Required="true" InputType="InputType.Email" Class="mb-2" />
+    <MudTextField @bind-Value="Password" Label="Password" Required="true" InputType="InputType.Password" Class="mb-2" />
+    <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="HandleValidSubmit">Login</MudButton>
+    </div>
+    <MudText Color="Color.Error" Typo="Typo.caption" Align="Align.Left">@ErrorMessage</MudText>
+</MudPaper>
+
+@code {
+    public string? Email { get; set; }
+    public string? Password { get; set; }
+    public string? ErrorMessage { get; set; }
+
+    [Inject] private NavigationManager? Navigation { get; set; }
+
+    private void HandleValidSubmit()
+    {
+        if (Email == "toto" && Password == "toto")
+        {
+            Navigation?.NavigateTo("/");
+        }
+        else
+        {
+            ErrorMessage = "Wrong mail or password";
+        }
+    }
+}
