@@ -1,12 +1,12 @@
 ﻿@page "/profile"
 
 <MudContainer Class="profile-container">
-    <MudText Typo="Typo.h4" Class="profile-title">User Profile</MudText>
+    <MudText Typo="Typo.h4" Class="profile-title mb-4">User Profile</MudText>
     <MudForm @ref="Form" Class="profile-form">
-        <MudTextField @bind-Value="FirstName" Label="First name" Variant="Variant.Outlined" Class="profile-field" />
-        <MudTextField @bind-Value="LastName" Label="Last name" Variant="Variant.Outlined" Class="profile-field" />
-        <MudTextField @bind-Value="Email" Label="Email" Variant="Variant.Outlined" Class="profile-field" />
-        <MudButton OnClick="SaveProfile" Color="Color.Primary" Variant="Variant.Filled" Class="profile-button">Save</MudButton>
+        <MudTextField @bind-Value="FirstName" Label="First name" Variant="Variant.Outlined" Class="profile-field mb-4" />
+        <MudTextField @bind-Value="LastName" Label="Last name" Variant="Variant.Outlined" Class="profile-field mb-4" />
+        <MudTextField @bind-Value="Email" Label="Email" Variant="Variant.Outlined" Class="profile-field mb-4" />
+        <MudButton OnClick="SaveProfile" Color="Color.Primary" Variant="Variant.Filled" Class="profile-button mt-4">Save</MudButton>
     </MudForm>
 </MudContainer>
 
