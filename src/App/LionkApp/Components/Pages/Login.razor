@@ -1,4 +1,6 @@
-﻿@page "/login"
+﻿@using LionkApp.Components.Layout
+@layout SimpleLayout
+@page "/login"
 
 <MudPaper Class="pa-4 mx-auto" MaxWidth="400px">
     <MudText Typo="Typo.h6">Connexion</MudText>
@@ -23,7 +25,7 @@
     {
         if (Email == "toto@gmail.com" && Password == "toto")
         {
-            Navigation?.NavigateTo("/");
+            Navigation?.NavigateTo("");
         }
         else
         {
