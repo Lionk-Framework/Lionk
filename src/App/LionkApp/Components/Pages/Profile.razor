@@ -1,6 +1,6 @@
 ﻿@page "/profile"
 
-<MudContainer Class="profile-container">
+<MudContainer MaxWidth="MaxWidth.Small">
     <MudText Typo="Typo.h4" Class="profile-title mb-4">User Profile</MudText>
     <MudForm @ref="Form" Class="profile-form">
         <MudTextField @bind-Value="FirstName" Label="First name" Variant="Variant.Outlined" Class="profile-field mb-4" />
