@@ -1,28 +1,19 @@
-﻿<MudContainer MaxWidth="MaxWidth.Small" Style="margin-top: 40px;">
+﻿@using LionkApp.Components.Model;
+
+<MudContainer MaxWidth="MaxWidth.Small" Style="margin-top: 40px;">
     <h3 style="text-decoration: underline;">@SwitchListTitle</h3>
     <MudContainer MaxWidth="MaxWidth.Small" Style="border: 1px solid var(--mud-palette-primary); padding: 10px; border-radius: 5px; margin-top: 10px;">
-        <MudSwitch @bind-Value="Label_Switch1" Label="@Switch1" LabelPosition="LabelPosition.Start" Color="Color.Success" />
-        <MudSwitch @bind-Value="Label_Switch2" Label="@Switch2" LabelPosition="LabelPosition.Start" Color="Color.Success" />
-        <MudSwitch @bind-Value="Label_Switch3" Label="@Switch3" LabelPosition="LabelPosition.Start" Color="Color.Success" />
+        @foreach (var switchModel in SwitchModels)
+        {
+            <MudSwitch @bind-Value="switchModel.IsEnabled" Label="@switchModel.Label" LabelPosition="LabelPosition.Start" Color="Color.Success" />
+        }
     </MudContainer>
 </MudContainer>
 
 @code {
-    // TODO - Implement dynamic list
-
     [Parameter]
     public string? SwitchListTitle { get; set; }
 
     [Parameter]
-    public string? Switch1 { get; set; }
-
-    [Parameter]
-    public string? Switch2 { get; set; }
-
-    [Parameter]
-    public string? Switch3 { get; set; }
-
-    public bool Label_Switch1 { get; set; } = true;
-    public bool Label_Switch2 { get; set; } = true;
-    public bool Label_Switch3 { get; set; } = true;
+    public List<SwitchModel> SwitchModels { get; set; } = new List<SwitchModel>();
 }
