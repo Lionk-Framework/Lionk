@@ -1,9 +1,9 @@
 ﻿<MudContainer MaxWidth="MaxWidth.Small" Style="margin-top: 40px;">
-    <h3 style="text-decoration: underline;">@ChannelListTitle</h3>
+    <h3 style="text-decoration: underline;">@SwitchListTitle</h3>
     <MudContainer MaxWidth="MaxWidth.Small" Style="border: 1px solid var(--mud-palette-primary); padding: 10px; border-radius: 5px; margin-top: 10px;">
-        <MudSwitch @bind-Value="Label_Switch1" Label="@DiscordLabel" LabelPosition="LabelPosition.Start" Color="Color.Success" />
-        <MudSwitch @bind-Value="Label_Switch2" Label="@TelegramLabel" LabelPosition="LabelPosition.Start" Color="Color.Success" />
-        <MudSwitch @bind-Value="Label_Switch3" Label="@PushLabel" LabelPosition="LabelPosition.Start" Color="Color.Success" />
+        <MudSwitch @bind-Value="Label_Switch1" Label="@Switch1" LabelPosition="LabelPosition.Start" Color="Color.Success" />
+        <MudSwitch @bind-Value="Label_Switch2" Label="@Switch2" LabelPosition="LabelPosition.Start" Color="Color.Success" />
+        <MudSwitch @bind-Value="Label_Switch3" Label="@Switch3" LabelPosition="LabelPosition.Start" Color="Color.Success" />
     </MudContainer>
 </MudContainer>
 
@@ -11,16 +11,16 @@
     // TODO - Implement dynamic list
 
     [Parameter]
-    public string? ChannelListTitle { get; set; }
+    public string? SwitchListTitle { get; set; }
 
     [Parameter]
-    public string? DiscordLabel { get; set; }
+    public string? Switch1 { get; set; }
 
     [Parameter]
-    public string? TelegramLabel { get; set; }
+    public string? Switch2 { get; set; }
 
     [Parameter]
-    public string? PushLabel { get; set; }
+    public string? Switch3 { get; set; }
 
     public bool Label_Switch1 { get; set; } = true;
     public bool Label_Switch2 { get; set; } = true;
