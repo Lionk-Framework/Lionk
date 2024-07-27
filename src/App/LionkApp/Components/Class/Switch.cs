@@ -3,9 +3,9 @@
 namespace LionkApp.Components.Model;
 
 /// <summary>
-/// Model class for a switch component.
+///  Class for a switch component.
 /// </summary>
-public class SwitchModel
+public class Switch
 {
     /// <summary>
     /// Gets or sets the switch label.
