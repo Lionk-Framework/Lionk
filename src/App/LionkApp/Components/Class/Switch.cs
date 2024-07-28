@@ -1,6 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
-namespace LionkApp.Components.Model;
+namespace LionkApp.Components.Class;
 
 /// <summary>
 ///  Class for a switch component.
