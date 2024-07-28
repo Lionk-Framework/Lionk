@@ -28,15 +28,22 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
 
+    - name: Archive build output
+      uses: actions/upload-artifact@v2
+      with:
+        name: build-output
+        path: ${{ vars.SLN_PATH }}  
+
   test:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION}}
-    defaults:
-      run:
-        working-directory: ${{ vars.SLN_PATH }}
     needs: build
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+
+    - name: get build output
+      uses: actions/download-artifact@v2
+      with:
+        name: build-output  
 
     - name: Execute tests 
       run: dotnet test
