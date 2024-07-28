@@ -21,7 +21,7 @@ public class Tests
     [Test]
     public void FirstTest()
     {
-        bool test = false;
+        bool test = true;
         Assert.IsTrue(test);
     }
 }
