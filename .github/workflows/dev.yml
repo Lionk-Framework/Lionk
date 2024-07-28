@@ -46,5 +46,4 @@ jobs:
         name: build-output  
 
     - name: Execute tests 
-      run: dotnet test
-
+      run: dotnet test --no-build --no-restore
