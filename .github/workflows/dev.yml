@@ -39,5 +39,5 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Execute tests 
-      run: dotnet test --no-restore
+      run: dotnet test
 
