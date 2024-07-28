@@ -4,15 +4,18 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>0.2.0</Version>
+    <Version>0.3.0</Version>
     <Description>
 
 ## Change Log
-- updating title
+- Deleting text
 
 # Lionk App
 
 This is the Lionk App README file.
 </Description>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="MudBlazor" Version="7.4.0" />
+  </ItemGroup>
 </Project>
