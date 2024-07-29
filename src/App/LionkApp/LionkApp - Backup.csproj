@@ -15,4 +15,7 @@
 This is the Lionk App README file.
 </Description>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="MudBlazor" Version="7.4.0" />
+  </ItemGroup>
 </Project>
