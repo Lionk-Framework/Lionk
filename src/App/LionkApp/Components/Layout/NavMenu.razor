@@ -1,8 +1,8 @@
 ﻿<MudNavMenu>
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Dashboard</MudNavLink>
     <MudNavGroup Title="Notifications" Icon="@Icons.Material.Filled.Notifications" @bind-Expanded="Expanded">
-        <MudNavLink Href="/active">Active</MudNavLink>
-        <MudNavLink Href="/history">History</MudNavLink>
+        <MudNavLink Href="/active" Match="NavLinkMatch.Prefix">Active</MudNavLink>
+        <MudNavLink Href="/history" Match="NavLinkMatch.Prefix">History</MudNavLink>
         <MudNavLink Href="/configuration" Match="NavLinkMatch.Prefix">Configuration</MudNavLink>
     </MudNavGroup>
     <MudNavLink Href="/plugins" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AddBox">Plugins</MudNavLink>
