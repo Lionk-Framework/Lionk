@@ -14,7 +14,25 @@
         <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <NavMenu />
+        <MudNavMenu>
+            <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Dashboard</MudNavLink>
+            <MudNavGroup Title="Notifications" Icon="@Icons.Material.Filled.Notifications" @bind-Expanded="_isNotifcationExpanded">
+                <MudNavLink Href="/active" Match="NavLinkMatch.Prefix">Active</MudNavLink>
+                <MudNavLink Href="/history" Match="NavLinkMatch.Prefix">History</MudNavLink>
+                <MudNavLink Href="/configuration" Match="NavLinkMatch.Prefix">Configuration</MudNavLink>
+            </MudNavGroup>
+            <MudNavLink Href="/plugins" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AddBox">Plugins</MudNavLink>
+        </MudNavMenu>
+        <MudContainer Class="mt-auto pa-2">
+            <MudGrid Justify="Justify.SpaceBetween">
+                <MudItem>
+                    <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Primary" OnClick="OnProfilePressed" />
+                </MudItem>
+                <MudItem>
+                    <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Primary" OnClick="OnLogoutPressed" />
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
     </MudDrawer>
     <MudMainContent Class="mt-16 pa-4">
         @Body
@@ -29,6 +47,7 @@
 
 @code {
     private bool _drawerOpen = true;
+    private bool _isNotifcationExpanded = true;
     private bool _isDarkMode = true;
     private MudTheme? _theme = null;
 
@@ -47,6 +66,22 @@
     private void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
+    }
+
+    private void OnNotificationPressed()
+    {
+        NavManager.NavigateTo("/active");
+        _isNotifcationExpanded = true;
+    }
+
+    private void OnProfilePressed()
+    {
+        NavManager.NavigateTo("/profile");
+    }
+
+    private void OnLogoutPressed()
+    {
+        NavManager.NavigateTo("/auth");
     }
 
     private void DarkModeToggle()
@@ -98,9 +133,4 @@
         true => Icons.Material.Rounded.LightMode,
         false => Icons.Material.Outlined.DarkMode,
     };
-
-    private void OnNotificationPressed()
-    {
-        NavManager.NavigateTo("/active");
-    }
 }
