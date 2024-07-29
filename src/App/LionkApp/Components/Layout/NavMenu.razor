@@ -1,4 +1,6 @@
-﻿<MudNavMenu>
+﻿@inject NavigationManager NavManager
+
+<MudNavMenu>
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Dashboard</MudNavLink>
     <MudNavGroup Title="Notifications" Icon="@Icons.Material.Filled.Notifications" @bind-Expanded="Expanded">
         <MudNavLink Href="/active" Match="NavLinkMatch.Prefix">Active</MudNavLink>
@@ -19,17 +21,15 @@
 </MudContainer>
 
 @code {
-    [Inject] NavigationManager? NavigationManager { get; set; }
-
     bool Expanded = true;
 
     private void OnProfilePressed()
     {
-        NavigationManager?.NavigateTo("/profile");
+        NavManager.NavigateTo("/profile");
     }
 
     private void OnLogoutPressed()
     {
-        NavigationManager?.NavigateTo("/auth");
+        NavManager.NavigateTo("/auth");
     }
 }

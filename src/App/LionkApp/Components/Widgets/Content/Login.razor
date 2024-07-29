@@ -1,4 +1,6 @@
-﻿<MudGrid>
+﻿@inject NavigationManager NavManager
+
+<MudGrid>
     <MudItem xs="12" sm="12">
         <MudPaper Class="pa-4">
             <MudTextField @bind-Value="Email" Label="Email" Required="true" InputType="InputType.Email" Class="mb-2" />
@@ -16,13 +18,11 @@
     public string? Password { get; set; }
     public string? ErrorMessage { get; set; }
 
-    [Inject] private NavigationManager? Navigation { get; set; }
-
     private void HandleValidSubmit()
     {
         if (Email == "toto" && Password == "toto")
         {
-            Navigation?.NavigateTo("/");
+            NavManager.NavigateTo("/");
         }
         else
         {

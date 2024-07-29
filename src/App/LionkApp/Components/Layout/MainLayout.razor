@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager NavManager
 
 <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
 <MudPopoverProvider />
@@ -30,7 +31,6 @@
     private bool _drawerOpen = true;
     private bool _isDarkMode = true;
     private MudTheme? _theme = null;
-    [Inject] NavigationManager? NavigationManager { get; set; }
 
     protected override void OnInitialized()
     {
@@ -101,6 +101,6 @@
 
     private void OnNotificationPressed()
     {
-        NavigationManager?.NavigateTo("/active");
+        NavManager.NavigateTo("/active");
     }
 }
