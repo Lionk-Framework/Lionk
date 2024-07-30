@@ -1,5 +1,5 @@
 ﻿// Copyright © 2024 Lionk Project
-using Notifications.Enums;
+using Notifications.Interfaces;
 
 namespace Notifications.Classes;
 
@@ -19,31 +19,54 @@ public class Notification
     public DateTime Timestamp { get; private set; }
 
     /// <summary>
-    /// Gets the level of the notification.
+    /// Gets the Notifyer that created the notification.
     /// </summary>
-    public NotificationLevel Level { get; private set; }
+    public INotifyer Notifyer { get; private set; }
 
     /// <summary>
-    /// Gets the title of the notification.
+    /// Gets the content of the notification.
     /// </summary>
-    public string Title { get; private set; }
+    public List<IChannel> Channels { get; private set; }
 
     /// <summary>
-    /// Gets the message of the notification.
+    /// Gets the content of the notification.
     /// </summary>
-    public string Message { get; private set; }
+    public NotificationContent Content { get; private set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Notification"/> class.
     /// </summary>
-    /// <param name="title">The title of the notification.</param>
-    /// <param name="message">The message of the notification.</param>
-    /// <param name="level">The level of the notification.</param>
-    public Notification(string title, string message, NotificationLevel level)
+    /// <param name="notifyer"> The notifyer that created the notification.</param>
+    /// <param name="channels"> The channels to send the notification to.</param>
+    /// <param name="content"> The content of the notification.</param>
+    public Notification(INotifyer notifyer, List<IChannel> channels, NotificationContent content)
     {
-        Level = Level;
         Timestamp = DateTime.UtcNow;
-        Title = title;
-        Message = message;
+        Channels = channels;
+        Content = content;
+        Notifyer = notifyer;
+    }
+
+    /// <summary>
+    /// Method to send the notification to all the channels.
+    /// </summary>
+    public void SendAll()
+    {
+        foreach (IChannel channel in Channels)
+        {
+            SendToChannel(channel);
+        }
+
+        NotificationLogger.LogNotification(this);
+    }
+
+    /// <summary>
+    /// Method to send the notification to a specific channel.
+    /// </summary>
+    /// <param name="channel"> The channel to send the notification to.</param>
+    public void SendToChannel(IChannel channel)
+    {
+        if (channel is null) throw new ArgumentNullException(nameof(channel));
+        channel.Send(Content);
     }
 }

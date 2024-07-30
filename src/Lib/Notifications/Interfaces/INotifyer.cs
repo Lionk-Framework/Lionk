@@ -1,19 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Notifications.Classes;
-using Serilog.Events;
+﻿// Copyright © 2024 Lionk Project
+namespace Notifications.Interfaces;
 
-namespace Notifications.Interfaces
+/// <summary>
+/// Interface that define a Notifyer.
+/// </summary>
+public interface INotifyer
 {
-
-    public interface INotifyer
-    {
-        string Name { get; }
-        IEnumerable<IChannel> Channels { get; }
-        void Send(Notification notification);
-    }
-
+    string Name { get; }
 }
