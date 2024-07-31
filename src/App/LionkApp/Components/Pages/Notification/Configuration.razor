@@ -1,0 +1,24 @@
+﻿@page "/configuration"
+
+@using LionkApp.Components.Model
+@using LionkApp.Components.Widgets.Content
+
+<SwitchList SwitchListTitle="Notifier list" Switchs=NotifierList />
+
+<SwitchList SwitchListTitle="Channel list" Switchs=ChannelList />
+
+@code {
+    private List<Switch> NotifierList = new List<Switch>
+    {
+        new Switch { Label = "Chimpey", IsEnabled = true },
+        new Switch { Label = "Nastaran", IsEnabled = true },
+        new Switch { Label = "Ronflex", IsEnabled = true }
+    };
+
+    private List<Switch> ChannelList = new List<Switch>
+    {
+        new Switch { Label = "Discord", IsEnabled = true },
+        new Switch { Label = "Telegram", IsEnabled = true },
+        new Switch { Label = "Push", IsEnabled = true }
+    };
+}
