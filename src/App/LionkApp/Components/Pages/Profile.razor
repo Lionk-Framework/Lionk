@@ -11,12 +11,12 @@
 </MudContainer>
 
 @code {
-    protected MudForm? Form;
-    protected string? FirstName { get; set; }
-    protected string? LastName { get; set; }
-    protected string? Email { get; set; }
+    private MudForm? Form;
+    private string? FirstName { get; set; }
+    private string? LastName { get; set; }
+    private string? Email { get; set; }
 
-    protected void SaveProfile()
+    private void SaveProfile()
     {
         Console.WriteLine($"Saved profile : {FirstName} {LastName} ({Email})");
     }
