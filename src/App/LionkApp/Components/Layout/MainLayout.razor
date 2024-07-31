@@ -26,10 +26,10 @@
         <MudContainer Class="mt-auto pa-2">
             <MudGrid Justify="Justify.SpaceBetween">
                 <MudItem>
-                    <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Primary" OnClick='() => NavManager.NavigateTo("/profile")' />
+                    <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Primary" OnClick="@(() => NavManager.NavigateTo("/profile"))" />
                 </MudItem>
                 <MudItem>
-                    <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Primary" OnClick='() => NavManager.NavigateTo("/auth")' />
+                    <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Primary" OnClick="@(() => NavManager.NavigateTo("/auth"))" />
                 </MudItem>
             </MudGrid>
         </MudContainer>
