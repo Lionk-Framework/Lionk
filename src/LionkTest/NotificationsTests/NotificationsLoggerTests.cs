@@ -1,8 +1,11 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Notifications.Classes;
 using Notifications.Interfaces;
+using Serilog.Events;
+using Serilog.Formatting.Compact.Reader;
 
 namespace LionkTest.NotificationsTests;
 
@@ -53,12 +56,13 @@ internal class NotificationsLoggerTests
 
     private Notification Notification => new(Notifyer, Channels, Content);
 
-    private string _fileContent;
+    private readonly List<string> _jsonNotifications = new();
 
     [OneTimeSetUp]
     public void InitializeHistoryFile()
     {
         NotificationLogger.LogNotification(Notification);
+        NotificationLogger.CloseLogger();
 
         // Assert
         if (!File.Exists(NotificationLogger.HistoryFilePath))
@@ -66,8 +70,17 @@ internal class NotificationsLoggerTests
             Assert.Fail("The history file was not created.");
         }
 
-        // Finaly
-        _fileContent = File.ReadAllText(NotificationLogger.HistoryFilePath);
+        // Finaly read the file
+        using (var fileStream = new FileStream(NotificationLogger.HistoryFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+        using (var reader = new StreamReader(fileStream))
+        {
+            while (!reader.EndOfStream)
+            {
+                string? line = reader.ReadLine();
+                if (string.IsNullOrEmpty(line)) continue;
+                _jsonNotifications.Add(line);
+            }
+        }
     }
 
     [Test]
@@ -80,9 +93,9 @@ internal class NotificationsLoggerTests
         // nothing to act
 
         // Assert
-        if (string.IsNullOrEmpty(_fileContent))
+        if (_jsonNotifications.Count() < 1)
         {
-            Assert.Fail("The history file is empty.");
+            Assert.Fail("The history file is empty or not correctly written.");
         }
     }
 
@@ -93,12 +106,12 @@ internal class NotificationsLoggerTests
         // Nothing to arrange
 
         // Act
-        dynamic? logEntry = JsonConvert.DeserializeObject(_fileContent);
+        dynamic? logEntry = JsonConvert.DeserializeObject(_jsonNotifications.Last());
 
         // Assert
         if (logEntry is null)
         {
-            Assert.Fail("The history file is empty.");
+            Assert.Fail("The last notification in the history file can't be deserialized.");
         }
     }
 
@@ -109,8 +122,26 @@ internal class NotificationsLoggerTests
         // Nothing to arrange
 
         // Act
-        dynamic? logEntry = JsonConvert.DeserializeObject(_fileContent);
-        Notification? notification = JsonConvert.DeserializeObject<Notification>(logEntry?.Notification.ToString());
+        dynamic? logEntry = JsonConvert.DeserializeObject<dynamic>(_jsonNotifications.Last());
+        string jsonLog = logEntry?.ToString() ?? string.Empty;
+
+        LogEvent? notificationLog = LogEventReader.ReadFromJObject(JObject.Parse(jsonLog));
+
+        // Assert
+        Assert.NotNull(notificationLog, "The notification log is empty.");
+    }
+
+    public void TestDeserializationNotification2()
+    {
+        // Arrange
+        // Nothing to arrange
+
+        // Act
+        dynamic? logEntry = JsonConvert.DeserializeObject(_jsonNotifications.Last());
+        JToken? jToken = logEntry?.Notification;
+        string jsonNotification = jToken?.Value<string>() ?? string.Empty;
+
+        Notification? notification = JsonConvert.DeserializeObject<Notification>(jsonNotification);
 
         // Assert
         if (notification is null)

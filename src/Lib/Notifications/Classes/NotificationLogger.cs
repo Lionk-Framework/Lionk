@@ -25,7 +25,7 @@ public static class NotificationLogger
     /// <summary>
     /// Gets the notification logger.
     /// </summary>
-    private static readonly Logger _logger;
+    private static Logger? _logger;
 
     /// <summary>
     /// Initializes static members of the <see cref="NotificationLogger"/> class.
@@ -36,13 +36,28 @@ public static class NotificationLogger
         if (!Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Notifications")))
             Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Notifications"));
 
+        // Initialize the logger.
+        InitializeLogger();
+    }
+
+    /// <summary>
+    /// Method that initialize the logger.
+    /// </summary>
+    /// <exception cref="InvalidOperationException"> If the logger is not correctly initialized.</exception>
+    private static void InitializeLogger()
+    {
         NotificationFormatter formatter = new();
 
         // Initialize the logger and verify if it's not null.
         _logger = new LoggerConfiguration()
             .WriteTo.File(formatter, HistoryFilePath, encoding: System.Text.Encoding.UTF8)
-            .CreateLogger() ?? throw new InvalidOperationException("The logger is not initialized.");
+            .CreateLogger() ?? throw new InvalidOperationException("The logger is not correctly initialized.");
     }
+
+    /// <summary>
+    /// This method close the logger.
+    /// </summary>
+    public static void CloseLogger() => Log.CloseAndFlush();
 
     /// <summary>
     /// Method that log a notification.
@@ -50,6 +65,8 @@ public static class NotificationLogger
     /// <param name="notification">The notification to log.</param>
     public static void LogNotification(Notification notification)
     {
+        if (_logger is null) throw new InvalidOperationException("The logger must be initialized before logging a notification.");
+
         LogEventLevel level = notification.Content.Level;
         _logger.ForContext("Notification", notification, destructureObjects: true)
                .Write(level, MESSAGE);
