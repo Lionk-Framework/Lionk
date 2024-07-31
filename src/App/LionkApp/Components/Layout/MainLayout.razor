@@ -1,7 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager NavManager
 
-<MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
+<MudThemeProvider Theme="@Theme" IsDarkMode="IsDarkMode" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
@@ -13,10 +13,10 @@
         <MudIconButton Icon="@Icons.Material.Filled.CircleNotifications" Color="Color.Primary" OnClick="OnNotificationPressed" />
         <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
     </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+    <MudDrawer @bind-Open="IsDrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <MudNavMenu>
             <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Dashboard</MudNavLink>
-            <MudNavGroup Title="Notifications" Icon="@Icons.Material.Filled.Notifications" @bind-Expanded="_isNotifcationExpanded">
+            <MudNavGroup Title="Notifications" Icon="@Icons.Material.Filled.Notifications" @bind-Expanded="IsNotifcationExpanded">
                 <MudNavLink Href="/active" Match="NavLinkMatch.Prefix">Active</MudNavLink>
                 <MudNavLink Href="/history" Match="NavLinkMatch.Prefix">History</MudNavLink>
                 <MudNavLink Href="/configuration" Match="NavLinkMatch.Prefix">Configuration</MudNavLink>
@@ -46,16 +46,16 @@
 </div>
 
 @code {
-    private bool _drawerOpen = true;
-    private bool _isNotifcationExpanded = false;
-    private bool _isDarkMode = true;
-    private MudTheme? _theme = null;
+    private bool IsDrawerOpen = true;
+    private bool IsNotifcationExpanded = false;
+    private MudTheme? Theme = null;
+    private bool IsDarkMode = true;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
 
-        _theme = new()
+        Theme = new()
             {
                 PaletteLight = _lightPalette,
                 PaletteDark = _darkPalette,
@@ -63,15 +63,20 @@
             };
     }
 
+    private void DarkModeToggle()
+    {
+        IsDarkMode = !IsDarkMode;
+    }
+
     private void DrawerToggle()
     {
-        _drawerOpen = !_drawerOpen;
+        IsDrawerOpen = !IsDrawerOpen;
     }
 
     private void OnNotificationPressed()
     {
         NavManager.NavigateTo("/active");
-        _isNotifcationExpanded = true;
+        IsNotifcationExpanded = true;
     }
 
     private void OnProfilePressed()
@@ -82,11 +87,6 @@
     private void OnLogoutPressed()
     {
         NavManager.NavigateTo("/auth");
-    }
-
-    private void DarkModeToggle()
-    {
-        _isDarkMode = !_isDarkMode;
     }
 
     private readonly PaletteLight _lightPalette = new()
@@ -128,7 +128,7 @@
             OverlayLight = "#1e1e2d80",
         };
 
-    public string DarkLightModeButtonIcon => _isDarkMode switch
+    public string DarkLightModeButtonIcon => IsDarkMode switch
     {
         true => Icons.Material.Rounded.LightMode,
         false => Icons.Material.Outlined.DarkMode,
