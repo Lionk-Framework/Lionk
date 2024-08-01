@@ -9,7 +9,7 @@ namespace Lionk.Log;
 /// <summary>
 /// Default Logger class.
 /// </summary>
-public class SerilogLogger : IStandardLogger
+internal class SerilogLogger : IStandardLogger
 {
     private readonly Logger _logger;
 

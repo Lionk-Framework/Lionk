@@ -56,7 +56,7 @@ public class SerilogLoggerTests
         if (File.Exists(path))
             File.Delete(path);
 
-        var logger = factory.CreateLogger(loggerName) as SerilogLogger;
+        IStandardLogger? logger = factory.CreateLogger(loggerName);
         logger?.Log(LogSeverity.Information, "Testing custom file logger");
 
         Assert.That(logger, Is.Not.Null);

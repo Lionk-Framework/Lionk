@@ -5,15 +5,15 @@ namespace Lionk.Log;
 /// <summary>
 /// Utils static class for logging.
 /// </summary>
-public static class Utils
+internal static class Utils
 {
     /// <summary>
     /// The directory path for the logs.
     /// </summary>
-    public const string DirectoryPath = "logs";
+    internal const string DirectoryPath = "logs";
 
     /// <summary>
     /// The extension for the log files.
     /// </summary>
-    public const string LogExtension = ".log";
+    internal const string LogExtension = ".log";
 }
