@@ -23,6 +23,7 @@ public class DefaultCustomLogger : ICustomLogger
     {
         string appLogFilePath = Path.Combine(Utils.DirectoryPath, $"{AppLogFilename}{Utils.LogExtension}");
         string debugLogFilePath = Path.Combine(Utils.DirectoryPath, $"{DebugLogFilename}{Utils.LogExtension}");
+        appLogFilePath = Path.GetFullPath(appLogFilePath);
 
         _appLogger = CreateLogger(appLogFilePath);
         _debugLogger = CreateLogger(debugLogFilePath);

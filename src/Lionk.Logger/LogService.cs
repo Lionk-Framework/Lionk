@@ -38,12 +38,16 @@ public static class LogService
     /// <summary>
     /// asdasd.
     /// </summary>
-    /// <param name="filePath">asdfasdsdf.</param>
+    /// <param name="loggerName">asdfasdsdf.</param>
     /// <returns>asdfasdf.</returns>
     /// <exception cref="ArgumentNullException">asdasdfsd.</exception>
-    public static ILogger CreateLogger(string filePath)
+    public static ILogger CreateLogger(string loggerName)
     {
-        ILogger? logger = _logger?.CreateLogger(filePath);
-        return logger ?? throw new ArgumentNullException(nameof(logger));
+        string loggerPath = Path.Combine(Utils.DirectoryPath, $"{loggerName}{Utils.LogExtension}");
+
+        ILogger? logger = _logger?.CreateLogger(loggerPath);
+
+        return logger
+            ?? throw new ArgumentNullException(nameof(logger));
     }
 }
