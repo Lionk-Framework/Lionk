@@ -18,10 +18,10 @@ public class SerilogLoggerTests
     {
         string loggerName = "test";
 
-        string path = Path.GetFullPath(
-            Utils.DirectoryPath
-            + $"\\{loggerName}" +
-            DateOnly.FromDateTime(DateTime.Now).ToString("yyyyMMdd")
+        string path = Path.Combine(Utils.DirectoryPath, loggerName);
+
+        path = Path.GetFullPath(path
+            + DateOnly.FromDateTime(DateTime.Now).ToString("yyyyMMdd")
             + $"{Utils.LogExtension}");
 
         if (File.Exists(path))
@@ -47,10 +47,11 @@ public class SerilogLoggerTests
     {
         var factory = new SerilogFactory();
         string loggerName = "custom";
-        string path = Path.GetFullPath(
-            Utils.DirectoryPath
-            + $"\\{loggerName}" +
-            DateOnly.FromDateTime(DateTime.Now).ToString("yyyyMMdd")
+
+        string path = Path.Combine(Utils.DirectoryPath, loggerName);
+
+        path = Path.GetFullPath(path
+            + DateOnly.FromDateTime(DateTime.Now).ToString("yyyyMMdd")
             + $"{Utils.LogExtension}");
 
         if (File.Exists(path))
