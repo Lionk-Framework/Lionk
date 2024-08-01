@@ -1,19 +1,26 @@
 // Copyright © 2024 Lionk Project
 
-using System.Text;
+using Lionk.Log;
+using Lionk.Log.Serilog;
 using LionkApp.Components;
 using MudBlazor.Services;
+using ILoggerFactory = Lionk.Log.ILoggerFactory;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-
-StringBuilder sb = new();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddMudServices();
 
+// Configure custom logger
+builder.Services.AddSingleton<ILoggerFactory, SerilogFactory>();
+
 WebApplication app = builder.Build();
+
+// Configure the LogService with the singleton logger
+ILoggerFactory loggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
+LogService.Configure(loggerFactory);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

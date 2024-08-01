@@ -18,4 +18,7 @@ This is the Lionk App README file.
   <ItemGroup>
     <PackageReference Include="MudBlazor" Version="7.4.0" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Lionk.Logger\Lionk.Logger.csproj" />
+  </ItemGroup>
 </Project>
