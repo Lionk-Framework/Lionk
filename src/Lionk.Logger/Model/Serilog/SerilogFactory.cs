@@ -1,6 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
-namespace Lionk.Logger.Serilog;
+namespace Lionk.Log.Serilog;
 
 /// <summary>
 /// A factory for creating Serilog loggers.

@@ -1,20 +1,19 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using Serilog;
+using Serilog.Core;
 using Serilog.Events;
 
-namespace Lionk.Logger;
+namespace Lionk.Log;
 
 /// <summary>
 /// Default Logger class.
 /// </summary>
-/// <remarks>
-/// Initializes a new instance of the <see cref="SerilogLogger"/> class.
-/// </remarks>
-/// <param name="path">The path of the log file.</param>
-public class SerilogLogger(string path) : IStandardLogger
+public class SerilogLogger : IStandardLogger
 {
-    private readonly ILogger? _logger = new LoggerConfiguration()
+    private readonly Logger _logger;
+
+    internal SerilogLogger(string path) => _logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
             .WriteTo.File(path, rollingInterval: RollingInterval.Day)
             .CreateLogger();
@@ -39,4 +38,17 @@ public class SerilogLogger(string path) : IStandardLogger
             LogSeverity.Critical => LogEventLevel.Fatal,
             _ => LogEventLevel.Information,
         };
+
+    /// <summary>
+    /// Close the logger.
+    /// </summary>
+    public void CloseLogger()
+        => _logger.Dispose();
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        _logger.Dispose();
+        GC.SuppressFinalize(this);
+    }
 }

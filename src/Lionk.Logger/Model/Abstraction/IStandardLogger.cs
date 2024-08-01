@@ -1,11 +1,11 @@
 ﻿// Copyright © 2024 Lionk Project
 
-namespace Lionk.Logger;
+namespace Lionk.Log;
 
 /// <summary>
 /// Interface for custom logger.
 /// </summary>
-public interface IStandardLogger
+public interface IStandardLogger : IDisposable
 {
     /// <summary>
     /// Log a message with a <see cref="LogSeverity"/>.

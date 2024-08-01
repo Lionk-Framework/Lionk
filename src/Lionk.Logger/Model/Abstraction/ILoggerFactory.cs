@@ -1,6 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
-namespace Lionk.Logger;
+namespace Lionk.Log;
 
 /// <summary>
 /// Interface for creating loggers.
