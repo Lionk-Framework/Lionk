@@ -19,7 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Lionk.Core\Lionk.Core.csproj" />
     <ProjectReference Include="..\Lionk.Logger\Lionk.Logger.csproj" />
+    <ProjectReference Include="..\Lionk.Plugin\Lionk.Plugin.csproj" />
   </ItemGroup>
 
   <ItemGroup>
