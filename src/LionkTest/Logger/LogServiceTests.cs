@@ -11,19 +11,31 @@ namespace LionkTest;
 public class LogServiceTests
 {
     /// <summary>
+    /// Initialize the test class.
+    /// </summary>
+    [OneTimeSetUp]
+    public void Initialize()
+    {
+        _mockLoggerFactory = new Mock<ILoggerFactory>();
+        _mockAppLogger = new Mock<IStandardLogger>();
+        _mockDebugLogger = new Mock<IStandardLogger>();
+    }
+
+    /// <summary>
     /// Test for <see cref="LogService.Configure(ILoggerFactory)"/>.
     /// </summary>
     [Test]
     public void Configure_ShouldInitializeLoggers()
     {
-        var mockLoggerFactory = new Mock<ILoggerFactory>();
-        var mockAppLogger = new Mock<IStandardLogger>();
-        var mockDebugLogger = new Mock<IStandardLogger>();
+        _mockLoggerFactory.Setup(
+            factory => factory.CreateLogger("app"))
+            .Returns(_mockAppLogger.Object);
 
-        mockLoggerFactory.Setup(factory => factory.CreateLogger("app")).Returns(mockAppLogger.Object);
-        mockLoggerFactory.Setup(factory => factory.CreateLogger("debug")).Returns(mockDebugLogger.Object);
+        _mockLoggerFactory.Setup(
+            factory => factory.CreateLogger("debug"))
+            .Returns(_mockDebugLogger.Object);
 
-        LogService.Configure(mockLoggerFactory.Object);
+        LogService.Configure(_mockLoggerFactory.Object);
 
         Assert.That(LogService.CreateLogger("app"), Is.Not.Null);
         Assert.That(LogService.CreateLogger("debug"), Is.Not.Null);
@@ -35,17 +47,17 @@ public class LogServiceTests
     [Test]
     public void LogDebug_ShouldCallDebugLogger()
     {
-        var mockLoggerFactory = new Mock<ILoggerFactory>();
-        var mockDebugLogger = new Mock<IStandardLogger>();
+        _mockLoggerFactory.Setup(
+            factory => factory.CreateLogger("debug"))
+            .Returns(_mockDebugLogger.Object);
 
-        mockLoggerFactory.Setup(factory => factory.CreateLogger("debug")).Returns(mockDebugLogger.Object);
-        LogService.Configure(mockLoggerFactory.Object);
+        LogService.Configure(_mockLoggerFactory.Object);
 
         string message = "Debug message";
 
         LogService.LogDebug(message);
 
-        mockDebugLogger.Verify(logger => logger.Log(LogSeverity.Debug, message), Times.Once);
+        _mockDebugLogger.Verify(logger => logger.Log(LogSeverity.Debug, message), Times.Once);
     }
 
     /// <summary>
@@ -54,17 +66,21 @@ public class LogServiceTests
     [Test]
     public void LogApp_ShouldCallAppLogger()
     {
-        var mockLoggerFactory = new Mock<ILoggerFactory>();
-        var mockAppLogger = new Mock<IStandardLogger>();
+        _mockLoggerFactory.Setup(
+            factory => factory.CreateLogger("app"))
+            .Returns(_mockAppLogger.Object);
 
-        mockLoggerFactory.Setup(factory => factory.CreateLogger("app")).Returns(mockAppLogger.Object);
-        LogService.Configure(mockLoggerFactory.Object);
+        LogService.Configure(_mockLoggerFactory.Object);
 
         LogSeverity severity = LogSeverity.Information;
         string message = "App message";
 
         LogService.LogApp(severity, message);
 
-        mockAppLogger.Verify(logger => logger.Log(severity, message), Times.Once);
+        _mockAppLogger.Verify(logger => logger.Log(severity, message), Times.Once);
     }
+
+    private Mock<ILoggerFactory> _mockLoggerFactory;
+    private Mock<IStandardLogger> _mockAppLogger;
+    private Mock<IStandardLogger> _mockDebugLogger;
 }

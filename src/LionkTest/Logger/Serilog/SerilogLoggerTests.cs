@@ -36,7 +36,7 @@ public class SerilogLoggerTests
 
         Assert.That(File.Exists(path), Is.True);
         string logContents = File.ReadAllText(path);
-        Assert.That(logContents.Contains("Test log message"), Is.True);
+        Assert.That(logContents, Does.Contain("Test log message"));
     }
 
     /// <summary>

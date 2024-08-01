@@ -3,7 +3,8 @@
 namespace Lionk.Log;
 
 /// <summary>
-/// Static class for logging this class must be used to log messages and create loggers.
+/// Static class for logging this class must
+/// be used to log messages and create loggers.
 /// </summary>
 public static class LogService
 {
