@@ -2,6 +2,7 @@
 
 using System.Reflection;
 using Lionk.Plugin;
+using Newtonsoft.Json;
 
 namespace LionkTest;
 
@@ -34,8 +35,17 @@ public class PluginManagerTests
     public void Constructor_ShouldLoadPluginsFromFile()
     {
         // Arrange
-        var pluginPaths = new List<string> { "path/to/plugin1.dll", "path/to/plugin2.dll" };
-        File.WriteAllText("plugin_paths.json", $"{{\"pluginPaths\": [\"{pluginPaths[0]}\", \"{pluginPaths[1]}\"]}}");
+        string currentDir = Directory.GetCurrentDirectory();
+        string path = Path.Combine(currentDir, "Resources", "Plugins");
+        var pluginPaths = new List<string>
+        {
+            Path.Combine(path, "plugin1.dll"),
+            Path.Combine(path, "plugin2.dll"),
+        };
+
+        string json = JsonConvert.SerializeObject(pluginPaths, Formatting.Indented);
+
+        File.WriteAllText("plugin_paths.json", json);
 
         // Act
         var pluginManager = new PluginManager();
@@ -121,8 +131,50 @@ public class PluginManagerTests
         File.WriteAllText("plugin_paths.json", "invalid json");
 
         // Act & Assert
-        Assert.Throws<InvalidOperationException>(
+        Assert.Throws<FormatException>(
             () =>
             _pluginManager = new PluginManager());
+    }
+
+    /// <summary>
+    /// Test for <see cref="PluginManager.AddPlugin(string)"/>.
+    /// </summary>
+    [Test]
+    public void AddPlugins_AddingSamePluginTwice_ShouldNotAddPluginTwice()
+    {
+        string path = Assembly.GetExecutingAssembly().Location;
+
+        _pluginManager.AddPlugin(path);
+        _pluginManager.AddPlugin(path);
+
+        Assert.That(_pluginManager.GetAllPlugins().Count(), Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// Test for <see cref="PluginManager"/> constructor.
+    /// </summary>
+    [Test]
+    public void LoadConfigurationFile_WithCreation_ShouldLoadUsedPlugins()
+    {
+        // Arrange
+        string currentDir = Directory.GetCurrentDirectory();
+        string path = Path.Combine(currentDir, "Resources", "Plugins");
+        var pluginPaths = new List<string>
+        {
+            Path.Combine(path, "plugin1.dll"),
+            Path.Combine(path, "plugin2.dll"),
+        };
+
+        // Act
+        _pluginManager = new PluginManager();
+        _pluginManager.AddPlugin(pluginPaths[0]);
+        _pluginManager.AddPlugin(pluginPaths[1]);
+
+        // Assert
+        Assert.That(_pluginManager.GetAllPlugins().Count(), Is.EqualTo(2));
+
+        _pluginManager = new PluginManager();
+
+        Assert.That(_pluginManager.GetAllPlugins().Count(), Is.EqualTo(2));
     }
 }

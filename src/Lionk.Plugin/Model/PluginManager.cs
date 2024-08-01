@@ -64,10 +64,7 @@ public class PluginManager
     /// <param name="plugin">The plugin to remove.</param>
     public void RemovePlugin(Plugin plugin)
     {
-        if (plugin == null)
-        {
-            throw new ArgumentNullException(nameof(plugin));
-        }
+        ArgumentNullException.ThrowIfNull(plugin, nameof(plugin));
 
         _plugins.Remove(plugin);
         _pluginPaths.Remove(plugin.Assembly.Location);
@@ -100,7 +97,7 @@ public class PluginManager
     {
         try
         {
-            string json = JsonConvert.SerializeObject(new { pluginPaths = _pluginPaths }, Formatting.Indented);
+            string json = JsonConvert.SerializeObject(_pluginPaths, Formatting.Indented);
             File.WriteAllText(PluginPathsFile, json);
         }
         catch (Exception ex)
@@ -114,18 +111,31 @@ public class PluginManager
         if (File.Exists(PluginPathsFile))
         {
             string json = File.ReadAllText(PluginPathsFile);
-            Dictionary<string, List<string>>? data =
-                JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(json);
+
+            TryToReadPaths(json, out List<string>? data);
 
             if (data is null)
                 throw new InvalidOperationException("Invalid plugin paths file.");
 
-            _pluginPaths = data["pluginPaths"];
+            _pluginPaths = data;
         }
         else
         {
             LogService.LogApp(LogSeverity.Information, "Plugin paths file not found.");
             _pluginPaths = new List<string>();
+        }
+    }
+
+    private void TryToReadPaths(string json, out List<string>? readedText)
+    {
+        try
+        {
+            readedText =
+                JsonConvert.DeserializeObject<List<string>>(json);
+        }
+        catch (JsonReaderException)
+        {
+            throw new FormatException("The plugin configuration file is not formated.");
         }
     }
 
