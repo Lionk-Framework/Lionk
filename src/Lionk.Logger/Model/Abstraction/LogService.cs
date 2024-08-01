@@ -1,53 +1,52 @@
 ﻿// Copyright © 2024 Lionk Project
 
-using Serilog;
-using Serilog.Events;
-
 namespace Lionk.Logger;
 
 /// <summary>
-/// Class for logging.
+/// Static class for logging.
 /// </summary>
 public static class LogService
 {
-    private static IStandardLogger? _logger;
+    private const string AppLogFilename = "app";
+    private const string DebugLogFilename = "debug";
+
+    private static IStandardLogger? _appLogger;
+    private static IStandardLogger? _debugLogger;
+    private static ILoggerFactory? _loggerFactory;
 
     /// <summary>
     /// Configure the logger.
     /// </summary>
-    /// <param name="logger">.</param>
-    /// <exception cref="ArgumentNullException">a.</exception>
-    public static void Configure(IStandardLogger logger)
-        => _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
-    /// <summary>
-    /// .
-    /// </summary>
-    /// <param name="message">as.</param>
-    public static void LogDebug(string message)
-        => _logger?.LogDebug(message);
-
-    /// <summary>
-    /// asdada.
-    /// </summary>
-    /// <param name="severity">asd.</param>
-    /// <param name="message">dsa.</param>
-    public static void LogApp(LogEventLevel severity, string message)
-        => _logger?.LogApp(severity, message);
-
-    /// <summary>
-    /// asdasd.
-    /// </summary>
-    /// <param name="loggerName">asdfasdsdf.</param>
-    /// <returns>asdfasdf.</returns>
-    /// <exception cref="ArgumentNullException">asdasdfsd.</exception>
-    public static ILogger CreateLogger(string loggerName)
+    /// <param name="loggerFactory">The logger factory.</param>
+    /// <exception cref="ArgumentNullException">Throw
+    /// an argument null exception if loggerFactory is null.</exception>
+    public static void Configure(ILoggerFactory loggerFactory)
     {
-        string loggerPath = Path.Combine(Utils.DirectoryPath, $"{loggerName}{Utils.LogExtension}");
-
-        ILogger? logger = _logger?.CreateLogger(loggerPath);
-
-        return logger
-            ?? throw new ArgumentNullException(nameof(logger));
+        _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+        _appLogger = _loggerFactory.CreateLogger(AppLogFilename);
+        _debugLogger = _loggerFactory.CreateLogger(DebugLogFilename);
     }
+
+    /// <summary>
+    /// Log a debug message.
+    /// </summary>
+    /// <param name="message">Debug message.</param>
+    public static void LogDebug(string message)
+        => _debugLogger?.Log(LogSeverity.Debug, message);
+
+    /// <summary>
+    /// Log an application message.
+    /// </summary>
+    /// <param name="severity">Log severity.</param>
+    /// <param name="message">Log message.</param>
+    public static void LogApp(LogSeverity severity, string message)
+        => _appLogger?.Log(severity, message);
+
+    /// <summary>
+    /// Create a new <see cref="IStandardLogger"/>.
+    /// </summary>
+    /// <param name="loggerName">The name of the logger.</param>
+    /// <returns>A new <see cref="IStandardLogger"/>.</returns>
+    public static IStandardLogger? CreateLogger(string loggerName)
+        => _loggerFactory?.CreateLogger(loggerName);
 }
