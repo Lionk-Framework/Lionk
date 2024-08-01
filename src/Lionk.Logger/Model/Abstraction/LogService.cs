@@ -10,14 +10,14 @@ namespace Lionk.Logger;
 /// </summary>
 public static class LogService
 {
-    private static ICustomLogger? _logger;
+    private static IStandardLogger? _logger;
 
     /// <summary>
     /// Configure the logger.
     /// </summary>
     /// <param name="logger">.</param>
     /// <exception cref="ArgumentNullException">a.</exception>
-    public static void Configure(ICustomLogger logger)
+    public static void Configure(IStandardLogger logger)
         => _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     /// <summary>

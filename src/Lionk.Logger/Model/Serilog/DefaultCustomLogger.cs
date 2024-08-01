@@ -8,7 +8,7 @@ namespace Lionk.Logger;
 /// <summary>
 /// Default Logger class.
 /// </summary>
-public class DefaultCustomLogger : ICustomLogger
+public class DefaultCustomLogger : IStandardLogger
 {
     private const string AppLogFilename = "app";
     private const string DebugLogFilename = "debug";
