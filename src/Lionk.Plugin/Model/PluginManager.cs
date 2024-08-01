@@ -9,7 +9,7 @@ namespace Lionk.Plugin;
 /// <summary>
 /// Class which allows to manage plugins.
 /// </summary>
-public class PluginManager
+public class PluginManager : IPluginManager
 {
     private const string PluginPathsFile = "plugin_paths.json";
     private readonly List<Plugin> _plugins = [];
@@ -21,24 +21,7 @@ public class PluginManager
     public PluginManager()
         => LoadPlugins();
 
-    /// <summary>
-    /// Gets all types from the loaded plugins.
-    /// </summary>
-    /// <returns>A collection of types from all plugins.</returns>
-    public IEnumerable<Type> GetTypesFromPlugins()
-    {
-        var types = new List<Type>();
-
-        foreach (Plugin plugin in _plugins)
-            types.AddRange(plugin.Assembly.GetTypes());
-
-        return types;
-    }
-
-    /// <summary>
-    /// Adds a plugin to the manager.
-    /// </summary>
-    /// <param name="path">The path to the plugin.</param>
+    /// <inheritdoc/>
     public void AddPlugin(string path)
     {
         if (!File.Exists(path) || Path.GetExtension(path) != ".dll")
@@ -58,10 +41,7 @@ public class PluginManager
         SavePluginPaths();
     }
 
-    /// <summary>
-    /// Removes the specified plugin from the manager.
-    /// </summary>
-    /// <param name="plugin">The plugin to remove.</param>
+    /// <inheritdoc/>
     public void RemovePlugin(Plugin plugin)
     {
         ArgumentNullException.ThrowIfNull(plugin, nameof(plugin));
@@ -71,10 +51,18 @@ public class PluginManager
         SavePluginPaths();
     }
 
-    /// <summary>
-    /// Gets all loaded plugins.
-    /// </summary>
-    /// <returns>A collection of loaded plugins.</returns>
+    /// <inheritdoc/>
+    public IEnumerable<Type> GetTypesFromPlugins()
+    {
+        var types = new List<Type>();
+
+        foreach (Plugin plugin in _plugins)
+            types.AddRange(plugin.Assembly.GetTypes());
+
+        return types;
+    }
+
+    /// <inheritdoc/>
     public IEnumerable<Plugin> GetAllPlugins()
         => _plugins.AsReadOnly();
 

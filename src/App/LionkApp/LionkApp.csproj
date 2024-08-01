@@ -20,5 +20,6 @@ This is the Lionk App README file.
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Lionk.Logger\Lionk.Logger.csproj" />
+    <ProjectReference Include="..\..\Lionk.Plugin\Lionk.Plugin.csproj" />
   </ItemGroup>
 </Project>

@@ -2,6 +2,7 @@
 
 using Lionk.Log;
 using Lionk.Log.Serilog;
+using Lionk.Plugin;
 using LionkApp.Components;
 using MudBlazor.Services;
 using ILoggerFactory = Lionk.Log.ILoggerFactory;
@@ -15,6 +16,9 @@ builder.Services.AddMudServices();
 
 // Configure custom logger
 builder.Services.AddSingleton<ILoggerFactory, SerilogFactory>();
+
+// Configure plugin service
+builder.Services.AddSingleton<IPluginManager, PluginManager>();
 
 WebApplication app = builder.Build();
 
