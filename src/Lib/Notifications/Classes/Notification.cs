@@ -57,7 +57,7 @@ public class Notification
             SendToChannel(channel);
         }
 
-        NotificationLogger.LogNotification(this);
+        NotificationService.SaveNotification(this);
     }
 
     /// <summary>

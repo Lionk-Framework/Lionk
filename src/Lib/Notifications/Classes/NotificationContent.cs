@@ -1,5 +1,5 @@
 ﻿// Copyright © 2024 Lionk Project
-using Serilog.Events;
+using Notifications.Enums;
 
 namespace Notifications.Classes;
 
@@ -11,7 +11,7 @@ public class NotificationContent
     /// <summary>
     /// Gets the level of the notification.
     /// </summary>
-    public LogEventLevel Level { get; private set; }
+    public Severity Level { get; private set; }
 
     /// <summary>
     /// Gets the title of the notification.
@@ -29,7 +29,7 @@ public class NotificationContent
     /// <param name="level">The level of the notification.</param>
     /// <param name="title">The title of the notification.</param>
     /// <param name="message">The message of the notification.</param>
-    public NotificationContent(LogEventLevel level, string title, string message)
+    public NotificationContent(Severity level, string title, string message)
     {
         Level = level;
         Title = title;

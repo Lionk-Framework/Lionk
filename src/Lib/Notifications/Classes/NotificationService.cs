@@ -11,5 +11,11 @@ public static class NotificationService
     /// Save a notification in history.
     /// </summary>
     /// <param name="notification"> The notification to save.</param>
-    public static void SaveNotification(Notification notification) => NotificationLogger.LogNotification(notification);
+    public static void SaveNotification(Notification notification) => NotificationFileHandler.SaveNotification(notification);
+
+    /// <summary>
+    /// Get all the notifications saved.
+    /// </summary>
+    /// <returns> The list of notifications saved.</returns>
+    public static List<Notification> GetNotifications() => NotificationFileHandler.GetNotifications();
 }
