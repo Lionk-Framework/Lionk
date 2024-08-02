@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Lionk.Core\Lionk.Core.csproj" />
     <ProjectReference Include="..\Lionk.Logger\Lionk.Logger.csproj" />
   </ItemGroup>
 

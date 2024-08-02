@@ -34,7 +34,6 @@ public class PluginManagerTests
     [Test]
     public void Constructor_ShouldLoadPluginsFromFile()
     {
-        // Arrange
         string currentDir = Directory.GetCurrentDirectory();
         string path = Path.Combine(currentDir, "Resources", "Plugins");
         var pluginPaths = new List<string>
@@ -47,10 +46,8 @@ public class PluginManagerTests
 
         File.WriteAllText("plugin_paths.json", json);
 
-        // Act
         var pluginManager = new PluginManager();
 
-        // Assert
         Assert.That(pluginManager.GetAllPlugins().Count(), Is.EqualTo(2));
     }
 
@@ -60,13 +57,10 @@ public class PluginManagerTests
     [Test]
     public void AddPlugin_WithValidPath_ShouldAddPlugin()
     {
-        // Arrange
         string path = Assembly.GetExecutingAssembly().Location;
 
-        // Act
         _pluginManager.AddPlugin(path);
 
-        // Assert
         Assert.That(_pluginManager.GetAllPlugins().Count(), Is.EqualTo(1));
     }
 
@@ -76,13 +70,10 @@ public class PluginManagerTests
     [Test]
     public void AddPlugin_WithInvalidPath_ShouldNotAddPlugin()
     {
-        // Arrange
         string invalidPath = "invalid/path/to/plugin.dll";
 
-        // Act
         _pluginManager.AddPlugin(invalidPath);
 
-        // Assert
         Assert.That(_pluginManager.GetAllPlugins().Count(), Is.EqualTo(0));
     }
 
@@ -92,32 +83,26 @@ public class PluginManagerTests
     [Test]
     public void RemovePlugin_ShouldRemovePlugin()
     {
-        // Arrange
         string path = Assembly.GetExecutingAssembly().Location;
         _pluginManager.AddPlugin(path);
         Plugin plugin = _pluginManager.GetAllPlugins().First();
 
-        // Act
         _pluginManager.RemovePlugin(plugin);
 
-        // Assert
         Assert.That(_pluginManager.GetAllPlugins().Count(), Is.EqualTo(0));
     }
 
     /// <summary>
-    /// Test for <see cref="PluginManager.GetTypesFromPlugins"/>.
+    /// Test for <see cref="PluginManager.GetTypes"/>.
     /// </summary>
     [Test]
     public void GetTypesFromPlugins_ShouldReturnAllTypes()
     {
-        // Arrange
         string path = Assembly.GetExecutingAssembly().Location;
         _pluginManager.AddPlugin(path);
 
-        // Act
-        IEnumerable<Type> types = _pluginManager.GetTypesFromPlugins();
+        IEnumerable<Type> types = _pluginManager.GetTypes();
 
-        // Assert
         Assert.That(types.Any(), Is.True);
     }
 
@@ -127,10 +112,8 @@ public class PluginManagerTests
     [Test]
     public void LoadPluginPaths_WithInvalidFile_ShouldLogError()
     {
-        // Arrange
         File.WriteAllText("plugin_paths.json", "invalid json");
 
-        // Act & Assert
         Assert.Throws<FormatException>(
             () =>
             _pluginManager = new PluginManager());
@@ -156,7 +139,6 @@ public class PluginManagerTests
     [Test]
     public void LoadConfigurationFile_WithCreation_ShouldLoadUsedPlugins()
     {
-        // Arrange
         string currentDir = Directory.GetCurrentDirectory();
         string path = Path.Combine(currentDir, "Resources", "Plugins");
         var pluginPaths = new List<string>
@@ -165,16 +147,50 @@ public class PluginManagerTests
             Path.Combine(path, "plugin2.dll"),
         };
 
-        // Act
         _pluginManager = new PluginManager();
         _pluginManager.AddPlugin(pluginPaths[0]);
         _pluginManager.AddPlugin(pluginPaths[1]);
 
-        // Assert
         Assert.That(_pluginManager.GetAllPlugins().Count(), Is.EqualTo(2));
 
         _pluginManager = new PluginManager();
 
         Assert.That(_pluginManager.GetAllPlugins().Count(), Is.EqualTo(2));
+    }
+
+    /// <summary>
+    /// Test for <see cref="PluginManager.NewTypesAvailable"/>.
+    /// </summary>
+    [Test]
+    public void AddPlugin_ShouldTriggerNewTypesAvailableEvent()
+    {
+        string path = Assembly.GetExecutingAssembly().Location;
+        bool eventTriggered = false;
+
+        _pluginManager.NewTypesAvailable +=
+            (sender, args) => eventTriggered = true;
+
+        _pluginManager.AddPlugin(path);
+
+        Assert.That(eventTriggered, Is.True);
+    }
+
+    /// <summary>
+    /// Test for <see cref="PluginManager.NewTypesAvailable"/>.
+    /// </summary>
+    [Test]
+    public void AddPlugin_ShouldProvideTypesInNewTypesAvailableEvent()
+    {
+        string path = Assembly.GetExecutingAssembly().Location;
+        List<Type>? eventTypes = null;
+
+        _pluginManager.NewTypesAvailable +=
+            (sender, args) =>
+                eventTypes = args.Types.ToList();
+
+        _pluginManager.AddPlugin(path);
+
+        Assert.That(eventTypes, Is.Not.Null);
+        Assert.That(eventTypes.Count, Is.GreaterThan(0));
     }
 }
