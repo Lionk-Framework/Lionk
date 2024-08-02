@@ -1,11 +1,13 @@
 ﻿// Copyright © 2024 Lionk Project
 
+using Lionk.Core;
+
 namespace Lionk.Plugin;
 
 /// <summary>
 /// Interface wich define a plugin manager.
 /// </summary>
-public interface IPluginManager
+public interface IPluginManager : ITypesProvider
 {
     /// <summary>
     /// Adds a plugin to the manager.
@@ -18,12 +20,6 @@ public interface IPluginManager
     /// </summary>
     /// <param name="plugin">The plugin to remove.</param>
     void RemovePlugin(Plugin plugin);
-
-    /// <summary>
-    /// Gets all types from the loaded plugins.
-    /// </summary>
-    /// <returns>A collection of types from all plugins.</returns>
-    IEnumerable<Type> GetTypesFromPlugins();
 
     /// <summary>
     /// Gets all loaded plugins.

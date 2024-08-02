@@ -1,6 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using System.Reflection;
+using Lionk.Core;
 using Lionk.Log;
 using Newtonsoft.Json;
 
@@ -14,6 +15,9 @@ public class PluginManager : IPluginManager
     private const string PluginPathsFile = "plugin_paths.json";
     private readonly List<Plugin> _plugins = [];
     private List<string> _pluginPaths = [];
+
+    /// <inheritdoc/>
+    public event EventHandler<TypesEventArgs>? NewTypesAvailable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PluginManager"/> class.
@@ -52,7 +56,7 @@ public class PluginManager : IPluginManager
     }
 
     /// <inheritdoc/>
-    public IEnumerable<Type> GetTypesFromPlugins()
+    public IEnumerable<Type> GetTypes()
     {
         var types = new List<Type>();
 
@@ -73,6 +77,9 @@ public class PluginManager : IPluginManager
             var assembly = Assembly.LoadFrom(path);
             var plugin = new Plugin(assembly);
             _plugins.Add(plugin);
+
+            NewTypesAvailable?.Invoke(this, new TypesEventArgs(plugin.Assembly.GetTypes()));
+
             LogService.LogApp(LogSeverity.Information, $"Plugin loaded: {plugin.Name}");
         }
         catch (Exception ex)
