@@ -27,10 +27,8 @@ public class NotificationPropertiesConverter : JsonConverter
         if (value is null) throw new ArgumentNullException(nameof(value));
         Type type = value.GetType();
 
-        // Ajoute le type de l'objet
         jsonObject.Add("Type", type.FullName);
 
-        // Ajoute les propriétés de l'objet
         foreach (PropertyInfo property in type.GetProperties())
         {
             if (property.CanRead)
