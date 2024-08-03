@@ -1,5 +1,5 @@
 ﻿// Copyright © 2024 Lionk Project
-namespace Notifications.Classes;
+namespace Notifications.Model.Classes;
 
 /// <summary>
 /// This class define a notification recipient.

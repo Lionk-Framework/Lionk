@@ -1,7 +1,8 @@
 ﻿// Copyright © 2024 Lionk Project
-using Notifications.Interfaces;
+using Newtonsoft.Json;
+using Notifications.Model.Abstraction;
 
-namespace Notifications.Classes;
+namespace Notifications.Model.Classes;
 
 /// <summary>
 /// This class represents a notification that can be displayed to the user.
@@ -40,8 +41,23 @@ public class Notification
     /// <param name="channels"> The channels to send the notification to.</param>
     /// <param name="content"> The content of the notification.</param>
     public Notification(INotifyer notifyer, List<IChannel> channels, NotificationContent content)
+        : this(Guid.NewGuid(), notifyer, channels, content, DateTime.Now)
     {
-        Timestamp = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Notification"/> class.
+    /// </summary>
+    /// <param name="id"> The unique identifier of the notification.</param>
+    /// <param name="notifyer"> The notifyer that created the notification.</param>
+    /// <param name="channels"> The channels to send the notification to.</param>
+    /// <param name="content"> The content of the notification.</param>
+    /// <param name="timestamp">The timestamp when the notification was created.</param>
+    [JsonConstructor]
+    public Notification(Guid id, INotifyer notifyer, List<IChannel> channels, NotificationContent content, DateTime timestamp)
+    {
+        Id = id;
+        Timestamp = timestamp;
         Channels = channels;
         Content = content;
         Notifyer = notifyer;

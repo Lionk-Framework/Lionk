@@ -1,7 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
-using Notifications.Classes;
+using Notifications.Model.Classes;
 
-namespace Notifications.Interfaces;
+namespace Notifications.Model.Abstraction;
 
 /// <summary>
 /// Interface that define a Notification Channel.
@@ -13,6 +13,9 @@ public interface IChannel
     /// </summary>
     string Name { get; }
 
+    /// <summary>
+    /// Gets the recipients of the channel.
+    /// </summary>
     List<NotificationRecipient> Recipients { get; }
 
     /// <summary>

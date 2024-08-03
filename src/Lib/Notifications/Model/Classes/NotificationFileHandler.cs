@@ -1,7 +1,8 @@
 ﻿// Copyright © 2024 Lionk Project
 using Newtonsoft.Json;
+using Notifications.Model.Converters;
 
-namespace Notifications.Classes;
+namespace Notifications.Model.Classes;
 
 /// <summary>
 /// This class implements the way notifications are managed with a file.
@@ -19,6 +20,11 @@ public static class NotificationFileHandler
     public static string FilePath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FolderName, "Notifications.json");
 
     /// <summary>
+    /// Gets the settings for the JSON serializer.
+    /// </summary>
+    public static JsonSerializerSettings JsonSerializerSettings { get; private set; }
+
+    /// <summary>
     /// Initializes static members of the <see cref="NotificationFileHandler"/> class.
     /// </summary>
     static NotificationFileHandler()
@@ -32,6 +38,10 @@ public static class NotificationFileHandler
         {
             File.WriteAllText(FilePath, "[]");
         }
+
+        JsonSerializerSettings = new JsonSerializerSettings();
+        JsonSerializerSettings.Converters.Add(new NotificationPropertiesConverter());
+        JsonSerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
     }
 
     /// <summary>
@@ -42,7 +52,8 @@ public static class NotificationFileHandler
     {
         List<Notification> notifications = GetNotifications();
         notifications.Add(notification);
-        File.WriteAllText(FilePath, JsonConvert.SerializeObject(notifications, Formatting.Indented));
+        string json = JsonConvert.SerializeObject(notifications, Formatting.Indented, JsonSerializerSettings);
+        File.WriteAllText(FilePath, json);
     }
 
     /// <summary>
@@ -55,9 +66,20 @@ public static class NotificationFileHandler
         List<Notification> notifications = new();
         if (File.Exists(FilePath))
         {
-            notifications = JsonConvert.DeserializeObject<List<Notification>>(File.ReadAllText(FilePath)) ?? throw new ArgumentNullException(nameof(notifications));
+            notifications = JsonConvert.DeserializeObject<List<Notification>>(File.ReadAllText(FilePath), JsonSerializerSettings) ?? throw new ArgumentNullException(nameof(notifications));
         }
 
         return notifications;
+    }
+
+    /// <summary>
+    /// Method to get a notification by its unique identifier.
+    /// </summary>
+    /// <param name="guid"> The unique identifier of the notification.</param>
+    /// <returns> The notification with the specified unique identifier.</returns>
+    public static Notification? GetNotificationByGuid(Guid guid)
+    {
+        List<Notification> notifications = GetNotifications();
+        return notifications.FirstOrDefault(n => n.Id == guid);
     }
 }
