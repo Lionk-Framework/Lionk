@@ -23,12 +23,10 @@ def read_file_to_list(filename):
 
 
 LIB_PATH = os.getenv('LIB_PATH')
-nuget_registry = os.getenv('NUGET_REGISTRY')
-gh_token = os.getenv('GITHUB_TOKEN')
+nuget_api_key = os.getenv('NUGET_API_KEY')
 
 print(f"LIB_PATH: {LIB_PATH}")
-print(f"NUGET_REGISTRY: {nuget_registry}")
-print(f"GITHUB_TOKEN: {'******' if gh_token else None}")
+print(f"NUGET_API_KEY: {'******' if nuget_api_key else None}")
 
 projects = read_file_to_list('projects.txt')
 newversions = read_file_to_list('newversions.txt')
@@ -45,6 +43,4 @@ for i, project in enumerate(projects):
 
     run_command(['dotnet', 'pack', csproj, '-o', './output'])
     run_command(['dotnet', 'nuget', 'push', f"./output/{project}.{newversion}.nupkg", 
-                    '-k', gh_token, '-s', nuget_registry])
-
-
+                    '-k', nuget_api_key, '-s', 'https://api.nuget.org/v3/index.json'])

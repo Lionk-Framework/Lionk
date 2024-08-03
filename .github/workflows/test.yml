@@ -1,0 +1,71 @@
+name: Conditional Workflow on PR
+
+on:
+  pull_request:
+    branches:
+      - test-nuget-publish
+
+jobs:
+  check_state:
+    if: github.event.pull_request.merged == true
+    runs-on: ${{vars.RUNNER_DISTRIBUTION}}
+    steps:
+
+      - name: Check PR state and source branch
+        run: |
+          if [ "${{ github.event.pull_request.merged }}" == "true" ] && [ "${{ github.event.pull_request.base.ref }}" == "main" ]; then
+            echo "PR is merged and comes from the dev branch"
+          else
+            echo "PR must be merged and come from the dev branch"
+            exit 1
+          fi
+
+  app_workflow:
+    needs: check_state
+    permissions:
+      contents: write
+    if: contains(github.event.pull_request.title, 'app:')
+    uses: ./.github/workflows/app.yml
+    secrets: inherit
+
+  nuget_workflow:
+    needs: check_state
+    permissions:
+      contents: write
+    if: contains(github.event.pull_request.title, 'nuget:')
+    uses: ./.github/workflows/nuget.yml
+    secrets: inherit
+
+  Doc_workflow:
+    needs: check_state
+    permissions:
+      contents: write
+    if: contains(github.event.pull_request.title, 'doc:')
+    runs-on: ${{vars.RUNNER_DISTRIBUTION}}
+    steps:
+
+      - name: Display info
+        run: |
+          echo "Doc merged"
+
+  Wof_Workflow:
+    needs: check_state
+    permissions:
+      contents: write
+    if: contains(github.event.pull_request.title, 'wof:')
+    runs-on: ${{vars.RUNNER_DISTRIBUTION}}
+    steps:
+
+      - name: Display info
+        run: |
+          echo "Wof merged"
+
+  default_workflow:
+    needs: check_state
+    if: ${{ !(contains(github.event.pull_request.title, 'app:') || contains(github.event.pull_request.title, 'nuget:') || contains(github.event.pull_request.title, 'doc:') || contains(github.event.pull_request.title, 'wof:'))}}
+    runs-on: ubuntu-latest
+    steps:
+     - name: Error message
+       run: | 
+        echo "This job is running because the PR title does not contain 'app:', 'nuget:', `doc:` or `wof`. Please, look at the PR title guidelines here -> https://github.com/Lionk-Framework/Lionk/blob/main/docs/Workflow/README.md"
+        exit 1
