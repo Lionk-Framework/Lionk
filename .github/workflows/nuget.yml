@@ -128,6 +128,7 @@ jobs:
       - name: Setup environment variables
         run: |
           echo "LIB_PATH=${{vars.LIB_PATH}}" >> $GITHUB_ENV
+          echo "NUGET_API_KEY=${{ secrets.NUGET_API_KEY }}" >> $GITHUB_ENV
           echo "NUGET_REGISTRY=${{ vars.NUGET_REGISTRY}}" >> $GITHUB_ENV    
           echo "BOT_NAME=${{ vars.BOT_NAME}}" >> $GITHUB_ENV
           echo "BOT_MAIL=${{ vars.BOT_MAIL}}" >> $GITHUB_ENV
