@@ -1,6 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 using Newtonsoft.Json;
-using Notifications.Model.Converters;
+using Notifications.Model.Converter;
 
 namespace Notifications.Model.Classes;
 

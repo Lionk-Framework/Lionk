@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Notifications.Model.Abstraction;
 
-namespace Notifications.Model.Converters;
+namespace Notifications.Model.Converter;
 
 /// <summary>
 /// This class is used to convert a notifyer.
