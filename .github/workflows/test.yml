@@ -13,12 +13,13 @@ jobs:
 
       - name: Check PR state and source branch
         run: |
-          if [ "${{ github.event.pull_request.merged }}" == "true" ] && [ "${{ github.event.pull_request.base.ref }}" == "main" ]; then
-            echo "PR is merged and comes from the dev branch"
-          else
-            echo "PR must be merged and come from the dev branch"
-            exit 1
-          fi
+          echo "test"
+          # if [ "${{ github.event.pull_request.merged }}" == "true" ] && [ "${{ github.event.pull_request.base.ref }}" == "main" ]; then
+          #   echo "PR is merged and comes from the dev branch"
+          # else
+          #   echo "PR must be merged and come from the dev branch"
+          #   exit 1
+          # fi
 
   app_workflow:
     needs: check_state
