@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <Project Sdk="Microsoft.NET.Sdk.Web">
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Version>0.3.0</Version>
-    <Description>
 
-## Change Log
-- Deleting text
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Version>0.3.0</Version>
+        <UserSecretsId>aspnet-LionkApp-1090f860-485b-4f82-b55e-51a9c5fb0c02</UserSecretsId>
+    </PropertyGroup>
 
-# Lionk App
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.7" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.7" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.7" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.7" />
+        <PackageReference Include="MudBlazor" Version="7.4.0" />
+    </ItemGroup>
 
-This is the Lionk App README file.
-</Description>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="MudBlazor" Version="7.4.0" />
-  </ItemGroup>
 </Project>
