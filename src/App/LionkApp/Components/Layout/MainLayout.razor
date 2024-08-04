@@ -15,22 +15,42 @@
     </MudAppBar>
     <MudDrawer @bind-Open="IsDrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <MudNavMenu>
-            <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Dashboard</MudNavLink>
-            <MudNavGroup Title="Notifications" Icon="@Icons.Material.Filled.Notifications" @bind-Expanded="IsNotifcationExpanded">
-                <MudNavLink Href="/active" Match="NavLinkMatch.Prefix">Active</MudNavLink>
-                <MudNavLink Href="/history" Match="NavLinkMatch.Prefix">History</MudNavLink>
-                <MudNavLink Href="/configuration" Match="NavLinkMatch.Prefix">Configuration</MudNavLink>
-            </MudNavGroup>
-            <MudNavLink Href="/plugins" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AddBox">Plugins</MudNavLink>
+            <AuthorizeView>
+                <Authorized>
+                    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Dashboard</MudNavLink>
+                    <MudNavGroup Title="Notifications" Icon="@Icons.Material.Filled.Notifications" @bind-Expanded="IsNotifcationExpanded">
+                        <MudNavLink Href="/active" Match="NavLinkMatch.Prefix">Active</MudNavLink>
+                        <MudNavLink Href="/history" Match="NavLinkMatch.Prefix">History</MudNavLink>
+                        <MudNavLink Href="/configuration" Match="NavLinkMatch.Prefix">Configuration</MudNavLink>
+                    </MudNavGroup>
+                    <MudNavLink Href="/plugins" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AddBox">Plugins</MudNavLink>
+                </Authorized>
+                <NotAuthorized>
+                    <MudNavLink Href="Account/Register" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.FormatAlignLeft">Register</MudNavLink>
+                    <MudNavLink Href="Account/Login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Login">Login</MudNavLink>
+                </NotAuthorized>
+            </AuthorizeView>
         </MudNavMenu>
         <MudContainer Class="mt-auto pa-2">
             <MudGrid Justify="Justify.SpaceBetween">
-                <MudItem>
-                    <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Primary" OnClick="@(() => NavManager.NavigateTo("/profile"))" />
-                </MudItem>
-                <MudItem>
-                    <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Primary" OnClick="@(() => NavManager.NavigateTo("/auth"))" />
-                </MudItem>
+                <AuthorizeView>
+                    <Authorized>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="Account/Manage">
+                                <span class="bi bi-person-fill" aria-hidden="true"></span> Profile
+                            </NavLink>
+                        </div>
+                        <div class="nav-item px-3">
+                            <form action="Account/Logout" method="post">
+                                <AntiforgeryToken />
+                                <input type="hidden" name="ReturnUrl" value="Account/Login" />
+                                <button type="submit" class="nav-link">
+                                    <span class="bi bi-box-arrow-right" aria-hidden="true"></span> Logout
+                                </button>
+                            </form>
+                        </div>
+                    </Authorized>
+                </AuthorizeView>
             </MudGrid>
         </MudContainer>
     </MudDrawer>
