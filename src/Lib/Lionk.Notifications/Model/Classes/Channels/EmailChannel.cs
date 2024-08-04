@@ -11,9 +11,13 @@ namespace Lionk.Notification.Email;
 /// </summary>
 public class EmailChannel : IChannel
 {
+    private const string ConfigFileFolder = "Notifications";
+    private const string ConfigFileName = "smtpconfig.json";
     private SmtpClient? _smtpClient;
     private SmtpConfig? _smtpConfig;
     private bool _isInitialized;
+
+    private string ConfigFilePath => Path.Combine(ConfigFileFolder, ConfigFileName);
 
     /// <inheritdoc/>
     public string Name { get; private set; }
@@ -38,13 +42,12 @@ public class EmailChannel : IChannel
     /// <inheritdoc/>
     public void Initialize()
     {
-        string configFilePath = "path/to/smtpconfig.json";
-        if (!File.Exists(configFilePath))
+        if (!File.Exists(ConfigFilePath))
         {
-            throw new FileNotFoundException("The SMTP configuration file was not found.", configFilePath);
+            throw new FileNotFoundException("The SMTP configuration file was not found.", ConfigFilePath);
         }
 
-        string configJson = File.ReadAllText(configFilePath);
+        string configJson = File.ReadAllText(ConfigFilePath);
         _smtpConfig = JsonConvert.DeserializeObject<SmtpConfig>(configJson);
 
         if (_smtpConfig == null)
@@ -78,13 +81,35 @@ public class EmailChannel : IChannel
         }
     }
 
-    /// <summary>
-    /// Adds a recipient to the channel.
-    /// </summary>
-    /// <param name="recipient">The recipient to add.</param>
+    /// <inheritdoc/>
     public void AddRecipient(IRecipient recipient)
     {
         if (recipient is not EmailRecipients) throw new InvalidOperationException("Recipient is not an email recipient.");
         Recipients.Add(recipient);
+    }
+
+    /// <summary>
+    /// Method used to create the SMTP configuration file.
+    /// </summary>
+    /// <param name="smtpServer"> The SMTP server.</param>
+    /// <param name="port"> The port of the SMTP server.</param>
+    /// <param name="enableSsl"> A value indicating whether the SSL is enabled.</param>
+    /// <param name="username"> The username used to authenticate to the SMTP server.</param>
+    /// <param name="password"> The password used to authenticate to the SMTP server.</param>
+    public void CreatSmtpConfigurationFile(string smtpServer, int port, bool enableSsl, string username, string password)
+    {
+        if (!Directory.Exists(ConfigFileFolder)) Directory.CreateDirectory(ConfigFileFolder);
+
+        var smtpConfig = new SmtpConfig
+        {
+            SmtpServer = smtpServer,
+            Port = port,
+            EnableSsl = enableSsl,
+            Username = username,
+            Password = password,
+        };
+
+        string json = JsonConvert.SerializeObject(smtpConfig);
+        File.WriteAllText(ConfigFilePath, json);
     }
 }

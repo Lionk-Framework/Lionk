@@ -59,4 +59,21 @@ public static class NotificationService
     /// <param name="guid"> the unique identifier of the notification.</param>
     /// <returns> The notification with the specified unique identifier.</returns>
     public static NotificationHistory? GetNotificationByGuid(Guid guid) => NotificationFileHandler.GetNotificationByGuid(guid);
+
+    /// <summary>
+    /// Map a notifyer to a channel.
+    /// </summary>
+    /// <param name="notifyer"> The notifyer to map.</param>
+    /// <param name="channels"> The list of channels to map.</param>
+    public static void MapNotifyerToChannel(INotifyer notifyer, params IChannel[] channels)
+    {
+        if (channels is null) return;
+
+        if (!NotifyerChannels.ContainsKey(notifyer)) NotifyerChannels.Add(notifyer, new List<IChannel>());
+
+        foreach (IChannel channel in channels)
+        {
+            NotifyerChannels[notifyer].Add(channel);
+        }
+    }
 }

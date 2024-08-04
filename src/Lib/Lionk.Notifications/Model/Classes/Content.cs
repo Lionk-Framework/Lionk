@@ -1,7 +1,5 @@
 ﻿// Copyright © 2024 Lionk Project
 
-using System.Text;
-
 namespace Lionk.Notification;
 
 /// <summary>
