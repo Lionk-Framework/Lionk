@@ -19,11 +19,11 @@
                 <Authorized>
                     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Dashboard</MudNavLink>
                     <MudNavGroup Title="Notifications" Icon="@Icons.Material.Filled.Notifications" @bind-Expanded="IsNotifcationExpanded">
-                        <MudNavLink Href="/active" Match="NavLinkMatch.Prefix">Active</MudNavLink>
-                        <MudNavLink Href="/history" Match="NavLinkMatch.Prefix">History</MudNavLink>
-                        <MudNavLink Href="/configuration" Match="NavLinkMatch.Prefix">Configuration</MudNavLink>
+                        <MudNavLink Href="active" Match="NavLinkMatch.Prefix">Active</MudNavLink>
+                        <MudNavLink Href="history" Match="NavLinkMatch.Prefix">History</MudNavLink>
+                        <MudNavLink Href="configuration" Match="NavLinkMatch.Prefix">Configuration</MudNavLink>
                     </MudNavGroup>
-                    <MudNavLink Href="/plugins" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AddBox">Plugins</MudNavLink>
+                    <MudNavLink Href="plugins" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AddBox">Plugins</MudNavLink>
                 </Authorized>
                 <NotAuthorized>
                     <MudNavLink Href="Account/Register" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.FormatAlignLeft">Register</MudNavLink>
