@@ -1,6 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
-namespace Notifications.Model.Enums;
+namespace Lionk.Notification;
 
 /// <summary>
 /// This enum define the level of a notification.

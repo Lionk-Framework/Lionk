@@ -9,6 +9,11 @@ namespace Lionk.Notification;
 public class Notification
 {
     /// <summary>
+    /// Gets a value indicating whether the notification is active.
+    /// </summary>
+    public bool IsActive { get; private set; }
+
+    /// <summary>
     /// Gets the unique identifier of the notification.
     /// </summary>
     public Guid Id { get; private set; }
@@ -19,28 +24,22 @@ public class Notification
     public DateTime Timestamp { get; private set; }
 
     /// <summary>
-    /// Gets the Notifyer that created the notification.
+    /// Gets the content of the notification.
+    /// </summary>
+    public Content Content { get; private set; }
+
+    /// <summary>
+    /// Gets the notifyer that sent the notification.
     /// </summary>
     public INotifyer Notifyer { get; private set; }
 
     /// <summary>
-    /// Gets the content of the notification.
-    /// </summary>
-    public List<IChannel> Channels { get; private set; }
-
-    /// <summary>
-    /// Gets the content of the notification.
-    /// </summary>
-    public NotificationContent Content { get; private set; }
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="Notification"/> class.
     /// </summary>
-    /// <param name="notifyer"> The notifyer that created the notification.</param>
-    /// <param name="channels"> The channels to send the notification to.</param>
     /// <param name="content"> The content of the notification.</param>
-    public Notification(INotifyer notifyer, List<IChannel> channels, NotificationContent content)
-        : this(Guid.NewGuid(), notifyer, channels, content, DateTime.Now)
+    /// <param name="notifyer"> The notifyer that sent the notification.</param>
+    public Notification(Content content, INotifyer notifyer)
+        : this(Guid.NewGuid(), content, notifyer, DateTime.Now)
     {
     }
 
@@ -48,40 +47,15 @@ public class Notification
     /// Initializes a new instance of the <see cref="Notification"/> class.
     /// </summary>
     /// <param name="id"> The unique identifier of the notification.</param>
-    /// <param name="notifyer"> The notifyer that created the notification.</param>
-    /// <param name="channels"> The channels to send the notification to.</param>
     /// <param name="content"> The content of the notification.</param>
+    /// <param name="notifyer"> The notifyer that sent the notification.</param>
     /// <param name="timestamp">The timestamp when the notification was created.</param>
     [JsonConstructor]
-    public Notification(Guid id, INotifyer notifyer, List<IChannel> channels, NotificationContent content, DateTime timestamp)
+    public Notification(Guid id, Content content, INotifyer notifyer, DateTime timestamp)
     {
         Id = id;
         Timestamp = timestamp;
-        Channels = channels;
         Content = content;
         Notifyer = notifyer;
-    }
-
-    /// <summary>
-    /// Method to send the notification to all the channels.
-    /// </summary>
-    public void SendAll()
-    {
-        foreach (IChannel channel in Channels)
-        {
-            SendToChannel(channel);
-        }
-
-        NotificationService.SaveNotification(this);
-    }
-
-    /// <summary>
-    /// Method to send the notification to a specific channel.
-    /// </summary>
-    /// <param name="channel"> The channel to send the notification to.</param>
-    public void SendToChannel(IChannel channel)
-    {
-        if (channel is null) throw new ArgumentNullException(nameof(channel));
-        channel.Send(Content);
     }
 }

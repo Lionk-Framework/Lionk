@@ -15,12 +15,14 @@ public interface IChannel
     /// <summary>
     /// Gets the recipients of the channel.
     /// </summary>
-    List<NotificationRecipient> Recipients { get; }
+    List<IRecipient> Recipients { get; }
 
     /// <summary>
     /// Gets a value indicating whether the channel is initialized.
     /// </summary>
     bool IsInitialized { get; }
+
+    void AddRecipient(IRecipient recipient);
 
     /// <summary>
     /// Initialize the channel to send notifications.
@@ -28,13 +30,9 @@ public interface IChannel
     void Initialize();
 
     /// <summary>
-    /// Test the channel to check if it's working.
-    /// </summary>
-    void TestChannel();
-
-    /// <summary>
     /// Send a notification to the specified recipients.
     /// </summary>
+    /// <param name="notifyer"> The notifyer that send the notification.</param>
     /// <param name="content"> The content of the notification.</param>
-    void Send(NotificationContent content);
+    void Send(INotifyer notifyer, Content content);
 }

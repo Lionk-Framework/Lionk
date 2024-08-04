@@ -1,6 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using System.Reflection;
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -14,8 +15,9 @@ public class NotificationPropertiesConverter : JsonConverter
     /// <inheritdoc/>
     public override bool CanConvert(Type objectType) => objectType switch
     {
-        Type t when typeof(INotifyer).IsAssignableFrom(t) => true,
         Type t when typeof(IChannel).IsAssignableFrom(t) => true,
+        Type t when typeof(IRecipient).IsAssignableFrom(t) => true,
+        Type t when typeof(INotifyer).IsAssignableFrom(t) => true,
         _ => false,
     };
 

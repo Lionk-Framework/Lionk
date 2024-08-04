@@ -48,9 +48,9 @@ public static class NotificationFileHandler
     /// Method to save a notification in history.
     /// </summary>
     /// <param name="notification"> The notification to save.</param>
-    public static void SaveNotification(Notification notification)
+    public static void SaveNotification(NotificationHistory notification)
     {
-        List<Notification> notifications = GetNotifications();
+        List<NotificationHistory> notifications = GetNotifications();
         notifications.Add(notification);
         string json = JsonConvert.SerializeObject(notifications, Formatting.Indented, JsonSerializerSettings);
         File.WriteAllText(FilePath, json);
@@ -61,12 +61,12 @@ public static class NotificationFileHandler
     /// </summary>
     /// <returns> The list of notifications saved.</returns>
     /// <exception cref="ArgumentNullException"> If file exists but the result of the deserialization is null.</exception>
-    public static List<Notification> GetNotifications()
+    public static List<NotificationHistory> GetNotifications()
     {
-        List<Notification> notifications = new();
+        List<NotificationHistory> notifications = new();
         if (File.Exists(FilePath))
         {
-            notifications = JsonConvert.DeserializeObject<List<Notification>>(File.ReadAllText(FilePath), JsonSerializerSettings) ?? throw new ArgumentNullException(nameof(notifications));
+            notifications = JsonConvert.DeserializeObject<List<NotificationHistory>>(File.ReadAllText(FilePath), JsonSerializerSettings) ?? throw new ArgumentNullException(nameof(notifications));
         }
 
         return notifications;
@@ -77,9 +77,9 @@ public static class NotificationFileHandler
     /// </summary>
     /// <param name="guid"> The unique identifier of the notification.</param>
     /// <returns> The notification with the specified unique identifier.</returns>
-    public static Notification? GetNotificationByGuid(Guid guid)
+    public static NotificationHistory? GetNotificationByGuid(Guid guid)
     {
-        List<Notification> notifications = GetNotifications();
-        return notifications.FirstOrDefault(n => n.Id == guid);
+        List<NotificationHistory> notifications = GetNotifications();
+        return notifications.FirstOrDefault(n => n.Notification.Id == guid);
     }
 }
