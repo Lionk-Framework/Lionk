@@ -10,9 +10,9 @@ namespace Lionk.Notification;
 public class NotificationHistory
 {
     /// <summary>
-    /// Gets the notification.
+    /// Gets or sets the notification.
     /// </summary>
-    public Notification Notification { get; private set; }
+    public Notification Notification { get; set; }
 
     /// <summary>
     /// Gets the list of channels.

@@ -53,7 +53,7 @@ public class NotificationEmailTests
         string smtpServer = "localhost";
         int port = 2526;
         bool enableSsl = false;
-        string username = "senderTest";
+        string username = "notifyer@email.test";
         string password = "passwordTest";
         Notification notification = new(_content, _notifyer);
 
@@ -62,5 +62,12 @@ public class NotificationEmailTests
         _emailChannel.Initialize();
         _emailChannel.AddRecipient(new EmailRecipients("Recipient", "recipient@email.test"));
         NotificationService.Send(notification);
+
+        // Assert
+        Assert.That(SmtpServerTest.Mailbox.Count, Is.EqualTo(1));
+        Assert.That(SmtpServerTest.Mailbox.First(), Does.Contain("Title"));
+        Assert.That(SmtpServerTest.Mailbox.First(), Does.Contain("Message"));
+        Assert.That(SmtpServerTest.Mailbox.First(), Does.Contain("notifyer@email.test"));
+        Assert.That(SmtpServerTest.Mailbox.First(), Does.Contain("recipient@email.test"));
     }
 }

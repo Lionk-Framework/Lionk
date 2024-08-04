@@ -1,46 +1,11 @@
 ﻿// Copyright © 2024 Lionk Project
 using Lionk.Notification;
+using LionkTest.Notifications.Mock;
 
 namespace LionkTest.NotificationsTests;
 
 internal class NotificationsHistoryTests
 {
-    public class MockRecipient : IRecipient
-    {
-        public string Name { get; }
-
-        public MockRecipient(string name) => Name = name;
-    }
-
-    public class MockNotifyer : INotifyer
-    {
-        public string Name => "TestNotifyer";
-    }
-
-    public class MockChannel : IChannel
-    {
-        public string Name { get; } = $"Channel";
-
-        public List<IRecipient> Recipients { get; } = new() { new MockRecipient($"Recipient1"), new MockRecipient($"Recipient2") };
-
-        public bool IsInitialized => true;
-
-        public void Initialize()
-        {
-            // do nothing
-        }
-
-        public void Send(INotifyer notifyer, Content content)
-        {
-            // do nothing
-        }
-
-        public void AddRecipient(IRecipient recipient)
-        {
-            // do nothing
-        }
-    }
-
     private MockChannel _mockChannel1;
     private MockChannel _mockChannel2;
     private MockNotifyer _mockNotifyer;
@@ -56,10 +21,10 @@ internal class NotificationsHistoryTests
         _mockChannel1 = new MockChannel();
         _mockChannel2 = new MockChannel();
         _content = new Content(Severity.Information, "Title", "Message");
-
-        INotifyer notifyer = _mockNotifyer;
         _channels = new() { _mockChannel1, _mockChannel2 };
-        _notification = new Notification(_content, notifyer);
+        _notification = new Notification(_content, _mockNotifyer);
+
+        // Act
         NotificationService.SaveNotificationHistory(_notification, _channels);
     }
 
@@ -100,5 +65,34 @@ internal class NotificationsHistoryTests
         Assert.That(notificationHistory.Notification.Content.Level, Is.EqualTo(_notification.Content.Level), "The level is not the same.");
         Assert.That(notificationHistory.Notification.Content.Title, Is.EqualTo(_notification.Content.Title), "The title is not the same.");
         Assert.That(notificationHistory.Notification.Content.Message, Is.EqualTo(_notification.Content.Message), "The message is not the same.");
+    }
+
+    [Test]
+    public void TestEditedNotificationDeserialization()
+    {
+        // Arrange
+        Guid id;
+
+        // Act
+        List<NotificationHistory> notifications = NotificationService.GetNotifications();
+        NotificationHistory notificationHistory = notifications.Last();
+        if (notificationHistory is null)
+        {
+            Assert.Fail("The notification history is null.");
+            return;
+        }
+
+        id = notificationHistory.Notification.Id;
+        notificationHistory.Notification.Read();
+        NotificationService.EditNotificationHistory(notificationHistory.Notification);
+        NotificationHistory? editedNotificationHistory = NotificationService.GetNotificationByGuid(id);
+        if (editedNotificationHistory is null)
+        {
+            Assert.Fail("The edited notification history is null.");
+            return;
+        }
+
+        // Assert
+        Assert.That(editedNotificationHistory.Notification.IsRead, Is.True, "The notification is not read.");
     }
 }

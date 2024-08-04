@@ -15,6 +15,11 @@ namespace LionkTest.Notifications;
 public class SmtpServerTest
 {
     /// <summary>
+    /// Gets the list of received emails.
+    /// </summary>
+    public static List<string> Mailbox { get; } = new List<string>();
+
+    /// <summary>
     /// This class is used to store the message received by the SMTP server.
     /// </summary>
     private class SampleMessageStore : MessageStore
@@ -22,9 +27,8 @@ public class SmtpServerTest
         public override Task<SmtpResponse> SaveAsync(ISessionContext context, IMessageTransaction transaction, ReadOnlySequence<byte> buffer, CancellationToken cancellationToken)
         {
             string message = System.Text.Encoding.UTF8.GetString(buffer.ToArray());
-            Console.WriteLine($"Message reçu : {message}");
+            Mailbox.Add(message);
 
-            // Traiter le message reçu ici
             return Task.FromResult(SmtpResponse.Ok);
         }
     }
@@ -37,7 +41,7 @@ public class SmtpServerTest
         public Task<bool> AuthenticateAsync(ISessionContext context, string user, string password, CancellationToken cancellationToken)
         {
             // Authentifier l'utilisateur (exemple basique)
-            if (user == "senderTest" && password == "passwordTest")
+            if (user == "notifyer@email.test" && password == "passwordTest")
             {
                 return Task.FromResult(true);
             }

@@ -52,6 +52,15 @@ public static class NotificationFileHandler
     {
         List<NotificationHistory> notifications = GetNotifications();
         notifications.Add(notification);
+        WriteNotifications(notifications);
+    }
+
+    /// <summary>
+    /// Method to write the notifications in the file.
+    /// </summary>
+    /// <param name="notifications"> The list of notifications to write.</param>
+    private static void WriteNotifications(List<NotificationHistory> notifications)
+    {
         string json = JsonConvert.SerializeObject(notifications, Formatting.Indented, JsonSerializerSettings);
         File.WriteAllText(FilePath, json);
     }
@@ -81,5 +90,16 @@ public static class NotificationFileHandler
     {
         List<NotificationHistory> notifications = GetNotifications();
         return notifications.FirstOrDefault(n => n.Notification.Id == guid);
+    }
+
+    /// <summary>
+    /// Method to edit a notification in history.
+    /// </summary>
+    /// <param name="notificationHistory">The notification to edit.</param>
+    public static void EditNotification(NotificationHistory notificationHistory)
+    {
+        List<NotificationHistory> notificationHistories = GetNotifications();
+        notificationHistories[notificationHistories.FindIndex(n => n.Notification.Id == notificationHistory.Notification.Id)] = notificationHistory;
+        WriteNotifications(notificationHistories);
     }
 }

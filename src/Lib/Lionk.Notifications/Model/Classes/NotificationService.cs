@@ -1,4 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
+using Lionk.Notification.Event;
+
 namespace Lionk.Notification;
 
 /// <summary>
@@ -6,6 +8,11 @@ namespace Lionk.Notification;
 /// </summary>
 public static class NotificationService
 {
+    /// <summary>
+    /// This event is raised when a notification is sent.
+    /// </summary>
+    public static event EventHandler<NotificationEventArgs>? NotificationSent;
+
     /// <summary>
     /// Gets get the list of all the notifyers.
     /// </summary>
@@ -27,13 +34,15 @@ public static class NotificationService
     /// <param name="notification">the notification to send.</param>
     public static void Send(Notification notification)
     {
-        // TODO : Raise the event.
         ArgumentNullException.ThrowIfNull(notification, nameof(notification));
         List<IChannel> channels = NotifyerChannels[notification.Notifyer];
         foreach (IChannel channel in channels)
         {
             channel.Send(notification.Notifyer, notification.Content);
         }
+
+        SaveNotificationHistory(notification, channels);
+        NotificationSent?.Invoke(null, new NotificationEventArgs(notification, channels));
     }
 
     /// <summary>
@@ -45,6 +54,18 @@ public static class NotificationService
     {
         var notificationHistory = new NotificationHistory(notification, channels);
         NotificationFileHandler.SaveNotification(notificationHistory);
+    }
+
+    /// <summary>
+    /// Edit a notification in history.
+    /// </summary>
+    /// <param name="notification">The notification to edit.</param>
+    public static void EditNotificationHistory(Notification notification)
+    {
+        NotificationHistory? notificationHistory = NotificationFileHandler.GetNotificationByGuid(notification.Id);
+        if (notificationHistory is null) return;
+        notificationHistory.Notification = notification;
+        NotificationFileHandler.EditNotification(notificationHistory);
     }
 
     /// <summary>
