@@ -8,12 +8,12 @@ namespace Lionk.Notification.Email;
 public class EmailRecipients : IRecipient
 {
     /// <inheritdoc/>
-    public string Name { get; private set; }
+    public string Name { get; private set; } = string.Empty;
 
     /// <summary>
     /// Gets the email of the recipient.
     /// </summary>
-    public string Email { get; private set; }
+    public string Email { get; private set; } = string.Empty;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EmailRecipients"/> class with the specified name, email, subject, and body.
@@ -24,5 +24,12 @@ public class EmailRecipients : IRecipient
     {
         Name = name;
         Email = email;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EmailRecipients"/> class.
+    /// </summary>
+    public EmailRecipients()
+    {
     }
 }

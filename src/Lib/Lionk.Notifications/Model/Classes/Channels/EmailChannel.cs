@@ -15,18 +15,18 @@ public class EmailChannel : IChannel
     private const string ConfigFileName = "smtpconfig.json";
     private SmtpClient? _smtpClient;
     private SmtpConfig? _smtpConfig;
-    private bool _isInitialized;
 
     private string ConfigFilePath => Path.Combine(ConfigFileFolder, ConfigFileName);
 
     /// <inheritdoc/>
-    public string Name { get; private set; }
+    public string Name { get; private set; } = string.Empty;
 
     /// <inheritdoc/>
-    public List<IRecipient> Recipients { get; private set; }
+    public List<IRecipient> Recipients { get; private set; } = new();
 
     /// <inheritdoc/>
-    public bool IsInitialized => _isInitialized;
+    [JsonIgnore]
+    public bool IsInitialized { get; private set; } = false;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EmailChannel"/> class.
@@ -36,7 +36,25 @@ public class EmailChannel : IChannel
     {
         Name = name;
         Recipients = new List<IRecipient>();
-        _isInitialized = false;
+        IsInitialized = false;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EmailChannel"/> class.
+    /// </summary>
+    /// <param name="name"> The name of the channel.</param>
+    /// <param name="recipients"> The list of recipients.</param>
+    public EmailChannel(string name, LinkedList<IRecipient> recipients)
+    {
+        Name = name;
+        Recipients = new List<IRecipient>(recipients);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EmailChannel"/> class.
+    /// </summary>
+    public EmailChannel()
+    {
     }
 
     /// <inheritdoc/>
@@ -59,7 +77,7 @@ public class EmailChannel : IChannel
         _smtpClient.EnableSsl = _smtpConfig.EnableSsl;
         _smtpClient.Credentials = new NetworkCredential(_smtpConfig.Username, _smtpConfig.Password);
 
-        _isInitialized = true;
+        IsInitialized = true;
     }
 
     /// <inheritdoc/>
@@ -67,7 +85,7 @@ public class EmailChannel : IChannel
     {
         ArgumentNullException.ThrowIfNull(content);
         ArgumentNullException.ThrowIfNull(notifyer);
-        if (!_isInitialized) throw new InvalidOperationException("EmailChannel is not initialized.");
+        if (!IsInitialized) throw new InvalidOperationException("EmailChannel is not initialized.");
         if (_smtpConfig is null) throw new InvalidOperationException("SMTP configuration is not initialized.");
         if (_smtpClient is null) throw new InvalidOperationException("SMTP client is not initialized.");
 

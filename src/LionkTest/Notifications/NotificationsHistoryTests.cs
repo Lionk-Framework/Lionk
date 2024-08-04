@@ -2,7 +2,7 @@
 using Lionk.Notification;
 using LionkTest.Notifications.Mock;
 
-namespace LionkTest.NotificationsTests;
+namespace LionkTest.Notifications;
 
 internal class NotificationsHistoryTests
 {
