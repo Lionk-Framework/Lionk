@@ -1,7 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
-using Notifications.Model.Classes;
 
-namespace Notifications.Model.Abstraction;
+namespace Lionk.Notification;
 
 /// <summary>
 /// Interface that define a Notification Channel.

@@ -1,8 +1,8 @@
 ﻿// Copyright © 2024 Lionk Project
+using Lionk.Notification.Converter;
 using Newtonsoft.Json;
-using Notifications.Model.Converter;
 
-namespace Notifications.Model.Classes;
+namespace Lionk.Notification;
 
 /// <summary>
 /// This class implements the way notifications are managed with a file.

@@ -1,8 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
 using Newtonsoft.Json;
-using Notifications.Model.Abstraction;
 
-namespace Notifications.Model.Classes;
+namespace Lionk.Notification;
 
 /// <summary>
 /// This class represents a notification that can be displayed to the user.

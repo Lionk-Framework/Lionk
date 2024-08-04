@@ -1,5 +1,5 @@
 ﻿// Copyright © 2024 Lionk Project
-namespace Notifications.Model.Abstraction;
+namespace Lionk.Notification;
 
 /// <summary>
 /// Interface that define a Notifyer.

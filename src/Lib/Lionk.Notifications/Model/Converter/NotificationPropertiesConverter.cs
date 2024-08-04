@@ -3,9 +3,8 @@
 using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Notifications.Model.Abstraction;
 
-namespace Notifications.Model.Converter;
+namespace Lionk.Notification.Converter;
 
 /// <summary>
 /// This class is used to convert a notifyer.

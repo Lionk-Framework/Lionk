@@ -1,9 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
-
-// Copyright © 2024 Lionk Project
 using Notifications.Model.Enums;
 
-namespace Notifications.Model.Classes;
+namespace Lionk.Notification;
 
 /// <summary>
 /// This class define a notification content.
