@@ -49,7 +49,7 @@ public class PluginManager : IPluginManager
     /// <inheritdoc/>
     public void RemovePlugin(Plugin plugin)
     {
-        ArgumentNullException.ThrowIfNull(plugin, nameof(plugin));
+        if (plugin is null) return;
 
         _plugins.Remove(plugin);
         _pluginPaths.Remove(plugin.Assembly.Location);
