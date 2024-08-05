@@ -1,21 +1,19 @@
 ﻿// Copyright © 2024 Lionk Project
 
-namespace Lionk.Core;
+namespace Lionk.Core.TypeRegistery;
 
 /// <summary>
 /// Provides data for the TypeAvailable event.
 /// </summary>
-public class TypesEventArgs : EventArgs
+/// <remarks>
+/// Initializes a new instance of the <see cref="TypesEventArgs"/> class.
+/// </remarks>
+/// <param name="type">The new types that is available.</param>
+public class TypesEventArgs(IEnumerable<Type> type) : EventArgs
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TypesEventArgs"/> class.
-    /// </summary>
-    /// <param name="type">The new types that is available.</param>
-    public TypesEventArgs(IEnumerable<Type> type)
-        => Types = type ?? throw new ArgumentNullException(nameof(type));
 
     /// <summary>
     /// Gets the new types that is available.
     /// </summary>
-    public IEnumerable<Type> Types { get; }
+    public IEnumerable<Type> Types { get; } = type ?? throw new ArgumentNullException(nameof(type));
 }
