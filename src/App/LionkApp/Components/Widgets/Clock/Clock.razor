@@ -1,0 +1,31 @@
+﻿@using Lionk.Core
+@implements Lionk.Core.IComponent
+@attribute [NamedElement("Clock", "a sweet clock widget")]
+
+<MudCard>
+    <MudCardContent>
+        <MudText Typo="Typo.h3">@InstanceName</MudText>
+        <MudText Typo="Typo.h4">@currentTime</MudText>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    private string currentTime = "No time setted";
+
+    protected override void OnInitialized()
+    {
+        InstanceName = "Super Clock";
+        currentTime = DateTime.Now.ToString("HH:mm:ss");
+        var timer = new System.Timers.Timer(1000);
+        timer.Elapsed += (sender, e) => InvokeAsync(UpdateTime);
+        timer.Start();
+    }
+
+    private void UpdateTime()
+    {
+        currentTime = DateTime.Now.ToString("HH:mm:ss");
+        StateHasChanged();
+    }
+
+    public string? InstanceName { get; set; }
+}
