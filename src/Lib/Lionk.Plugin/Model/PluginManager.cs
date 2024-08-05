@@ -46,14 +46,6 @@ public class PluginManager : IPluginManager
         SavePluginPaths();
     }
 
-    /// <summary>
-    /// Gets the loaded plugins.
-    /// </summary>
-    /// <returns>A <see cref="IEnumerable{T}"/>
-    /// which contains all the loaded <see cref="Plugin"/>.</returns>
-    public IEnumerable<Plugin> GetPlugins()
-        => _plugins.AsReadOnly();
-
     /// <inheritdoc/>
     public void RemovePlugin(Plugin plugin)
     {
