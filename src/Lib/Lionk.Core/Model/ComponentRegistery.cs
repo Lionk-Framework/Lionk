@@ -7,7 +7,7 @@ namespace Lionk.Core.TypeRegistery;
 /// <summary>
 /// .
 /// </summary>
-public class TypeRegistery
+public class ComponentRegistery
 {
     private readonly Dictionary<Type, Factory> _typesRegistery;
 
@@ -18,9 +18,9 @@ public class TypeRegistery
         => _typesRegistery.AsReadOnly();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TypeRegistery"/> class.
+    /// Initializes a new instance of the <see cref="ComponentRegistery"/> class.
     /// </summary>
-    public TypeRegistery()
+    public ComponentRegistery()
         => _typesRegistery = [];
 
     private static readonly Type _type = typeof(Factory);
