@@ -1,6 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
-namespace Lionk.Core;
+namespace Lionk.Core.Component;
 
 /// <summary>
 /// Interface that define a component.
