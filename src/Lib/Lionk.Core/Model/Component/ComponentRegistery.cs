@@ -1,6 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using System.Collections.ObjectModel;
+using Lionk.Core.Model.Component;
 using Lionk.Core.TypeRegistery;
 
 namespace Lionk.Core.Component;
@@ -14,7 +15,7 @@ public class ComponentRegistery : IDisposable
     /// <summary>
     /// Gets a dictionnary containing all registered Type and theirs factory.
     /// </summary>
-    public ReadOnlyDictionary<Type, Factory> TypesRegistery
+    public ReadOnlyDictionary<ComponentTypeDescription, Factory> TypesRegistery
         => _typesRegistery.AsReadOnly();
 
     /// <summary>
@@ -50,13 +51,12 @@ public class ComponentRegistery : IDisposable
     /// <summary>
     /// Used to add a provider.
     /// </summary>
-    /// <param name="provider"></param>
+    /// <param name="provider">Provider to add.</param>
     public void AddProvider(ITypesProvider provider)
     {
         _providers.Add(provider);
         provider.NewTypesAvailable += OnNewTypesAvailable;
     }
-
 
     /// <summary>
     /// Used to delete a provider.
@@ -83,13 +83,15 @@ public class ComponentRegistery : IDisposable
                 !_registeredTypes.Contains(type))
             {
                 var factory = new Factory(type);
-                _typesRegistery.Add(type, factory);
+                var description = new ComponentTypeDescription(type);
+
+                _typesRegistery.Add(description, factory);
                 _registeredTypes.Add(type);
             }
         }
     }
 
-    private readonly Dictionary<Type, Factory> _typesRegistery;
+    private readonly Dictionary<ComponentTypeDescription, Factory> _typesRegistery;
     private readonly HashSet<Type> _registeredTypes;
     private readonly List<ITypesProvider> _providers;
 }
