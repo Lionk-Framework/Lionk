@@ -1,5 +1,7 @@
 // Copyright © 2024 Lionk Project
 
+using Lionk.Log;
+using Lionk.Log.Serilog;
 using LionkApp.Components;
 using LionkApp.Components.Account;
 using LionkApp.Data;
@@ -7,6 +9,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
+using ILoggerFactory = Lionk.Log.ILoggerFactory;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -39,7 +42,14 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
+// Configure custom logger
+builder.Services.AddSingleton<ILoggerFactory, SerilogFactory>();
+
 WebApplication app = builder.Build();
+
+// Configure the LogService with the singleton logger
+ILoggerFactory loggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
+LogService.Configure(loggerFactory);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
