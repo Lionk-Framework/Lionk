@@ -10,10 +10,5 @@ public interface IComponent
     /// <summary>
     /// Gets the name of the component.
     /// </summary>
-    string Name { get; }
-
-    /// <summary>
-    /// Gets the description of the component.
-    /// </summary>
-    string Description { get; }
+    public string? InstanceName { get; }
 }

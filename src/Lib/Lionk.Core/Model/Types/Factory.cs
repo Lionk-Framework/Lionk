@@ -9,14 +9,17 @@ namespace Lionk.Core.TypeRegistery;
 /// </summary>
 public class Factory
 {
-    private readonly Type _type;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Factory"/> class.
     /// </summary>
-    /// <param name="type">asd.</param>
+    /// <param name="type">The type created by the factory.</param>
     public Factory(Type type)
-        => _type = type;
+        => Type = type;
+
+    /// <summary>
+    /// Gets the type used by the factory.
+    /// </summary>
+    public Type Type { get; }
 
     /// <summary>
     /// Create a new instance of the type.
@@ -29,12 +32,12 @@ public class Factory
 
         try
         {
-            result = Activator.CreateInstance(_type);
+            result = Activator.CreateInstance(Type);
         }
         catch (MissingMethodException ex)
         {
             LogService.LogDebug($"Error creating instance of type" +
-                $" {_type.Name}. {ex.Message}");
+                $" {Type.Name}. {ex.Message}");
         }
 
         return result;
