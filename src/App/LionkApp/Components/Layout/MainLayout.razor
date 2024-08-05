@@ -11,7 +11,7 @@
         <MudText Typo="Typo.h5" Class="ml-3">Lionk</MudText>
         <MudSpacer />
         <MudIconButton Icon="@Icons.Material.Filled.CircleNotifications" Color="Color.Primary" OnClick="OnNotificationPressed" />
-        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="() => IsDarkMode = !IsDarkMode" />
+        @*<MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="() => IsDarkMode = !IsDarkMode" />*@
     </MudAppBar>
     <MudDrawer @bind-Open="IsDrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <MudNavMenu>
