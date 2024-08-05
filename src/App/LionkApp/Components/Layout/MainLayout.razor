@@ -7,11 +7,11 @@
 <MudSnackbarProvider />
 <MudLayout>
     <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="() => IsDrawerOpen = !IsDrawerOpen" />
         <MudText Typo="Typo.h5" Class="ml-3">Lionk</MudText>
         <MudSpacer />
         <MudIconButton Icon="@Icons.Material.Filled.CircleNotifications" Color="Color.Primary" OnClick="OnNotificationPressed" />
-        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
+        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="() => IsDarkMode = !IsDarkMode" />
     </MudAppBar>
     <MudDrawer @bind-Open="IsDrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <MudNavMenu>
@@ -26,10 +26,10 @@
         <MudContainer Class="mt-auto pa-2">
             <MudGrid Justify="Justify.SpaceBetween">
                 <MudItem>
-                    <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Primary" OnClick="OnProfilePressed" />
+                    <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Primary" OnClick='() => NavManager.NavigateTo("/profile")' />
                 </MudItem>
                 <MudItem>
-                    <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Primary" OnClick="OnLogoutPressed" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Primary" OnClick='() => NavManager.NavigateTo("/auth")' />
                 </MudItem>
             </MudGrid>
         </MudContainer>
@@ -47,9 +47,9 @@
 
 @code {
     private bool IsDrawerOpen = true;
+    private bool IsDarkMode = false;
     private bool IsNotifcationExpanded = false;
     private MudTheme? Theme = null;
-    private bool IsDarkMode = true;
 
     protected override void OnInitialized()
     {
@@ -61,32 +61,6 @@
                 PaletteDark = _darkPalette,
                 LayoutProperties = new LayoutProperties()
             };
-    }
-
-    private void DarkModeToggle()
-    {
-        IsDarkMode = !IsDarkMode;
-    }
-
-    private void DrawerToggle()
-    {
-        IsDrawerOpen = !IsDrawerOpen;
-    }
-
-    private void OnNotificationPressed()
-    {
-        NavManager.NavigateTo("/active");
-        IsNotifcationExpanded = true;
-    }
-
-    private void OnProfilePressed()
-    {
-        NavManager.NavigateTo("/profile");
-    }
-
-    private void OnLogoutPressed()
-    {
-        NavManager.NavigateTo("/auth");
     }
 
     private readonly PaletteLight _lightPalette = new()
@@ -133,4 +107,10 @@
         true => Icons.Material.Rounded.LightMode,
         false => Icons.Material.Outlined.DarkMode,
     };
+
+    private void OnNotificationPressed()
+    {
+        NavManager.NavigateTo("/active");
+        IsNotifcationExpanded = true;
+    }
 }
