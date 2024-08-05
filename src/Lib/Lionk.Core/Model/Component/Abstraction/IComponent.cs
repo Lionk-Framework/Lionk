@@ -8,7 +8,7 @@ namespace Lionk.Core.Component;
 public interface IComponent
 {
     /// <summary>
-    /// Gets the name of the component.
+    /// Gets or sets the name of the component.
     /// </summary>
-    public string? InstanceName { get; }
+    public string? InstanceName { get; set; }
 }

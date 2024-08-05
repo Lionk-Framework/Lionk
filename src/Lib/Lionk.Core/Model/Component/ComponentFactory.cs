@@ -1,6 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using Lionk.Core.TypeRegistery;
+using Lionk.Log;
 
 namespace Lionk.Core.Component;
 
@@ -21,5 +22,16 @@ public class ComponentFactory(Type type) : Factory(type)
 
     /// <inheritdoc/>
     protected override void OnCreateInstance(object instance)
-        => _componentService?.RegisterComponentInstance(instance);
+    {
+        if (instance is IComponent component)
+        {
+            _componentService?.RegisterComponentInstance(component);
+        }
+        else
+        {
+            LogService.LogApp(
+                LogSeverity.Error,
+                $"Error creating instance of type {Type.Name}. " + $"The instance is not a component.");
+        }
+    }
 }
