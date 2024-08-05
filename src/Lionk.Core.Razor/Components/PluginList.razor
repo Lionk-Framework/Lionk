@@ -1,0 +1,29 @@
+﻿@namespace Lionk.Core.Razor
+@using Lionk.Core.TypeRegistery
+@using MudBlazor
+
+<MudTable @ref="_table" T="KeyValuePair<Type, Factory>" Items="@_typesRegistery" MultiSelection="true" SelectionChangeable="false" Hover="true"
+          @bind-SelectedItems="_selectedItem">
+    <HeaderContent>
+        <MudTh>Select</MudTh>
+        <MudTh>Type Name</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Type Name">@context.Key.Name</MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
+    </PagerContent>
+    <FooterContent>
+        <MudTd colspan="5">Select All</MudTd>
+    </FooterContent>
+</MudTable>
+
+
+@code {
+    private List<KeyValuePair<Type, Factory>> _typesRegistery;
+    private MudTable<KeyValuePair<Type, Factory>> _table;
+    private HashSet<KeyValuePair<Type, Factory>> _selectedItem;
+    private bool _selectOnRowClick = false;
+
+}
