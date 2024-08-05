@@ -28,6 +28,7 @@ public class PluginManager : IPluginManager
     /// <inheritdoc/>
     public void AddPlugin(string path)
     {
+        // TODO copy path to plugin folder
         if (!File.Exists(path) || Path.GetExtension(path) != ".dll")
         {
             LogService.LogApp(LogSeverity.Warning, $"Invalid plugin path: {path}");
