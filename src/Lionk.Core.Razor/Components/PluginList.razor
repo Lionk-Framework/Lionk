@@ -3,14 +3,16 @@
 @using Lionk.Core.TypeRegistery
 
 
-<MudTable @ref="_table" T="KeyValuePair<ComponentTypeDescription, Factory>" Items="@TypesRegistery" MultiSelection="true" SelectionChangeable="false" Hover="true"
+<MudTable @ref="_table" T="KeyValuePair<ComponentTypeDescription, Factory>" Items="@TypesRegistery" MultiSelection="true" SelectionChangeable="true" Hover="true"
           @bind-SelectedItems="_selectedItem">
     <HeaderContent>
+        <MudTh></MudTh>
         <MudTh>Type Name</MudTh>
         <MudTh>Details</MudTh>
     </HeaderContent>
 
     <RowTemplate>
+        <MudTd><MudIcon Icon="@Icons.Material.Filled.AutoAwesomeMosaic"/></MudTd>
         <MudTd DataLabel="Type Name">@context.Key.Name</MudTd>
         <MudTd>
             <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => ShowDetails(context.Key.Description)">Component details</MudButton>
