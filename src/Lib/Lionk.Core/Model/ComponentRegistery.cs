@@ -1,20 +1,21 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using System.Collections.ObjectModel;
+using Lionk.Core.TypeRegistery;
 
-namespace Lionk.Core.TypeRegistery;
+namespace Lionk.Core;
 
 /// <summary>
 /// .
 /// </summary>
 public class ComponentRegistery
 {
-    private readonly Dictionary<Type, Factory> _typesRegistery;
+    private readonly Dictionary<IComponent, Factory> _typesRegistery;
 
     /// <summary>
     /// Gets r.
     /// </summary>
-    public ReadOnlyDictionary<Type, Factory> TypesRegistery
+    public ReadOnlyDictionary<IComponent, Factory> TypesRegistery
         => _typesRegistery.AsReadOnly();
 
     /// <summary>
@@ -22,6 +23,4 @@ public class ComponentRegistery
     /// </summary>
     public ComponentRegistery()
         => _typesRegistery = [];
-
-    private static readonly Type _type = typeof(Factory);
 }

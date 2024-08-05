@@ -11,7 +11,6 @@ namespace Lionk.Core.TypeRegistery;
 /// <param name="type">The new types that is available.</param>
 public class TypesEventArgs(IEnumerable<Type> type) : EventArgs
 {
-
     /// <summary>
     /// Gets the new types that is available.
     /// </summary>

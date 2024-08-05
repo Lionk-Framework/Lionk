@@ -1,6 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
-namespace Lionk.Core;
+namespace Lionk.Core.TypeRegistery;
 
 /// <summary>
 /// Interface wich define a types provider.

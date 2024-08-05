@@ -1,6 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
-using Lionk.Core;
+using Lionk.Core.TypeRegistery;
 
 namespace Lionk.Plugin;
 
