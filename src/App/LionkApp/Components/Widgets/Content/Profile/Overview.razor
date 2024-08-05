@@ -1,11 +1,15 @@
-﻿@using System.ComponentModel.DataAnnotations
+﻿@page "/overview"
+
+@using System.ComponentModel.DataAnnotations
 
 <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
     <MudGrid>
-        <MudItem xs="12" sm="12">
+        <MudItem xs="12">
             <MudCard>
                 <MudCardContent>
+                    <MudTextField Label="First name" HelperText="Max. 8 characters"
+                                  @bind-Value="model.Username" For="@(() => model.Username)" />
                     <MudTextField Label="Email" Class="mt-3"
                                   @bind-Value="model.Email" For="@(() => model.Email)" />
                     <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
@@ -18,6 +22,11 @@
                 </MudCardActions>
             </MudCard>
         </MudItem>
+        <MudItem xs="12">
+            <MudText Typo="Typo.body2" Align="Align.Center">
+                Fill out the form correctly to see the success message.
+            </MudText>
+        </MudItem>
     </MudGrid>
 </EditForm>
 @code {
@@ -26,6 +35,10 @@
 
     public class RegisterAccountForm
     {
+        [Required]
+        [StringLength(8, ErrorMessage = "Name length can't be more than 8.")]
+        public string? Username { get; set; }
+
         [Required]
         [EmailAddress]
         public string? Email { get; set; }
@@ -45,4 +58,5 @@
         // success = true;
         StateHasChanged();
     }
+
 }
