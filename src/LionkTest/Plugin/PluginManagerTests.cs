@@ -4,7 +4,7 @@ using System.Reflection;
 using Lionk.Plugin;
 using Newtonsoft.Json;
 
-namespace LionkTest;
+namespace LionkTest.Plugin;
 
 /// <summary>
 /// Test class for <see cref="PluginManager"/>.
@@ -78,14 +78,14 @@ public class PluginManagerTests
     }
 
     /// <summary>
-    /// Test for <see cref="PluginManager.RemovePlugin(Plugin)"/>.
+    /// Test for removePlugin.
     /// </summary>
     [Test]
     public void RemovePlugin_ShouldRemovePlugin()
     {
         string path = Assembly.GetExecutingAssembly().Location;
         _pluginManager.AddPlugin(path);
-        Plugin plugin = _pluginManager.GetAllPlugins().First();
+        Lionk.Plugin.Plugin plugin = _pluginManager.GetAllPlugins().First();
 
         _pluginManager.RemovePlugin(plugin);
 

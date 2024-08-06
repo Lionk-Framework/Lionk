@@ -1,5 +1,7 @@
 // Copyright © 2024 Lionk Project
 
+using Lionk.Core.Component;
+using Lionk.Core.TypeRegistery;
 using Lionk.Log;
 using Lionk.Log.Serilog;
 using Lionk.Plugin;
@@ -17,8 +19,15 @@ builder.Services.AddMudServices();
 // Configure custom logger
 builder.Services.AddSingleton<ILoggerFactory, SerilogFactory>();
 
-// Configure plugin service
+// Register PluginManager as both IPluginManager and ITypesProvider
 builder.Services.AddSingleton<IPluginManager, PluginManager>();
+
+// Register ComponentService with a factory to resolve ITypesProvider
+builder.Services.AddSingleton<IComponentService>(serviceProvider =>
+{
+    ITypesProvider typesProvider = serviceProvider.GetRequiredService<IPluginManager>();
+    return new ComponentService(typesProvider);
+});
 
 WebApplication app = builder.Build();
 

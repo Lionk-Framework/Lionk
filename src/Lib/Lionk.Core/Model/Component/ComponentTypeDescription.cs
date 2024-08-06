@@ -1,6 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
-namespace Lionk.Core.Model.Component;
+namespace Lionk.Core.Component;
 
 /// <summary>
 /// Define a component type description.
