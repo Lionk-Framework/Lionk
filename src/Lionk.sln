@@ -14,7 +14,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lionk.Logger", "Lib\Lionk.L
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lionk.Notification", "Lib\Lionk.Notifications\Lionk.Notification.csproj", "{42D88A26-9B6D-4122-9B7B-8486A3A306D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lionk.Core.Razor", "Lionk.Core.Razor\Lionk.Core.Razor.csproj", "{265A14C4-89BB-49AA-B3C9-1D44F9A92DC1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lionk.Core.Razor", "Lionk.Core.Razor\Lionk.Core.Razor.csproj", "{265A14C4-89BB-49AA-B3C9-1D44F9A92DC1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
