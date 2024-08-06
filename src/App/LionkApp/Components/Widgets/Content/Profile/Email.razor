@@ -8,7 +8,10 @@
         <MudItem xs="12">
             <MudCard>
                 <MudCardContent>
-                    <MudTextField Label="Email" Class="mt-3"
+                    <MudTextField T="string" Label="Email" Text="toto@gmail.com" ReadOnly="true" />
+                </MudCardContent>
+                <MudCardContent>
+                    <MudTextField Label="New email" Class="mt-3"
                                   @bind-Value="model.Email" For="@(() => model.Email)" />
                 </MudCardContent>
                 <MudCardActions>
