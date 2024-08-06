@@ -1,5 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
 
+using Lionk.Utils;
+
 namespace Lionk.Log.Serilog;
 
 /// <summary>
@@ -10,7 +12,11 @@ public class SerilogFactory : ILoggerFactory
     /// <inheritdoc/>
     public IStandardLogger CreateLogger(string loggerName)
     {
-        string logFilePath = Path.Combine(Utils.DirectoryPath, $"{loggerName}{Utils.LogExtension}");
+        string logFilePath =
+            Path.Combine(
+                ConfigurationUtils.GetFolderPath(FolderType.Logs),
+                $"{loggerName}{Utils.LogExtension}");
+
         logFilePath = Path.GetFullPath(logFilePath);
 
         return new SerilogLogger(logFilePath);
