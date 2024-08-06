@@ -2,6 +2,7 @@
 
 using System.Reflection;
 using Lionk.Plugin;
+using Lionk.Utils;
 using Newtonsoft.Json;
 
 namespace LionkTest.Plugin;
@@ -20,10 +21,9 @@ public class PluginManagerTests
     [SetUp]
     public void SetUp()
     {
-        if (File.Exists("plugin_paths.json"))
-        {
-            File.Delete("plugin_paths.json");
-        }
+        string configFilename = "plugin_paths.json";
+        if (ConfigurationUtils.FileExists(configFilename, FolderType.Config))
+            ConfigurationUtils.TryDeleteFile(configFilename, FolderType.Config);
 
         _pluginManager = new PluginManager();
     }
@@ -44,7 +44,7 @@ public class PluginManagerTests
 
         string json = JsonConvert.SerializeObject(pluginPaths, Formatting.Indented);
 
-        File.WriteAllText("plugin_paths.json", json);
+        ConfigurationUtils.SaveFile("plugin_paths.json", json, FolderType.Config);
 
         var pluginManager = new PluginManager();
 
@@ -112,7 +112,8 @@ public class PluginManagerTests
     [Test]
     public void LoadPluginPaths_WithInvalidFile_ShouldLogError()
     {
-        File.WriteAllText("plugin_paths.json", "invalid json");
+        string json = "invalid json";
+        ConfigurationUtils.SaveFile("plugin_paths.json", json, FolderType.Config);
 
         Assert.Throws<FormatException>(
             () =>

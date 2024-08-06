@@ -3,6 +3,7 @@
 using System.Reflection;
 using Lionk.Core.TypeRegistery;
 using Lionk.Log;
+using Lionk.Utils;
 using Newtonsoft.Json;
 
 namespace Lionk.Plugin;
@@ -28,12 +29,13 @@ public class PluginManager : IPluginManager
     /// <inheritdoc/>
     public void AddPlugin(string path)
     {
-        // TODO copy path to plugin folder
         if (!File.Exists(path) || Path.GetExtension(path) != ".dll")
         {
             LogService.LogApp(LogSeverity.Warning, $"Invalid plugin path: {path}");
             return;
         }
+
+        path = CopyPluginToLocalFolder(path);
 
         if (_pluginPaths.Contains(path))
         {
@@ -44,6 +46,12 @@ public class PluginManager : IPluginManager
         LoadPlugin(path);
         _pluginPaths.Add(path);
         SavePluginPaths();
+    }
+
+    private static string CopyPluginToLocalFolder(string pluginPaths)
+    {
+        ConfigurationUtils.CopyFileToFolder(pluginPaths, FolderType.Plugin);
+        return Path.Combine(ConfigurationUtils.GetFolderPath(FolderType.Plugin), Path.GetFileName(pluginPaths));
     }
 
     /// <inheritdoc/>
@@ -94,7 +102,7 @@ public class PluginManager : IPluginManager
         try
         {
             string json = JsonConvert.SerializeObject(_pluginPaths, Formatting.Indented);
-            File.WriteAllText(PluginPathsFile, json);
+            ConfigurationUtils.SaveFile(PluginPathsFile, json, FolderType.Config);
         }
         catch (Exception ex)
         {
@@ -104,9 +112,9 @@ public class PluginManager : IPluginManager
 
     private void LoadPluginPaths()
     {
-        if (File.Exists(PluginPathsFile))
+        if (ConfigurationUtils.FileExists(PluginPathsFile, FolderType.Config))
         {
-            string json = File.ReadAllText(PluginPathsFile);
+            string json = ConfigurationUtils.ReadFile(PluginPathsFile, FolderType.Config);
 
             TryToReadPaths(json, out List<string>? data);
 
@@ -118,7 +126,7 @@ public class PluginManager : IPluginManager
         else
         {
             LogService.LogApp(LogSeverity.Information, "Plugin paths file not found.");
-            _pluginPaths = new List<string>();
+            _pluginPaths = [];
         }
     }
 
