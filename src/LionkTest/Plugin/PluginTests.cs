@@ -1,9 +1,8 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using System.Reflection;
-using Lionk.Plugin;
 
-namespace LionkTest;
+namespace LionkTest.Plugin;
 
 /// <summary>
 /// Test class for <see cref="Plugin"/>.
@@ -12,7 +11,7 @@ namespace LionkTest;
 public class PluginTests
 {
     /// <summary>
-    /// Test method for <see cref="Plugin(Assembly)"/>.
+    /// Test method for Plugin class.
     /// </summary>
     [Test]
     public void Constructor_WithValidAssembly_ShouldInitializeProperties()
@@ -22,7 +21,7 @@ public class PluginTests
         Version version = assembly.GetName().Version!;
 
         // Act
-        var plugin = new Plugin(assembly);
+        var plugin = new Lionk.Plugin.Plugin(assembly);
 
         // Assert
         Assert.That(plugin.Assembly, Is.EqualTo(assembly));
