@@ -24,7 +24,7 @@ builder.Services.AddSingleton<IPluginManager, PluginManager>();
 builder.Services.AddSingleton<ITypesProvider>(provider => provider.GetRequiredService<IPluginManager>());
 
 // Register ComponentService with a factory to resolve ITypesProvider
-builder.Services.AddSingleton<ComponentService>(serviceProvider =>
+builder.Services.AddSingleton(serviceProvider =>
 {
     ITypesProvider typesProvider = serviceProvider.GetRequiredService<ITypesProvider>();
     return new ComponentService(typesProvider);
