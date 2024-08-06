@@ -1,4 +1,8 @@
-﻿@typeparam T
+﻿///summary
+/// The ListSearcher component is used to search inside a list of items .
+///summary
+
+@typeparam T
 @namespace Lionk.Core.Razor
 @if (!_isLoaded)
 {
@@ -28,9 +32,24 @@ else
 }
 
 @code {
+    /// <summary>
+    /// Gets or sets the items to be searched.
+    /// </summary>
     [Parameter] public List<T> Items { get; set; } = new();
+
+    /// <summary>
+    /// Gets or sets the properties to be searched inside the items.
+    /// </summary>
     [Parameter] public List<string> Properties { get; set; } = new();
+
+    /// <summary>
+    /// Gets or sets the friendly names of the properties to be displayed on the checkboxes.
+    /// </summary>
     [Parameter] public List<string> PropertiesFriendlyNames { get; set; } = new();
+
+    /// <summary>
+    /// The event that is triggered when the items are changed.
+    /// </summary>
     [Parameter] public EventCallback<List<T>> ItemsChanged { get; set; }
 
     private Dictionary<string, bool> _selectedProperties = new();

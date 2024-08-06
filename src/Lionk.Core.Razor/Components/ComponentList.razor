@@ -46,8 +46,16 @@
 </MudTable>
 
 @code {
+    /// <summary>
+    /// Gets or sets the types registery Dictionary.
+    /// </summary>
     [Parameter] public Dictionary<ComponentTypeDescription, Factory> TypesRegistery { get; set; } = new();
+
+    /// <summary>
+    /// Raised when a RowTable is selected.
+    /// </summary>
     [Parameter] public EventCallback<KeyValuePair<ComponentTypeDescription, Factory>> OnComponentSelected { get; set; }
+
     MudTable<ComponentTypeDescription> _table = new();
     private HashSet<ComponentTypeDescription>? _selectedItem;
     private string selectedDescription = "";
