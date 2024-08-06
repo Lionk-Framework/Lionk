@@ -126,7 +126,7 @@ public class PluginManager : IPluginManager
         else
         {
             LogService.LogApp(LogSeverity.Information, "Plugin paths file not found.");
-            _pluginPaths = new List<string>();
+            _pluginPaths = [];
         }
     }
 
