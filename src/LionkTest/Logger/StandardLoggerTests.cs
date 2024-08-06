@@ -3,7 +3,7 @@
 using Lionk.Log;
 using Moq;
 
-namespace LionkTest;
+namespace LionkTest.Logger;
 
 /// <summary>
 /// Test class for <see cref="IStandardLogger"/>.

@@ -3,7 +3,7 @@
 using Lionk.Log;
 using Lionk.Log.Serilog;
 
-namespace LionkTest;
+namespace LionkTest.Logger;
 
 /// <summary>
 /// Test class for <see cref="SerilogLogger"/>.
