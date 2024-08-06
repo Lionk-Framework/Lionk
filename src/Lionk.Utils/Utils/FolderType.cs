@@ -8,22 +8,27 @@ namespace Lionk.Utils;
 public enum FolderType
 {
     /// <summary>
-    /// Represents the configuration file type.
+    /// Represents the configuration folder.
     /// </summary>
     Config,
 
     /// <summary>
-    /// Represents the log file type.
+    /// Represents the log folder.
     /// </summary>
     Logs,
 
     /// <summary>
-    /// Represents the data file type.
+    /// Represents the data folder.
     /// </summary>
     Data,
 
     /// <summary>
-    /// Represents the temporary file type.
+    /// Represents the plugin folder.
+    /// </summary>
+    Plugin,
+
+    /// <summary>
+    /// Represents the temporary folder.
     /// </summary>
     Temp,
 }

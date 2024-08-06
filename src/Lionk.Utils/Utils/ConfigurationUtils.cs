@@ -14,6 +14,7 @@ public static class ConfigurationUtils
         { FolderType.Logs, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs") },
         { FolderType.Data, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data") },
         { FolderType.Temp, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "temp") },
+        { FolderType.Plugin, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "plugins") },
     };
 
     /// <summary>
@@ -98,6 +99,20 @@ public static class ConfigurationUtils
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Method to copy a file to a folder.
+    /// </summary>
+    /// <param name="sourcePath">The source file path.</param>
+    /// <param name="folderType">The folder type.</param>
+    public static void CopyFileToFolder(string sourcePath, FolderType folderType)
+    {
+        if (!File.Exists(sourcePath))
+            return;
+
+        string destinationPath = Path.Combine(_keyValuePairs[folderType], Path.GetFileName(sourcePath));
+        File.Copy(sourcePath, destinationPath, true);
     }
 
     /// <summary>

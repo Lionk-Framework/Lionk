@@ -28,12 +28,13 @@ public class PluginManager : IPluginManager
     /// <inheritdoc/>
     public void AddPlugin(string path)
     {
-        // TODO copy path to plugin folder
         if (!File.Exists(path) || Path.GetExtension(path) != ".dll")
         {
             LogService.LogApp(LogSeverity.Warning, $"Invalid plugin path: {path}");
             return;
         }
+
+        path = CopyPluginToLocalFolder(path);
 
         if (_pluginPaths.Contains(path))
         {
@@ -44,6 +45,12 @@ public class PluginManager : IPluginManager
         LoadPlugin(path);
         _pluginPaths.Add(path);
         SavePluginPaths();
+    }
+
+    private static string CopyPluginToLocalFolder(string pluginPaths)
+    {
+        Utils.ConfigurationUtils.CopyFileToFolder(pluginPaths, Utils.FolderType.Plugin);
+        return Path.Combine(Utils.ConfigurationUtils.GetFolderPath(Utils.FolderType.Plugin), Path.GetFileName(pluginPaths));
     }
 
     /// <inheritdoc/>
