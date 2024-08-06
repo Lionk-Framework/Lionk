@@ -4,19 +4,15 @@
     StartedEditingItem="@StartedEditingItem" CanceledEditingItem="@CanceledEditingItem" CommittedItemChanges="@CommittedItemChanges"
              Bordered="true" Dense="true" EditTrigger="DataGridEditTrigger.Manual">
     <Columns>
-        <PropertyColumn Property="x => x.Number" Title="Nr" Editable="false" />
-        <PropertyColumn Property="x => x.Sign" />
-        <PropertyColumn Property="x => x.Name" />
-        <PropertyColumn Property="x => x.Position">
+        <PropertyColumn Property="x => x.Email"Editable="false" />
+        <PropertyColumn Property="x => x.Role">
             <EditTemplate>
-                <MudSelect @bind-Value="context.Item.Position" Required RequiredError="You must select a Position!!!" Margin="@Margin.Dense">
-                    <MudSelectItem Value="0">zero</MudSelectItem>
-                    <MudSelectItem Value="1">one</MudSelectItem>
-                    <MudSelectItem Value="17">seventeen</MudSelectItem>
+                <MudSelect @bind-Value="context.Item.Role" Required RequiredError="You must select a Role" Margin="@Margin.Normal">
+                    <MudSelectItem Value="0">User</MudSelectItem>
+                    <MudSelectItem Value="1">Admin</MudSelectItem>
                 </MudSelect>
             </EditTemplate>
         </PropertyColumn>
-        <PropertyColumn Property="x => x.Molar" Title="Molar mass" />
         <TemplateColumn CellClass="d-flex justify-end">
             <CellTemplate>
                 <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@context.Actions.StartEditingItemAsync" />
@@ -44,19 +40,16 @@
 @code {
     public class Element
     {
-        public int Number { get; set; }
-        public string? Sign { get; set; }
-        public string? Name { get; set; }
-        public int Position { get; set; }
-        public double Molar { get; set; }
+        public string? Email { get; set; }
+        public int Role { get; set; }
     }
 
     private IEnumerable<Element> Elements = new List<Element>
     {
-        new Element { Number = 1, Sign = "H", Name = "Hydrogen", Position = 1, Molar = 1.008 },
-        new Element { Number = 2, Sign = "He", Name = "Helium", Position = 18, Molar = 4.0026 },
-        new Element { Number = 3, Sign = "Li", Name = "Lithium", Position = 2, Molar = 6.94 },
-        new Element { Number = 4, Sign = "Be", Name = "Beryllium", Position = 2, Molar = 9.0122 }
+        new Element { Email = "toto@gmail.com", Role = 0},
+        new Element { Email = "toto@gmail.com", Role = 0},
+        new Element { Email = "toto@gmail.com", Role = 0},
+        new Element { Email = "toto@gmail.com", Role = 1}
     };
     private bool _readOnly = false;
     private List<string> _events = new();
