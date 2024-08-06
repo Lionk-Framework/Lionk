@@ -8,11 +8,6 @@ namespace Lionk.Log;
 public static class Utils
 {
     /// <summary>
-    /// The directory path for the logs.
-    /// </summary>
-    public const string DirectoryPath = "logs";
-
-    /// <summary>
     /// The extension for the log files.
     /// </summary>
     public const string LogExtension = ".log";
