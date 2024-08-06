@@ -21,12 +21,11 @@ builder.Services.AddSingleton<ILoggerFactory, SerilogFactory>();
 
 // Register PluginManager as both IPluginManager and ITypesProvider
 builder.Services.AddSingleton<IPluginManager, PluginManager>();
-builder.Services.AddSingleton<ITypesProvider>(provider => provider.GetRequiredService<IPluginManager>());
 
 // Register ComponentService with a factory to resolve ITypesProvider
-builder.Services.AddSingleton(serviceProvider =>
+builder.Services.AddSingleton<IComponentService>(serviceProvider =>
 {
-    ITypesProvider typesProvider = serviceProvider.GetRequiredService<ITypesProvider>();
+    ITypesProvider typesProvider = serviceProvider.GetRequiredService<IPluginManager>();
     return new ComponentService(typesProvider);
 });
 
