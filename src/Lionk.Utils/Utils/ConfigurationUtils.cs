@@ -1,6 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
-namespace Lionk.Core.Utils;
+namespace Lionk.Utils;
 
 /// <summary>
 /// Static class that contains utility methods for save files.
@@ -99,4 +99,11 @@ public static class ConfigurationUtils
 
         return false;
     }
+
+    /// <summary>
+    /// Gets the folder path for the specified folder type.
+    /// </summary>
+    /// <param name="folderType">The folder type.</param>
+    /// <returns>The path. </returns>
+    public static string GetFolderPath(FolderType folderType) => _keyValuePairs[folderType];
 }

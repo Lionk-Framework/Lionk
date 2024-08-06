@@ -1,6 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
-namespace Lionk.Core.Utils;
+namespace Lionk.Utils;
 
 /// <summary>
 /// Represents the type of the configuration file.

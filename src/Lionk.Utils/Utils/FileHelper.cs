@@ -1,6 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
-namespace Lionk.Core.Utils;
+namespace Lionk.Utils;
 
 /// <summary>
 /// Static class that contains utility methods for files.
