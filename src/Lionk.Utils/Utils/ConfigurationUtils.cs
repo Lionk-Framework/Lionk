@@ -121,4 +121,16 @@ public static class ConfigurationUtils
     /// <param name="folderType">The folder type.</param>
     /// <returns>The path. </returns>
     public static string GetFolderPath(FolderType folderType) => _keyValuePairs[folderType];
+
+    /// <summary>
+    /// Checks if a file exists.
+    /// </summary>
+    /// <param name="filename">The filename.</param>
+    /// <param name="folderType">The folderType.</param>
+    /// <returns>True if it exist, false otherwise.</returns>
+    public static bool FileExists(string filename, FolderType folderType)
+    {
+        string filePath = Path.Combine(_keyValuePairs[folderType], filename);
+        return File.Exists(filePath);
+    }
 }
