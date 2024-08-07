@@ -2,6 +2,7 @@
 
 using Lionk.Notification;
 using Lionk.Notification.Email;
+using LionkTest.Notifications.Mock;
 
 namespace LionkTest.Notifications;
 
@@ -10,11 +11,6 @@ namespace LionkTest.Notifications;
 /// </summary>
 public class NotificationEmailTests
 {
-    private class MockNotifyer : INotifyer
-    {
-        public string Name => "TestNotifyer";
-    }
-
     private Content _content;
     private EmailChannel _emailChannel;
     private Notification _notification;
@@ -27,7 +23,7 @@ public class NotificationEmailTests
     public void Initialize()
     {
         // Arrange
-        _notifyer = new MockNotifyer();
+        _notifyer = new MockNotifyer("EmailTestNotifyer");
         _emailChannel = new EmailChannel("Email Channel");
         _content = new Content(Severity.Information, "Title", "Message");
         _notification = new Notification(_content, _notifyer);
@@ -58,7 +54,7 @@ public class NotificationEmailTests
         // Act
         _emailChannel.CreatSmtpConfigurationFile(smtpServer, port, enableSsl, username, password);
         _emailChannel.Initialize();
-        _emailChannel.AddRecipient(new EmailRecipients("Recipient", "recipient@email.test"));
+        _emailChannel.AddRecipients(new EmailRecipients("Recipient", "recipient@email.test"));
         NotificationService.Send(notification);
 
         // Assert

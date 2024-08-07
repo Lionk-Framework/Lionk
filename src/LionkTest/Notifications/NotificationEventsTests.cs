@@ -22,8 +22,8 @@ public class NotificationEventsTests
     public void Initialize()
     {
         // Arrange
-        _mockNotifyer = new MockNotifyer();
-        _mockChannel = new MockChannel();
+        _mockNotifyer = new MockNotifyer("NotifyerEventTests");
+        _mockChannel = new MockChannel("ChannelEventTest");
         _content = new Content(Severity.Information, "Title", "Message");
         _notification = new Notification(_content, _mockNotifyer);
 

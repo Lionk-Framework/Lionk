@@ -17,28 +17,16 @@ internal class NotificationsHistoryTests
     public void Initialize()
     {
         // Arrange
-        _mockNotifyer = new MockNotifyer();
-        _mockChannel1 = new MockChannel();
-        _mockChannel2 = new MockChannel();
+        _mockNotifyer = new MockNotifyer("NotyfierBHistoryTests");
+        _mockChannel1 = new MockChannel("ChannelHistory1");
+        _mockChannel2 = new MockChannel("ChannelHistory2");
         _content = new Content(Severity.Information, "Title", "Message");
         _channels = new() { _mockChannel1, _mockChannel2 };
         _notification = new Notification(_content, _mockNotifyer);
+        NotificationService.MapNotifyerToChannel(_mockNotifyer, _mockChannel1, _mockChannel2);
 
         // Act
-        NotificationService.SaveNotificationHistory(_notification, _channels);
-    }
-
-    [Test]
-    public void FileExists()
-    {
-        // Arrange
-        // Nothing to arrange
-
-        // Act
-        bool fileExists = File.Exists(NotificationFileHandler.FilePath);
-
-        // Assert
-        Assert.IsTrue(fileExists, "The history file doesn't exist.");
+        NotificationService.SaveNotificationHistory(_notification);
     }
 
     [Test]

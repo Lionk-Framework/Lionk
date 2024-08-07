@@ -2,6 +2,7 @@
 
 using System.Net;
 using System.Net.Mail;
+using Lionk.Utils;
 using Newtonsoft.Json;
 
 namespace Lionk.Notification.Email;
@@ -11,12 +12,14 @@ namespace Lionk.Notification.Email;
 /// </summary>
 public class EmailChannel : IChannel
 {
-    private const string ConfigFileFolder = "Notifications";
-    private const string ConfigFileName = "smtpconfig.json";
+    private static readonly FolderType _folderType = FolderType.Config;
+    private static readonly string _folder = "Notifications";
+    private static readonly string _configFilePath = Path.Combine(_folder, "smtpconfig.json");
     private SmtpClient? _smtpClient;
     private SmtpConfig? _smtpConfig;
 
-    private string ConfigFilePath => Path.Combine(ConfigFileFolder, ConfigFileName);
+    /// <inheritdoc/>
+    public Guid Guid { get; private set; } = Guid.NewGuid();
 
     /// <inheritdoc/>
     public string Name { get; private set; } = string.Empty;
@@ -53,19 +56,28 @@ public class EmailChannel : IChannel
     /// <summary>
     /// Initializes a new instance of the <see cref="EmailChannel"/> class.
     /// </summary>
-    public EmailChannel()
+    /// <param name="guid"> The Guid of the channel.</param>
+    /// <param name="name"> The name of the channel.</param>
+    /// <param name="recipients"> The list of recipients.</param>
+    /// <param name="isInitialized"> A value indicating whether the channel is initialized.</param>
+    [JsonConstructor]
+    public EmailChannel(Guid guid, string name, List<IRecipient> recipients, bool isInitialized)
     {
+        Guid = guid;
+        Name = name;
+        Recipients = recipients;
+        IsInitialized = isInitialized;
     }
 
     /// <inheritdoc/>
     public void Initialize()
     {
-        if (!File.Exists(ConfigFilePath))
+        string configJson = ConfigurationUtils.ReadFile(_configFilePath, _folderType);
+        if (string.IsNullOrEmpty(configJson))
         {
-            throw new FileNotFoundException("The SMTP configuration file was not found.", ConfigFilePath);
+            throw new InvalidOperationException("The SMTP configuration file is empty or it does not exist.");
         }
 
-        string configJson = File.ReadAllText(ConfigFilePath);
         _smtpConfig = JsonConvert.DeserializeObject<SmtpConfig>(configJson);
 
         if (_smtpConfig == null)
@@ -100,10 +112,23 @@ public class EmailChannel : IChannel
     }
 
     /// <inheritdoc/>
-    public void AddRecipient(IRecipient recipient)
+    public void AddRecipients(params IRecipient[] recipients)
     {
-        if (recipient is not EmailRecipients) throw new InvalidOperationException("Recipient is not an email recipient.");
-        Recipients.Add(recipient);
+        List<IRecipient> recipientsToAdd = new();
+        foreach (IRecipient recipient in recipients)
+        {
+            if (Recipients.Contains(recipient) || recipient is not EmailRecipients) continue;
+            else recipientsToAdd.Add(recipient);
+        }
+
+        Recipients.AddRange(recipientsToAdd);
+    }
+
+    /// <inheritdoc/>
+    public bool Equals(IChannel obj)
+    {
+        if (obj is not EmailChannel) return false;
+        return Guid == obj.Guid;
     }
 
     /// <summary>
@@ -116,7 +141,8 @@ public class EmailChannel : IChannel
     /// <param name="password"> The password used to authenticate to the SMTP server.</param>
     public void CreatSmtpConfigurationFile(string smtpServer, int port, bool enableSsl, string username, string password)
     {
-        if (!Directory.Exists(ConfigFileFolder)) Directory.CreateDirectory(ConfigFileFolder);
+        string folderPath = Path.Combine(ConfigurationUtils.GetFolderPath(_folderType), _folder);
+        FileHelper.CreateDirectoryIfNotExists(folderPath);
 
         var smtpConfig = new SmtpConfig
         {
@@ -127,7 +153,7 @@ public class EmailChannel : IChannel
             Password = password,
         };
 
-        string json = JsonConvert.SerializeObject(smtpConfig);
-        File.WriteAllText(ConfigFilePath, json);
+        string json = JsonConvert.SerializeObject(smtpConfig, Formatting.Indented);
+        ConfigurationUtils.SaveFile(_configFilePath, json, _folderType);
     }
 }
