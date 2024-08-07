@@ -10,7 +10,7 @@ public interface INotifyer
     /// <summary>
     /// Gets the Guid of the notifyer.
     /// </summary>
-    Guid Guid { get; }
+    Guid Id { get; }
 
     /// <summary>
     /// Gets the name of the notifyer.

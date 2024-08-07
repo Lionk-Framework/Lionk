@@ -16,7 +16,7 @@ public class MockRecipient : IRecipient
     /// <summary>
     /// Gets the name of the recipient.
     /// </summary>
-    public string Name { get; }
+    public string Name { get; private set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MockRecipient"/> class.

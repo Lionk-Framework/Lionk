@@ -1,6 +1,5 @@
 ﻿// Copyright © 2024 Lionk Project
 using System.Collections.ObjectModel;
-using System.Threading.Channels;
 using Lionk.Notification.Event;
 
 namespace Lionk.Notification;
@@ -12,7 +11,7 @@ public static class NotificationService
 {
     private static List<INotifyer> _notifyers = new();
     private static List<IChannel> _channels = new();
-    private static Dictionary<string, List<IChannel>> _notifyerChannels = new();
+    private static Dictionary<Guid, List<IChannel>> _notifyerChannels = new();
 
     /// <summary>
     /// This event is raised when a notification is sent.
@@ -46,7 +45,7 @@ public static class NotificationService
     /// <summary>
     /// Gets a Dictionary that maps the Notifyer name with multiple channels.
     /// </summary>
-    public static ReadOnlyDictionary<string, List<IChannel>> NotifyerChannels
+    public static ReadOnlyDictionary<Guid, List<IChannel>> NotifyerChannels
     {
         get
         {
@@ -62,7 +61,7 @@ public static class NotificationService
     public static void Send(Notification notification)
     {
         ArgumentNullException.ThrowIfNull(notification, nameof(notification));
-        List<IChannel> channels = NotifyerChannels[notification.Notifyer.Name];
+        List<IChannel> channels = NotifyerChannels[notification.Notifyer.Id];
         foreach (IChannel channel in channels)
         {
             channel.Send(notification.Notifyer, notification.Content);
@@ -78,21 +77,15 @@ public static class NotificationService
     /// <param name="notification"> The notification to save.</param>
     public static void SaveNotificationHistory(Notification notification)
     {
-        var notificationHistory = new NotificationHistory(notification, _notifyerChannels[notification.Notifyer.Name]);
+        var notificationHistory = new NotificationHistory(notification, _notifyerChannels[notification.Notifyer.Id]);
         NotificationFileHandler.SaveNotification(notificationHistory);
     }
 
     /// <summary>
     /// Edit a notification in history.
     /// </summary>
-    /// <param name="notification">The notification to edit.</param>
-    public static void EditNotificationHistory(Notification notification)
-    {
-        NotificationHistory? notificationHistory = NotificationFileHandler.GetNotificationByGuid(notification.Id);
-        if (notificationHistory is null) return;
-        notificationHistory.Notification = notification;
-        NotificationFileHandler.EditNotification(notificationHistory);
-    }
+    /// <param name="notificationHistory">The notification history to edit.</param>
+    public static void EditNotificationHistory(NotificationHistory notificationHistory) => NotificationFileHandler.EditNotificationHistory(notificationHistory);
 
     /// <summary>
     /// Get all the notifications saved.
@@ -119,8 +112,8 @@ public static class NotificationService
         AddChannels(channels);
         AddNotifyers(notifyer);
         GetNotifyerChannels();
-        if (!_notifyerChannels.ContainsKey(notifyer.Name)) _notifyerChannels.Add(notifyer.Name, new List<IChannel>());
-        foreach (IChannel item in channels) if (!_notifyerChannels[notifyer.Name].Contains(item)) _notifyerChannels[notifyer.Name].Add(item);
+        if (!_notifyerChannels.ContainsKey(notifyer.Id)) _notifyerChannels.Add(notifyer.Id, new List<IChannel>());
+        foreach (IChannel item in channels) if (!_notifyerChannels[notifyer.Id].Contains(item)) _notifyerChannels[notifyer.Id].Add(item);
         SaveNotifyerChannels();
     }
 

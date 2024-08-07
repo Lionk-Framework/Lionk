@@ -40,7 +40,15 @@ public class NotificationPropertiesConverter : JsonConverter
         if (jsonConstructor != null)
         {
             object?[]? args = jsonConstructor.GetParameters()
-                .Select(p => jsonObject[p.Name ?? string.Empty]?.ToObject(p.ParameterType, serializer))
+            .Select(p =>
+            {
+                string? jsonKey = jsonObject
+                    .Properties()
+                    .FirstOrDefault(prop => string.Equals(prop.Name, p.Name, StringComparison.OrdinalIgnoreCase))?
+                    .Name;
+
+                return jsonKey != null ? jsonObject[jsonKey]?.ToObject(p.ParameterType, serializer) : null;
+            })
                 .ToArray();
             obj = Activator.CreateInstance(type, args);
         }

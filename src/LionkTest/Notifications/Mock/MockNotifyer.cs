@@ -11,7 +11,7 @@ namespace LionkTest.Notifications.Mock;
 public class MockNotifyer : INotifyer
 {
     /// <inheritdoc/>
-    public Guid Guid { get; private set; } = Guid.NewGuid();
+    public Guid Id { get; private set; } = Guid.NewGuid();
 
     /// <summary>
     /// Gets the name of the notifyer.
@@ -26,7 +26,7 @@ public class MockNotifyer : INotifyer
     [JsonConstructor]
     public MockNotifyer(Guid guid, string name)
     {
-        Guid = guid;
+        Id = guid;
         Name = name;
     }
 
@@ -41,5 +41,5 @@ public class MockNotifyer : INotifyer
     /// </summary>
     /// <param name="obj"> The object to compare.</param>
     /// <returns> A value indicating whether the objects are equal.</returns>
-    public bool Equals(INotifyer? obj) => obj is MockNotifyer notifyer && notifyer.Guid == Guid;
+    public bool Equals(INotifyer? obj) => obj is MockNotifyer notifyer && notifyer.Id == Id;
 }

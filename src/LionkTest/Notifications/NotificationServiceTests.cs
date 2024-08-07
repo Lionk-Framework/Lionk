@@ -132,7 +132,7 @@ public class NotificationServiceTests
 
         // Assert
         Assert.That(NotificationService.NotifyerChannels.Count, Is.EqualTo(1), "The number of notifyer channels is not the same.");
-        Assert.That(NotificationService.NotifyerChannels[notifyer.Name].Count, Is.EqualTo(2), "The number of channels inside dictionary is not the same.");
+        Assert.That(NotificationService.NotifyerChannels[notifyer.Id].Count, Is.EqualTo(2), "The number of channels inside dictionary is not the same.");
         Assert.That(NotificationService.Notifyers.Count, Is.EqualTo(1), "The number of notifyers is not the same.");
         Assert.That(NotificationService.Channels.Count, Is.EqualTo(2), "The number of channels is not the same.");
     }
@@ -155,7 +155,7 @@ public class NotificationServiceTests
 
         // Assert
         Assert.That(NotificationService.NotifyerChannels.Count, Is.EqualTo(1), "The number of notifyer channels is not the same.");
-        Assert.That(NotificationService.NotifyerChannels[notifyer.Name].Count, Is.EqualTo(3), "The number of channels inside dictionary is not the same.");
+        Assert.That(NotificationService.NotifyerChannels[notifyer.Id].Count, Is.EqualTo(3), "The number of channels inside dictionary is not the same.");
         Assert.That(NotificationService.Notifyers.Count, Is.EqualTo(1), "The number of notifyers is not the same.");
         Assert.That(NotificationService.Channels.Count, Is.EqualTo(3), "The number of channels is not the same.");
     }

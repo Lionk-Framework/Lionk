@@ -58,10 +58,9 @@ public static class NotificationFileHandler
     /// <exception cref="ArgumentNullException"> If file exists but the result of the deserialization is null.</exception>
     public static List<NotificationHistory> GetNotifications()
     {
-        List<NotificationHistory> notifications = new();
         string json = ConfigurationUtils.ReadFile(_notificationPath, _folderType);
-        if (string.IsNullOrEmpty(json)) return notifications;
-        notifications = JsonConvert.DeserializeObject<List<NotificationHistory>>(json, _jsonSerializerSettings) ?? throw new ArgumentNullException(nameof(notifications));
+        if (string.IsNullOrEmpty(json)) return new();
+        List<NotificationHistory> notifications = JsonConvert.DeserializeObject<List<NotificationHistory>>(json, _jsonSerializerSettings) ?? throw new ArgumentNullException(nameof(notifications));
         return notifications;
     }
 
@@ -73,17 +72,18 @@ public static class NotificationFileHandler
     public static NotificationHistory? GetNotificationByGuid(Guid guid)
     {
         List<NotificationHistory> notifications = GetNotifications();
-        return notifications.FirstOrDefault(n => n.Notification.Id == guid);
+        return notifications.FirstOrDefault(n => n.Id == guid);
     }
 
     /// <summary>
     /// Method to edit a notification in history.
     /// </summary>
     /// <param name="notificationHistory">The notification to edit.</param>
-    public static void EditNotification(NotificationHistory notificationHistory)
+    public static void EditNotificationHistory(NotificationHistory notificationHistory)
     {
         List<NotificationHistory> notificationHistories = GetNotifications();
-        notificationHistories[notificationHistories.FindIndex(n => n.Notification.Id == notificationHistory.Notification.Id)] = notificationHistory;
+        int index = notificationHistories.FindIndex(n => n.Id == notificationHistory.Id);
+        notificationHistories[index] = notificationHistory;
         WriteNotifications(notificationHistories);
     }
 
@@ -111,7 +111,7 @@ public static class NotificationFileHandler
     /// Method to save notifyer channels dictionary to a file.
     /// </summary>
     /// <param name="notifyerChannels"> The dictionary of notifyers and channels to save.</param>
-    public static void SaveNotifyerChannelsToJson(Dictionary<string, List<IChannel>> notifyerChannels)
+    public static void SaveNotifyerChannelsToJson(Dictionary<Guid, List<IChannel>> notifyerChannels)
     {
         string json = JsonConvert.SerializeObject(notifyerChannels, Formatting.Indented, _jsonSerializerSettings);
         ConfigurationUtils.SaveFile(_notifyerChannelsPath, json, _folderType);
@@ -147,11 +147,11 @@ public static class NotificationFileHandler
     /// Method to get notifyer channels dictionary from a file.
     /// </summary>
     /// <returns> The dictionary of notifyers and channels.</returns>
-    public static Dictionary<string, List<IChannel>> GetNotifyerChannelsFromJson()
+    public static Dictionary<Guid, List<IChannel>> GetNotifyerChannelsFromJson()
     {
         string json = ConfigurationUtils.ReadFile(_notifyerChannelsPath, _folderType);
         if (string.IsNullOrEmpty(json)) return new();
-        Dictionary<string, List<IChannel>>? notifyerChannels = JsonConvert.DeserializeObject<Dictionary<string, List<IChannel>>>(json, _jsonSerializerSettings);
+        Dictionary<Guid, List<IChannel>>? notifyerChannels = JsonConvert.DeserializeObject<Dictionary<Guid, List<IChannel>>>(json, _jsonSerializerSettings);
         if (notifyerChannels is null) return new();
         return notifyerChannels;
     }

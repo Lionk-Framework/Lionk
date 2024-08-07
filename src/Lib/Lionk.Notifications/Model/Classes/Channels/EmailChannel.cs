@@ -16,7 +16,6 @@ public class EmailChannel : IChannel
     private static readonly string _folder = "Notifications";
     private static readonly string _configFilePath = Path.Combine(_folder, "smtpconfig.json");
     private SmtpClient? _smtpClient;
-    private SmtpConfig? _smtpConfig;
 
     /// <inheritdoc/>
     public Guid Guid { get; private set; } = Guid.NewGuid();
@@ -32,6 +31,11 @@ public class EmailChannel : IChannel
     public bool IsInitialized { get; private set; } = false;
 
     /// <summary>
+    /// Gets the SMTP configuration.
+    /// </summary>
+    public SmtpConfig SmtpConfig { get; private set; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="EmailChannel"/> class.
     /// </summary>
     /// <param name="name">The name of the channel.</param>
@@ -39,6 +43,7 @@ public class EmailChannel : IChannel
     {
         Name = name;
         Recipients = new List<IRecipient>();
+        SmtpConfig = new SmtpConfig();
         IsInitialized = false;
     }
 
@@ -51,6 +56,7 @@ public class EmailChannel : IChannel
     {
         Name = name;
         Recipients = new List<IRecipient>(recipients);
+        SmtpConfig = new SmtpConfig();
     }
 
     /// <summary>
@@ -59,14 +65,18 @@ public class EmailChannel : IChannel
     /// <param name="guid"> The Guid of the channel.</param>
     /// <param name="name"> The name of the channel.</param>
     /// <param name="recipients"> The list of recipients.</param>
+    /// <param name="smtpConfig"> The SMTP configuration.</param>
     /// <param name="isInitialized"> A value indicating whether the channel is initialized.</param>
     [JsonConstructor]
-    public EmailChannel(Guid guid, string name, List<IRecipient> recipients, bool isInitialized)
+    public EmailChannel(Guid guid, string name, List<IRecipient> recipients, SmtpConfig smtpConfig, bool isInitialized)
     {
         Guid = guid;
         Name = name;
         Recipients = recipients;
         IsInitialized = isInitialized;
+        SmtpConfig = smtpConfig;
+        IsInitialized = isInitialized;
+        if (IsInitialized) Initialize();
     }
 
     /// <inheritdoc/>
@@ -78,16 +88,11 @@ public class EmailChannel : IChannel
             throw new InvalidOperationException("The SMTP configuration file is empty or it does not exist.");
         }
 
-        _smtpConfig = JsonConvert.DeserializeObject<SmtpConfig>(configJson);
+        SmtpConfig = JsonConvert.DeserializeObject<SmtpConfig>(configJson) ?? throw new NullReferenceException("The SMTP configuration is null.");
 
-        if (_smtpConfig == null)
-        {
-            throw new InvalidOperationException("The SMTP configuration is invalid.");
-        }
-
-        _smtpClient = new SmtpClient(_smtpConfig.SmtpServer, _smtpConfig.Port);
-        _smtpClient.EnableSsl = _smtpConfig.EnableSsl;
-        _smtpClient.Credentials = new NetworkCredential(_smtpConfig.Username, _smtpConfig.Password);
+        _smtpClient = new SmtpClient(SmtpConfig.SmtpServer, SmtpConfig.Port);
+        _smtpClient.EnableSsl = SmtpConfig.EnableSsl;
+        _smtpClient.Credentials = new NetworkCredential(SmtpConfig.Username, SmtpConfig.Password);
 
         IsInitialized = true;
     }
@@ -98,13 +103,13 @@ public class EmailChannel : IChannel
         ArgumentNullException.ThrowIfNull(content);
         ArgumentNullException.ThrowIfNull(notifyer);
         if (!IsInitialized) throw new InvalidOperationException("EmailChannel is not initialized.");
-        if (_smtpConfig is null) throw new InvalidOperationException("SMTP configuration is not initialized.");
+        if (SmtpConfig is null) throw new InvalidOperationException("SMTP configuration is not initialized.");
         if (_smtpClient is null) throw new InvalidOperationException("SMTP client is not initialized.");
 
         foreach (IRecipient recipient in Recipients)
         {
             var emailRecipient = (EmailRecipients)recipient;
-            var mailMessage = new MailMessage(_smtpConfig.Username, emailRecipient.Email);
+            var mailMessage = new MailMessage(SmtpConfig.Username, emailRecipient.Email);
             mailMessage.Subject = content.Title;
             mailMessage.Body = content.Message;
             _smtpClient.Send(mailMessage);
