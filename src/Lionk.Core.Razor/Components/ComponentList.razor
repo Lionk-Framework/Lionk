@@ -1,0 +1,93 @@
+﻿@namespace Lionk.Core.Razor
+@using Lionk.Core.Component
+@using Lionk.Core.TypeRegistery
+
+<ListSearcher Items="@_componentTypeDescriptions"
+              Properties="@Properties"
+              PropertiesFriendlyNames="@PropertiesFriendlyNames"
+              ItemsChanged="ItemsChanged"
+              T="ComponentTypeDescription" />
+
+<MudTable @ref="_table"
+            T="ComponentTypeDescription"
+            Items="@_componentTypeDescriptions"
+            Hover="true" @bind-SelectedItems="_selectedItem"
+            OnRowClick="@RowClicked">
+    <HeaderContent>
+        <MudTh></MudTh>
+        <MudTh>Type Name</MudTh>
+        <MudTh>Details</MudTh>
+    </HeaderContent>
+
+    <RowTemplate>
+        <MudTd><MudIcon Icon="@Icons.Material.Filled.AutoAwesomeMosaic" /></MudTd>
+        <MudTd DataLabel="Type Name">@context.Name</MudTd>
+        <MudTd>
+            <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => ShowDetails(context.Description)">Component details</MudButton>
+        </MudTd>
+    </RowTemplate>
+
+    <ChildRowContent>
+        @if (string.Compare(selectedDescription, context.Description) == 0)
+        {
+            <MudTd colspan="5">
+                <MudText Typo="Typo.h6">Description</MudText>
+                <MudText Typo="Typo.body1">@selectedDescription</MudText>
+            </MudTd>
+        }
+    </ChildRowContent>
+
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
+    </PagerContent>
+    <FooterContent>
+    </FooterContent>
+</MudTable>
+
+@code {
+    /// <summary>
+    /// Gets or sets the types registery Dictionary.
+    /// </summary>
+    [Parameter] public Dictionary<ComponentTypeDescription, Factory> TypesRegistery { get; set; } = new();
+
+    /// <summary>
+    /// Raised when a RowTable is selected.
+    /// </summary>
+    [Parameter] public EventCallback<KeyValuePair<ComponentTypeDescription, Factory>> OnComponentSelected { get; set; }
+
+    MudTable<ComponentTypeDescription> _table = new();
+    private HashSet<ComponentTypeDescription>? _selectedItem;
+    private string selectedDescription = "";
+    private List<ComponentTypeDescription> _componentTypeDescriptions = new List<ComponentTypeDescription>();
+    private List<string> Properties = new List<string> { "Name", "Description" };
+    private List<string> PropertiesFriendlyNames = new List<string> { "Type Name", "Description" };
+
+    protected override void OnInitialized()
+    {
+        _componentTypeDescriptions = TypesRegistery.Keys.ToList();
+    }
+
+    private void ShowDetails(string description)
+    {
+        if (string.Compare(selectedDescription, description) == 0)
+        {
+            selectedDescription = "";
+            return;
+        }
+        selectedDescription = description;
+    }
+
+    private void ItemsChanged(List<ComponentTypeDescription> items)
+    {
+        _componentTypeDescriptions = items;
+        StateHasChanged();
+    }
+
+    private void RowClicked(TableRowClickEventArgs<ComponentTypeDescription> item)
+    {
+        ComponentTypeDescription? componentTypeDescription = item.Item;
+        if (componentTypeDescription is null) return;
+        Factory factory = TypesRegistery[componentTypeDescription];
+        OnComponentSelected.InvokeAsync(new KeyValuePair<ComponentTypeDescription, Factory>(componentTypeDescription, factory));
+    }
+}
