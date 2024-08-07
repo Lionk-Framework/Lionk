@@ -60,11 +60,10 @@ else
         foreach (var property in Properties)
         {
             var propInfo = typeof(T).GetProperty(property);
-            if (propInfo != null)
-            {
-                _displayProperties.Add(property);
-                _selectedProperties[property] = false;
-            }
+            if (propInfo is null) throw new ArgumentException($"Property {property} not found in {typeof(T).Name}");
+
+            _displayProperties.Add(property);
+            _selectedProperties[property] = false;
         }
 
         _items = Items;

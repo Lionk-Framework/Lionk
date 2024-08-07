@@ -11,7 +11,7 @@
 <MudTable @ref="_table"
             T="ComponentTypeDescription"
             Items="@_componentTypeDescriptions"
-            Hover="true" @bind-SelectedItems="_selectedItem"
+            Hover="true" @bind-SelectedItems="_selectedItems"
             OnRowClick="@RowClicked">
     <HeaderContent>
         <MudTh></MudTh>
@@ -56,7 +56,7 @@
     [Parameter] public EventCallback<KeyValuePair<ComponentTypeDescription, Factory>> OnComponentSelected { get; set; }
 
     MudTable<ComponentTypeDescription> _table = new();
-    private HashSet<ComponentTypeDescription>? _selectedItem;
+    private HashSet<ComponentTypeDescription>? _selectedItems;
     private string selectedDescription = "";
     private List<ComponentTypeDescription> _componentTypeDescriptions = new List<ComponentTypeDescription>();
     private List<string> Properties = new List<string> { "Name", "Description" };
