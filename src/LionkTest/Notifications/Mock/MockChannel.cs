@@ -64,7 +64,7 @@ public class MockChannel : IChannel
     }
 
     /// <inheritdoc/>
-    public bool Equals(IChannel obj)
+    public new bool Equals(object? obj)
     {
         if (obj is MockChannel channel) return Guid == channel.Guid && Name == channel.Name;
         return false;

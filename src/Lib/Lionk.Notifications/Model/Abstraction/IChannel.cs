@@ -50,5 +50,5 @@ public interface IChannel
     /// </summary>
     /// <param name="obj"> The object to compare.</param>
     /// <returns> True if the objects are equals, otherwise false.</returns>
-    bool Equals(IChannel obj);
+    bool Equals(object? obj);
 }
