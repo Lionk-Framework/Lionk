@@ -3,7 +3,7 @@
 using Lionk.Log;
 using Lionk.Log.Serilog;
 
-namespace LionkTest;
+namespace LionkTest.Logger;
 
 /// <summary>
 /// Test class for <see cref="SerilogLogger"/>.
@@ -18,7 +18,9 @@ public class SerilogLoggerTests
     {
         string loggerName = "test";
 
-        string path = Path.Combine(Utils.DirectoryPath, loggerName);
+        string path = Path.Combine(
+            Lionk.Utils.ConfigurationUtils.GetFolderPath(Lionk.Utils.FolderType.Logs),
+            loggerName);
 
         path = Path.GetFullPath(path
             + DateOnly.FromDateTime(DateTime.Now).ToString("yyyyMMdd")
@@ -48,7 +50,9 @@ public class SerilogLoggerTests
         var factory = new SerilogFactory();
         string loggerName = "custom";
 
-        string path = Path.Combine(Utils.DirectoryPath, loggerName);
+        string path = Path.Combine(
+            Lionk.Utils.ConfigurationUtils.GetFolderPath(Lionk.Utils.FolderType.Logs),
+            loggerName);
 
         path = Path.GetFullPath(path
             + DateOnly.FromDateTime(DateTime.Now).ToString("yyyyMMdd")
