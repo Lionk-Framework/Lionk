@@ -27,8 +27,6 @@ public class NotificationEventsTests
         _content = new Content(Severity.Information, "Title", "Message");
         _notification = new Notification(_content, _mockNotifyer);
 
-        NotificationService.Channels.Add(_mockChannel);
-        NotificationService.Notifyers.Add(_mockNotifyer);
         NotificationService.MapNotifyerToChannel(_mockNotifyer, _mockChannel);
     }
 

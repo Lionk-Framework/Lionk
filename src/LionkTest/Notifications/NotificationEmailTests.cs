@@ -31,8 +31,6 @@ public class NotificationEmailTests
         _emailChannel = new EmailChannel("Email Channel");
         _content = new Content(Severity.Information, "Title", "Message");
         _notification = new Notification(_content, _notifyer);
-        NotificationService.Channels.Add(_emailChannel);
-        NotificationService.Notifyers.Add(_notifyer);
         NotificationService.MapNotifyerToChannel(_notifyer, _emailChannel);
         SmtpServerTest.Start();
     }

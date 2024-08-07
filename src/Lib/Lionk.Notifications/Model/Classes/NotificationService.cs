@@ -1,4 +1,5 @@
 ﻿// Copyright © 2024 Lionk Project
+using System.Collections.ObjectModel;
 using Lionk.Notification.Event;
 
 namespace Lionk.Notification;
@@ -8,6 +9,10 @@ namespace Lionk.Notification;
 /// </summary>
 public static class NotificationService
 {
+    private static readonly List<INotifyer> _notifyers = new();
+    private static readonly List<IChannel> _channels = new();
+    private static readonly Dictionary<INotifyer, List<IChannel>> _notifyerChannels = new();
+
     /// <summary>
     /// This event is raised when a notification is sent.
     /// </summary>
@@ -16,17 +21,17 @@ public static class NotificationService
     /// <summary>
     /// Gets get the list of all the notifyers.
     /// </summary>
-    public static List<INotifyer> Notifyers { get; } = new List<INotifyer>();
+    public static ReadOnlyCollection<INotifyer> Notifyers => _notifyers.AsReadOnly();
 
     /// <summary>
     /// Gets the list of all the channels.
     /// </summary>
-    public static List<IChannel> Channels { get; } = new List<IChannel>();
+    public static ReadOnlyCollection<IChannel> Channels => _channels.AsReadOnly();
 
     /// <summary>
     /// Gets a Dictionary that maps the Notifyer with multiple channels.
     /// </summary>
-    public static Dictionary<INotifyer, List<IChannel>> NotifyerChannels { get; } = new Dictionary<INotifyer, List<IChannel>>();
+    public static ReadOnlyDictionary<INotifyer, List<IChannel>> NotifyerChannels => _notifyerChannels.AsReadOnly();
 
     /// <summary>
     /// This method sends a notification and raises the event.
@@ -88,13 +93,44 @@ public static class NotificationService
     /// <param name="channels"> The list of channels to map.</param>
     public static void MapNotifyerToChannel(INotifyer notifyer, params IChannel[] channels)
     {
-        if (channels is null) return;
+        if (channels is null || notifyer is null) return;
+        foreach (IChannel channel in channels)
+        {
+            if (!_channels.Contains(channel)) _channels.Add(channel);
+        }
 
-        if (!NotifyerChannels.ContainsKey(notifyer)) NotifyerChannels.Add(notifyer, new List<IChannel>());
+        if (!_notifyers.Contains(notifyer)) _notifyers.Add(notifyer);
+        if (!_notifyerChannels.ContainsKey(notifyer)) _notifyerChannels.Add(notifyer, new List<IChannel>());
 
         foreach (IChannel channel in channels)
         {
-            NotifyerChannels[notifyer].Add(channel);
+            _notifyerChannels[notifyer].Add(channel);
+        }
+    }
+
+    /// <summary>
+    /// This method adds channels to the list of channels.
+    /// </summary>
+    /// <param name="channels"> The channels to add.</param>
+    public static void AddChannel(params IChannel[] channels)
+    {
+        ArgumentNullException.ThrowIfNull(channels, nameof(channels));
+        foreach (IChannel item in channels)
+        {
+            if (!_channels.Contains(item)) _channels.Add(item);
+        }
+    }
+
+    /// <summary>
+    /// This method adds notifyers to the list of notifyers.
+    /// </summary>
+    /// <param name="notifyers"> The notifyers to add.</param>
+    public static void AddNotifyer(params INotifyer[] notifyers)
+    {
+        ArgumentNullException.ThrowIfNull(notifyers, nameof(notifyers));
+        foreach (INotifyer item in notifyers)
+        {
+            if (!_notifyers.Contains(item)) _notifyers.Add(item);
         }
     }
 }
