@@ -15,7 +15,8 @@ This library allows sending notifications through various channels, such as emai
 ## Installation
 
 1. Clone the repository.
-2. Ensure you have the necessary dependencies  - Newtonsoft.Json
+2. Ensure you have the necessary dependencies
+  - Newtonsoft.Json
 3. Add the library files to your project.
 
 ## Usage

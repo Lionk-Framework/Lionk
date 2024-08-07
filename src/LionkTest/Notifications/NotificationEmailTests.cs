@@ -46,15 +46,10 @@ public class NotificationEmailTests
         ConfigurationUtils.TryDeleteFile(notifyerChannelFilePath, FolderType.Data);
         ConfigurationUtils.TryDeleteFile(notificationFilePath, FolderType.Data);
         ConfigurationUtils.TryDeleteFile(smtpConfigurationFilePath, FolderType.Config);
-
-        // Arrange
         _notifyer = new MockNotifyer("EmailTestNotifyer");
         _content = new Content(Severity.Information, "Title", "Message");
         _notification = new Notification(_content, _notifyer);
         _emailChannel = new EmailChannel("Email Channel");
-        _emailChannel.Initialize();
-        _emailChannel.AddRecipients(new EmailRecipients("Recipient", "recipient@email.test"));
-        NotificationService.MapNotifyerToChannel(_notifyer, _emailChannel);
     }
 
     /// <summary>
@@ -69,10 +64,13 @@ public class NotificationEmailTests
         bool enableSsl = false;
         string username = "notifyer@email.test";
         string password = "passwordTest";
-        Notification notification = new(_content, _notifyer);
 
         // Act
-        _emailChannel.CreatSmtpConfigurationFile(smtpServer, port, enableSsl, username, password);
+        _emailChannel.SetSmtpConfiguration(smtpServer, port, enableSsl, username, password);
+        _emailChannel.Initialize();
+        _emailChannel.AddRecipients(new EmailRecipients("Recipient", "recipient@email.test"));
+        NotificationService.MapNotifyerToChannel(_notifyer, _emailChannel);
+        Notification notification = new(_content, _notifyer);
         NotificationService.Send(notification);
 
         // Assert

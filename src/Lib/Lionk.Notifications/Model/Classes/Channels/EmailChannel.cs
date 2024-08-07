@@ -144,7 +144,7 @@ public class EmailChannel : IChannel
     /// <param name="enableSsl"> A value indicating whether the SSL is enabled.</param>
     /// <param name="username"> The username used to authenticate to the SMTP server.</param>
     /// <param name="password"> The password used to authenticate to the SMTP server.</param>
-    public void CreatSmtpConfigurationFile(string smtpServer, int port, bool enableSsl, string username, string password)
+    public void SetSmtpConfiguration(string smtpServer, int port, bool enableSsl, string username, string password)
     {
         string folderPath = Path.Combine(ConfigurationUtils.GetFolderPath(_folderType), _folder);
         FileHelper.CreateDirectoryIfNotExists(folderPath);
