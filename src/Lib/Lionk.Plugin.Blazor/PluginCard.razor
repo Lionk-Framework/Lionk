@@ -1,0 +1,39 @@
+﻿@using Lionk.Plugin
+@using MudBlazor
+
+@if (Plugin is null)
+{
+    <MudCard>
+        <MudCardContent>
+            <MudText Typo="Typo.h6">No plugin selected</MudText>
+        </MudCardContent>
+    </MudCard>
+}
+else
+{
+    <MudCard @onclick="() => OnSelect.InvokeAsync(Plugin)">
+        <MudCardHeader>
+            <MudText Typo="Typo.h6">@Plugin.Name</MudText>
+            <MudText Typo="Typo.subtitle2">Version: @Plugin.Version</MudText>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudText Typo="Typo.body1">@Plugin.Description</MudText>
+            <MudText Typo="Typo.body2">Author: @Plugin.Author</MudText>
+            <MudText Typo="Typo.caption">Dependencies:</MudText>
+            <MudList T="string">
+                @foreach (var dependency in Plugin.Dependencies)
+                {
+                    <MudListItem>@dependency</MudListItem>
+                }
+            </MudList>
+        </MudCardContent>
+    </MudCard>
+}
+
+@code {
+    [Parameter]
+    public Plugin? Plugin { get; set; }
+
+    [Parameter]
+    public EventCallback<Plugin> OnSelect { get; set; }
+}

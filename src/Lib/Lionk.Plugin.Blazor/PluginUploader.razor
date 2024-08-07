@@ -1,4 +1,5 @@
 ﻿@inject ISnackbar Snackbar
+@inject IPluginManager PluginManager
 
 <MudStack Style="width: 100%">
     <MudFileUpload T="IReadOnlyList<IBrowserFile>"
@@ -21,13 +22,14 @@
                 <MudText Typo="Typo.h6">
                     Drag and drop files here or click
                 </MudText>
-                @foreach (var file in _fileNames)
-                {
-                    <MudChip T="string"
-                             Color="Color.Dark"
-                             Text="@file"
-                             tabindex="-1" />
-                }
+                <MudGrid>
+                    @foreach (var plugin in PluginManager.GetAllPlugins())
+                    {
+                        <MudItem xs="12" sm="6" md="4" lg="3">
+                            <PluginCard Plugin="@plugin" />
+                        </MudItem>
+                    }
+                </MudGrid>
             </MudPaper>
         </ActivatorContent>
     </MudFileUpload>
@@ -36,13 +38,13 @@
         <MudButton Color="Color.Primary"
                    OnClick="@OpenFilePickerAsync"
                    Variant="Variant.Filled">
-            Open file picker
+            Add
         </MudButton>
         <MudButton Color="Color.Error"
-                   Disabled="@(!_fileNames.Any())"
+                   Disabled="@(PluginManager.GetPluginCount() == 0)"
                    OnClick="@ClearAsync"
                    Variant="Variant.Filled">
-            Clear
+            Delete
         </MudButton>
     </MudToolBar>
 </MudStack>
@@ -50,13 +52,11 @@
 #nullable enable
     private const string DefaultDragClass = "relative rounded-lg border-2 border-dashed pa-4 mt-4 mud-width-full mud-height-full";
     private string _dragClass = DefaultDragClass;
-    private readonly List<string> _fileNames = new();
     private MudFileUpload<IReadOnlyList<IBrowserFile>>? _fileUpload;
 
     private async Task ClearAsync()
     {
         await (_fileUpload?.ClearAsync() ?? Task.CompletedTask);
-        _fileNames.Clear();
         ClearDragClass();
     }
 
@@ -78,7 +78,14 @@
     {
         // Upload the files here
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
-        Snackbar.Add("TODO: Upload your files!");
+
+        if (_fileNames.Any())
+        {
+            Snackbar.Add($"Uploading {_fileNames.Count} files...");
+            _fileNames.Clear();
+        }
+        else
+            Snackbar.Add("TODO: Upload your files!");
     }
 
     private void SetDragClass()
@@ -86,4 +93,6 @@
 
     private void ClearDragClass()
         => _dragClass = DefaultDragClass;
+
+    private List<string> _fileNames = new();
 }

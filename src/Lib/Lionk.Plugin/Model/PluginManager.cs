@@ -149,4 +149,8 @@ public class PluginManager : IPluginManager
         foreach (string path in _pluginPaths)
             LoadPlugin(path);
     }
+
+    /// <inheritdoc/>
+    public int GetPluginCount()
+        => _plugins.Count;
 }

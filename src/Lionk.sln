@@ -14,7 +14,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lionk.Logger", "Lib\Lionk.L
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lionk.Notification", "Lib\Lionk.Notifications\Lionk.Notification.csproj", "{42D88A26-9B6D-4122-9B7B-8486A3A306D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lionk.Plugin.Blazor", "Lib\Lionk.Plugin.Blazor\Lionk.Plugin.Blazor.csproj", "{67298732-D7D7-440E-8B26-2C5C95828B32}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lionk.Plugin.Blazor", "Lib\Lionk.Plugin.Blazor\Lionk.Plugin.Blazor.csproj", "{67298732-D7D7-440E-8B26-2C5C95828B32}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lionk.Utils", "Lib\Lionk.Utils\Lionk.Utils.csproj", "{87F57CF7-D29C-406C-9018-32C07267338E}"
 EndProject
