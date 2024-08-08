@@ -1,7 +1,5 @@
 ﻿// Copyright © 2024 Lionk Project
 
-using System.Diagnostics;
-
 namespace Lionk.Auth.Identity;
 
 /// <summary>

@@ -1,10 +1,9 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using System.Security.Claims;
-using Lionk.Auth.Identity;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace Lionk.Auth.Razor.Identity;
+namespace Lionk.Auth.Identity;
 
 /// <summary>
 /// This class is used to provide the authentication state of the user.

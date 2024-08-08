@@ -1,5 +1,7 @@
-﻿@inherits LayoutComponentBase
+﻿@using Lionk.Auth.Identity
+@inherits LayoutComponentBase
 @inject NavigationManager NavManager
+@inject UserAuthenticationStateProvider AuthStateProvider
 
 <MudThemeProvider Theme="@Theme" IsDarkMode="IsDarkMode" />
 <MudPopoverProvider />
@@ -14,19 +16,21 @@
         <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
     </MudAppBar>
     <MudDrawer @bind-Open="IsDrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <MudNavMenu>
-            <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Dashboard</MudNavLink>
-            <MudNavGroup Title="Notifications" Icon="@Icons.Material.Filled.Notifications" @bind-Expanded="IsNotifcationExpanded">
-                <MudNavLink Href="/active" Match="NavLinkMatch.Prefix">Active</MudNavLink>
-                <MudNavLink Href="/history" Match="NavLinkMatch.Prefix">History</MudNavLink>
-                <MudNavLink Href="/configuration" Match="NavLinkMatch.Prefix">Configuration</MudNavLink>
-            </MudNavGroup>
-            <MudNavLink Href="/plugins" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AddBox">Plugins</MudNavLink>
-        </MudNavMenu>
+            <MudNavMenu>
+                <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Dashboard</MudNavLink>
+                <MudNavGroup Title="Notifications" Icon="@Icons.Material.Filled.Notifications" @bind-Expanded="IsNotifcationExpanded">
+                    <MudNavLink Href="/active" Match="NavLinkMatch.Prefix">Active</MudNavLink>
+                    <MudNavLink Href="/history" Match="NavLinkMatch.Prefix">History</MudNavLink>
+                    <MudNavLink Href="/configuration" Match="NavLinkMatch.Prefix">Configuration</MudNavLink>
+                </MudNavGroup>
+                <MudNavLink Href="/plugins" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AddBox">Plugins</MudNavLink>
+            </MudNavMenu>
         <MudContainer Class="mt-auto pa-2">
             <MudGrid Justify="Justify.SpaceBetween">
                 <MudItem>
                     <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Primary" OnClick="OnProfilePressed" />
+                    <MudText Typo="Typo.body2">Profile</MudText>
+                    <MudText Typo="Typo.body2">@_userName</MudText>
                 </MudItem>
                 <MudItem>
                     <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Primary" OnClick="OnLogoutPressed" />
@@ -50,11 +54,12 @@
     private bool IsNotifcationExpanded = false;
     private MudTheme? Theme = null;
     private bool IsDarkMode = true;
+    public string _userName = "";
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-
+        _userName = AuthStateProvider.CurrentUser?.Username ?? "Not Logged In";
         Theme = new()
             {
                 PaletteLight = _lightPalette,
@@ -84,8 +89,9 @@
         NavManager.NavigateTo("/profile");
     }
 
-    private void OnLogoutPressed()
+    private async Task OnLogoutPressed()
     {
+        await AuthStateProvider.LogoutAsync();
         NavManager.NavigateTo("/auth");
     }
 

@@ -1,11 +1,9 @@
 ﻿@using Lionk.Auth.Identity
-@using Lionk.Auth.Razor.Identity
 @using Lionk.Auth.Utils
 @using Microsoft.AspNetCore.Authorization
 
 @inject NavigationManager NavManager
 @inject UserAuthenticationStateProvider AuthStateProvider
-
 
 <MudGrid>
     <MudItem xs="12" sm="12">
@@ -32,11 +30,14 @@
         bool isAuthenticated = authState?.User?.Identity?.IsAuthenticated ?? false;
         if (!isAuthenticated)
         {
-        string salt = PasswordUtils.GenerateSalt(16);
-        string passwordHash = PasswordUtils.HashPassword("admin", salt);
-        base.OnInitialized();
+            string salt = PasswordUtils.GenerateSalt(16);
+            string passwordHash = PasswordUtils.HashPassword("admin", salt);
+            base.OnInitialized();
         }
-        NavManager.NavigateTo(_mainPageRoute);
+        else
+        {
+            NavManager.NavigateTo(_mainPageRoute);
+        }
     }
 
     public async Task LoginAsync(string userName, string password)
@@ -44,8 +45,17 @@
         string salt = UserService.GetUserSalt(userName);
         string passwordHash = PasswordUtils.HashPassword(password, salt);
         await AuthStateProvider.LoginAsync(userName, passwordHash);
-        if (AuthStateProvider.CurrentUser is null) ErrorMessage = "Invalid username or password.";
-        StateHasChanged();
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        bool isAuthenticated = authState?.User?.Identity?.IsAuthenticated ?? false;
+        if (isAuthenticated)
+        {
+            NavManager.NavigateTo(_mainPageRoute);
+        }
+        else
+        {
+            ErrorMessage = "Invalid username or password.";
+            StateHasChanged();
+        }
     }
 
     private async void HandleValidSubmit()
