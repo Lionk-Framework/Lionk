@@ -130,7 +130,7 @@ public class EmailChannel : IChannel
     }
 
     /// <inheritdoc/>
-    public new bool Equals(object? obj)
+    public bool Equals(IChannel? obj)
     {
         if (obj is EmailChannel channel) return Guid == channel.Guid;
         return false;
