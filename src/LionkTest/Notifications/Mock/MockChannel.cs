@@ -47,10 +47,7 @@ public class MockChannel : IChannel
         // do nothing
     }
 
-    /// <summary>
-    /// This method adds a recipient to the channel.
-    /// </summary>
-    /// <param name="recipients"> The recipient to add.</param>
+    /// <inheritdoc/>
     public void AddRecipients(params IRecipient[] recipients)
     {
         List<IRecipient> recipientsToAdd = new();
@@ -64,7 +61,7 @@ public class MockChannel : IChannel
     }
 
     /// <inheritdoc/>
-    public new bool Equals(object? obj)
+    public bool Equals(IChannel? obj)
     {
         if (obj is MockChannel channel) return Guid == channel.Guid && Name == channel.Name;
         return false;

@@ -5,7 +5,7 @@ namespace Lionk.Notification;
 /// <summary>
 /// This interface represents a notifyer that can send notifications.
 /// </summary>
-public interface INotifyer
+public interface INotifyer : IEquatable<INotifyer>
 {
     /// <summary>
     /// Gets the Guid of the notifyer.
@@ -22,5 +22,5 @@ public interface INotifyer
     /// </summary>
     /// <param name="obj"> The object to compare.</param>
     /// <returns> A value indicating whether the objects are equal.</returns>
-    bool Equals(INotifyer? obj);
+    new bool Equals(INotifyer? obj);
 }
