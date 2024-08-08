@@ -9,11 +9,6 @@ namespace Lionk.Notification;
 public class Notification
 {
     /// <summary>
-    /// Gets a value indicating whether the notification is active.
-    /// </summary>
-    public bool IsRead { get; private set; }
-
-    /// <summary>
     /// Gets the unique identifier of the notification.
     /// </summary>
     public Guid Id { get; private set; }
@@ -39,7 +34,7 @@ public class Notification
     /// <param name="content"> The content of the notification.</param>
     /// <param name="notifyer"> The notifyer that sent the notification.</param>
     public Notification(Content content, INotifyer notifyer)
-        : this(Guid.NewGuid(), content, notifyer, DateTime.Now, false)
+        : this(Guid.NewGuid(), content, notifyer, DateTime.Now)
     {
     }
 
@@ -50,32 +45,12 @@ public class Notification
     /// <param name="content"> The content of the notification.</param>
     /// <param name="notifyer"> The notifyer that sent the notification.</param>
     /// <param name="timestamp">The timestamp when the notification was created.</param>
-    /// <param name="isRead"> A value indicating whether the notification is read.</param>
     [JsonConstructor]
-    public Notification(Guid id, Content content, INotifyer notifyer, DateTime timestamp, bool isRead)
+    public Notification(Guid id, Content content, INotifyer notifyer, DateTime timestamp)
     {
         Id = id;
         Timestamp = timestamp;
         Content = content;
         Notifyer = notifyer;
-        IsRead = isRead;
-    }
-
-    /// <summary>
-    /// This method marks the notification as read.
-    /// </summary>
-    public void Read()
-    {
-        IsRead = true;
-        NotificationService.EditNotificationHistory(this);
-    }
-
-    /// <summary>
-    /// This method marks the notification as unread.
-    /// </summary>
-    public void Unread()
-    {
-        IsRead = false;
-        NotificationService.EditNotificationHistory(this);
     }
 }
