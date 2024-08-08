@@ -1,6 +1,7 @@
 ﻿@using Lionk.Auth.Identity
 @using Lionk.Auth.Razor.Identity
 @using Lionk.Auth.Utils
+@using Microsoft.AspNetCore.Authorization
 
 @inject NavigationManager NavManager
 @inject UserAuthenticationStateProvider AuthStateProvider
@@ -23,14 +24,19 @@
     public string? Username { get; set; }
     public string? Password { get; set; }
     public string? ErrorMessage { get; set; }
+    private readonly string _mainPageRoute = "/";
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        bool isAuthenticated = authState?.User?.Identity?.IsAuthenticated ?? false;
+        if (!isAuthenticated)
+        {
         string salt = PasswordUtils.GenerateSalt(16);
         string passwordHash = PasswordUtils.HashPassword("admin", salt);
-        User userTest = new User("admin", "admin@admin.ch", passwordHash, salt);
-        UserFileHandler.SaveUser(userTest);
         base.OnInitialized();
+        }
+        NavManager.NavigateTo(_mainPageRoute);
     }
 
     public async Task LoginAsync(string userName, string password)
@@ -38,7 +44,7 @@
         string salt = UserService.GetUserSalt(userName);
         string passwordHash = PasswordUtils.HashPassword(password, salt);
         await AuthStateProvider.LoginAsync(userName, passwordHash);
-        ErrorMessage = (await AuthStateProvider.GetAuthenticationStateAsync())?.User?.Identity?.Name ?? "No user";
+        if (AuthStateProvider.CurrentUser is null) ErrorMessage = "Invalid username or password.";
         StateHasChanged();
     }
 

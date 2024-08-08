@@ -20,7 +20,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddMudServices();
 
 // Add Basic Authentication services
-builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<UserServiceRazor>();
 builder.Services.AddScoped<UserAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<UserAuthenticationStateProvider>());
 

@@ -11,7 +11,7 @@ namespace Lionk.Auth.Razor.Identity;
 /// </summary>
 public class UserAuthenticationStateProvider : AuthenticationStateProvider, IDisposable
 {
-    private readonly UserService _userService;
+    private readonly UserServiceRazor _userService;
 
     /// <summary>
     /// Gets the current user.
@@ -22,7 +22,7 @@ public class UserAuthenticationStateProvider : AuthenticationStateProvider, IDis
     /// Initializes a new instance of the <see cref="UserAuthenticationStateProvider"/> class.
     /// </summary>
     /// <param name="userService"> The user service to use.</param>
-    public UserAuthenticationStateProvider(UserService userService)
+    public UserAuthenticationStateProvider(UserServiceRazor userService)
     {
         AuthenticationStateChanged += OnAuthenticationStateChangedAsync;
         _userService = userService;

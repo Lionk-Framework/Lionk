@@ -29,7 +29,21 @@ public class UserFileHandler
     /// <param name="user"> The notification to save.</param>
     public static void SaveUser(User user)
     {
+        ArgumentNullException.ThrowIfNull(user);
         HashSet<User> users = GetUsers();
+        users.Add(user);
+        WriteUsers(users);
+    }
+
+    /// <summary>
+    /// Method to update an user.
+    /// </summary>
+    /// <param name="user"> The user to update.</param>
+    public static void UpdateUser(User user)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+        HashSet<User> users = GetUsers();
+        users.RemoveWhere(u => u.Id == user.Id);
         users.Add(user);
         WriteUsers(users);
     }
@@ -55,5 +69,17 @@ public class UserFileHandler
         if (string.IsNullOrEmpty(json)) return new();
         HashSet<User> users = JsonConvert.DeserializeObject<HashSet<User>>(json) ?? throw new ArgumentNullException(nameof(users));
         return users;
+    }
+
+    /// <summary>
+    /// Method to delete an user.
+    /// </summary>
+    /// <param name="user"> The user to delete.</param>
+    public static void DeleteUser(User user)
+    {
+        if (user is null) return;
+        HashSet<User> users = GetUsers();
+        users.RemoveWhere(u => u.Id == user.Id);
+        WriteUsers(users);
     }
 }

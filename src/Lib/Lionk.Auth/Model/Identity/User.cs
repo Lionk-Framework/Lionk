@@ -1,6 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using System.Security.Claims;
+using Newtonsoft.Json;
 
 namespace Lionk.Auth.Identity;
 
@@ -51,6 +52,24 @@ public class User
     }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="User"/> class.
+    /// </summary>
+    /// <param name="id"> The unique identifier of the user.</param>
+    /// <param name="userName"> The username of the user.</param>
+    /// <param name="email"> The email of the user.</param>
+    /// <param name="passwordHash"> The password hash of the user.</param>
+    /// <param name="salt"> The salt used to hash the password.</param>
+    [JsonConstructor]
+    public User(Guid id, string userName, string email, string passwordHash, string salt)
+    {
+        Id = id;
+        Username = userName;
+        Email = email;
+        PasswordHash = passwordHash;
+        Salt = salt;
+    }
+
+    /// <summary>
     /// Method to convert a ClaimsPrincipal to a user.
     /// </summary>
     /// <param name="principal"> The ClaimsPrincipal to convert.</param>
@@ -70,6 +89,27 @@ public class User
 
         return user;
     }
+
+    /// <summary>
+    /// Method to update the username of the user.
+    /// </summary>
+    /// <param name="newUsername"> The new username.</param>
+    /// <exception cref="ArgumentNullException"> If the new username is null.</exception>
+    public void UpdateUsername(string newUsername) => Username = newUsername ?? throw new ArgumentNullException(nameof(newUsername));
+
+    /// <summary>
+    /// Method to update the email of the user.
+    /// </summary>
+    /// <param name="newEmail"> The new email.</param>
+    /// <exception cref="ArgumentNullException"> If the new email is null.</exception>
+    public void UpdateEmail(string newEmail) => Email = newEmail ?? throw new ArgumentNullException(nameof(newEmail));
+
+    /// <summary>
+    /// Method to update the password hash of the user.
+    /// </summary>
+    /// <param name="newPasswordHash"> The new password hash.</param>
+    /// <exception cref="ArgumentNullException"> If the new password hash is null.</exception>
+    public void UpdatePasswordHash(string newPasswordHash) => PasswordHash = newPasswordHash ?? throw new ArgumentNullException(nameof(newPasswordHash));
 
     /// <summary>
     /// Method to convert the user to a ClaimsPrincipal.
