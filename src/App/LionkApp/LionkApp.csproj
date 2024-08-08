@@ -16,7 +16,7 @@ This is the Lionk App README file.
 </Description>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MudBlazor" Version="7.5.0" />
+    <PackageReference Include="MudBlazor" Version="7.6.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Lib\Lionk.Core.Razor\Lionk.Core.Razor.csproj" />

@@ -5,8 +5,13 @@ namespace Lionk.Notification;
 /// <summary>
 /// Interface that define a Notification Channel.
 /// </summary>
-public interface IChannel
+public interface IChannel : IEquatable<IChannel>
 {
+    /// <summary>
+    /// Gets the Guid of the channel.
+    /// </summary>
+    Guid Guid { get; }
+
     /// <summary>
     /// Gets the name of the channel.
     /// </summary>
@@ -22,7 +27,11 @@ public interface IChannel
     /// </summary>
     bool IsInitialized { get; }
 
-    void AddRecipient(IRecipient recipient);
+    /// <summary>
+    /// This method add one or more recipients to the channel.
+    /// </summary>
+    /// <param name="recipients"> The recipient to add.</param>
+    void AddRecipients(params IRecipient[] recipients);
 
     /// <summary>
     /// Initialize the channel to send notifications.
@@ -35,4 +44,11 @@ public interface IChannel
     /// <param name="notifyer"> The notifyer that send the notification.</param>
     /// <param name="content"> The content of the notification.</param>
     void Send(INotifyer notifyer, Content content);
+
+    /// <summary>
+    /// Method to compare two objects.
+    /// </summary>
+    /// <param name="obj"> The object to compare.</param>
+    /// <returns> True if the objects are equals, otherwise false.</returns>
+    new bool Equals(IChannel? obj);
 }

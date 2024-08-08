@@ -2,6 +2,8 @@
 
 using Lionk.Notification;
 using Lionk.Notification.Email;
+using Lionk.Utils;
+using LionkTest.Notifications.Mock;
 
 namespace LionkTest.Notifications;
 
@@ -10,38 +12,45 @@ namespace LionkTest.Notifications;
 /// </summary>
 public class NotificationEmailTests
 {
-    private class MockNotifyer : INotifyer
-    {
-        public string Name => "TestNotifyer";
-    }
-
     private Content _content;
     private EmailChannel _emailChannel;
     private Notification _notification;
     private MockNotifyer _notifyer;
 
     /// <summary>
-    /// Initializes datas for the test.
+    /// One time setup the test.
     /// </summary>
     [OneTimeSetUp]
-    public void Initialize()
-    {
-        // Arrange
-        _notifyer = new MockNotifyer();
-        _emailChannel = new EmailChannel("Email Channel");
-        _content = new Content(Severity.Information, "Title", "Message");
-        _notification = new Notification(_content, _notifyer);
-        NotificationService.Channels.Add(_emailChannel);
-        NotificationService.Notifyers.Add(_notifyer);
-        NotificationService.MapNotifyerToChannel(_notifyer, _emailChannel);
-        SmtpServerTest.Start();
-    }
+    public void Initialize() => SmtpServerTest.Start();
 
     /// <summary>
     /// Clean up the test.
     /// </summary>
     [OneTimeTearDown]
     public void Cleanup() => SmtpServerTest.Stop();
+
+    /// <summary>
+    /// Set up the test.
+    /// </summary>
+    [SetUp]
+    public void SetUp()
+    {
+        // Clear the files
+        string channelFilePath = Path.Combine("notifications", "channels.json");
+        string notifyerFilePath = Path.Combine("notifications", "notifyers.json");
+        string notifyerChannelFilePath = Path.Combine("notifications", "notifyerChannels.json");
+        string notificationFilePath = Path.Combine("notifications", "notifications.json");
+        string smtpConfigurationFilePath = Path.Combine("notifications", "smtpConfiguration.json");
+        ConfigurationUtils.TryDeleteFile(channelFilePath, FolderType.Data);
+        ConfigurationUtils.TryDeleteFile(notifyerFilePath, FolderType.Data);
+        ConfigurationUtils.TryDeleteFile(notifyerChannelFilePath, FolderType.Data);
+        ConfigurationUtils.TryDeleteFile(notificationFilePath, FolderType.Data);
+        ConfigurationUtils.TryDeleteFile(smtpConfigurationFilePath, FolderType.Config);
+        _notifyer = new MockNotifyer("EmailTestNotifyer");
+        _content = new Content(Severity.Information, "Title", "Message");
+        _notification = new Notification(_content, _notifyer);
+        _emailChannel = new EmailChannel("Email Channel");
+    }
 
     /// <summary>
     /// Test the email notification.
@@ -55,12 +64,13 @@ public class NotificationEmailTests
         bool enableSsl = false;
         string username = "notifyer@email.test";
         string password = "passwordTest";
-        Notification notification = new(_content, _notifyer);
 
         // Act
-        _emailChannel.CreatSmtpConfigurationFile(smtpServer, port, enableSsl, username, password);
+        _emailChannel.SetSmtpConfiguration(smtpServer, port, enableSsl, username, password);
         _emailChannel.Initialize();
-        _emailChannel.AddRecipient(new EmailRecipients("Recipient", "recipient@email.test"));
+        _emailChannel.AddRecipients(new EmailRecipients("Recipient", "recipient@email.test"));
+        NotificationService.MapNotifyerToChannel(_notifyer, _emailChannel);
+        Notification notification = new(_content, _notifyer);
         NotificationService.Send(notification);
 
         // Assert
