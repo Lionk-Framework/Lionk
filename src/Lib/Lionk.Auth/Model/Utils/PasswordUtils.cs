@@ -8,7 +8,7 @@ namespace Lionk.Auth.Utils;
 /// <summary>
 /// This class contains methods to manage users authentication.
 /// </summary>
-public static class AuthenticatorManager
+public static class PasswordUtils
 {
     /// <summary>
     /// Method to generate a salt with a specific size.

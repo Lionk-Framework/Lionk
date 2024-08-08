@@ -1,9 +1,15 @@
-﻿@inject NavigationManager NavManager
+﻿@using Lionk.Auth.Identity
+@using Lionk.Auth.Razor.Identity
+@using Lionk.Auth.Utils
+
+@inject NavigationManager NavManager
+@inject UserAuthenticationStateProvider AuthStateProvider
+
 
 <MudGrid>
     <MudItem xs="12" sm="12">
         <MudPaper Class="pa-4">
-            <MudTextField @bind-Value="Email" Label="Email" Required="true" InputType="InputType.Email" Class="mb-2" />
+            <MudTextField @bind-Value="Username" Label="Username" Required="true" InputType="InputType.Text" Class="mb-2" />
             <MudTextField @bind-Value="Password" Label="Password" Required="true" InputType="InputType.Password" Class="mb-2" />
             <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
                 <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="HandleValidSubmit">Login</MudButton>
@@ -14,19 +20,35 @@
 </MudGrid>
 
 @code {
-    public string? Email { get; set; }
+    public string? Username { get; set; }
     public string? Password { get; set; }
     public string? ErrorMessage { get; set; }
 
-    private void HandleValidSubmit()
+    protected override void OnInitialized()
     {
-        if (Email == "toto" && Password == "toto")
+        string salt = PasswordUtils.GenerateSalt(16);
+        string passwordHash = PasswordUtils.HashPassword("admin", salt);
+        User userTest = new User("admin", "admin@admin.ch", passwordHash, salt);
+        UserFileHandler.SaveUser(userTest);
+        base.OnInitialized();
+    }
+
+    public async Task LoginAsync(string userName, string password)
+    {
+        string salt = UserService.GetUserSalt(userName);
+        string passwordHash = PasswordUtils.HashPassword(password, salt);
+        await AuthStateProvider.LoginAsync(userName, passwordHash);
+        ErrorMessage = (await AuthStateProvider.GetAuthenticationStateAsync())?.User?.Identity?.Name ?? "No user";
+        StateHasChanged();
+    }
+
+    private async void HandleValidSubmit()
+    {
+        if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
         {
-            NavManager.NavigateTo("/");
+            ErrorMessage = "Username and password are required.";
+            return;
         }
-        else
-        {
-            ErrorMessage = "Wrong mail or password";
-        }
+        await LoginAsync(Username, Password);
     }
 }

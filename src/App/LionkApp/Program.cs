@@ -1,11 +1,14 @@
 // Copyright © 2024 Lionk Project
 
+using Lionk.Auth.Identity;
+using Lionk.Auth.Razor.Identity;
 using Lionk.Core.Component;
 using Lionk.Core.TypeRegistery;
 using Lionk.Log;
 using Lionk.Log.Serilog;
 using Lionk.Plugin;
 using LionkApp.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor.Services;
 using ILoggerFactory = Lionk.Log.ILoggerFactory;
 
@@ -15,6 +18,11 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddMudServices();
+
+// Add Basic Authentication services
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<UserAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<UserAuthenticationStateProvider>());
 
 // Configure custom logger
 builder.Services.AddSingleton<ILoggerFactory, SerilogFactory>();

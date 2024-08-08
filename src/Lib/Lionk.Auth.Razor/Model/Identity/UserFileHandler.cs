@@ -1,10 +1,9 @@
 ﻿// Copyright © 2024 Lionk Project
 
-using Lionk.Auth.Identity;
 using Lionk.Utils;
 using Newtonsoft.Json;
 
-namespace Lionk.Auth.Model.Identity;
+namespace Lionk.Auth.Identity;
 
 /// <summary>
 /// This class is used to handle the users witj json files.
@@ -28,7 +27,7 @@ public class UserFileHandler
     /// Method to save a notification in history.
     /// </summary>
     /// <param name="user"> The notification to save.</param>
-    public static void SaveNotification(User user)
+    public static void SaveUser(User user)
     {
         HashSet<User> users = GetUsers();
         users.Add(user);

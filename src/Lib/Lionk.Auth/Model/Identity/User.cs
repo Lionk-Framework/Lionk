@@ -17,7 +17,7 @@ public class User
     /// <summary>
     /// Gets the username of the user.
     /// </summary>
-    public string UserName { get; private set; }
+    public string Username { get; private set; }
 
     /// <summary>
     /// Gets the email of the user.
@@ -44,7 +44,7 @@ public class User
     public User(string userName, string email, string passwordHash, string salt)
     {
         Id = Guid.NewGuid();
-        UserName = userName;
+        Username = userName;
         Email = email;
         PasswordHash = passwordHash;
         Salt = salt;
@@ -79,7 +79,7 @@ public class User
     {
         ClaimsIdentity identity = new("UserClaim");
 
-        Claim userNameClaim = new(ClaimTypes.Name, UserName);
+        Claim userNameClaim = new(ClaimTypes.Name, Username);
         Claim emailClaim = new(ClaimTypes.Email, Email);
         Claim passwordHashClaim = new(ClaimTypes.Hash, PasswordHash);
         Claim saltClaim = new("string", Salt);
