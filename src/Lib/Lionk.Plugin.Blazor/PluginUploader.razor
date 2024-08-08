@@ -1,91 +1,108 @@
-﻿@inject ISnackbar Snackbar
+﻿@page "/plugin-manager"
+@using Microsoft.AspNetCore.Components.Forms
+@inject ISnackbar Snackbar
 @inject IPluginManager PluginManager
+@inject FileUploadService FileUploadService
 
 <MudStack Style="width: 100%">
-    <MudFileUpload T="IReadOnlyList<IBrowserFile>"
-                   Accept=".dll"
-                   @ref="@_fileUpload"
-                   OnFilesChanged="OnInputFileChanged"
-                   AppendMultipleFiles
-                   Hidden="@false"
-                   InputClass="absolute mud-width-full mud-height-full overflow-hidden z-10"
-                   InputStyle="opacity:0"
-                   tabindex="-1"
-                   @ondrop="@ClearDragClass"
-                   @ondragenter="@SetDragClass"
-                   @ondragleave="@ClearDragClass"
-                   @ondragend="@ClearDragClass">
-        <ActivatorContent>
-            <MudPaper Height="300px"
-                      Outlined="true"
-                      Class="@_dragClass">
-                <MudText Typo="Typo.h6">
-                    Drag and drop files here or click
-                </MudText>
-                <MudGrid>
-                    @foreach (var plugin in PluginManager.GetAllPlugins())
-                    {
-                        <MudItem xs="12" sm="6" md="4" lg="3">
-                            <PluginCard Plugin="@plugin" />
-                        </MudItem>
-                    }
-                </MudGrid>
-            </MudPaper>
-        </ActivatorContent>
-    </MudFileUpload>
-    <MudToolBar Gutters="@false"
-                Class="relative d-flex justify-end gap-4">
-        <MudButton Color="Color.Primary"
-                   OnClick="@OpenFilePickerAsync"
-                   Variant="Variant.Filled">
-            Add
-        </MudButton>
+    <MudPaper Outlined="true" Class="pa-4">
+        <MudText Typo="Typo.h6">Installed Plugins</MudText>
+        <MudGrid>
+            @foreach (var plugin in PluginManager.GetAllPlugins())
+            {
+                <MudItem xs="12" sm="6" md="4" lg="3">
+                    <PluginCard Plugin="@plugin" OnSelect="SelectPlugin" />
+                </MudItem>
+            }
+        </MudGrid>
+    </MudPaper>
+    <MudToolBar Gutters="false" Class="relative d-flex justify-end gap-4 mt-4">
+        <MudFileUpload T="IReadOnlyList<IBrowserFile>"
+                       Accept=".dll"
+                       @ref="_fileUpload"
+                       OnFilesChanged="OnInputFileChanged"
+                       AppendMultipleFiles
+                       Hidden="false"
+                       InputClass="absolute mud-width-full mud-height-full overflow-hidden z-10"
+                       InputStyle="opacity:0"
+                       tabindex="-1"
+                       @ondrop="ClearDragClass"
+                       @ondragenter="SetDragClass"
+                       @ondragleave="ClearDragClass"
+                       @ondragend="ClearDragClass">
+            <ActivatorContent>
+                <MudPaper Height="50px" Width="150px"
+                          Outlined="true"
+                          Class="@_dragClass">
+                    <MudText Typo="Typo.subtitle2" Align="Align.Center">
+                        Drag files here
+                    </MudText>
+                </MudPaper>
+                <MudButton Color="Color.Primary"
+                           OnClick="OpenFilePickerAsync"
+                           Variant="Variant.Filled">
+                    Add
+                </MudButton>
+            </ActivatorContent>
+        </MudFileUpload>
+
         <MudButton Color="Color.Error"
-                   Disabled="@(PluginManager.GetPluginCount() == 0)"
-                   OnClick="@ClearAsync"
+                   Disabled="@(SelectedPlugin == null)"
+                   OnClick="DeletePlugin"
                    Variant="Variant.Filled">
             Delete
         </MudButton>
     </MudToolBar>
 </MudStack>
+
 @code {
 #nullable enable
-    private const string DefaultDragClass = "relative rounded-lg border-2 border-dashed pa-4 mt-4 mud-width-full mud-height-full";
+    private const string DefaultDragClass = "relative rounded-lg border-2 border-dashed pa-4 mud-width-full mud-height-full";
     private string _dragClass = DefaultDragClass;
     private MudFileUpload<IReadOnlyList<IBrowserFile>>? _fileUpload;
+    private Plugin? SelectedPlugin { get; set; }
 
-    private async Task ClearAsync()
+    private async Task DeletePlugin()
     {
-        await (_fileUpload?.ClearAsync() ?? Task.CompletedTask);
-        ClearDragClass();
+        await Task.Run(() =>
+        {
+            if (SelectedPlugin != null)
+            {
+                PluginManager.RemovePlugin(SelectedPlugin);
+                SelectedPlugin = null;
+            }
+        });
     }
 
     private Task OpenFilePickerAsync()
         => _fileUpload?.OpenFilePickerAsync() ?? Task.CompletedTask;
 
-    private void OnInputFileChanged(InputFileChangeEventArgs e)
+    private async Task OnInputFileChanged(InputFileChangeEventArgs e)
     {
         ClearDragClass();
         var files = e.GetMultipleFiles();
-        foreach (var file in files)
+        var uploadedFilePaths = await FileUploadService.UploadFileAsync(files);
+
+        if (uploadedFilePaths is null)
         {
-            _fileNames.Add(file.Name);
+            Snackbar.Add("File upload failed plugin with the same name is already uploaded!"
+                            , Severity.Error);
+            return;
         }
-        Upload(); // Appeler Upload ici
-    }
 
-    private void Upload()
-    {
-        // Upload the files here
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
-
-        if (_fileNames.Any())
+        if (uploadedFilePaths != null && uploadedFilePaths.Any())
         {
-            Snackbar.Add($"Uploading {_fileNames.Count} files...");
-            _fileNames.Clear();
+            Snackbar.Add("Files uploaded successfully!", Severity.Success);
+
+            foreach (var file in uploadedFilePaths)
+                PluginManager.AddPlugin(file);
         }
         else
-            Snackbar.Add("TODO: Upload your files!");
+        {
+            Snackbar.Add("File upload failed!", Severity.Error);
+        }
+
+        StateHasChanged();
     }
 
     private void SetDragClass()
@@ -94,5 +111,11 @@
     private void ClearDragClass()
         => _dragClass = DefaultDragClass;
 
-    private List<string> _fileNames = new();
+    private List<string>
+    _fileNames = new();
+
+    private void SelectPlugin(Plugin plugin)
+    {
+        SelectedPlugin = plugin;
+    }
 }

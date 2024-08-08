@@ -60,6 +60,7 @@ public class PluginManager : IPluginManager
         if (plugin is null) return;
 
         _plugins.Remove(plugin);
+        File.Delete(plugin.Assembly.Location);
         _pluginPaths.Remove(plugin.Assembly.Location);
         SavePluginPaths();
     }

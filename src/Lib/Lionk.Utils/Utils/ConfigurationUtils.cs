@@ -108,11 +108,12 @@ public static class ConfigurationUtils
     /// <param name="folderType">The folder type.</param>
     public static void CopyFileToFolder(string sourcePath, FolderType folderType)
     {
-        if (!File.Exists(sourcePath))
+        string destinationPath = Path.Combine(_keyValuePairs[folderType], Path.GetFileName(sourcePath));
+
+        if (!File.Exists(sourcePath) || File.Exists(destinationPath))
             return;
 
-        string destinationPath = Path.Combine(_keyValuePairs[folderType], Path.GetFileName(sourcePath));
-        File.Copy(sourcePath, destinationPath, true);
+        File.Copy(sourcePath, destinationPath, false);
     }
 
     /// <summary>
