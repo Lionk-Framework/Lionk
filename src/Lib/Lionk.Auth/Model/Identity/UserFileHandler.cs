@@ -8,7 +8,7 @@ namespace Lionk.Auth.Identity;
 /// <summary>
 /// This class is used to handle the users witj json files.
 /// </summary>
-public class UserFileHandler
+public static class UserFileHandler
 {
 #if DEBUG
     private static readonly string _fileName = "users_debug.json";
@@ -19,6 +19,11 @@ public class UserFileHandler
     private static readonly FolderType _folderType = FolderType.Data;
     private static readonly string _folderPath = "users";
     private static readonly string _usersPath = Path.Combine(_folderPath, _fileName);
+
+    /// <summary>
+    /// Gets the path of the users file.
+    /// </summary>
+    public static string UsersPath => _usersPath;
 
     /// <summary>
     /// Initializes static members of the <see cref="UserFileHandler"/> class.

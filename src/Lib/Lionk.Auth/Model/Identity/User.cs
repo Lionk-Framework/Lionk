@@ -149,4 +149,28 @@ public class User
 
     /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is User user && user.Id == Id;
+
+    /// <summary>
+    /// Method to add a role to the user.
+    /// </summary>
+    /// <param name="role"> The role to add.</param>
+    public void AddRole(string role) => _roles.Add(role);
+
+    /// <summary>
+    /// Method to add roles to the user.
+    /// </summary>
+    /// <param name="roles"> The roles to add.</param>
+    public void AddRoles(IEnumerable<string> roles) => _roles.UnionWith(roles);
+
+    /// <summary>
+    /// Method to remove a role from the user.
+    /// </summary>
+    /// <param name="role"> The role to remove.</param>
+    public void RemoveRole(string role) => _roles.Remove(role);
+
+    /// <summary>
+    /// Method to remove roles from the user.
+    /// </summary>
+    /// <param name="roles"> The roles to remove.</param>
+    public void RemoveRoles(IEnumerable<string> roles) => _roles.ExceptWith(roles);
 }

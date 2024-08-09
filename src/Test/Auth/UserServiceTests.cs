@@ -11,6 +11,10 @@ namespace LionkTest.Auth;
 /// </summary>
 public class UserServiceTests
 {
+    private User _user1;
+    private User _user2;
+    private User _user3;
+
     /// <summary>
     /// Setups the tests.
     /// </summary>
@@ -18,8 +22,16 @@ public class UserServiceTests
     public void Setup()
     {
         // Clear the files
-        string usersFilePath = Path.Combine("users", "users.json");
-        ConfigurationUtils.TryDeleteFile(usersFilePath, FolderType.Data);
+        ConfigurationUtils.TryDeleteFile(UserFileHandler.UsersPath, FolderType.Data);
+
+        // Arrange
+        string salt1 = PasswordUtils.GenerateSalt(16);
+        string salt2 = PasswordUtils.GenerateSalt(16);
+        string salt3 = PasswordUtils.GenerateSalt(16);
+        List<string> roles = new() { "role1", "role2" };
+        _user1 = new("user1", "email1", "password1", salt1, roles);
+        _user2 = new("user2", "email2", "password2", salt2, roles);
+        _user3 = new("user3", "email3", "password3", salt3, roles);
     }
 
     /// <summary>
@@ -29,15 +41,11 @@ public class UserServiceTests
     public void InsertUserCountVerification()
     {
         // Arrange
-        string salt1 = PasswordUtils.GenerateSalt(16);
-        string salt2 = PasswordUtils.GenerateSalt(16);
-        List<string> roles = new() { "role1", "role2" };
-        User user1 = new("user1", "user1@email.com", "password1", salt1, roles);
-        User user2 = new("user2", "user2@email.com", "password2", salt2, roles);
+        // nothing to arrange
 
         // Act
-        User? instert1 = UserService.Insert(user1);
-        User? instert2 = UserService.Insert(user2);
+        User? instert1 = UserService.Insert(_user1);
+        User? instert2 = UserService.Insert(_user2);
 
         // Assert
         Assert.That(instert1, Is.Not.Null);
@@ -56,17 +64,14 @@ public class UserServiceTests
         string newName = "userUpdated";
         string newMail = "userUpdated@email.com";
         string newPass = "passwordUpdated";
-        string salt = "salt";
-        List<string> roles = new() { "role1", "role2" };
 
-        User user = new("user", "user@email.com", "password", salt, roles);
-        User? insert = UserService.Insert(user);
+        User? insert = UserService.Insert(_user1);
 
         // Act
-        user.UpdateUsername(newName);
-        user.UpdateEmail(newMail);
-        user.UpdatePasswordHash(newPass);
-        User? updated = UserService.Update(user);
+        _user1.UpdateUsername(newName);
+        _user1.UpdateEmail(newMail);
+        _user1.UpdatePasswordHash(newPass);
+        User? updated = UserService.Update(_user1);
 
         // Assert
         Assert.That(updated, Is.Not.Null);
@@ -81,18 +86,14 @@ public class UserServiceTests
     [Test]
     public void DeleteUserVerification()
     {
-        string salt1 = PasswordUtils.GenerateSalt(16);
-        string salt2 = PasswordUtils.GenerateSalt(16);
-        List<string> roles = new() { "role1", "role2" };
-
-        User user1 = new("user1", "user1@email.com", "password1", salt1, roles);
-        User user2 = new("user2", "user2@email.com", "password2", salt2, roles);
+        // Arrange
+        // nothing to arrange
 
         // Act
-        UserService.Insert(user1);
-        UserService.Insert(user2);
+        UserService.Insert(_user1);
+        UserService.Insert(_user2);
         int count = UserService.GetUsers().Count;
-        bool isDeleted = UserService.Delete(user1);
+        bool isDeleted = UserService.Delete(_user1);
 
         // Assert
         Assert.That(isDeleted, Is.True);
@@ -115,16 +116,79 @@ public class UserServiceTests
     public void InsertExistingUser()
     {
         // Arrange
-        List<string> roles = new() { "role1", "role2" };
-        User user = new("user", "user@email.com", "password", "salt", roles);
-        User? userCopy = user;
+        User? userCopy = _user1;
 
         // Act
-        User? insert = UserService.Insert(user);
+        User? insert = UserService.Insert(_user1);
         User? insertCopy = UserService.Insert(userCopy);
 
         // Assert
         Assert.That(insert, Is.Not.Null);
         Assert.That(insertCopy, Is.Null);
+    }
+
+    /// <summary>
+    /// This method tests the insertion of a user with a null username.
+    /// </summary>
+    [Test]
+    public void AddRoleToUser()
+    {
+        // Arrange
+        // nothing to arrange
+
+        // Act
+        _user1.AddRole("role3");
+
+        // Assert
+        Assert.That(_user1.Roles.Count, Is.EqualTo(3));
+    }
+
+    /// <summary>
+    /// This method tests the insertion of a user with a null username.
+    /// </summary>
+    [Test]
+    public void AddRoleListToUser()
+    {
+        // Arrange
+        List<string> rolesToAdd = new() { "role3", "role4" };
+
+        // Act
+        _user1.AddRoles(rolesToAdd);
+
+        // Assert
+        Assert.That(_user1.Roles.Count, Is.EqualTo(4));
+    }
+
+    /// <summary>
+    /// This method tests the insertion of a user with a null username.
+    /// </summary>
+    [Test]
+    public void RemoveRoleFromUser()
+    {
+        // Arrange
+        _user1.AddRole("role3");
+
+        // Act
+        _user1.RemoveRole("role3");
+
+        // Assert
+        Assert.That(_user1.Roles.Count, Is.EqualTo(2));
+    }
+
+    /// <summary>
+    /// This method tests the insertion of a user with a null username.
+    /// </summary>
+    [Test]
+    public void RemoveRoleListFromUser()
+    {
+        // Arrange
+        List<string> rolesToAdd = new() { "role3", "role4" };
+        _user1.AddRoles(rolesToAdd);
+
+        // Act
+        _user1.RemoveRoles(rolesToAdd);
+
+        // Assert
+        Assert.That(_user1.Roles.Count, Is.EqualTo(2));
     }
 }
