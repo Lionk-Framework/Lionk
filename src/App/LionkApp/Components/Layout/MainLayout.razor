@@ -1,47 +1,57 @@
 ﻿@using Lionk.Auth.Identity
+@using Microsoft.AspNetCore.Components.Authorization
 @inherits LayoutComponentBase
 @inject NavigationManager NavManager
 @inject UserAuthenticationStateProvider AuthStateProvider
+@inject LionkPalette theme
+<AuthorizeView>
+        <MudThemeProvider Theme="@Theme" IsDarkMode="IsDarkMode" />
+        <MudPopoverProvider />
+        <MudDialogProvider />
+        <MudSnackbarProvider />
+        <MudLayout>
 
-<MudThemeProvider Theme="@Theme" IsDarkMode="IsDarkMode" />
-<MudPopoverProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
-<MudLayout>
-    <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h5" Class="ml-3">Lionk</MudText>
-        <MudSpacer />
-        <MudIconButton Icon="@Icons.Material.Filled.CircleNotifications" Color="Color.Primary" OnClick="OnNotificationPressed" />
-        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
-    </MudAppBar>
-    <MudDrawer @bind-Open="IsDrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-            <MudNavMenu>
-                <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Dashboard</MudNavLink>
-                <MudNavGroup Title="Notifications" Icon="@Icons.Material.Filled.Notifications" @bind-Expanded="IsNotifcationExpanded">
-                    <MudNavLink Href="/active" Match="NavLinkMatch.Prefix">Active</MudNavLink>
-                    <MudNavLink Href="/history" Match="NavLinkMatch.Prefix">History</MudNavLink>
-                    <MudNavLink Href="/configuration" Match="NavLinkMatch.Prefix">Configuration</MudNavLink>
-                </MudNavGroup>
-                <MudNavLink Href="/plugins" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AddBox">Plugins</MudNavLink>
-            </MudNavMenu>
-        <MudContainer Class="mt-auto pa-2">
-            <MudGrid Justify="Justify.SpaceBetween">
-                <MudItem>
-                    <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Primary" OnClick="OnProfilePressed" />
-                    <MudText Typo="Typo.body2">Profile</MudText>
-                    <MudText Typo="Typo.body2">@_userName</MudText>
-                </MudItem>
-                <MudItem>
-                    <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Primary" OnClick="OnLogoutPressed" />
-                </MudItem>
-            </MudGrid>
-        </MudContainer>
-    </MudDrawer>
-    <MudMainContent Class="mt-16 pa-4">
-        @Body
-    </MudMainContent>
-</MudLayout>
+            <MudAppBar Elevation="1">
+                <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+                <MudText Typo="Typo.h5" Class="ml-3">Lionk</MudText>
+                <MudSpacer />
+                <MudIconButton Icon="@Icons.Material.Filled.CircleNotifications" Color="Color.Primary" OnClick="OnNotificationPressed" />
+                <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
+            </MudAppBar>
+            <MudDrawer @bind-Open="IsDrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+
+                <MudNavMenu>
+
+                    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Dashboard</MudNavLink>
+                    <MudNavGroup Title="Notifications" Icon="@Icons.Material.Filled.Notifications" @bind-Expanded="IsNotifcationExpanded">
+                        <MudNavLink Href="/active" Match="NavLinkMatch.Prefix">Active</MudNavLink>
+                        <MudNavLink Href="/history" Match="NavLinkMatch.Prefix">History</MudNavLink>
+                        <MudNavLink Href="/configuration" Match="NavLinkMatch.Prefix">Configuration</MudNavLink>
+                    </MudNavGroup>
+                    <MudNavLink Href="/plugins" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AddBox">Plugins</MudNavLink>
+
+                </MudNavMenu>
+
+
+                <MudContainer Class="mt-auto pa-2">
+                    <MudGrid Justify="Justify.SpaceBetween">
+                        <MudItem>
+                            <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Primary" OnClick="OnProfilePressed" />
+                            <MudText Typo="Typo.body2">Profile</MudText>
+                            <MudText Typo="Typo.body2">@_userName</MudText>
+                        </MudItem>
+                        <MudItem>
+                            <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Primary" OnClick="OnLogoutPressed" />
+                        </MudItem>
+                    </MudGrid>
+                </MudContainer>
+            </MudDrawer>
+
+            <MudMainContent Class="mt-16 pa-4">
+                @Body
+            </MudMainContent>
+        </MudLayout>
+</AuthorizeView>
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
@@ -56,14 +66,20 @@
     private bool IsDarkMode = true;
     public string _userName = "";
 
+    private object Unauthorized()
+    {
+        NavManager.NavigateTo("/unauthorized");
+        return new();
+    }
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
         _userName = AuthStateProvider.CurrentUser?.Username ?? "Not Logged In";
         Theme = new()
             {
-                PaletteLight = _lightPalette,
-                PaletteDark = _darkPalette,
+                PaletteLight = theme.LightPalette,
+                PaletteDark = theme.DarkPalette,
                 LayoutProperties = new LayoutProperties()
             };
     }
@@ -94,45 +110,6 @@
         await AuthStateProvider.LogoutAsync();
         NavManager.NavigateTo("/auth");
     }
-
-    private readonly PaletteLight _lightPalette = new()
-        {
-            Black = "#110e2d",
-            AppbarText = "#424242",
-            AppbarBackground = "rgba(255,255,255,0.8)",
-            DrawerBackground = "#ffffff",
-            GrayLight = "#e8e8e8",
-            GrayLighter = "#f9f9f9",
-        };
-
-    private readonly PaletteDark _darkPalette = new()
-        {
-            Primary = "#7e6fff",
-            Surface = "#1e1e2d",
-            Background = "#1a1a27",
-            BackgroundGray = "#151521",
-            AppbarText = "#92929f",
-            AppbarBackground = "rgba(26,26,39,0.8)",
-            DrawerBackground = "#1a1a27",
-            ActionDefault = "#74718e",
-            ActionDisabled = "#9999994d",
-            ActionDisabledBackground = "#605f6d4d",
-            TextPrimary = "#b2b0bf",
-            TextSecondary = "#92929f",
-            TextDisabled = "#ffffff33",
-            DrawerIcon = "#92929f",
-            DrawerText = "#92929f",
-            GrayLight = "#2a2833",
-            GrayLighter = "#1e1e2d",
-            Info = "#4a86ff",
-            Success = "#3dcb6c",
-            Warning = "#ffb545",
-            Error = "#ff3f5f",
-            LinesDefault = "#33323e",
-            TableLines = "#33323e",
-            Divider = "#292838",
-            OverlayLight = "#1e1e2d80",
-        };
 
     public string DarkLightModeButtonIcon => IsDarkMode switch
     {

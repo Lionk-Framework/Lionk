@@ -1,17 +1,27 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager NavManager
 
 <CascadingAuthenticationState>
     <Router AppAssembly="typeof(Program).Assembly">
         <Found Context="routeData">
-            <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
+            <AuthorizeView>
+                <Authorized>
+                    <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+                </Authorized>
                 <NotAuthorized>
-                    <p>You are not authorized to access this resource.</p>
+                    @if (!NavManager.Uri.Contains("/auth"))
+                    {
+                        <LayoutView Layout="typeof(Layout.UnauthorizedLayout)">
+                            <LionkApp.Components.Pages.Unauthorized />
+                        </LayoutView>
+                    } else
+                    {
+                        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.SecondaryLayout)" />
+                    }
                 </NotAuthorized>
-                <Authorizing>
-                    <p>Authorizing...</p>
-                </Authorizing>
-            </AuthorizeRouteView>
+            </AuthorizeView>
             <FocusOnNavigate RouteData="routeData" Selector="h1" />
         </Found>
     </Router>
 </CascadingAuthenticationState>
+

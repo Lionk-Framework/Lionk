@@ -1,22 +1,40 @@
 // Copyright © 2024 Lionk Project
 
 using Lionk.Auth.Identity;
+using Lionk.Auth.Utils;
 using Lionk.Core.Component;
 using Lionk.Core.TypeRegistery;
 using Lionk.Log;
 using Lionk.Log.Serilog;
 using Lionk.Plugin;
 using LionkApp.Components;
+using LionkApp.Components.Layout;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor.Services;
 using ILoggerFactory = Lionk.Log.ILoggerFactory;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+#if DEBUG
+string userName = "debug";
+User? user = UserService.GetUserByUsername(userName);
+if (user is not null) UserService.Delete(user);
+string salt = "salt";
+string password = "debug";
+string passwordHash = PasswordUtils.HashPassword(password, salt);
+string email = "debug@email.com";
+user = new(userName, email, passwordHash, salt);
+user = UserService.Insert(user);
+if (user is null) throw new Exception("Failed to create debug user");
+#endif
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddMudServices();
+
+// Add Theme
+builder.Services.AddScoped<LionkPalette>();
 
 // Add Basic Authentication services
 builder.Services.AddScoped<UserServiceRazor>();

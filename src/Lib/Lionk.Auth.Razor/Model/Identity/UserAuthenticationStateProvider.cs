@@ -82,6 +82,11 @@ public class UserAuthenticationStateProvider : AuthenticationStateProvider, IDis
         }
     }
 
+    /// <summary>
+    /// Method to dispose the user authentication state provider.
+    /// </summary>
+    public void Dispose() => AuthenticationStateChanged -= OnAuthenticationStateChangedAsync;
+
     private async void OnAuthenticationStateChangedAsync(Task<AuthenticationState> task)
     {
         AuthenticationState? authenticationState = await task;
@@ -91,9 +96,4 @@ public class UserAuthenticationStateProvider : AuthenticationStateProvider, IDis
             CurrentUser = User.FromClaimsPrincipal(authenticationState.User);
         }
     }
-
-    /// <summary>
-    /// Method to dispose the user authentication state provider.
-    /// </summary>
-    public void Dispose() => AuthenticationStateChanged -= OnAuthenticationStateChangedAsync;
 }
