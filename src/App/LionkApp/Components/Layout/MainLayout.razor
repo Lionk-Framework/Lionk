@@ -5,52 +5,54 @@
 @inject UserAuthenticationStateProvider AuthStateProvider
 @inject LionkPalette theme
 <AuthorizeView>
-        <MudThemeProvider Theme="@Theme" IsDarkMode="IsDarkMode" />
-        <MudPopoverProvider />
-        <MudDialogProvider />
-        <MudSnackbarProvider />
-        <MudLayout>
+    <MudThemeProvider Theme="@Theme" IsDarkMode="IsDarkMode" />
+    <MudPopoverProvider />
+    <MudDialogProvider />
+    <MudSnackbarProvider />
+    <MudLayout>
 
-            <MudAppBar Elevation="1">
-                <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-                <MudText Typo="Typo.h5" Class="ml-3">Lionk</MudText>
-                <MudSpacer />
-                <MudIconButton Icon="@Icons.Material.Filled.CircleNotifications" Color="Color.Primary" OnClick="OnNotificationPressed" />
-                <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
-            </MudAppBar>
-            <MudDrawer @bind-Open="IsDrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <MudAppBar Elevation="1">
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+            <MudText Typo="Typo.h5" Class="ml-3">Lionk</MudText>
+            <MudSpacer />
+            <MudIconButton Icon="@Icons.Material.Filled.CircleNotifications" Color="Color.Primary" OnClick="OnNotificationPressed" />
+            <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
+        </MudAppBar>
+        <MudDrawer @bind-Open="IsDrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
 
-                <MudNavMenu>
+            <MudNavMenu>
 
-                    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Dashboard</MudNavLink>
-                    <MudNavGroup Title="Notifications" Icon="@Icons.Material.Filled.Notifications" @bind-Expanded="IsNotifcationExpanded">
-                        <MudNavLink Href="/active" Match="NavLinkMatch.Prefix">Active</MudNavLink>
-                        <MudNavLink Href="/history" Match="NavLinkMatch.Prefix">History</MudNavLink>
-                        <MudNavLink Href="/configuration" Match="NavLinkMatch.Prefix">Configuration</MudNavLink>
-                    </MudNavGroup>
+                <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Dashboard</MudNavLink>
+                <MudNavGroup Title="Notifications" Icon="@Icons.Material.Filled.Notifications" @bind-Expanded="IsNotifcationExpanded">
+                    <MudNavLink Href="/active" Match="NavLinkMatch.Prefix">Active</MudNavLink>
+                    <MudNavLink Href="/history" Match="NavLinkMatch.Prefix">History</MudNavLink>
+                    <MudNavLink Href="/configuration" Match="NavLinkMatch.Prefix">Configuration</MudNavLink>
+                </MudNavGroup>
+                <AuthorizeView Context="pluginContext" Roles="Admin">
                     <MudNavLink Href="/plugins" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AddBox">Plugins</MudNavLink>
+                </AuthorizeView>
 
-                </MudNavMenu>
+            </MudNavMenu>
 
 
-                <MudContainer Class="mt-auto pa-2">
-                    <MudGrid Justify="Justify.SpaceBetween">
-                        <MudItem>
-                            <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Primary" OnClick="OnProfilePressed" />
-                            <MudText Typo="Typo.body2">Profile</MudText>
-                            <MudText Typo="Typo.body2">@_userName</MudText>
-                        </MudItem>
-                        <MudItem>
-                            <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Primary" OnClick="OnLogoutPressed" />
-                        </MudItem>
-                    </MudGrid>
-                </MudContainer>
-            </MudDrawer>
+            <MudContainer Class="mt-auto pa-2">
+                <MudGrid Justify="Justify.SpaceBetween">
+                    <MudItem>
+                        <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Primary" OnClick="OnProfilePressed" />
+                        <MudText Typo="Typo.body2">Profile</MudText>
+                        <MudText Typo="Typo.body2">@_userName</MudText>
+                    </MudItem>
+                    <MudItem>
+                        <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Primary" OnClick="OnLogoutPressed" />
+                    </MudItem>
+                </MudGrid>
+            </MudContainer>
+        </MudDrawer>
 
-            <MudMainContent Class="mt-16 pa-4">
-                @Body
-            </MudMainContent>
-        </MudLayout>
+        <MudMainContent Class="mt-16 pa-4">
+            @Body
+        </MudMainContent>
+    </MudLayout>
 </AuthorizeView>
 
 <div id="blazor-error-ui">

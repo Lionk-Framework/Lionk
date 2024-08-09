@@ -16,16 +16,32 @@ using ILoggerFactory = Lionk.Log.ILoggerFactory;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 #if DEBUG
-string userName = "debug";
-User? user = UserService.GetUserByUsername(userName);
+
+// To use debug users, set "dadmin" or "duser" as username and "password" as password.
+string adminUsername = "dadmin";
+List<string> adminRoles = new() { "Admin" };
+string adminEmail = "debugAdmin@email.com";
+User? admin = UserService.GetUserByUsername(adminUsername);
+if (admin is not null) UserService.Delete(admin);
+
+string userUsername = "duser";
+List<string> userRoles = new() { "User" };
+string userEmail = "debugUser@email.com";
+User? user = UserService.GetUserByUsername(userUsername);
 if (user is not null) UserService.Delete(user);
+
 string salt = "salt";
-string password = "debug";
+string password = "password";
 string passwordHash = PasswordUtils.HashPassword(password, salt);
-string email = "debug@email.com";
-user = new(userName, email, passwordHash, salt);
+
+admin = new(adminUsername, adminEmail, passwordHash, salt, adminRoles);
+user = new(userUsername, userEmail, passwordHash, salt, userRoles);
+
+admin = UserService.Insert(admin);
 user = UserService.Insert(user);
-if (user is null) throw new Exception("Failed to create debug user");
+
+if (admin is null) throw new Exception("Failed to create admin user");
+if (admin is null) throw new Exception("Failed to create simple user");
 #endif
 
 // Add services to the container.

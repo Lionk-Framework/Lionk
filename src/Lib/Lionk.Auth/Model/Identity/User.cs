@@ -10,6 +10,8 @@ namespace Lionk.Auth.Identity;
 /// </summary>
 public class User
 {
+    private readonly HashSet<string> _roles = new();
+
     /// <summary>
     /// Gets the unique identifier of the user.
     /// </summary>
@@ -36,19 +38,26 @@ public class User
     public string Salt { get; private set; }
 
     /// <summary>
+    /// Gets the roles of the user.
+    /// </summary>
+    public IReadOnlyCollection<string> Roles => _roles;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="User"/> class.
     /// </summary>
     /// <param name="userName"> The username of the user.</param>
     /// <param name="email"> The email of the user.</param>
     /// <param name="passwordHash"> The password hash of the user.</param>
     /// <param name="salt"> The salt used to hash the password.</param>
-    public User(string userName, string email, string passwordHash, string salt)
+    /// <param name="roles"> The roles of the user.</param>
+    public User(string userName, string email, string passwordHash, string salt, List<string> roles)
     {
         Id = Guid.NewGuid();
         Username = userName;
         Email = email;
         PasswordHash = passwordHash;
         Salt = salt;
+        _roles = roles.ToHashSet();
     }
 
     /// <summary>
@@ -59,14 +68,16 @@ public class User
     /// <param name="email"> The email of the user.</param>
     /// <param name="passwordHash"> The password hash of the user.</param>
     /// <param name="salt"> The salt used to hash the password.</param>
+    /// <param name="roles"> The roles of the user.</param>
     [JsonConstructor]
-    public User(Guid id, string userName, string email, string passwordHash, string salt)
+    public User(Guid id, string userName, string email, string passwordHash, string salt, List<string> roles)
     {
         Id = id;
         Username = userName;
         Email = email;
         PasswordHash = passwordHash;
         Salt = salt;
+        _roles = roles.ToHashSet();
     }
 
     /// <summary>
@@ -80,12 +91,14 @@ public class User
         string email = principal.FindFirst(ClaimTypes.Email)?.Value ?? throw new ArgumentException("The ClaimsPrincipal does not contain an email.");
         string passwordHash = principal.FindFirst(ClaimTypes.Hash)?.Value ?? throw new ArgumentException("The ClaimsPrincipal does not contain a password hash.");
         string salt = principal.FindFirst("string")?.Value ?? throw new ArgumentException("The ClaimsPrincipal does not contain a salt.");
+        var roles = principal.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
 
         User user = new(
             userName,
             email,
             passwordHash,
-            salt);
+            salt,
+            roles);
 
         return user;
     }
@@ -123,8 +136,9 @@ public class User
         Claim emailClaim = new(ClaimTypes.Email, Email);
         Claim passwordHashClaim = new(ClaimTypes.Hash, PasswordHash);
         Claim saltClaim = new("string", Salt);
+        Claim rolesClaim = new(ClaimTypes.Role, string.Join(',', _roles));
 
-        Claim[] claims = [userNameClaim, emailClaim, passwordHashClaim, saltClaim];
+        Claim[] claims = [userNameClaim, emailClaim, passwordHashClaim, saltClaim, rolesClaim];
 
         identity.AddClaims(claims);
         return new ClaimsPrincipal(identity);
