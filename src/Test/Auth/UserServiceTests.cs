@@ -31,8 +31,9 @@ public class UserServiceTests
         // Arrange
         string salt1 = PasswordUtils.GenerateSalt(16);
         string salt2 = PasswordUtils.GenerateSalt(16);
-        User user1 = new("user1", "user1@email.com", "password1", salt1);
-        User user2 = new("user2", "user2@email.com", "password2", salt2);
+        List<string> roles = new() { "role1", "role2" };
+        User user1 = new("user1", "user1@email.com", "password1", salt1, roles);
+        User user2 = new("user2", "user2@email.com", "password2", salt2, roles);
 
         // Act
         User? instert1 = UserService.Insert(user1);
@@ -56,8 +57,9 @@ public class UserServiceTests
         string newMail = "userUpdated@email.com";
         string newPass = "passwordUpdated";
         string salt = "salt";
+        List<string> roles = new() { "role1", "role2" };
 
-        User user = new("user", "user@email.com", "password", salt);
+        User user = new("user", "user@email.com", "password", salt, roles);
         User? insert = UserService.Insert(user);
 
         // Act
@@ -81,8 +83,10 @@ public class UserServiceTests
     {
         string salt1 = PasswordUtils.GenerateSalt(16);
         string salt2 = PasswordUtils.GenerateSalt(16);
-        User user1 = new("user1", "user1@email.com", "password1", salt1);
-        User user2 = new("user2", "user2@email.com", "password2", salt2);
+        List<string> roles = new() { "role1", "role2" };
+
+        User user1 = new("user1", "user1@email.com", "password1", salt1, roles);
+        User user2 = new("user2", "user2@email.com", "password2", salt2, roles);
 
         // Act
         UserService.Insert(user1);
@@ -111,7 +115,8 @@ public class UserServiceTests
     public void InsertExistingUser()
     {
         // Arrange
-        User user = new("user", "user@email.com", "password", "salt");
+        List<string> roles = new() { "role1", "role2" };
+        User user = new("user", "user@email.com", "password", "salt", roles);
         User? userCopy = user;
 
         // Act
