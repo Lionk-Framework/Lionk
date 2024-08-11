@@ -8,6 +8,11 @@ namespace Lionk.Notification;
 public interface IRecipient
 {
     /// <summary>
+    /// Gets the Guid of the channel.
+    /// </summary>
+    Guid Guid { get; }
+
+    /// <summary>
     /// Gets the name of the recipient.
     /// </summary>
     string Name { get; }

@@ -21,9 +21,60 @@ public class NotificationPropertiesConverter : JsonConverter
     };
 
     /// <inheritdoc/>
+    public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+    {
+        var jsonObject = JObject.Load(reader);
+        if (jsonObject is null) throw new ArgumentNullException(nameof(jsonObject));
+
+        string? typeName = jsonObject["Type"]?.ToString();
+        if (typeName is null) throw new JsonSerializationException("The type of the object is not defined inside the JSON object.");
+
+        Type? type = GetFullType(typeName);
+        if (type is null) throw new JsonSerializationException($"The type {typeName} is not found.");
+
+        // Get the constructor with the JsonConstructorAttribute
+        ConstructorInfo? jsonConstructor = type.GetConstructors()
+            .FirstOrDefault(c => c.GetCustomAttribute<JsonConstructorAttribute>() != null);
+
+        object? obj;
+        if (jsonConstructor != null)
+        {
+            object?[]? args = jsonConstructor.GetParameters()
+            .Select(p =>
+            {
+                string? jsonKey = jsonObject
+                    .Properties()
+                    .FirstOrDefault(prop => string.Equals(prop.Name, p.Name, StringComparison.OrdinalIgnoreCase))?
+                    .Name;
+
+                return jsonKey != null ? jsonObject[jsonKey]?.ToObject(p.ParameterType, serializer) : null;
+            })
+                .ToArray();
+            obj = Activator.CreateInstance(type, args);
+        }
+        else
+        {
+            obj = Activator.CreateInstance(type);
+        }
+
+        if (obj is null) throw new JsonSerializationException($"Impossible to create an instance of {type.FullName}.");
+
+        foreach (PropertyInfo property in type.GetProperties())
+        {
+            if (property.CanWrite && jsonObject.TryGetValue(property.Name, out JToken? value))
+            {
+                object? propertyValue = value.ToObject(property.PropertyType, serializer);
+                property.SetValue(obj, propertyValue);
+            }
+        }
+
+        return obj;
+    }
+
+    /// <inheritdoc/>
     public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
     {
-        JObject jsonObject = new();
+        JObject jsonObject = [];
         if (value is null) throw new ArgumentNullException(nameof(value));
         Type type = value.GetType();
 
@@ -42,33 +93,12 @@ public class NotificationPropertiesConverter : JsonConverter
         jsonObject.WriteTo(writer);
     }
 
-    /// <inheritdoc/>
-    public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
-    {
-        var jsonObject = JObject.Load(reader);
-        if (jsonObject is null) throw new ArgumentNullException(nameof(jsonObject));
-
-        string? typeName = jsonObject["Type"]?.ToString();
-        if (typeName is null) throw new JsonSerializationException("The type of the object is not defined inside the JSON object.");
-
-        Type? type = GetFullType(typeName);
-        if (type is null) throw new JsonSerializationException($"The type {typeName} is not found.");
-
-        object? obj = Activator.CreateInstance(type);
-        if (obj is null) throw new JsonSerializationException($"Impossible to create an instance of {type.FullName}.");
-        foreach (PropertyInfo property in type.GetProperties())
-        {
-            if (property.CanWrite && jsonObject.TryGetValue(property.Name, out JToken? value))
-            {
-                object? propertyValue = value.ToObject(property.PropertyType, serializer);
-                property.SetValue(obj, propertyValue);
-            }
-        }
-
-        return obj;
-    }
-
-    private Type? GetFullType(string typeName)
+    /// <summary>
+    /// Gets the type of the object.
+    /// </summary>
+    /// <param name="typeName"> The name of the type.</param>
+    /// <returns> The type of the object.</returns>
+    protected Type? GetFullType(string typeName)
     {
         Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
         Type? type = assemblies.Select(assembly => assembly.GetType(typeName, false, true)).FirstOrDefault(type => type != null);

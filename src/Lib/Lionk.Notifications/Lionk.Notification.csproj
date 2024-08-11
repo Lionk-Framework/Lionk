@@ -14,4 +14,8 @@
     <Folder Include="Model\Events\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Lionk.Utils\Lionk.Utils.csproj" />
+  </ItemGroup>
+
 </Project>
