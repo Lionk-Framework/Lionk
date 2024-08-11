@@ -50,25 +50,13 @@ public class PluginManager : IPluginManager
         SavePluginPaths();
     }
 
-    private static string CopyPluginToTempStorage(string pluginPaths)
-    {
-        ConfigurationUtils.CopyFileToFolder(pluginPaths, FolderType.Temp);
-        return Path.Combine(ConfigurationUtils.GetFolderPath(FolderType.Temp), Path.GetFileName(pluginPaths));
-    }
-
-    private static string CopyPluginToPluginFolder(string pluginPaths)
-    {
-        ConfigurationUtils.CopyFileToFolder(pluginPaths, FolderType.Plugin);
-        return Path.Combine(ConfigurationUtils.GetFolderPath(FolderType.Plugin), Path.GetFileName(pluginPaths));
-    }
-
     /// <inheritdoc/>
     public void RemovePlugin(Plugin plugin)
     {
         if (plugin is null) return;
 
         _plugins.Remove(plugin);
-        DoNeedARestart = true;
+        _doNeedARestart = true;
         string tempPath = plugin.Assembly.Location;
         string filename = Path.GetFileName(tempPath);
         string pluginPath = Path.Combine(ConfigurationUtils.GetFolderPath(FolderType.Plugin), filename);
@@ -90,6 +78,14 @@ public class PluginManager : IPluginManager
     /// <inheritdoc/>
     public IEnumerable<Plugin> GetAllPlugins()
         => _plugins.AsReadOnly();
+
+    /// <inheritdoc/>
+    public bool DoNeedARestart()
+        => _doNeedARestart;
+
+    /// <inheritdoc/>
+    public int GetPluginCount()
+        => _plugins.Count;
 
     private void LoadPlugin(string path)
     {
@@ -185,12 +181,17 @@ public class PluginManager : IPluginManager
         }
     }
 
-    /// <inheritdoc/>
-    public int GetPluginCount()
-        => _plugins.Count;
+    private string CopyPluginToTempStorage(string pluginPaths)
+    {
+        ConfigurationUtils.CopyFileToFolder(pluginPaths, FolderType.Temp);
+        return Path.Combine(ConfigurationUtils.GetFolderPath(FolderType.Temp), Path.GetFileName(pluginPaths));
+    }
 
-    /// <summary>
-    /// Gets a value indicating whether a restart is needed.
-    /// </summary>
-    public bool DoNeedARestart { get; private set; }
+    private string CopyPluginToPluginFolder(string pluginPaths)
+    {
+        ConfigurationUtils.CopyFileToFolder(pluginPaths, FolderType.Plugin);
+        return Path.Combine(ConfigurationUtils.GetFolderPath(FolderType.Plugin), Path.GetFileName(pluginPaths));
+    }
+
+    private bool _doNeedARestart = false;
 }

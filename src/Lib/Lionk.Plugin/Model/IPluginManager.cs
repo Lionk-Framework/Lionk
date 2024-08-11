@@ -34,4 +34,10 @@ public interface IPluginManager : ITypesProvider
     /// </summary>
     /// <returns>The count of plugins.</returns>
     public int GetPluginCount();
+
+    /// <summary>
+    /// Gets a boolean indicating if a restart is needed.
+    /// </summary>
+    /// <returns>True if the application must be restarded false otherwise.</returns>
+    public bool DoNeedARestart();
 }
