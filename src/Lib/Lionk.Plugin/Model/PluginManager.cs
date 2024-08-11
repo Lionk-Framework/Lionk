@@ -153,11 +153,21 @@ public class PluginManager : IPluginManager
 
     private void LoadPlugins()
     {
+        CleanTempRepo();
         LoadPluginPaths();
         foreach (string path in _pluginPaths)
             LoadPlugin(path);
 
         DeleteUnloadedPluginFromPluginFolder();
+    }
+
+    private void CleanTempRepo()
+    {
+        foreach (string path in Directory.GetFiles(ConfigurationUtils.GetFolderPath(FolderType.Temp)))
+        {
+            if (path.EndsWith(".dll"))
+                File.Delete(path);
+        }
     }
 
     private void DeleteUnloadedPluginFromPluginFolder()
