@@ -67,6 +67,8 @@ public class PluginManager : IPluginManager
     {
         if (plugin is null) return;
 
+        _plugins.Remove(plugin);
+        DoNeedARestart = true;
         _pluginPaths.Remove(plugin.Assembly.Location);
         SavePluginPaths();
     }
@@ -183,4 +185,9 @@ public class PluginManager : IPluginManager
     /// <inheritdoc/>
     public int GetPluginCount()
         => _plugins.Count;
+
+    /// <summary>
+    /// Gets a value indicating whether a restart is needed.
+    /// </summary>
+    public bool DoNeedARestart { get; private set; }
 }

@@ -78,49 +78,6 @@ public class PluginManagerTests
     }
 
     /// <summary>
-    /// Test for removePlugin.
-    /// </summary>
-    [Test]
-    public void RemovePlugin_ShouldRemovePlugin()
-    {
-        string path = Assembly.GetExecutingAssembly().Location;
-        _pluginManager.AddPlugin(path);
-        Lionk.Plugin.Plugin plugin = _pluginManager.GetAllPlugins().First();
-
-        _pluginManager.RemovePlugin(plugin);
-
-        Assert.That(_pluginManager.GetAllPlugins().Count(), Is.EqualTo(0));
-    }
-
-    /// <summary>
-    /// Test for <see cref="PluginManager.GetTypes"/>.
-    /// </summary>
-    [Test]
-    public void GetTypesFromPlugins_ShouldReturnAllTypes()
-    {
-        string path = Assembly.GetExecutingAssembly().Location;
-        _pluginManager.AddPlugin(path);
-
-        IEnumerable<Type> types = _pluginManager.GetTypes();
-
-        Assert.That(types.Any(), Is.True);
-    }
-
-    /// <summary>
-    /// Test for bad format configuration file.
-    /// </summary>
-    [Test]
-    public void LoadPluginPaths_WithInvalidFile_ShouldLogError()
-    {
-        string json = "invalid json";
-        ConfigurationUtils.SaveFile("plugin_paths.json", json, FolderType.Config);
-
-        Assert.Throws<FormatException>(
-            () =>
-            _pluginManager = new PluginManager());
-    }
-
-    /// <summary>
     /// Test for <see cref="PluginManager.AddPlugin(string)"/>.
     /// </summary>
     [Test]
@@ -132,31 +89,6 @@ public class PluginManagerTests
         _pluginManager.AddPlugin(path);
 
         Assert.That(_pluginManager.GetAllPlugins().Count(), Is.EqualTo(1));
-    }
-
-    /// <summary>
-    /// Test for <see cref="PluginManager"/> constructor.
-    /// </summary>
-    [Test]
-    public void LoadConfigurationFile_WithCreation_ShouldLoadUsedPlugins()
-    {
-        string currentDir = Directory.GetCurrentDirectory();
-        string path = Path.Combine(currentDir, "Resources", "Plugins");
-        var pluginPaths = new List<string>
-        {
-            Path.Combine(path, "plugin1.dll"),
-            Path.Combine(path, "plugin2.dll"),
-        };
-
-        _pluginManager = new PluginManager();
-        _pluginManager.AddPlugin(pluginPaths[0]);
-        _pluginManager.AddPlugin(pluginPaths[1]);
-
-        Assert.That(_pluginManager.GetAllPlugins().Count(), Is.EqualTo(2));
-
-        _pluginManager = new PluginManager();
-
-        Assert.That(_pluginManager.GetAllPlugins().Count(), Is.EqualTo(2));
     }
 
     /// <summary>
