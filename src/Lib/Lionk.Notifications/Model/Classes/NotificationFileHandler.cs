@@ -59,7 +59,7 @@ public static class NotificationFileHandler
     public static List<NotificationHistory> GetNotifications()
     {
         string json = ConfigurationUtils.ReadFile(_notificationPath, _folderType);
-        if (string.IsNullOrEmpty(json)) return new();
+        if (string.IsNullOrEmpty(json)) return [];
         List<NotificationHistory> notifications = JsonConvert.DeserializeObject<List<NotificationHistory>>(json, _jsonSerializerSettings) ?? throw new ArgumentNullException(nameof(notifications));
         return notifications;
     }
@@ -124,9 +124,9 @@ public static class NotificationFileHandler
     public static List<INotifyer> GetNotifyersFromJson()
     {
         string json = ConfigurationUtils.ReadFile(_notifyersPath, _folderType);
-        if (string.IsNullOrEmpty(json)) return new();
+        if (string.IsNullOrEmpty(json)) return [];
         INotifyer[]? notifyers = JsonConvert.DeserializeObject<INotifyer[]>(json, _jsonSerializerSettings);
-        if (notifyers is null) return new();
+        if (notifyers is null) return [];
         return notifyers.ToList();
     }
 
@@ -137,9 +137,9 @@ public static class NotificationFileHandler
     public static List<IChannel> GetChannelsFromJson()
     {
         string json = ConfigurationUtils.ReadFile(_channelsPath, _folderType);
-        if (string.IsNullOrEmpty(json)) return new();
+        if (string.IsNullOrEmpty(json)) return [];
         IChannel[]? channels = JsonConvert.DeserializeObject<IChannel[]>(json, _jsonSerializerSettings);
-        if (channels is null) return new();
+        if (channels is null) return [];
         return channels.ToList();
     }
 
@@ -150,9 +150,9 @@ public static class NotificationFileHandler
     public static Dictionary<Guid, List<IChannel>> GetNotifyerChannelsFromJson()
     {
         string json = ConfigurationUtils.ReadFile(_notifyerChannelsPath, _folderType);
-        if (string.IsNullOrEmpty(json)) return new();
+        if (string.IsNullOrEmpty(json)) return [];
         Dictionary<Guid, List<IChannel>>? notifyerChannels = JsonConvert.DeserializeObject<Dictionary<Guid, List<IChannel>>>(json, _jsonSerializerSettings);
-        if (notifyerChannels is null) return new();
+        if (notifyerChannels is null) return [];
         return notifyerChannels;
     }
 }

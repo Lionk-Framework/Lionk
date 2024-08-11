@@ -24,7 +24,7 @@ public class EmailChannel : IChannel
     public string Name { get; private set; } = string.Empty;
 
     /// <inheritdoc/>
-    public List<IRecipient> Recipients { get; private set; } = new();
+    public List<IRecipient> Recipients { get; private set; } = [];
 
     /// <inheritdoc/>
     [JsonIgnore]
@@ -42,7 +42,7 @@ public class EmailChannel : IChannel
     public EmailChannel(string name)
     {
         Name = name;
-        Recipients = new List<IRecipient>();
+        Recipients = [];
         SmtpConfig = new SmtpConfig();
         IsInitialized = false;
     }
@@ -90,9 +90,11 @@ public class EmailChannel : IChannel
 
         SmtpConfig = JsonConvert.DeserializeObject<SmtpConfig>(configJson) ?? throw new NullReferenceException("The SMTP configuration is null.");
 
-        _smtpClient = new SmtpClient(SmtpConfig.SmtpServer, SmtpConfig.Port);
-        _smtpClient.EnableSsl = SmtpConfig.EnableSsl;
-        _smtpClient.Credentials = new NetworkCredential(SmtpConfig.Username, SmtpConfig.Password);
+        _smtpClient = new SmtpClient(SmtpConfig.SmtpServer, SmtpConfig.Port)
+        {
+            EnableSsl = SmtpConfig.EnableSsl,
+            Credentials = new NetworkCredential(SmtpConfig.Username, SmtpConfig.Password)
+        };
 
         IsInitialized = true;
     }
@@ -109,9 +111,11 @@ public class EmailChannel : IChannel
         foreach (IRecipient recipient in Recipients)
         {
             var emailRecipient = (EmailRecipients)recipient;
-            var mailMessage = new MailMessage(SmtpConfig.Username, emailRecipient.Email);
-            mailMessage.Subject = content.Title;
-            mailMessage.Body = content.Message;
+            var mailMessage = new MailMessage(SmtpConfig.Username, emailRecipient.Email)
+            {
+                Subject = content.Title,
+                Body = content.Message
+            };
             _smtpClient.Send(mailMessage);
         }
     }
@@ -119,7 +123,7 @@ public class EmailChannel : IChannel
     /// <inheritdoc/>
     public void AddRecipients(params IRecipient[] recipients)
     {
-        List<IRecipient> recipientsToAdd = new();
+        List<IRecipient> recipientsToAdd = [];
         foreach (IRecipient recipient in recipients)
         {
             if (Recipients.Contains(recipient) || recipient is not EmailRecipients) continue;

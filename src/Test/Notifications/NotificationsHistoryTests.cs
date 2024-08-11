@@ -39,7 +39,7 @@ internal class NotificationsHistoryTests
         _mockChannel2.AddRecipients(new MockRecipient("Recipient3"), new MockRecipient("Recipient4"));
 
         _content = new Content(Severity.Information, "Title", "Message");
-        _channels = new() { _mockChannel1, _mockChannel2 };
+        _channels = [_mockChannel1, _mockChannel2];
         _notification = new Notification(_content, _mockNotifyer);
         NotificationService.MapNotifyerToChannel(_mockNotifyer, _channels.ToArray());
 

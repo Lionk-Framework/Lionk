@@ -62,7 +62,7 @@ public class NotifyerChannelDictionaryConverter : JsonConverter
             var notifyer = notifyerObject.ToObject(GetFullType(notifyerObject["Type"]?.ToString() ?? string.Empty), serializer) as INotifyer;
             if (notifyer is null) throw new JsonSerializationException("The notifyer object is null.");
 
-            List<IChannel> channels = entry["Value"]?.ToObject<List<IChannel>>(serializer) ?? new List<IChannel>();
+            List<IChannel> channels = entry["Value"]?.ToObject<List<IChannel>>(serializer) ?? [];
 
             dictionary[notifyer] = channels; // Écraser l'entrée si la clé existe déjà
         }
