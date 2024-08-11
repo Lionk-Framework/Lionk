@@ -1,9 +1,11 @@
-﻿@using Lionk.Auth.Identity
+﻿@using Lionk.Auth.Abstraction
+@using Lionk.Auth.Identity
 @using Lionk.Auth.Utils
 @using Microsoft.AspNetCore.Authorization
 
 @inject NavigationManager NavManager
 @inject UserAuthenticationStateProvider AuthStateProvider
+@inject IUserService UserService
 
 <MudGrid>
     <MudItem xs="12" sm="12">

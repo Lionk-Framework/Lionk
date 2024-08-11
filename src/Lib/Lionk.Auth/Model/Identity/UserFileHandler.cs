@@ -1,5 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
+using Lionk.Auth.Abstraction;
 using Lionk.Utils;
 using Newtonsoft.Json;
 
@@ -8,7 +9,7 @@ namespace Lionk.Auth.Identity;
 /// <summary>
 /// This class is used to handle the users witj json files.
 /// </summary>
-public static class UserFileHandler
+public class UserFileHandler : IUserRepository
 {
 #if DEBUG
     private static readonly string _fileName = "users_debug.json";
@@ -38,7 +39,7 @@ public static class UserFileHandler
     /// Method to save a notification in history.
     /// </summary>
     /// <param name="user"> The notification to save.</param>
-    public static void SaveUser(User user)
+    public void SaveUser(User user)
     {
         ArgumentNullException.ThrowIfNull(user);
         HashSet<User> users = GetUsers();
@@ -50,7 +51,7 @@ public static class UserFileHandler
     /// Method to update an user.
     /// </summary>
     /// <param name="user"> The user to update.</param>
-    public static void UpdateUser(User user)
+    public void UpdateUser(User user)
     {
         ArgumentNullException.ThrowIfNull(user);
         HashSet<User> users = GetUsers();
@@ -74,7 +75,7 @@ public static class UserFileHandler
     /// </summary>
     /// <returns> The list of notifications saved.</returns>
     /// <exception cref="ArgumentNullException"> If file exists but the result of the deserialization is null.</exception>
-    public static HashSet<User> GetUsers()
+    public HashSet<User> GetUsers()
     {
         string json = ConfigurationUtils.ReadFile(_usersPath, _folderType);
         if (string.IsNullOrEmpty(json)) return new();
@@ -86,7 +87,7 @@ public static class UserFileHandler
     /// Method to delete an user.
     /// </summary>
     /// <param name="user"> The user to delete.</param>
-    public static void DeleteUser(User user)
+    public void DeleteUser(User user)
     {
         if (user is null) return;
         HashSet<User> users = GetUsers();

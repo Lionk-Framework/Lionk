@@ -1,6 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using System.Security.Claims;
+using Lionk.Auth.Abstraction;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Lionk.Auth.Identity;
@@ -11,6 +12,7 @@ namespace Lionk.Auth.Identity;
 public class UserAuthenticationStateProvider : AuthenticationStateProvider, IDisposable
 {
     private readonly UserServiceRazor _userService;
+    private readonly IUserService _userServiceImpl;
 
     /// <summary>
     /// Gets the current user.
@@ -21,10 +23,12 @@ public class UserAuthenticationStateProvider : AuthenticationStateProvider, IDis
     /// Initializes a new instance of the <see cref="UserAuthenticationStateProvider"/> class.
     /// </summary>
     /// <param name="userService"> The user service to use.</param>
-    public UserAuthenticationStateProvider(UserServiceRazor userService)
+    /// <param name="userServiceImpl">The local user service implementation.</param>
+    public UserAuthenticationStateProvider(UserServiceRazor userService, IUserService userServiceImpl)
     {
         AuthenticationStateChanged += OnAuthenticationStateChangedAsync;
         _userService = userService;
+        _userServiceImpl = userServiceImpl;
     }
 
     /// <summary>
@@ -36,7 +40,7 @@ public class UserAuthenticationStateProvider : AuthenticationStateProvider, IDis
     public async Task LoginAsync(string username, string passwordHash)
     {
         var principal = new ClaimsPrincipal();
-        User? user = UserService.GetRegisteredUser(username, passwordHash);
+        User? user = _userServiceImpl.GetRegisteredUser(username, passwordHash);
 
         if (user is not null)
         {
@@ -69,7 +73,7 @@ public class UserAuthenticationStateProvider : AuthenticationStateProvider, IDis
 
             if (user is not null)
             {
-                User? userInDatabase = UserService.GetRegisteredUser(user.Username, user.PasswordHash);
+                User? userInDatabase = _userServiceImpl.GetRegisteredUser(user.Username, user.PasswordHash);
 
                 if (userInDatabase is not null)
                 {

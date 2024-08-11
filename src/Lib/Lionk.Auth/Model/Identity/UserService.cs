@@ -1,136 +1,102 @@
 ﻿// Copyright © 2024 Lionk Project
 
+using Lionk.Auth.Abstraction;
+
 namespace Lionk.Auth.Identity;
 
 /// <summary>
 /// This class represents a user service.
 /// </summary>
-public static class UserService
+public class UserService : IUserService
 {
     /// <summary>
-    /// Method to get all the users.
+    /// Initializes a new instance of the <see cref="UserService"/> class.
     /// </summary>
-    /// <returns> The hashSet of all the users.</returns>
-    public static HashSet<User> GetUsers() => UserFileHandler.GetUsers();
+    /// <param name="repository">The user repository.</param>
+    public UserService(IUserRepository repository)
+        => UserRepository = repository;
 
-    /// <summary>
-    /// Method to get a user by its id.
-    /// </summary>
-    /// <param name="id"> The id of the user.</param>
-    /// <returns> The user with the id, null if not found.</returns>
-    public static User? GetUserById(Guid id)
+    /// <inheritdoc/>
+    public IUserRepository UserRepository { get; set; }
+
+    /// <inheritdoc/>
+    public HashSet<User> GetUsers() => UserRepository.GetUsers();
+
+    /// <inheritdoc/>
+    public User? GetUserById(Guid id)
     {
         HashSet<User> users = GetUsers();
         User? user = users.FirstOrDefault(user => user.Id.Equals(id));
         return user;
     }
 
-    /// <summary>
-    /// Method to get a user by its username.
-    /// </summary>
-    /// <param name="username"> The username of the user.</param>
-    /// <returns> The user with the username, null if not found.</returns>
-    public static User? GetUserByUsername(string username)
+    /// <inheritdoc/>
+    public User? GetUserByUsername(string username)
     {
         HashSet<User> users = GetUsers();
         User? user = users.FirstOrDefault(user => string.Equals(user.Username, username));
         return user;
     }
 
-    /// <summary>
-    /// Method to get a user by its email.
-    /// </summary>
-    /// <param name="email"> The email of the user.</param>
-    /// <returns> The user with the email, null if not found.</returns>
-    public static User? GetUserByEmail(string email)
+    /// <inheritdoc/>
+    public User? GetUserByEmail(string email)
     {
         HashSet<User> users = GetUsers();
         User? user = users.FirstOrDefault(user => string.Equals(user.Email, email));
         return user;
     }
 
-    /// <summary>
-    /// Method to get a registered user.
-    /// </summary>
-    /// <param name="username"> The username of the user.</param>
-    /// <param name="passwordHash"> The hash of the password of the user.</param>
-    /// <returns> The registered user.</returns>
-    public static User? GetRegisteredUser(string username, string passwordHash)
+    /// <inheritdoc/>
+    public User? GetRegisteredUser(string username, string passwordHash)
     {
         HashSet<User> users = GetUsers();
         User? user = users.FirstOrDefault(user => string.Equals(user.Username, username) && string.Equals(user.PasswordHash, passwordHash));
         return user;
     }
 
-    /// <summary>
-    /// Method to get the salt of a user.
-    /// </summary>
-    /// <param name="username"> The username of the user.</param>
-    /// <returns> The salt of the user.</returns>
-    public static string GetUserSalt(string username)
+    /// <inheritdoc/>
+    public string GetUserSalt(string username)
     {
         HashSet<User> users = GetUsers();
         User? user = users.FirstOrDefault(user => string.Equals(user.Username, username));
         return user?.Salt ?? string.Empty;
     }
 
-    /// <summary>
-    /// Method to insert a user.
-    /// </summary>
-    /// <param name="user"> The user to insert.</param>
-    /// <returns> The inserted user, null the insertion failed.</returns>
-    public static User? Insert(User user)
+    /// <inheritdoc/>
+    public User? Insert(User user)
     {
         ArgumentNullException.ThrowIfNull(user);
-        if (UsernameExists(user) || EmailExists(user)) return null;
-        UserFileHandler.SaveUser(user);
+        if (IsUsernameExist(user.Username) || IsEmailExist(user.Email)) return null;
+        UserRepository.SaveUser(user);
         return user;
     }
 
-    /// <summary>
-    /// Method to check if a username exists.
-    /// </summary>
-    /// <param name="user"> The user to check.</param>
-    /// <returns> True if the username exists, false otherwise.</returns>
-    public static bool UsernameExists(User user) => GetUserByUsername(user.Username) != null;
+    /// <inheritdoc/>
+    public bool IsUsernameExist(string username)
+        => GetUserByUsername(username) != null;
 
-    /// <summary>
-    /// Method to check if a username exists.
-    /// </summary>
-    /// <param name="user"> The user to check.</param>
-    /// <returns> True if the username exists, false otherwise.</returns>
-    public static bool EmailExists(User user) => GetUserByEmail(user.Email) != null;
+    /// <inheritdoc/>
+    public bool IsEmailExist(string email)
+        => GetUserByEmail(email) != null;
 
-    /// <summary>
-    /// Method to check if an id exists.
-    /// </summary>
-    /// <param name="user"> The user to check.</param>
-    /// <returns> True if the id exists, false otherwise.</returns>
-    public static bool IdExists(User user) => GetUserById(user.Id) != null;
+    /// <inheritdoc/>
+    public bool IsIdExist(Guid id) => GetUserById(id) != null;
 
-    /// <summary>
-    /// Method to update a user.
-    /// </summary>
-    /// <param name="user"> The user to update.</param>
-    /// <returns> The updated user, null if the update failed.</returns>
-    public static User? Update(User user)
+    /// <inheritdoc/>
+    public User? Update(User user)
     {
         ArgumentNullException.ThrowIfNull(user);
-        if (!IdExists(user)) return null;
-        UserFileHandler.UpdateUser(user);
+        if (!IsIdExist(user.Id)) return null;
+        UserRepository.UpdateUser(user);
         return user;
     }
 
-    /// <summary>
-    /// Method to delete a user.
-    /// </summary>
-    /// <param name="user"> The user to delete.</param>
-    /// <returns> True if the user was deleted, false otherwise.</returns>
-    public static bool Delete(User user)
+    /// <inheritdoc/>
+    public bool Delete(User user)
     {
         ArgumentNullException.ThrowIfNull(user);
-        if (!IdExists(user)) return false;
-        UserFileHandler.DeleteUser(user);
+        if (!IsIdExist(user.Id)) return false;
+        UserRepository.DeleteUser(user);
         return true;
     }
 }

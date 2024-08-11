@@ -1,5 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
+using Lionk.Auth.Abstraction;
 using Lionk.Auth.Identity;
 using Lionk.Auth.Utils;
 using Lionk.Utils;
@@ -11,6 +12,9 @@ namespace LionkTest.Auth;
 /// </summary>
 public class UserServiceTests
 {
+    private readonly IUserService _userService
+        = new UserService(new UserFileHandler());
+
     private User _user1;
     private User _user2;
     private User _user3;
@@ -44,13 +48,13 @@ public class UserServiceTests
         // nothing to arrange
 
         // Act
-        User? instert1 = UserService.Insert(_user1);
-        User? instert2 = UserService.Insert(_user2);
+        User? instert1 = _userService.Insert(_user1);
+        User? instert2 = _userService.Insert(_user2);
 
         // Assert
         Assert.That(instert1, Is.Not.Null);
         Assert.That(instert2, Is.Not.Null);
-        HashSet<User> users = UserService.GetUsers();
+        HashSet<User> users = _userService.GetUsers();
         Assert.That(users.Count, Is.EqualTo(2));
     }
 
@@ -65,13 +69,13 @@ public class UserServiceTests
         string newMail = "userUpdated@email.com";
         string newPass = "passwordUpdated";
 
-        User? insert = UserService.Insert(_user1);
+        User? insert = _userService.Insert(_user1);
 
         // Act
         _user1.UpdateUsername(newName);
         _user1.UpdateEmail(newMail);
         _user1.UpdatePasswordHash(newPass);
-        User? updated = UserService.Update(_user1);
+        User? updated = _userService.Update(_user1);
 
         // Assert
         Assert.That(updated, Is.Not.Null);
@@ -90,14 +94,14 @@ public class UserServiceTests
         // nothing to arrange
 
         // Act
-        UserService.Insert(_user1);
-        UserService.Insert(_user2);
-        int count = UserService.GetUsers().Count;
-        bool isDeleted = UserService.Delete(_user1);
+        _userService.Insert(_user1);
+        _userService.Insert(_user2);
+        int count = _userService.GetUsers().Count;
+        bool isDeleted = _userService.Delete(_user1);
 
         // Assert
         Assert.That(isDeleted, Is.True);
-        Assert.That(UserService.GetUsers().Count, Is.EqualTo(count - 1));
+        Assert.That(_userService.GetUsers().Count, Is.EqualTo(count - 1));
     }
 
     /// <summary>
@@ -119,8 +123,8 @@ public class UserServiceTests
         User? userCopy = _user1;
 
         // Act
-        User? insert = UserService.Insert(_user1);
-        User? insertCopy = UserService.Insert(userCopy);
+        User? insert = _userService.Insert(_user1);
+        User? insertCopy = _userService.Insert(userCopy);
 
         // Assert
         Assert.That(insert, Is.Not.Null);

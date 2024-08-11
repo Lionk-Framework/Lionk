@@ -1,5 +1,6 @@
 // Copyright © 2024 Lionk Project
 
+using Lionk.Auth.Abstraction;
 using Lionk.Auth.Identity;
 using Lionk.Auth.Utils;
 using Lionk.Core.Component;
@@ -15,35 +16,6 @@ using ILoggerFactory = Lionk.Log.ILoggerFactory;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-#if DEBUG
-
-// To use debug users, set "dadmin" or "duser" as username and "password" as password.
-string adminUsername = "dadmin";
-List<string> adminRoles = new() { "Admin" };
-string adminEmail = "debugAdmin@email.com";
-User? admin = UserService.GetUserByUsername(adminUsername);
-if (admin is not null) UserService.Delete(admin);
-
-string userUsername = "duser";
-List<string> userRoles = new() { "User" };
-string userEmail = "debugUser@email.com";
-User? user = UserService.GetUserByUsername(userUsername);
-if (user is not null) UserService.Delete(user);
-
-string salt = "salt";
-string password = "password";
-string passwordHash = PasswordUtils.HashPassword(password, salt);
-
-admin = new(adminUsername, adminEmail, passwordHash, salt, adminRoles);
-user = new(userUsername, userEmail, passwordHash, salt, userRoles);
-
-admin = UserService.Insert(admin);
-user = UserService.Insert(user);
-
-if (admin is null) throw new Exception("Failed to create admin user");
-if (admin is null) throw new Exception("Failed to create simple user");
-#endif
-
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -54,7 +26,14 @@ builder.Services.AddScoped<LionkPalette>();
 
 // Add Basic Authentication services
 builder.Services.AddScoped<UserServiceRazor>();
-builder.Services.AddScoped<UserAuthenticationStateProvider>();
+builder.Services.AddSingleton<IUserRepository, UserFileHandler>();
+builder.Services.AddSingleton<IUserService>(sp => new UserService(sp.GetRequiredService<IUserRepository>()));
+
+builder.Services.AddScoped(sp =>
+    new UserAuthenticationStateProvider(
+        sp.GetRequiredService<UserServiceRazor>(),
+        sp.GetRequiredService<IUserService>()));
+
 builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<UserAuthenticationStateProvider>());
 
 // Configure custom logger
@@ -85,6 +64,11 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+#if DEBUG
+// Configure a default user for debug purposes if compiled in debug mode
+SetupDebugUser(app);
+#endif
+
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
@@ -94,3 +78,34 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.Run();
+
+static void SetupDebugUser(WebApplication app)
+{
+    IUserService userService = app.Services.GetRequiredService<IUserService>();
+
+    // To use debug users, set "dadmin" or "duser" as username and "password" as password.
+    string adminUsername = "dadmin";
+    List<string> adminRoles = new() { "Admin" };
+    string adminEmail = "debugAdmin@email.com";
+    User? admin = userService.GetUserByUsername(adminUsername);
+    if (admin is not null) userService.Delete(admin);
+
+    string userUsername = "duser";
+    List<string> userRoles = new() { "User" };
+    string userEmail = "debugUser@email.com";
+    User? user = userService.GetUserByUsername(userUsername);
+    if (user is not null) userService.Delete(user);
+
+    string salt = "salt";
+    string password = "password";
+    string passwordHash = PasswordUtils.HashPassword(password, salt);
+
+    admin = new(adminUsername, adminEmail, passwordHash, salt, adminRoles);
+    user = new(userUsername, userEmail, passwordHash, salt, userRoles);
+
+    admin = userService.Insert(admin);
+    user = userService.Insert(user);
+
+    if (admin is null) throw new Exception("Failed to create admin user");
+    if (admin is null) throw new Exception("Failed to create simple user");
+}
