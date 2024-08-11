@@ -35,20 +35,28 @@ public class PluginManager : IPluginManager
             return;
         }
 
-        path = CopyPluginToLocalFolder(path);
+        var assemblyName = AssemblyName.GetAssemblyName(path);
 
-        if (_pluginPaths.Contains(path))
+        if (_plugins.Any(x => x.Name == assemblyName.Name))
         {
             LogService.LogApp(LogSeverity.Warning, $"Plugin already loaded: {path}");
             return;
         }
+
+        path = CopyPluginToPluginFolder(path);
 
         LoadPlugin(path);
         _pluginPaths.Add(path);
         SavePluginPaths();
     }
 
-    private static string CopyPluginToLocalFolder(string pluginPaths)
+    private static string CopyPluginToTempStorage(string pluginPaths)
+    {
+        ConfigurationUtils.CopyFileToFolder(pluginPaths, FolderType.Temp);
+        return Path.Combine(ConfigurationUtils.GetFolderPath(FolderType.Temp), Path.GetFileName(pluginPaths));
+    }
+
+    private static string CopyPluginToPluginFolder(string pluginPaths)
     {
         ConfigurationUtils.CopyFileToFolder(pluginPaths, FolderType.Plugin);
         return Path.Combine(ConfigurationUtils.GetFolderPath(FolderType.Plugin), Path.GetFileName(pluginPaths));
@@ -59,8 +67,6 @@ public class PluginManager : IPluginManager
     {
         if (plugin is null) return;
 
-        _plugins.Remove(plugin);
-        File.Delete(plugin.Assembly.Location);
         _pluginPaths.Remove(plugin.Assembly.Location);
         SavePluginPaths();
     }
@@ -84,6 +90,7 @@ public class PluginManager : IPluginManager
     {
         try
         {
+            path = CopyPluginToTempStorage(path);
             var assembly = Assembly.LoadFrom(path);
             var plugin = new Plugin(assembly);
             _plugins.Add(plugin);
@@ -149,6 +156,18 @@ public class PluginManager : IPluginManager
         LoadPluginPaths();
         foreach (string path in _pluginPaths)
             LoadPlugin(path);
+
+        DeleteUnloadedPluginFromPluginFolder();
+    }
+
+    private void DeleteUnloadedPluginFromPluginFolder()
+    {
+        foreach (string path in Directory.GetFiles(ConfigurationUtils.GetFolderPath(FolderType.Plugin)))
+        {
+            if (_pluginPaths.Contains(path)) continue;
+
+            File.Delete(path);
+        }
     }
 
     /// <inheritdoc/>

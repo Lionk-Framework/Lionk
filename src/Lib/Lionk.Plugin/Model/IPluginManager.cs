@@ -17,6 +17,8 @@ public interface IPluginManager : ITypesProvider
 
     /// <summary>
     /// Removes the specified plugin from the manager.
+    /// As an assembly can't be removed during execution,
+    /// the plugin will be disabled only after a re-run.
     /// </summary>
     /// <param name="plugin">The plugin to remove.</param>
     public void RemovePlugin(Plugin plugin);
