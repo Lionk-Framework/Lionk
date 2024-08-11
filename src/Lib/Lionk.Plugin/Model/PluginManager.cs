@@ -69,7 +69,10 @@ public class PluginManager : IPluginManager
 
         _plugins.Remove(plugin);
         DoNeedARestart = true;
-        _pluginPaths.Remove(plugin.Assembly.Location);
+        string tempPath = plugin.Assembly.Location;
+        string filename = Path.GetFileName(tempPath);
+        string pluginPath = Path.Combine(ConfigurationUtils.GetFolderPath(FolderType.Plugin), filename);
+        _pluginPaths.Remove(pluginPath);
         SavePluginPaths();
     }
 

@@ -62,16 +62,14 @@
     private MudFileUpload<IReadOnlyList<IBrowserFile>>? _fileUpload;
     private Plugin? SelectedPlugin { get; set; }
 
-    private async Task DeletePlugin()
+    private void DeletePlugin()
     {
-        await Task.Run(() =>
+        if (SelectedPlugin != null)
         {
-            if (SelectedPlugin != null)
-            {
-                PluginManager.RemovePlugin(SelectedPlugin);
-                SelectedPlugin = null;
-            }
-        });
+            PluginManager.RemovePlugin(SelectedPlugin);
+            SelectedPlugin = null;
+            StateHasChanged();
+        }
     }
 
     private Task OpenFilePickerAsync()
