@@ -78,7 +78,7 @@ public class UserFileHandler : IUserRepository
     public HashSet<User> GetUsers()
     {
         string json = ConfigurationUtils.ReadFile(_usersPath, _folderType);
-        if (string.IsNullOrEmpty(json)) return new();
+        if (string.IsNullOrEmpty(json)) return [];
         HashSet<User> users = JsonConvert.DeserializeObject<HashSet<User>>(json) ?? throw new ArgumentNullException(nameof(users));
         return users;
     }

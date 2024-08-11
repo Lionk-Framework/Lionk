@@ -10,7 +10,7 @@ namespace Lionk.Auth.Identity;
 /// </summary>
 public class User
 {
-    private readonly HashSet<string> _roles = new();
+    private readonly HashSet<string> _roles = [];
 
     /// <summary>
     /// Gets the unique identifier of the user.

@@ -17,7 +17,7 @@ public class SmtpServerTest
     /// <summary>
     /// Gets the list of received emails.
     /// </summary>
-    public static List<string> Mailbox { get; } = new List<string>();
+    public static List<string> Mailbox { get; } = [];
 
     /// <summary>
     /// This class is used to store the message received by the SMTP server.

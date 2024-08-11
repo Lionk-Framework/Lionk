@@ -32,7 +32,7 @@ public class UserServiceTests
         string salt1 = PasswordUtils.GenerateSalt(16);
         string salt2 = PasswordUtils.GenerateSalt(16);
         string salt3 = PasswordUtils.GenerateSalt(16);
-        List<string> roles = new() { "role1", "role2" };
+        List<string> roles = ["role1", "role2"];
         _user1 = new("user1", "email1", "password1", salt1, roles);
         _user2 = new("user2", "email2", "password2", salt2, roles);
         _user3 = new("user3", "email3", "password3", salt3, roles);
@@ -154,7 +154,7 @@ public class UserServiceTests
     public void AddRoleListToUser()
     {
         // Arrange
-        List<string> rolesToAdd = new() { "role3", "role4" };
+        List<string> rolesToAdd = ["role3", "role4"];
 
         // Act
         _user1.AddRoles(rolesToAdd);
@@ -186,7 +186,7 @@ public class UserServiceTests
     public void RemoveRoleListFromUser()
     {
         // Arrange
-        List<string> rolesToAdd = new() { "role3", "role4" };
+        List<string> rolesToAdd = ["role3", "role4"];
         _user1.AddRoles(rolesToAdd);
 
         // Act

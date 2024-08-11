@@ -85,13 +85,13 @@ static void SetupDebugUser(WebApplication app)
 
     // To use debug users, set "dadmin" or "duser" as username and "password" as password.
     string adminUsername = "dadmin";
-    List<string> adminRoles = new() { "Admin" };
+    List<string> adminRoles = ["Admin"];
     string adminEmail = "debugAdmin@email.com";
     User? admin = userService.GetUserByUsername(adminUsername);
     if (admin is not null) userService.Delete(admin);
 
     string userUsername = "duser";
-    List<string> userRoles = new() { "User" };
+    List<string> userRoles = ["User"];
     string userEmail = "debugUser@email.com";
     User? user = userService.GetUserByUsername(userUsername);
     if (user is not null) userService.Delete(user);

@@ -9,9 +9,9 @@ namespace Lionk.Notification;
 /// </summary>
 public static class NotificationService
 {
-    private static List<INotifyer> _notifyers = new();
-    private static List<IChannel> _channels = new();
-    private static Dictionary<Guid, List<IChannel>> _notifyerChannels = new();
+    private static List<INotifyer> _notifyers = [];
+    private static List<IChannel> _channels = [];
+    private static Dictionary<Guid, List<IChannel>> _notifyerChannels = [];
 
     /// <summary>
     /// This event is raised when a notification is sent.
@@ -112,7 +112,7 @@ public static class NotificationService
         AddChannels(channels);
         AddNotifyers(notifyer);
         GetNotifyerChannels();
-        if (!_notifyerChannels.ContainsKey(notifyer.Id)) _notifyerChannels.Add(notifyer.Id, new List<IChannel>());
+        if (!_notifyerChannels.ContainsKey(notifyer.Id)) _notifyerChannels.Add(notifyer.Id, []);
         foreach (IChannel item in channels) if (!_notifyerChannels[notifyer.Id].Contains(item)) _notifyerChannels[notifyer.Id].Add(item);
         SaveNotifyerChannels();
     }
@@ -128,7 +128,7 @@ public static class NotificationService
 
         if (_channels == null)
         {
-            _channels = new List<IChannel>();
+            _channels = [];
         }
 
         foreach (IChannel item in channels)
@@ -195,7 +195,7 @@ public static class NotificationService
             }
             else
             {
-                List<INotifyer> notifyerToAdd = new();
+                List<INotifyer> notifyerToAdd = [];
                 foreach (INotifyer notifyer in _notifyers)
                 {
                     if (notifyer.Equals(item)) continue;
@@ -241,7 +241,7 @@ public static class NotificationService
     {
         ArgumentNullException.ThrowIfNull(channel, nameof(channel));
         GetNotifyerChannels();
-        List<INotifyer> notifyers = new();
+        List<INotifyer> notifyers = [];
         foreach (Guid key in _notifyerChannels.Keys)
         {
             foreach (IChannel item in _notifyerChannels[key])
