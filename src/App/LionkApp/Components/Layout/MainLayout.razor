@@ -31,6 +31,9 @@
                 <AuthorizeView Context="pluginContext" Roles="Admin">
                     <MudNavLink Href="/plugins" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AddBox">Plugins</MudNavLink>
                 </AuthorizeView>
+                <AuthorizeView Context="componentContext" Roles="Admin">
+                    <MudNavLink Href="/components" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.DeviceHub">Components</MudNavLink>
+                </AuthorizeView>
 
             </MudNavMenu>
 

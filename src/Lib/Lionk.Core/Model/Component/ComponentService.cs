@@ -15,7 +15,10 @@ public class ComponentService : IComponentService
     /// </summary>
     /// <param name="provider">The type provider.</param>
     public ComponentService(ITypesProvider provider)
-        => _componentRegistery = new ComponentRegistery(provider, this);
+    {
+        _componentRegistery = new ComponentRegistery(provider, this);
+        _componentRegistery.NewComponentAvailable += (s, e) => OnNewTypesAvailable();
+    }
 
     /// <inheritdoc/>
     public void RegisterComponentInstance(IComponent component)
@@ -39,8 +42,8 @@ public class ComponentService : IComponentService
         => _componentInstances.Values;
 
     /// <inheritdoc/>
-    public IDictionary<ComponentTypeDescription, Factory> GetRegisteredTypeDictionnary()
-        => _componentRegistery.TypesRegistery;
+    public IReadOnlyDictionary<ComponentTypeDescription, Factory> GetRegisteredTypeDictionnary()
+        => _componentRegistery.TypesRegistery.AsReadOnly();
 
     /// <inheritdoc/>
     public IComponent? GetInstanceByName(string name)
@@ -48,6 +51,12 @@ public class ComponentService : IComponentService
         _componentInstances.TryGetValue(name, out IComponent? component);
         return component;
     }
+
+    /// <inheritdoc/>
+    public event EventHandler<EventArgs>? NewComponentAvailable;
+
+    private void OnNewTypesAvailable()
+        => NewComponentAvailable?.Invoke(this, EventArgs.Empty);
 
     /// <summary>
     /// Generates a unique name for the component by adding suffixes if necessary.
@@ -66,6 +75,13 @@ public class ComponentService : IComponentService
         }
 
         return uniqueName;
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        _componentRegistery.NewComponentAvailable -= (s, e) => OnNewTypesAvailable();
+        GC.SuppressFinalize(this);
     }
 
     private const string DefaultComponentName = "Unamed";

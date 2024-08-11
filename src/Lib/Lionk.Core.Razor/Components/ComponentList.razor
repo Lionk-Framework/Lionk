@@ -1,6 +1,7 @@
 ﻿@namespace Lionk.Core.Razor
 @using Lionk.Core.Component
 @using Lionk.Core.TypeRegistery
+@using System.Collections.ObjectModel
 
 <ListSearcher Items="@_componentTypeDescriptions"
               Properties="@Properties"
@@ -9,33 +10,22 @@
               T="ComponentTypeDescription" />
 
 <MudTable @ref="_table"
-            T="ComponentTypeDescription"
-            Items="@_componentTypeDescriptions"
-            Hover="true" @bind-SelectedItems="_selectedItems"
-            OnRowClick="@RowClicked">
-    <HeaderContent>
-        <MudTh></MudTh>
-        <MudTh>Type Name</MudTh>
-        <MudTh>Details</MudTh>
+          T="ComponentTypeDescription"
+          Items="@_componentTypeDescriptions"
+          Hover="true" @bind-SelectedItems="_selectedItems"
+          OnRowClick="@RowClicked">
+    <HeaderContent >
+        <MudText Align="Align.Left" >Type Name</MudText>
     </HeaderContent>
 
     <RowTemplate>
-        <MudTd><MudIcon Icon="@Icons.Material.Filled.AutoAwesomeMosaic" /></MudTd>
-        <MudTd DataLabel="Type Name">@context.Name</MudTd>
-        <MudTd>
-            <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => ShowDetails(context.Description)">Component details</MudButton>
-        </MudTd>
+        <MudTooltip Text="@context.Description" Placement="Placement.Right">
+            <MudTr>
+                <MudTd><MudIcon Icon="@Icons.Material.Filled.AutoAwesomeMosaic" /></MudTd>
+                <MudTd DataLabel="Type Name">@context.Name</MudTd>
+            </MudTr>
+        </MudTooltip>
     </RowTemplate>
-
-    <ChildRowContent>
-        @if (string.Compare(selectedDescription, context.Description) == 0)
-        {
-            <MudTd colspan="5">
-                <MudText Typo="Typo.h6">Description</MudText>
-                <MudText Typo="Typo.body1">@selectedDescription</MudText>
-            </MudTd>
-        }
-    </ChildRowContent>
 
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
@@ -45,36 +35,25 @@
 </MudTable>
 
 @code {
-    /// <summary>
-    /// Gets or sets the types registery Dictionary.
-    /// </summary>
-    [Parameter] public Dictionary<ComponentTypeDescription, Factory> TypesRegistery { get; set; } = new();
+    [Parameter]
+    public IReadOnlyDictionary<ComponentTypeDescription, Factory> TypesRegistery { get; set; } = new Dictionary<ComponentTypeDescription, Factory>();
 
-    /// <summary>
-    /// Raised when a RowTable is selected.
-    /// </summary>
-    [Parameter] public EventCallback<KeyValuePair<ComponentTypeDescription, Factory>> OnComponentSelected { get; set; }
+    [Parameter]
+    public EventCallback<KeyValuePair<ComponentTypeDescription, Factory>> OnComponentSelected { get; set; }
 
-    MudTable<ComponentTypeDescription> _table = new();
+    private MudTable<ComponentTypeDescription> _table = new();
     private HashSet<ComponentTypeDescription>? _selectedItems;
-    private string selectedDescription = "";
     private List<ComponentTypeDescription> _componentTypeDescriptions = new List<ComponentTypeDescription>();
     private List<string> Properties = new List<string> { "Name", "Description" };
     private List<string> PropertiesFriendlyNames = new List<string> { "Type Name", "Description" };
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
-        _componentTypeDescriptions = TypesRegistery.Keys.ToList();
-    }
-
-    private void ShowDetails(string description)
-    {
-        if (string.Compare(selectedDescription, description) == 0)
+        if (TypesRegistery != null)
         {
-            selectedDescription = "";
-            return;
+            _componentTypeDescriptions = TypesRegistery.Keys.ToList();
+            StateHasChanged();
         }
-        selectedDescription = description;
     }
 
     private void ItemsChanged(List<ComponentTypeDescription> items)
@@ -85,9 +64,9 @@
 
     private void RowClicked(TableRowClickEventArgs<ComponentTypeDescription> item)
     {
-        ComponentTypeDescription? componentTypeDescription = item.Item;
+        var componentTypeDescription = item.Item;
         if (componentTypeDescription is null) return;
-        Factory factory = TypesRegistery[componentTypeDescription];
+        var factory = TypesRegistery[componentTypeDescription];
         OnComponentSelected.InvokeAsync(new KeyValuePair<ComponentTypeDescription, Factory>(componentTypeDescription, factory));
     }
 }

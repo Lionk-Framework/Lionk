@@ -26,6 +26,13 @@ public class ComponentServiceTests
     }
 
     /// <summary>
+    /// Tear down method.
+    /// </summary>
+    [TearDown]
+    public void TearDown() =>
+        _componentService.Dispose();
+
+    /// <summary>
     /// Test for the <see cref="ComponentService.RegisterComponentInstance"/> method.
     /// </summary>
     [Test]

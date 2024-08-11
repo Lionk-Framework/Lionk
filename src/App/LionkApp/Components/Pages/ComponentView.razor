@@ -1,0 +1,69 @@
+﻿@page "/components"
+@using LionkApp.Components.Widgets.Dialogs
+@using MudBlazor
+@using Lionk.Core.Component
+@using Lionk.Core.TypeRegistery
+@using System.Collections
+@inject IComponentService ComponentService
+
+<MudPaper Class="pa-4">
+    <MudGrid>
+        <MudItem xs="12" md="8">
+            <MudText Typo="Typo.h4">Component Manager</MudText>
+        </MudItem>
+        <MudItem xs="12" md="4" Class="d-flex justify-end">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddComponent">Add Component</MudButton>
+        </MudItem>
+    </MudGrid>
+
+    <ComponentList TypesRegistery="@TypesRegistery" OnComponentSelected="OnComponentSelected" />
+
+    <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="DeleteComponent">Delete Selected</MudButton>
+</MudPaper>
+
+@code {
+    private IReadOnlyDictionary<ComponentTypeDescription, Factory>? TypesRegistery { get; set; }
+        = new Dictionary<ComponentTypeDescription, Factory>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadComponentTypes();
+        ComponentService.NewComponentAvailable += (s, e) => OnNewTypesAvailable();
+    }
+
+    private async Task LoadComponentTypes()
+    {
+        TypesRegistery = ComponentService.GetRegisteredTypeDictionnary();
+        await InvokeAsync(StateHasChanged); // Mise à jour de l'interface utilisateur
+    }
+
+    private void OnNewTypesAvailable()
+    {
+        TypesRegistery = ComponentService.GetRegisteredTypeDictionnary();
+        StateHasChanged(); // Assurer la mise à jour de l'interface utilisateur
+    }
+
+    private void AddComponent()
+    {
+        // Logique pour ajouter un composant
+        // Sera implémenté plus tard
+    }
+
+    private void DeleteComponent()
+    {
+        // Logique pour supprimer un composant
+        // Sera implémenté plus tard
+    }
+
+    private void OnComponentSelected(KeyValuePair<ComponentTypeDescription, Factory> selectedComponent)
+    {
+        // Logique pour gérer la sélection d'un composant
+        // Sera implémenté plus tard
+    }
+
+    public void Dispose()
+    {
+        // Se désabonner de l'événement pour éviter les fuites de mémoire
+        ComponentService.NewComponentAvailable -= (s, e) => OnNewTypesAvailable();
+    }
+}
