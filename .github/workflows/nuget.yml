@@ -90,11 +90,6 @@ jobs:
           name: csproj-data
           path: ${{ vars.LIB_PATH }}
       
-      - name: Create description artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: description
-          path: description.txt
 
   publish-nuget:
     runs-on: ${{ vars.RUNNER_DISTRIBUTION }}
@@ -166,17 +161,13 @@ jobs:
       with:
         name: project-data
 
-    - name: Download description artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: description
-
     - name: Setup environment variables
       run: | 
         echo "LIB_PATH=${{vars.LIB_PATH}}" >> $GITHUB_ENV
         echo "BOT_NAME=${{ vars.BOT_NAME}}" >> $GITHUB_ENV
         echo "BOT_MAIL=${{ vars.BOT_MAIL}}" >> $GITHUB_ENV
         echo "NUGET_REGISTRY=${{ vars.NUGET_REGISTRY}}" >> $GITHUB_ENV
+        echo "CHANGELOG=$(cat changelog.json)" >> $GITHUB_ENV
 
 
     - name: Setup Python on failure
