@@ -1,0 +1,35 @@
+﻿:root {
+    --card-bg-color-light: #ffffff;
+    --card-bg-color-dark: #2d2d2d;
+    --card-shadow-light: 0px 4px 20px rgba(0, 0, 0, 0.1);
+    --card-shadow-dark: 0px 4px 20px rgba(0, 0, 0, 0.7);
+}
+
+.mud-theme-dark .floating-card {
+    background-color: var(--card-bg-color-dark);
+    box-shadow: var(--card-shadow-dark);
+    border: 1px solid #444;
+}
+
+.mud-theme-light .floating-card {
+    background-color: var(--card-bg-color-light);
+    box-shadow: var(--card-shadow-light);
+    border: 1px solid #ddd;
+}
+
+.floating-card {
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+    .floating-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.2);
+    }
+
+.non-selectable {
+    user-select: none;
+}
+
+.small-font {
+    font-size: 0.8rem;
+}
