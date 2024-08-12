@@ -1,12 +1,11 @@
-<?xml version='1.0' encoding='utf-8'?>
-<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <PackageReadmeFile>./src/Lib/Lionk.Utils/README.md</PackageReadmeFile>
-    <Version>1.1.0</Version>
-    <PackageReleaseNotes>##1.1.0 Changelog
-- Add README.md</PackageReleaseNotes>
-  </PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <Version>1.0.0</Version>
+    </PropertyGroup>
+
 </Project>
