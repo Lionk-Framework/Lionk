@@ -7,9 +7,10 @@
     <MudItem xs="12">
         <MudCard>
             <MudCardContent>
-                <MudCardContent>
-                    <MudText Typo="Typo.body2">@_userName</MudText>
-                </MudCardContent>
+                <MudTextField T="string" Label="Username" Text=@_userName ReadOnly="true" />
+            </MudCardContent>
+            <MudCardContent>
+                <MudTextField T="string" Label="Email" Text=@_email ReadOnly="true" />
             </MudCardContent>
         </MudCard>
     </MudItem>
@@ -17,10 +18,12 @@
 
 @code {
     public string _userName = "";
-
+    public string _email = "";
+    
     protected override void OnInitialized()
     {
         base.OnInitialized();
         _userName = AuthStateProvider.CurrentUser?.Username ?? "Not Logged In";
+        _email = AuthStateProvider.CurrentUser?.Email ?? "Not Logged In";
     }
 }

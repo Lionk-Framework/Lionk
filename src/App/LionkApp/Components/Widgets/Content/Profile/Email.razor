@@ -1,6 +1,8 @@
 ﻿@page "/email"
-
+@using Lionk.Auth.Identity
+@using Microsoft.AspNetCore.Components.Authorization
 @using System.ComponentModel.DataAnnotations
+@inject UserAuthenticationStateProvider AuthStateProvider
 
 <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
@@ -8,7 +10,7 @@
         <MudItem xs="12">
             <MudCard>
                 <MudCardContent>
-                    <MudTextField T="string" Label="Email" Text="toto@gmail.com" ReadOnly="true" />
+                    <MudTextField T="string" Label="Email" Text=@_email ReadOnly="true" />
                 </MudCardContent>
                 <MudCardContent>
                     <MudTextField Label="New email" Class="mt-3"
@@ -29,6 +31,7 @@
 
 
 @code {
+    public string _email = "";
     RegisterAccountForm model = new RegisterAccountForm();
     // bool success;
 
@@ -39,10 +42,15 @@
         public string? Email { get; set; }
     }
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _email = AuthStateProvider.CurrentUser?.Email ?? "Not Logged In";
+    }
+
     private void OnValidSubmit(EditContext context)
     {
         // success = true;
         StateHasChanged();
     }
-
 }
