@@ -1,0 +1,17 @@
+﻿@using LionkApp.Components.Layout
+@using LionkApp.Components.Widgets.Content
+@layout SecondaryLayout
+@page "/auth"
+
+<MudText Typo="Typo.h2" Align="Align.Center" Class="mt-4 mb-4">Lionk</MudText>
+<MudContainer Style="height:50px;">
+</MudContainer>
+<MudContainer MaxWidth="MaxWidth.Small">
+<MudTabs Elevation="2" Rounded="true" Centered="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+    <MudTabPanel Text="Login">
+        <Login />
+    </MudTabPanel>
+    <MudTabPanel Text="Register">
+        <Register />
+    </MudTabPanel>
+</MudTabs></MudContainer>

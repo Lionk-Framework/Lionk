@@ -1,23 +1,121 @@
-﻿@inherits LayoutComponentBase
+﻿@using Lionk.Auth.Identity
+@using Microsoft.AspNetCore.Components.Authorization
+@inherits LayoutComponentBase
+@inject NavigationManager NavManager
+@inject UserAuthenticationStateProvider AuthStateProvider
+@inject LionkPalette theme
+<AuthorizeView>
+    <MudThemeProvider Theme="@Theme" IsDarkMode="IsDarkMode" />
+    <MudPopoverProvider />
+    <MudDialogProvider />
+    <MudSnackbarProvider />
+    <MudLayout>
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+        <MudAppBar Elevation="1">
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+            <MudText Typo="Typo.h5" Class="ml-3">Lionk</MudText>
+            <MudSpacer />
+            <MudIconButton Icon="@Icons.Material.Filled.CircleNotifications" Color="Color.Primary" OnClick="OnNotificationPressed" />
+            <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
+        </MudAppBar>
+        <MudDrawer @bind-Open="IsDrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+            <MudNavMenu>
 
-        <article class="content px-4">
+                <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Dashboard</MudNavLink>
+                <MudNavGroup Title="Notifications" Icon="@Icons.Material.Filled.Notifications" @bind-Expanded="IsNotifcationExpanded">
+                    <MudNavLink Href="/active" Match="NavLinkMatch.Prefix">Active</MudNavLink>
+                    <MudNavLink Href="/history" Match="NavLinkMatch.Prefix">History</MudNavLink>
+                    <MudNavLink Href="/configuration" Match="NavLinkMatch.Prefix">Configuration</MudNavLink>
+                </MudNavGroup>
+                <AuthorizeView Context="pluginContext" Roles="Admin">
+                    <MudNavLink Href="/plugins" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AddBox">Plugins</MudNavLink>
+                </AuthorizeView>
+
+            </MudNavMenu>
+
+
+            <MudContainer Class="mt-auto pa-2">
+                <MudGrid Justify="Justify.SpaceBetween">
+                    <MudItem>
+                        <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Primary" OnClick="OnProfilePressed" />
+                        <MudText Typo="Typo.body2">Profile</MudText>
+                        <MudText Typo="Typo.body2">@_userName</MudText>
+                    </MudItem>
+                    <MudItem>
+                        <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Primary" OnClick="OnLogoutPressed" />
+                    </MudItem>
+                </MudGrid>
+            </MudContainer>
+        </MudDrawer>
+
+        <MudMainContent Class="mt-16 pa-4">
             @Body
-        </article>
-    </main>
-</div>
+        </MudMainContent>
+    </MudLayout>
+</AuthorizeView>
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+@code {
+    private bool IsDrawerOpen = true;
+    private bool IsNotifcationExpanded = false;
+    private MudTheme? Theme = null;
+    private bool IsDarkMode = true;
+    public string _userName = "";
+
+    private object Unauthorized()
+    {
+        NavManager.NavigateTo("/unauthorized");
+        return new();
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _userName = AuthStateProvider.CurrentUser?.Username ?? "Not Logged In";
+        Theme = new()
+            {
+                PaletteLight = theme.LightPalette,
+                PaletteDark = theme.DarkPalette,
+                LayoutProperties = new LayoutProperties()
+            };
+    }
+
+    private void DarkModeToggle()
+    {
+        IsDarkMode = !IsDarkMode;
+    }
+
+    private void DrawerToggle()
+    {
+        IsDrawerOpen = !IsDrawerOpen;
+    }
+
+    private void OnNotificationPressed()
+    {
+        NavManager.NavigateTo("/active");
+        IsNotifcationExpanded = true;
+    }
+
+    private void OnProfilePressed()
+    {
+        NavManager.NavigateTo("/profile");
+    }
+
+    private async Task OnLogoutPressed()
+    {
+        await AuthStateProvider.LogoutAsync();
+        NavManager.NavigateTo("/auth");
+    }
+
+    public string DarkLightModeButtonIcon => IsDarkMode switch
+    {
+        true => Icons.Material.Rounded.LightMode,
+        false => Icons.Material.Outlined.DarkMode,
+    };
+}

@@ -1,0 +1,19 @@
+﻿@using LionkApp.Components.Model;
+
+<MudContainer MaxWidth="MaxWidth.Small" Style="margin-top: 40px;">
+    <h3 style="text-decoration: underline;">@SwitchListTitle</h3>
+    <MudContainer MaxWidth="MaxWidth.Small" Style="border: 1px solid var(--mud-palette-primary); padding: 10px; border-radius: 5px; margin-top: 10px;">
+        @foreach (var s in Switchs)
+        {
+            <MudSwitch @bind-Value="s.IsEnabled" Label="@s.Label" LabelPosition="LabelPosition.Start" Color="Color.Success" />
+        }
+    </MudContainer>
+</MudContainer>
+
+@code {
+    [Parameter]
+    public string? SwitchListTitle { get; set; }
+
+    [Parameter]
+    public List<Switch> Switchs { get; set; } = new List<Switch>();
+}
