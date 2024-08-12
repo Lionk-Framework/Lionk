@@ -30,8 +30,8 @@
 </EditForm>
 
 @code {
-    public string CurrentEmail = "";
     RegisterAccountForm Model = new RegisterAccountForm();
+    public string CurrentEmail = "";
 
     public class RegisterAccountForm
     {
@@ -58,6 +58,7 @@
             Snackbar.Add("Failed to update email. Please try again.", Severity.Error);
         }
 
+        Model = new RegisterAccountForm();
         StateHasChanged();
     }
 }
