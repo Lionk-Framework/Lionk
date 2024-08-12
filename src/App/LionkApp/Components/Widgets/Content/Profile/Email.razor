@@ -48,18 +48,25 @@
 
     private void OnValidSubmit()
     {
-        if (!string.IsNullOrEmpty(Model.NewEmail))
-        {
-            AuthStateProvider.CurrentUser?.UpdateEmail(Model.NewEmail);
-            CurrentEmail = Model.NewEmail;
-            Model = new();
+        var currentUser = AuthStateProvider.CurrentUser;
 
-            Snackbar.Add("Email updated successfully", Severity.Success);
-            StateHasChanged();
-        }
-        else
+        if (currentUser == null)
         {
-            Snackbar.Add("Failed to update email. Please try again.", Severity.Error);
+            Snackbar.Add("User is not authenticated.", Severity.Error);
+            return;
         }
+
+        if (string.IsNullOrEmpty(Model.NewEmail))
+        {
+            Snackbar.Add("Please enter a valid email address.", Severity.Warning);
+            return;
+        }
+
+        currentUser.UpdateEmail(Model.NewEmail);
+        CurrentEmail = Model.NewEmail;
+        Model = new();
+
+        Snackbar.Add("Email updated successfully", Severity.Success);
+        StateHasChanged();
     }
 }
