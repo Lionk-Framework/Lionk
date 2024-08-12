@@ -1,34 +1,20 @@
-<?xml version='1.0' encoding='utf-8'?>
-<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>1.1.0</Version>
-    <Description>
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-## Change Log
-- Add README.md
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <Version>1.0.0</Version>
+    </PropertyGroup>
 
-# Lionk.Logger
+    <ItemGroup>
+        <PackageReference Include="Serilog" Version="4.0.1" />
+        <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+    </ItemGroup>
 
-## Description
-This is the logger library for Lionk. It is a simple logger that logs to files.
+    <ItemGroup>
+        <ProjectReference Include="..\Lionk.Utils\Lionk.Utils.csproj" />
+    </ItemGroup>
 
-## Installation
-```bash
-dotnet add package Lionk.Logger
-```
-
-## Usage
-comming soon</Description>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Serilog" Version="4.0.1" />
-    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Lionk.Utils\Lionk.Utils.csproj" />
-  </ItemGroup>
 </Project>
