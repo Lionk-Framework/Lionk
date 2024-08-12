@@ -52,7 +52,7 @@
         {
             AuthStateProvider.CurrentUser?.UpdateEmail(Model.NewEmail);
             CurrentEmail = Model.NewEmail;
-            Model = new RegisterAccountForm();
+            Model = new();
 
             Snackbar.Add("Email updated successfully", Severity.Success);
             StateHasChanged();
