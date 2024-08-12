@@ -1,57 +1,26 @@
 ﻿@page "/overview"
+@using Lionk.Auth.Identity
+@using Microsoft.AspNetCore.Components.Authorization
+@inject UserAuthenticationStateProvider AuthStateProvider
 
-@using System.ComponentModel.DataAnnotations
-
-<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
-    <DataAnnotationsValidator />
-    <MudGrid>
-        <MudItem xs="12">
-            <MudCard>
+<MudGrid>
+    <MudItem xs="12">
+        <MudCard>
+            <MudCardContent>
                 <MudCardContent>
-                    <MudCardContent>
-                        <MudTextField T="string" Label="Username" Text="Toto" ReadOnly="true" />
-                    </MudCardContent>
+                    <MudText Typo="Typo.body2">@_userName</MudText>
                 </MudCardContent>
-                <MudCardActions>
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save</MudButton>
-                </MudCardActions>
-            </MudCard>
-        </MudItem>
-        <MudItem xs="12">
-            <MudText Typo="Typo.body2" Align="Align.Center">
-                Fill out the form correctly to save your changes.
-            </MudText>
-        </MudItem>
-    </MudGrid>
-</EditForm>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
 @code {
-    RegisterAccountForm model = new RegisterAccountForm();
-    // bool success;
+    public string _userName = "";
 
-    public class RegisterAccountForm
+    protected override void OnInitialized()
     {
-        [Required]
-        [StringLength(8, ErrorMessage = "Name length can't be more than 8.")]
-        public string? Username { get; set; }
-
-        [Required]
-        [EmailAddress]
-        public string? Email { get; set; }
-
-        [Required]
-        [StringLength(30, ErrorMessage = "Password must be at least 8 characters long.", MinimumLength = 8)]
-        public string? Password { get; set; }
-
-        [Required]
-        [Compare(nameof(Password))]
-        public string? Password2 { get; set; }
-
+        base.OnInitialized();
+        _userName = AuthStateProvider.CurrentUser?.Username ?? "Not Logged In";
     }
-
-    private void OnValidSubmit(EditContext context)
-    {
-        // success = true;
-        StateHasChanged();
-    }
-
 }
