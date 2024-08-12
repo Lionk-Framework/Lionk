@@ -35,10 +35,7 @@ def update_or_add_element(container, name, value=None, attributes=None):
                 new_element.set(attr_name, attr_value)
         # Si aucune valeur de texte n'est spécifiée, laisser l'élément vide
 
-
-
-
-# get environment variables
+# Récupérer les variables d'environnement
 LIB_PATH = os.getenv("LIB_PATH")
 projects = os.getenv("PROJECTS").split()
 newversions = os.getenv("NEW_VERSION").split()
@@ -52,24 +49,32 @@ for project in projects:
     new_version = newversions[projects.index(project)]   
 
     if project in changelogs:
-        changes = f"##{new_version} Changelog"
+        changes = f"## {new_version} Changelog"
         for change in changelogs[project]:
             changes += f"\n- {change}"
     
     tree = ET.parse(csproj_file)
     root = tree.getroot()
-    property_group = root.find('PropertyGroup')
-    item_group = root.find('ItemGroup')
 
-    # update or add Version and Description elements
-    update_or_add_element(property_group ,"Version", value=new_version)
-    update_or_add_element(property_group ,"PackageReleaseNotes", value=changes)
+    # Trouver ou créer PropertyGroup
+    property_group = root.find('PropertyGroup')
+    if property_group is None:
+        property_group = ET.SubElement(root, 'PropertyGroup')
+
+    # Trouver ou créer ItemGroup
+    item_group = root.find('ItemGroup')
+    if item_group is None:
+        item_group = ET.SubElement(root, 'ItemGroup')
+
+    # Mettre à jour ou ajouter les éléments Version, PackageReleaseNotes et PackageReadmeFile
+    update_or_add_element(property_group, "Version", value=new_version)
+    update_or_add_element(property_group, "PackageReleaseNotes", value=changes)
     if os.path.exists(readme_file):
-        update_or_add_element(property_group ,"PackageReadmeFile", "README.md")
+        update_or_add_element(property_group, "PackageReadmeFile", "README.md")
         update_or_add_element(item_group, 'None', attributes={'Include': 'README.md', 'Pack': 'true', 'PackagePath': ''})
 
     indent(root)
     tree.write(csproj_file, encoding="utf-8", xml_declaration=True)
 
-    # show the updated csproj file
+    # Afficher le fichier .csproj mis à jour
     ET.dump(root)
