@@ -4,7 +4,7 @@
 @using System.ComponentModel.DataAnnotations
 @inject UserAuthenticationStateProvider AuthStateProvider
 
-<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+<EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
     <MudGrid>
         <MudItem xs="12">
@@ -13,7 +13,7 @@
                     <MudTextField T="string" Label="Email" Text=@_email ReadOnly="true" />
                 </MudCardContent>
                 <MudCardContent>
-                    <MudTextField Label="New email" Class="mt-3" @bind-Value="model.Email" For="@(() => model.Email)" />
+                    <MudTextField Label="New email" Class="mt-3" @bind-Value="_model.NewEmail" For="@(() => _model.NewEmail)" />
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save</MudButton>
@@ -30,14 +30,13 @@
 
 @code {
     public string _email = "";
-    RegisterAccountForm model = new RegisterAccountForm();
-    // bool success;
+    RegisterAccountForm _model = new RegisterAccountForm();
 
     public class RegisterAccountForm
     {
         [Required]
         [EmailAddress]
-        public string? Email { get; set; }
+        public string? NewEmail { get; set; }
     }
 
     protected override void OnInitialized()
@@ -46,9 +45,13 @@
         _email = AuthStateProvider.CurrentUser?.Email ?? "Not Logged In";
     }
 
-    private void OnValidSubmit(EditContext context)
+    private void OnValidSubmit()
     {
-        // success = true;
+        if (!string.IsNullOrEmpty(_model.NewEmail) && (_model.NewEmail != _email))
+        {
+            AuthStateProvider.CurrentUser?.UpdateEmail(_model.NewEmail);
+        }
+
         StateHasChanged();
     }
 }
