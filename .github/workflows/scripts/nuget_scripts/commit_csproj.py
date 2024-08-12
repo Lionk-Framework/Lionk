@@ -3,9 +3,15 @@ import subprocess
 
 
 def run_command(command):
-    result = subprocess.run(command, check=True, capture_output=True, text=True)
-    print(result.stdout.strip())
-    print(result.stderr.strip())
+    try:
+        result = subprocess.run(command, check=True, capture_output=True, text=True)
+        print(result.stdout.strip())
+        print(result.stderr.strip())
+    except subprocess.CalledProcessError as e:
+        print(f"Error during execution: {e}")
+        print(e.stdout)
+        print(e.stderr)
+        raise
 
 
 # Get environment variables
