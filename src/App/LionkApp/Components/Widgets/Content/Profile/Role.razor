@@ -1,25 +1,29 @@
 ﻿@page "/role"
 
-<MudDataGrid T="Element" Items="@Elements.Take(4)" ReadOnly="@_readOnly" EditMode="DataGridEditMode.Form"
-    StartedEditingItem="@StartedEditingItem" CanceledEditingItem="@CanceledEditingItem" CommittedItemChanges="@CommittedItemChanges"
-             Bordered="true" Dense="true" EditTrigger="DataGridEditTrigger.Manual">
-    <Columns>
-        <PropertyColumn Property="x => x.Email"Editable="false" />
-        <PropertyColumn Property="x => x.Role">
-            <EditTemplate>
-                <MudSelect @bind-Value="context.Item.Role" Required RequiredError="You must select a Role" Margin="@Margin.Normal">
-                    <MudSelectItem Value="0">User</MudSelectItem>
-                    <MudSelectItem Value="1">Admin</MudSelectItem>
-                </MudSelect>
-            </EditTemplate>
-        </PropertyColumn>
-        <TemplateColumn CellClass="d-flex justify-end">
-            <CellTemplate>
-                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@context.Actions.StartEditingItemAsync" />
-            </CellTemplate>
-        </TemplateColumn>
-    </Columns>
-</MudDataGrid>
+<div style="width: 600px;">
+    <MudDataGrid T="Element" Items="@Elements.Take(4)" ReadOnly="@_readOnly" EditMode="DataGridEditMode.Form"
+                 StartedEditingItem="@StartedEditingItem" CanceledEditingItem="@CanceledEditingItem" CommittedItemChanges="@CommittedItemChanges"
+                 Bordered="true" Dense="true" EditTrigger="DataGridEditTrigger.Manual">
+        <Columns>
+            <PropertyColumn Property="x => x.Email" Editable="false" />
+            <PropertyColumn Property="x => x.Role">
+                <EditTemplate>
+                    <div style="width: 400px;">
+                        <MudSelect @bind-Value="context.Item.Role" Required RequiredError="You must select a Role" Margin="@Margin.Normal">
+                            <MudSelectItem Value="0">User</MudSelectItem>
+                            <MudSelectItem Value="1">Admin</MudSelectItem>
+                        </MudSelect>
+                    </div>
+                </EditTemplate>
+            </PropertyColumn>
+            <TemplateColumn CellClass="d-flex justify-end">
+                <CellTemplate>
+                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@context.Actions.StartEditingItemAsync" />
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
+</div>
 
 @*
 <MudExpansionPanels Style="flex:1">
