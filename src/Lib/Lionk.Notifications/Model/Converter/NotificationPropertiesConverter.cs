@@ -74,7 +74,7 @@ public class NotificationPropertiesConverter : JsonConverter
     /// <inheritdoc/>
     public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
     {
-        JObject jsonObject = new();
+        JObject jsonObject = [];
         if (value is null) throw new ArgumentNullException(nameof(value));
         Type type = value.GetType();
 

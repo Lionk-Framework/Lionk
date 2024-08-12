@@ -50,7 +50,7 @@ public class MockChannel : IChannel
     /// <inheritdoc/>
     public void AddRecipients(params IRecipient[] recipients)
     {
-        List<IRecipient> recipientsToAdd = new();
+        List<IRecipient> recipientsToAdd = [];
         foreach (IRecipient recipient in recipients)
         {
             if (Recipients.Contains(recipient) || recipient is not MockRecipient) continue;
@@ -74,7 +74,7 @@ public class MockChannel : IChannel
     public MockChannel(string name)
     {
         Name = name;
-        Recipients = new();
+        Recipients = [];
     }
 
     /// <summary>
