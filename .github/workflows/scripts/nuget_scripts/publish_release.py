@@ -16,8 +16,12 @@ def run_command(command):
         sys.exit(1)
 
 def read_file_to_list(filename):
-    with open(filename, 'r') as file:
-        return [line.strip() for line in file.readlines()]
+    try:
+        with open(filename, 'r') as file:
+            return file.read().strip().split()
+    except FileNotFoundError:
+        print(f"File not found: {filename}")
+        sys.exit(1)
 
 bot_name = os.getenv('BOT_NAME')
 bot_mail = os.getenv('BOT_MAIL')
