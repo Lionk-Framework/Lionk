@@ -4,22 +4,23 @@
 @inject UserAuthenticationStateProvider AuthStateProvider
 
 <MudGrid>
-    <MudItem xs="12">
+    <MudItem xs="7">
         <MudCard>
             <MudCardContent>
-                <MudTextField T="string" Label="Username" Text=@_userName ReadOnly="true" />
+                <MudTextField T="string" Label="Username" Text=@_userName ReadOnly="true" Class="mb-3" />
             </MudCardContent>
             <MudCardContent>
-                <MudTextField T="string" Label="Email" Text=@_email ReadOnly="true" />
+                <MudTextField T="string" Label="Email" Text=@_email ReadOnly="true" Class="mb-3" />
             </MudCardContent>
         </MudCard>
     </MudItem>
 </MudGrid>
 
+
 @code {
     public string _userName = "";
     public string _email = "";
-    
+
     protected override void OnInitialized()
     {
         base.OnInitialized();

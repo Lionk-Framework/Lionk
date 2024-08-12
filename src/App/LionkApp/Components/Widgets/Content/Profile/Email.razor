@@ -13,8 +13,7 @@
                     <MudTextField T="string" Label="Email" Text=@_email ReadOnly="true" />
                 </MudCardContent>
                 <MudCardContent>
-                    <MudTextField Label="New email" Class="mt-3"
-                                  @bind-Value="model.Email" For="@(() => model.Email)" />
+                    <MudTextField Label="New email" Class="mt-3" @bind-Value="model.Email" For="@(() => model.Email)" />
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save</MudButton>
@@ -28,7 +27,6 @@
         </MudItem>
     </MudGrid>
 </EditForm>
-
 
 @code {
     public string _email = "";
