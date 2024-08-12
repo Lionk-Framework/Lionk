@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using System.ComponentModel.DataAnnotations
 @inject UserAuthenticationStateProvider AuthStateProvider
+@inject ISnackbar Snackbar
 
 <EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
@@ -10,10 +11,10 @@
         <MudItem xs="12">
             <MudCard>
                 <MudCardContent>
-                    <MudTextField T="string" Label="Email" Text=@_email ReadOnly="true" />
+                    <MudTextField T="string" Label="Email" Text="@_email" ReadOnly="true" />
                 </MudCardContent>
                 <MudCardContent>
-                    <MudTextField Label="New email" Class="mt-3" @bind-Value="_model.NewEmail" For="@(() => _model.NewEmail)" />
+                    <MudTextField Label="New Email" Class="mt-3" @bind-Value="_model.NewEmail" For="@(() => _model.NewEmail)" />
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save</MudButton>
@@ -47,9 +48,14 @@
 
     private void OnValidSubmit()
     {
-        if (!string.IsNullOrEmpty(_model.NewEmail) && (_model.NewEmail != _email))
+        if (!string.IsNullOrEmpty(_model.NewEmail) && _model.NewEmail != _email)
         {
             AuthStateProvider.CurrentUser?.UpdateEmail(_model.NewEmail);
+            Snackbar.Add("Email updated successfully", Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add("Failed to update email. Please try again.", Severity.Error);
         }
 
         StateHasChanged();
