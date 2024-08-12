@@ -51,14 +51,15 @@
         if (!string.IsNullOrEmpty(Model.NewEmail))
         {
             AuthStateProvider.CurrentUser?.UpdateEmail(Model.NewEmail);
+            CurrentEmail = Model.NewEmail;
+            Model = new RegisterAccountForm();
+
             Snackbar.Add("Email updated successfully", Severity.Success);
+            StateHasChanged();
         }
         else
         {
             Snackbar.Add("Failed to update email. Please try again.", Severity.Error);
         }
-
-        Model = new RegisterAccountForm();
-        StateHasChanged();
     }
 }
