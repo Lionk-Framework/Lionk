@@ -42,7 +42,9 @@ if len(projects) != len(newversions):
 
 for i, project in enumerate(projects):
     newversion = newversions[i]
-    csproj = os.path.join(LIB_PATH, project, f"{project}.csproj")
+    project_path = os.path.join(LIB_PATH, project)
+    csproj = os.path.join(project_path, f"{project}.csproj")
+    readme_path = os.path.join(project_path, "README.md")
 
     print(f"Publishing {csproj} as version {newversion}")
 

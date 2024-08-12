@@ -40,15 +40,13 @@ changelogs = json.loads(os.getenv("CHANGELOG"))
 for project in projects:
     project_path = os.path.join(LIB_PATH, project)
     csproj_file = os.path.join(project_path, f"{project}.csproj")
-    new_version = newversions[projects.index(project)]
     readme_file = os.path.join(project_path, "README.md")
-   
+    new_version = newversions[projects.index(project)]   
 
     if project in changelogs:
-        description = f"\n\n## Change Log"
+        changes = f"##{new_version} Changelog"
         for change in changelogs[project]:
-            description += f"\n- {change}"
-        description += "\n\n"
+            changes += f"\n- {change}"
     
     if not os.path.exists(readme_file):
             #create empty README.md
@@ -56,20 +54,18 @@ for project in projects:
                 file.write("")
 
 
-     # read description from README.md and add changelog
-    with open(readme_file, "r") as file:
-        description += file.read()
-
     tree = ET.parse(csproj_file)
     root = tree.getroot()
     property_group = root.find('PropertyGroup')
 
     # update or add Version and Description elements
     update_or_add_element(property_group ,"Version", new_version)
-    update_or_add_element(property_group ,"Description", description)
+    update_or_add_element(property_group ,"PackageReleaseNotes", changes)
+    if os.path.exists(readme_file):
+        update_or_add_element(property_group ,"PackageReadmeFile", readme_file)
 
     with open("description.txt", "w") as file:
-        file.write(description)
+        file.write(changes)
 
     indent(root)
     tree.write(csproj_file, encoding="utf-8", xml_declaration=True)
