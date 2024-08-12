@@ -16,9 +16,15 @@ This is the Lionk App README file.
 </Description>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MudBlazor" Version="7.4.0" />
+    <PackageReference Include="MudBlazor" Version="7.6.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Lionk.Logger\Lionk.Logger.csproj" />
+    <ProjectReference Include="..\..\Lib\Lionk.Auth.Razor\Lionk.Auth.Razor.csproj" />
+    <ProjectReference Include="..\..\Lib\Lionk.Core.Razor\Lionk.Core.Razor.csproj" />
+    <ProjectReference Include="..\..\Lib\Lionk.Core\Lionk.Core.csproj" />
+    <ProjectReference Include="..\..\Lib\Lionk.Logger\Lionk.Logger.csproj" />
+    <ProjectReference Include="..\..\Lib\Lionk.Plugin.Blazor\Lionk.Plugin.Blazor.csproj" />
+    <ProjectReference Include="..\..\Lib\Lionk.Plugin\Lionk.Plugin.csproj" />
+    <ProjectReference Include="..\..\Lib\Lionk.Plugin\Lionk.Notifications.csproj" />
   </ItemGroup>
 </Project>
