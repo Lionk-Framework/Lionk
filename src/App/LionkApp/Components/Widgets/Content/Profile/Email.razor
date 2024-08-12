@@ -48,7 +48,7 @@
 
     private void OnValidSubmit()
     {
-        if (!string.IsNullOrEmpty(Model.NewEmail) && Model.NewEmail != CurrentEmail)
+        if (!string.IsNullOrEmpty(Model.NewEmail))
         {
             AuthStateProvider.CurrentUser?.UpdateEmail(Model.NewEmail);
             Snackbar.Add("Email updated successfully", Severity.Success);
