@@ -1,6 +1,7 @@
 ﻿@page "/profile"
-
+@using Lionk.Auth.Identity
 @using LionkApp.Components.Widgets.Content.Profile
+@using Microsoft.AspNetCore.Components.Authorization
 
 <MudContainer>
     <MudText Typo="Typo.h4" GutterBottom="true">Manage your account</MudText>
@@ -16,8 +17,10 @@
         <MudTabPanel Text="Password">
             <Password />
         </MudTabPanel>
-        <MudTabPanel Text="Role">
-            <Role />
-        </MudTabPanel>
+         <AuthorizeView Context="pluginContext" Roles="Admin">
+            <MudTabPanel Text="Role">
+                <Role />
+            </MudTabPanel>
+        </AuthorizeView>
     </MudTabs>
 </MudContainer>
