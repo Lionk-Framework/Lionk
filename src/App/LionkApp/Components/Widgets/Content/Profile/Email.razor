@@ -5,16 +5,16 @@
 @inject UserAuthenticationStateProvider AuthStateProvider
 @inject ISnackbar Snackbar
 
-<EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
+<EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
     <MudGrid>
         <MudItem xs="12">
             <MudCard>
                 <MudCardContent>
-                    <MudTextField T="string" Label="Email" Text="@_email" ReadOnly="true" />
+                    <MudTextField T="string" Label="Email" Text="@CurrentEmail" ReadOnly="true" />
                 </MudCardContent>
                 <MudCardContent>
-                    <MudTextField Label="New Email" Class="mt-3" @bind-Value="_model.NewEmail" For="@(() => _model.NewEmail)" />
+                    <MudTextField Label="New Email" Class="mt-3" @bind-Value="Model.NewEmail" For="@(() => Model.NewEmail)" />
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save</MudButton>
@@ -30,8 +30,8 @@
 </EditForm>
 
 @code {
-    public string _email = "";
-    RegisterAccountForm _model = new RegisterAccountForm();
+    public string CurrentEmail = "";
+    RegisterAccountForm Model = new RegisterAccountForm();
 
     public class RegisterAccountForm
     {
@@ -43,14 +43,14 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        _email = AuthStateProvider.CurrentUser?.Email ?? "Not Logged In";
+        CurrentEmail = AuthStateProvider.CurrentUser?.Email ?? "Not Logged In";
     }
 
     private void OnValidSubmit()
     {
-        if (!string.IsNullOrEmpty(_model.NewEmail) && _model.NewEmail != _email)
+        if (!string.IsNullOrEmpty(Model.NewEmail) && Model.NewEmail != CurrentEmail)
         {
-            AuthStateProvider.CurrentUser?.UpdateEmail(_model.NewEmail);
+            AuthStateProvider.CurrentUser?.UpdateEmail(Model.NewEmail);
             Snackbar.Add("Email updated successfully", Severity.Success);
         }
         else
