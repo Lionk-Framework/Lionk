@@ -34,4 +34,4 @@ for project in projects:
 run_command(["git", "commit", "-m", "Update project versions"])
 
 # Push changes
-run_command(["git", "push"])
+run_command(["git", "push", "--force"])
