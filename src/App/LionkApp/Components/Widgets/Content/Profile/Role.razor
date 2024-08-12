@@ -1,4 +1,8 @@
 ﻿@page "/role"
+@using Lionk.Auth.Identity
+@using Microsoft.AspNetCore.Components.Authorization
+@inject UserAuthenticationStateProvider AuthStateProvider
+@inject UserService userService
 
 <div style="width: 600px;">
     <MudDataGrid T="Element" Items="@Elements.Take(4)" ReadOnly="@_readOnly" EditMode="DataGridEditMode.Form"
