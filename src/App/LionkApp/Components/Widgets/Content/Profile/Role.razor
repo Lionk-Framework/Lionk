@@ -5,7 +5,7 @@
 @inject UserService userService
 
 <div style="width: 600px;">
-    <MudDataGrid T="User" Items="@Users" ReadOnly="@_readOnly" EditMode="DataGridEditMode.Form" Bordered="true" Dense="true" EditTrigger="DataGridEditTrigger.Manual">
+    <MudDataGrid T="User" Items="@Users" ReadOnly="@ReadOnly" EditMode="DataGridEditMode.Form" Bordered="true" Dense="true" EditTrigger="DataGridEditTrigger.Manual">
         <Columns>
             <PropertyColumn Property="x => x.Email" Editable="false" />
             <PropertyColumn Property="x => x.Username" Editable="false" />
@@ -19,8 +19,8 @@
 </div>
 
 @code {
-    private HashSet<User>? Users;
-    private bool _readOnly = false;
+    public HashSet<User>? Users;
+    public bool ReadOnly = false;
 
     protected override void OnInitialized()
     {
