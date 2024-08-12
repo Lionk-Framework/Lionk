@@ -35,23 +35,19 @@ public class PluginManager : IPluginManager
             return;
         }
 
-        path = CopyPluginToLocalFolder(path);
+        var assemblyName = AssemblyName.GetAssemblyName(path);
 
-        if (_pluginPaths.Contains(path))
+        if (_plugins.Any(x => x.Name == assemblyName.Name))
         {
             LogService.LogApp(LogSeverity.Warning, $"Plugin already loaded: {path}");
             return;
         }
 
+        path = CopyPluginToPluginFolder(path);
+
         LoadPlugin(path);
         _pluginPaths.Add(path);
         SavePluginPaths();
-    }
-
-    private static string CopyPluginToLocalFolder(string pluginPaths)
-    {
-        ConfigurationUtils.CopyFileToFolder(pluginPaths, FolderType.Plugin);
-        return Path.Combine(ConfigurationUtils.GetFolderPath(FolderType.Plugin), Path.GetFileName(pluginPaths));
     }
 
     /// <inheritdoc/>
@@ -60,7 +56,11 @@ public class PluginManager : IPluginManager
         if (plugin is null) return;
 
         _plugins.Remove(plugin);
-        _pluginPaths.Remove(plugin.Assembly.Location);
+        _doNeedARestart = true;
+        string tempPath = plugin.Assembly.Location;
+        string filename = Path.GetFileName(tempPath);
+        string pluginPath = Path.Combine(ConfigurationUtils.GetFolderPath(FolderType.Plugin), filename);
+        _pluginPaths.Remove(pluginPath);
         SavePluginPaths();
     }
 
@@ -79,10 +79,19 @@ public class PluginManager : IPluginManager
     public IEnumerable<Plugin> GetAllPlugins()
         => _plugins.AsReadOnly();
 
+    /// <inheritdoc/>
+    public bool DoNeedARestart()
+        => _doNeedARestart;
+
+    /// <inheritdoc/>
+    public int GetPluginCount()
+        => _plugins.Count;
+
     private void LoadPlugin(string path)
     {
         try
         {
+            path = CopyPluginToTempStorage(path);
             var assembly = Assembly.LoadFrom(path);
             var plugin = new Plugin(assembly);
             _plugins.Add(plugin);
@@ -145,8 +154,44 @@ public class PluginManager : IPluginManager
 
     private void LoadPlugins()
     {
+        CleanTempRepo();
         LoadPluginPaths();
         foreach (string path in _pluginPaths)
             LoadPlugin(path);
+
+        DeleteUnloadedPluginFromPluginFolder();
     }
+
+    private void CleanTempRepo()
+    {
+        foreach (string path in Directory.GetFiles(ConfigurationUtils.GetFolderPath(FolderType.Temp)))
+        {
+            if (path.EndsWith(".dll"))
+                File.Delete(path);
+        }
+    }
+
+    private void DeleteUnloadedPluginFromPluginFolder()
+    {
+        foreach (string path in Directory.GetFiles(ConfigurationUtils.GetFolderPath(FolderType.Plugin)))
+        {
+            if (_pluginPaths.Contains(path)) continue;
+
+            File.Delete(path);
+        }
+    }
+
+    private string CopyPluginToTempStorage(string pluginPaths)
+    {
+        ConfigurationUtils.CopyFileToFolder(pluginPaths, FolderType.Temp);
+        return Path.Combine(ConfigurationUtils.GetFolderPath(FolderType.Temp), Path.GetFileName(pluginPaths));
+    }
+
+    private string CopyPluginToPluginFolder(string pluginPaths)
+    {
+        ConfigurationUtils.CopyFileToFolder(pluginPaths, FolderType.Plugin);
+        return Path.Combine(ConfigurationUtils.GetFolderPath(FolderType.Plugin), Path.GetFileName(pluginPaths));
+    }
+
+    private bool _doNeedARestart = false;
 }

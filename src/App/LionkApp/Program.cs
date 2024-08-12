@@ -8,6 +8,7 @@ using Lionk.Core.TypeRegistery;
 using Lionk.Log;
 using Lionk.Log.Serilog;
 using Lionk.Plugin;
+using Lionk.Plugin.Blazor;
 using LionkApp.Components;
 using LionkApp.Components.Layout;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -41,6 +42,11 @@ builder.Services.AddSingleton<ILoggerFactory, SerilogFactory>();
 
 // Register PluginManager as both IPluginManager and ITypesProvider
 builder.Services.AddSingleton<IPluginManager, PluginManager>();
+
+builder.Services.AddSingleton(
+    new FileUploadService(
+        Lionk.Utils.ConfigurationUtils.GetFolderPath(
+            Lionk.Utils.FolderType.Plugin)));
 
 // Register ComponentService with a factory to resolve ITypesProvider
 builder.Services.AddSingleton<IComponentService>(serviceProvider =>

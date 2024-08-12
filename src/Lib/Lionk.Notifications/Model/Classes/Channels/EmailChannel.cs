@@ -93,7 +93,7 @@ public class EmailChannel : IChannel
         _smtpClient = new SmtpClient(SmtpConfig.SmtpServer, SmtpConfig.Port)
         {
             EnableSsl = SmtpConfig.EnableSsl,
-            Credentials = new NetworkCredential(SmtpConfig.Username, SmtpConfig.Password)
+            Credentials = new NetworkCredential(SmtpConfig.Username, SmtpConfig.Password),
         };
 
         IsInitialized = true;
@@ -114,7 +114,7 @@ public class EmailChannel : IChannel
             var mailMessage = new MailMessage(SmtpConfig.Username, emailRecipient.Email)
             {
                 Subject = content.Title,
-                Body = content.Message
+                Body = content.Message,
             };
             _smtpClient.Send(mailMessage);
         }
