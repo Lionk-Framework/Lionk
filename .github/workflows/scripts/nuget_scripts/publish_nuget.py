@@ -27,7 +27,7 @@ nuget_api_key = os.getenv('NUGET_API_KEY')
 
 print(f"LIB_PATH: {LIB_PATH}")
 print(f"NUGET_REGISTRY: {nuget_registry}")
-print(f"GITHUB_TOKEN: {'******' if gh_token else None}")
+print(f"NUGET_API_KEY: {'******' if nuget_api_key else None}")
 
 projects = read_file_to_list('projects.txt')
 newversions = read_file_to_list('newversions.txt')
