@@ -18,15 +18,23 @@ def indent(elem, level=0):
         if level and (not elem.tail or not elem.tail.strip()):
             elem.tail = i
 
-def update_or_add_element(container, name, value):
+def update_or_add_element(container, name, value=None, attributes=None):
     element = container.find(name)
     if element is not None:
         # Modifier l'élément existant
         element.text = value
-    else:
-        # Ajouter un nouvel élément
+    elif value is not None:
+        # Ajouter un nouvel élément avec une valeur de texte
         new_element = ET.SubElement(container, name)
         new_element.text = value
+    else:
+        # Ajouter un nouvel élément avec des attributs
+        new_element = ET.SubElement(container, name)
+        if attributes:
+            for attr_name, attr_value in attributes.items():
+                new_element.set(attr_name, attr_value)
+        # Si aucune valeur de texte n'est spécifiée, laisser l'élément vide
+
 
 
 
@@ -48,24 +56,17 @@ for project in projects:
         for change in changelogs[project]:
             changes += f"\n- {change}"
     
-    if not os.path.exists(readme_file):
-            #create empty README.md
-            with open(readme_file, "w") as file:
-                file.write("")
-
-
     tree = ET.parse(csproj_file)
     root = tree.getroot()
     property_group = root.find('PropertyGroup')
+    item_group = root.find('ItemGroup')
 
     # update or add Version and Description elements
-    update_or_add_element(property_group ,"Version", new_version)
-    update_or_add_element(property_group ,"PackageReleaseNotes", changes)
+    update_or_add_element(property_group ,"Version", value=new_version)
+    update_or_add_element(property_group ,"PackageReleaseNotes", value=changes)
     if os.path.exists(readme_file):
-        update_or_add_element(property_group ,"PackageReadmeFile", readme_file)
-
-    with open("description.txt", "w") as file:
-        file.write(changes)
+        update_or_add_element(property_group ,"PackageReadmeFile", "README.md")
+        update_or_add_element(item_group, 'None', attributes={'Include': 'README.md', 'Pack': 'true', 'PackagePath': ''})
 
     indent(root)
     tree.write(csproj_file, encoding="utf-8", xml_declaration=True)
