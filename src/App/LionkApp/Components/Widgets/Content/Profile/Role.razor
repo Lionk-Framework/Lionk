@@ -12,48 +12,26 @@
             <MudTh Style="text-align: center; font-size: 14px;">Username</MudTh>
             <MudTh Style="text-align: center; font-size: 14px;">Email</MudTh>
             <MudTh Style="text-align: center; font-size: 14px;">Roles</MudTh>
-            <MudTh Style="text-align: center; font-size: 14px;">Add Role</MudTh>
-            <MudTh Style="text-align: center; font-size: 14px;">Delete Role</MudTh>
-            <MudTh Style="text-align: center; font-size: 14px;">Actions</MudTh>
+            <MudTh Style="text-align: center; font-size: 14px;"></MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd Style="font-size: 14px;">@context.Username</MudTd>
             <MudTd Style="font-size: 14px;">@context.Email</MudTd>
             <MudTd>
-                <MudList T="string" Style="display: inline-block; font-size: 14px;">
-                    @foreach (var role in @context.Roles)
-                    {
-                        <MudListItem>
-                            <div style="display: flex; font-size: 14px;">
-                                <span>@role</span>
-                            </div>
-                        </MudListItem>
-                    }
-                </MudList>
-            </MudTd>
-            <MudTd>
-                <MudSelect T="string" @bind-Value="RoleToAdd" Dense="true" Style="width: 150px; font-size: 14px;">
+                <div style="display: flex; align-items: center;">
                     @foreach (var role in AvailableRoles)
                     {
-                        <MudSelectItem Value="@role" Style="font-size: 14px;">@role</MudSelectItem>
+                        <div style="display: inline-flex; align-items: center; font-size: 14px; margin-right: 16px;">
+                            <span style="margin-right: 8px;">@role</span>
+                            <MudSwitch T="bool" @bind-Value="RoleStates[context.Id][role]" Color="Color.Primary" />
+                        </div>
                     }
-                </MudSelect>
-            </MudTd>
-            <MudTd>
-                <MudSelect T="string" @bind-Value="RoleToDelete" Dense="true" Style="width: 150px; font-size: 14px;">
-                    @foreach (var role in @context.Roles)
-                    {
-                        <MudSelectItem Value="@role" Style="font-size: 14px;">@role</MudSelectItem>
-                    }
-                </MudSelect>
+                </div>
             </MudTd>
             <MudTd>
                 <div style="display: flex; align-items: center; margin-top: 8px;">
                     <MudButton Variant="Variant.Filled" Color="Color.Primary" Style="margin-right: 10px; font-size: 14px;" OnClick="() => SaveUser(context)">
                         SAVE
-                    </MudButton>
-                    <MudButton Variant="Variant.Filled" Color="Color.Error" Style="font-size: 14px;" OnClick="() => DeleteUser(context.Id)">
-                        DELETE
                     </MudButton>
                 </div>
             </MudTd>
@@ -68,50 +46,51 @@ else
 @code {
     public HashSet<User>? Users;
     private List<string> AvailableRoles = new List<string> { "Admin", "User", "Moderator" };
-    private string? RoleToAdd;
-    private string? RoleToDelete;
+    private Dictionary<Guid, Dictionary<string, bool>> RoleStates = new();
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
         Users = userService.GetUsers();
+
+        if (Users != null)
+        {
+            foreach (var user in Users)
+            {
+                RoleStates[user.Id] = new Dictionary<string, bool>();
+                foreach (var role in AvailableRoles)
+                {
+                    RoleStates[user.Id][role] = user.Roles.Contains(role);
+                }
+            }
+        }
     }
 
     private void SaveUser(User user)
     {
-        if (!string.IsNullOrEmpty(RoleToAdd) && !user.Roles.Contains(RoleToAdd))
+        foreach (var role in AvailableRoles)
         {
-            user.AddRole(RoleToAdd);
-        }
+            bool currentRoleState = RoleStates[user.Id][role];
 
-        if (!string.IsNullOrEmpty(RoleToDelete) && user.Roles.Contains(RoleToDelete))
-        {
-            if (user.Roles.Count > 1)
+            if (currentRoleState && !user.Roles.Contains(role))
             {
-                user.RemoveRole(RoleToDelete);
+                user.AddRole(role);
             }
-            else
+            else if (!currentRoleState && user.Roles.Contains(role))
             {
-                Snackbar.Add("You cannot delete the user's only remaining role.", Severity.Warning);
+                if (user.Roles.Count > 1 || role != "Admin")
+                {
+                    user.RemoveRole(role);
+                }
+                else
+                {
+                    Snackbar.Add("You cannot remove the last remaining role or the Admin role.", Severity.Warning);
+                }
             }
         }
 
         userService.Update(user);
-        RoleToAdd = null;
-        RoleToDelete = null;
-
+        Snackbar.Add("User roles updated successfully.", Severity.Success);
         StateHasChanged();
-    }
-
-    private void DeleteUser(Guid userId)
-    {
-        var userToRemove = Users?.FirstOrDefault(u => u.Id == userId);
-
-        if (userToRemove != null)
-        {
-            // userService.Delete(userToRemove);
-
-            // StateHasChanged();
-        }
     }
 }
