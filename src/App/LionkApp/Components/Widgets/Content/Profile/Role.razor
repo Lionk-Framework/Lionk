@@ -1,6 +1,7 @@
 ﻿@page "/role"
 @using Lionk.Auth.Identity
 @using Microsoft.AspNetCore.Components.Authorization
+@inject ISnackbar Snackbar
 @inject UserAuthenticationStateProvider AuthStateProvider
 @inject UserService userService
 
@@ -85,7 +86,14 @@ else
 
         if (!string.IsNullOrEmpty(RoleToDelete) && user.Roles.Contains(RoleToDelete))
         {
-            user.RemoveRole(RoleToDelete);
+            if (user.Roles.Count > 1)
+            {
+                user.RemoveRole(RoleToDelete);
+            }
+            else
+            {
+                Snackbar.Add("You cannot delete the user's only remaining role.", Severity.Warning);
+            }
         }
 
         userService.Update(user);
