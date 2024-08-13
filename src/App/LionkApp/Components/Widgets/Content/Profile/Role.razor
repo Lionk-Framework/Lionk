@@ -8,12 +8,13 @@
 {
     <MudTable Items="Users" Bordered="true" Dense="true" Hover="true">
         <HeaderContent>
-            <MudTh>Username</MudTh>
-            <MudTh>Email</MudTh>
-            <MudTh>Current Roles</MudTh>
-            <MudTh>Add Roles</MudTh>
-            <MudTh>Save</MudTh>
-            <MudTh>Delete</MudTh>
+            <MudTh Style="text-align: center;">Username</MudTh>
+            <MudTh Style="text-align: center;">Email</MudTh>
+            <MudTh Style="text-align: center;">Roles</MudTh>
+            <MudTh Style="text-align: center;">Add Role</MudTh>
+            <MudTh Style="text-align: center;">Delete Role</MudTh>
+            <MudTh></MudTh>
+            <MudTh></MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd>@context.Username</MudTd>
@@ -31,8 +32,16 @@
                 </MudList>
             </MudTd>
             <MudTd>
-                <MudSelect T="string" @bind-Value="selectedRole" Dense="true" Style="width: 150px;">
-                    @foreach (var role in availableRoles)
+                <MudSelect T="string" @bind-Value="RoleToAdd" Dense="true" Style="width: 150px;">
+                    @foreach (var role in AvailableRoles)
+                    {
+                        <MudSelectItem Value="@role">@role</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudTd>
+            <MudTd>
+                <MudSelect T="string" @bind-Value="RoleToDelete" Dense="true" Style="width: 150px;">
+                    @foreach (var role in @context.Roles)
                     {
                         <MudSelectItem Value="@role">@role</MudSelectItem>
                     }
@@ -58,8 +67,9 @@ else
 
 @code {
     public HashSet<User>? Users;
-    private string? selectedRole;
-    private List<string> availableRoles = new List<string> { "Admin", "User", "Moderator" };
+    private List<string> AvailableRoles = new List<string> { "Admin", "User", "Moderator" };
+    private string? RoleToAdd;
+    private string? RoleToDelete;
 
     protected override void OnInitialized()
     {
@@ -68,20 +78,27 @@ else
 
     private void AddRole(User user)
     {
-        if (!string.IsNullOrEmpty(selectedRole) && !user.Roles.Contains(selectedRole))
+        if (!string.IsNullOrEmpty(RoleToAdd) && !user.Roles.Contains(RoleToAdd))
         {
-            user.AddRole(selectedRole);
+            user.AddRole(RoleToAdd);
         }
     }
 
-    private void RemoveRole(User user, string role)
+    private void RemoveRole(User user)
     {
-        user.RemoveRole(role);
+        if (!string.IsNullOrEmpty(RoleToDelete) && user.Roles.Contains(RoleToDelete))
+        {
+            user.RemoveRole(RoleToDelete);
+        }
     }
 
     private void SaveUser(User user)
     {
+        AddRole(user);
+        RemoveRole(user);
+        userService.Update(user);
 
+        StateHasChanged();
     }
 
     private void DeleteUser(Guid userId)
@@ -89,6 +106,9 @@ else
         var userToRemove = Users?.FirstOrDefault(u => u.Id == userId);
         if (userToRemove != null)
         {
+            userService.Delete(userToRemove);
+
+            StateHasChanged();
         }
     }
 }
