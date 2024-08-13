@@ -1,8 +1,11 @@
 ﻿@using Lionk.Core
+@using Lionk.Core.Component
+@using Lionk.Core.Razor
 @using MudBlazor
-@implements Lionk.Core.Component.IComponent
-@attribute [NamedElement("Clock", "a sweet clock widget")]
+@inject ISnackbar Snackbar
+@implements IBlazorCyclicComponent
 
+@attribute [NamedElement("Clock", "a sweet clock widget")]
 <MudCard>
     <MudCardContent>
         <MudText Typo="Typo.h3">@InstanceName</MudText>
@@ -20,6 +23,7 @@
         var timer = new System.Timers.Timer(1000);
         timer.Elapsed += (sender, e) => InvokeAsync(UpdateTime);
         timer.Start();
+        CyclicComponent = new ClockCyclicComponent("Clock", TimeSpan.FromSeconds(1), Snackbar);
     }
 
     private void UpdateTime()
@@ -29,4 +33,23 @@
     }
 
     public string? InstanceName { get; set; }
+
+    public CyclicComponent? CyclicComponent { get; private set; }
+
+    public class ClockCyclicComponent : CyclicComponent
+    {
+        public ClockCyclicComponent(string componentName, TimeSpan cycleTime, ISnackbar snackbar)
+            : base(componentName, cycleTime)
+        {
+            _snackbar = snackbar;
+            CyclicTask = UpdateTime;
+        }
+
+        private ISnackbar _snackbar;
+
+        private void UpdateTime()
+        {
+            _snackbar.Add($"Time updated", Severity.Success);
+        }
+    }
 }

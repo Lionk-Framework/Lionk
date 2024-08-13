@@ -1,8 +1,14 @@
 ﻿@page "/"
+@inject ISnackbar Snackbar
+@inject ICyclicExecutorService CyclicExecutorService
+@using Lionk.Core.Component
 @using LionkApp.Components.Widgets.Buttons
 
 <PageTitle>Dashboard</PageTitle>
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
+    <MudButton OnClick="testmethod">
+        Test
+    </MudButton>
     <MudGrid>
         <MudItem xs="12" sm="6" md="4">
             <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
@@ -38,4 +44,11 @@
     </MudGrid>
 </MudContainer>
 
-<FloatingButton/>
+<FloatingButton />
+
+@code {
+    private void testmethod()
+    {
+        CyclicExecutorService.Start();
+    }
+}

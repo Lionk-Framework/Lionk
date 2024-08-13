@@ -1,20 +1,18 @@
 ﻿// Copyright © 2024 Lionk Project
 
-using Lionk.Core.Component;
-
-namespace Lionk.Core.TypeRegistery;
+namespace Lionk.Core.Component;
 
 /// <summary>
-/// Provides data for the TypeAvailable event.
+/// Provides data for the MeasureAvailable event.
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="TypesEventArgs"/> class.
+/// Initializes a new instance of the <see cref="MeasureEventArgs{T}"/> class.
 /// </remarks>
-/// <param name="type">The new types that is available.</param>
-public class MeasureEventArgs(IEnumerable<Measure> measurableComponent) : EventArgs
+/// <typeparam name="T"> The type of the value. </typeparam>
+public class MeasureEventArgs<T>(IEnumerable<Measure<T>> measurableComponent) : EventArgs
 {
     /// <summary>
     /// Gets the new types that is available.
     /// </summary>
-    public IEnumerable<Type> Types { get; } = type ?? throw new ArgumentNullException(nameof(type));
+    public IEnumerable<Measure<T>> Measures { get; } = measurableComponent ?? throw new ArgumentNullException(nameof(measurableComponent));
 }

@@ -67,7 +67,11 @@ public class CyclicExecutorService : ICyclicExecutorService
     public IComponentService ComponentService { get; private set; }
 
     /// <inheritdoc/>
-    public void Start() => _thread.Start();
+    public void Start()
+    {
+        State = CycleState.Running;
+        _thread.Start();
+    }
 
     /// <inheritdoc/>
     public void Stop() => _cancellationTokenSource.Cancel();
@@ -79,10 +83,10 @@ public class CyclicExecutorService : ICyclicExecutorService
     public CyclicExecutorService(IComponentService componentService)
     {
         ComponentService = componentService;
+        WatchDogTime = TimeSpan.FromSeconds(3600);
         _timer = new(WatchDogTime);
         _timer.Elapsed += CallWatchDog;
         State = CycleState.Stopped;
-        WatchDogTime = TimeSpan.Zero;
         _thread = new(Execute);
     }
 
