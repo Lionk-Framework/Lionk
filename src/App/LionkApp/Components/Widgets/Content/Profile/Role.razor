@@ -71,6 +71,7 @@ else
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         Users = userService.GetUsers();
     }
 
