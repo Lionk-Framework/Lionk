@@ -8,22 +8,22 @@
 {
     <MudTable Items="Users" Bordered="true" Dense="true" Hover="true">
         <HeaderContent>
-            <MudTh Style="text-align: center;">Username</MudTh>
-            <MudTh Style="text-align: center;">Email</MudTh>
-            <MudTh Style="text-align: center;">Roles</MudTh>
-            <MudTh Style="text-align: center;">Add Role</MudTh>
-            <MudTh Style="text-align: center;">Delete Role</MudTh>
-            <MudTh Style="text-align: center;">Actions</MudTh>
+            <MudTh Style="text-align: center; font-size: 14px;">Username</MudTh>
+            <MudTh Style="text-align: center; font-size: 14px;">Email</MudTh>
+            <MudTh Style="text-align: center; font-size: 14px;">Roles</MudTh>
+            <MudTh Style="text-align: center; font-size: 14px;">Add Role</MudTh>
+            <MudTh Style="text-align: center; font-size: 14px;">Delete Role</MudTh>
+            <MudTh Style="text-align: center; font-size: 14px;">Actions</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd>@context.Username</MudTd>
-            <MudTd>@context.Email</MudTd>
+            <MudTd Style="font-size: 14px;">@context.Username</MudTd>
+            <MudTd Style="font-size: 14px;">@context.Email</MudTd>
             <MudTd>
-                <MudList T="string" Style="display: inline-block;">
+                <MudList T="string" Style="display: inline-block; font-size: 14px;">
                     @foreach (var role in @context.Roles)
                     {
                         <MudListItem>
-                            <div style="display: flex; justify-content: center;">
+                            <div style="display: flex; font-size: 14px;">
                                 <span>@role</span>
                             </div>
                         </MudListItem>
@@ -31,36 +31,37 @@
                 </MudList>
             </MudTd>
             <MudTd>
-                <MudSelect T="string" @bind-Value="RoleToAdd" Dense="true" Style="width: 150px;">
+                <MudSelect T="string" @bind-Value="RoleToAdd" Dense="true" Style="width: 150px; font-size: 14px;">
                     @foreach (var role in AvailableRoles)
                     {
-                        <MudSelectItem Value="@role">@role</MudSelectItem>
+                        <MudSelectItem Value="@role" Style="font-size: 14px;">@role</MudSelectItem>
                     }
                 </MudSelect>
             </MudTd>
             <MudTd>
-                <MudSelect T="string" @bind-Value="RoleToDelete" Dense="true" Style="width: 150px;">
+                <MudSelect T="string" @bind-Value="RoleToDelete" Dense="true" Style="width: 150px; font-size: 14px;">
                     @foreach (var role in @context.Roles)
                     {
-                        <MudSelectItem Value="@role">@role</MudSelectItem>
+                        <MudSelectItem Value="@role" Style="font-size: 14px;">@role</MudSelectItem>
                     }
                 </MudSelect>
             </MudTd>
             <MudTd>
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" Style="margin-right: 10px; margin-top: 8px;" OnClick="() => SaveUser(context)">
-                    SAVE
-                </MudButton>
-                <MudButton Variant="Variant.Filled" Color="Color.Error" Style="margin-top: 8px;" OnClick="() => DeleteUser(context.Id)">
-                    DELETE
-                </MudButton>
+                <div style="display: flex; align-items: center; margin-top: 8px;">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Style="margin-right: 10px; font-size: 14px;" OnClick="() => SaveUser(context)">
+                        SAVE
+                    </MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Error" Style="font-size: 14px;" OnClick="() => DeleteUser(context.Id)">
+                        DELETE
+                    </MudButton>
+                </div>
             </MudTd>
-
         </RowTemplate>
     </MudTable>
 }
 else
 {
-    <MudText Typo="Typo.body1" Align="Align.Left" Style="margin: 20px;">Loading users...</MudText>
+    <MudText Typo="Typo.body1" Align="Align.Left" Style="margin: 20px; font-size: 14px;">Loading users...</MudText>
 }
 
 @code {
