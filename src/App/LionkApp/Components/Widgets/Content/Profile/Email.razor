@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using System.ComponentModel.DataAnnotations
 @inject UserAuthenticationStateProvider AuthStateProvider
+@inject UserService userService
 @inject ISnackbar Snackbar
 
 <EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
@@ -48,9 +49,9 @@
 
     private void OnValidSubmit()
     {
-        var currentUser = AuthStateProvider.CurrentUser;
+        var user = AuthStateProvider.CurrentUser;
 
-        if (currentUser == null)
+        if (user == null)
         {
             Snackbar.Add("User is not authenticated.", Severity.Error);
             return;
@@ -62,7 +63,8 @@
             return;
         }
 
-        currentUser.UpdateEmail(Model.NewEmail);
+        user.UpdateEmail(Model.NewEmail);
+        userService.Update(user);
         CurrentEmail = Model.NewEmail;
         Model = new();
 
