@@ -38,19 +38,14 @@ public abstract class CyclicComponentBase : IComponent
     public DateTime StartingDate { get; private set; }
 
     /// <summary>
-    /// Gets the asynchronous function to execute.
+    /// Gets or sets the asynchronous function to execute.
     /// </summary>
-    public Func<object?[]?, Task>? AsyncTask { get; private set; }
+    public Func<Task>? AsyncTask { get; protected set; }
 
     /// <summary>
-    /// Gets the synchronous action to execute.
+    /// Gets or sets the synchronous action to execute.
     /// </summary>
-    public Action<object?[]?>? SyncTask { get; private set; }
-
-    /// <summary>
-    /// Gets the arguments of the action.
-    /// </summary>
-    public object?[]? Args { get; private set; }
+    public Action? SyncTask { get; protected set; }
 
     /// <summary>
     /// Gets or sets the number of cycles executed.
@@ -85,7 +80,7 @@ public abstract class CyclicComponentBase : IComponent
         if (diff >= TimeSpan.Zero)
         {
             PreExecution();
-            await AsyncTask(Args);
+            await AsyncTask();
             PostExecution();
         }
 
@@ -106,7 +101,7 @@ public abstract class CyclicComponentBase : IComponent
         if (diff >= TimeSpan.Zero)
         {
             PreExecution();
-            SyncTask(Args);
+            SyncTask();
             PostExecution();
         }
 
@@ -118,30 +113,7 @@ public abstract class CyclicComponentBase : IComponent
     /// </summary>
     /// <param name="componentName"> The name of the component. </param>
     /// <param name="cycleTime"> The cycle time of the component. </param>
-    /// <param name="asyncTask"> The asynchronous function to execute. </param>
-    /// <param name="args"> The arguments of the action. </param>
-    protected CyclicComponentBase(string componentName, TimeSpan cycleTime, Func<object?[]?, Task> asyncTask, object?[]? args)
-        : this(componentName, cycleTime)
-    {
-        AsyncTask = asyncTask;
-        Args = args;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CyclicComponentBase"/> class.
-    /// </summary>
-    /// <param name="componentName"> The name of the component. </param>
-    /// <param name="cycleTime"> The cycle time of the component. </param>
-    /// <param name="syncTask"> The synchronous action to execute. </param>
-    /// <param name="args"> The arguments of the action. </param>
-    protected CyclicComponentBase(string componentName, TimeSpan cycleTime, Action<object?[]?> syncTask, object?[]? args)
-        : this(componentName, cycleTime)
-    {
-        SyncTask = syncTask;
-        Args = args;
-    }
-
-    private CyclicComponentBase(string componentName, TimeSpan cycleTime)
+    protected CyclicComponentBase(string componentName, TimeSpan cycleTime)
     {
         LastExecution = DateTime.MinValue;
         StartingDate = DateTime.UtcNow;
