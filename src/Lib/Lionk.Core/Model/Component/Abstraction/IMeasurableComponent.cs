@@ -1,19 +1,22 @@
 ﻿// Copyright © 2024 Lionk Project
 
+using Lionk.Core.TypeRegistery;
+
 namespace Lionk.Core.Component;
 
 /// <summary>
-/// Interface for measurable component.
+/// This interface defines a measurable component.
 /// </summary>
-public interface IMeasurableComponent : IComponent
+/// <typeparam name="T"> The type of the value. </typeparam>
+public interface IMeasurableComponent<T> : IComponent
 {
     /// <summary>
-    /// Gets the unit of the value.
+    /// Raised when a new value is available.
     /// </summary>
-    string? Unit { get; }
+    event EventHandler<MeasureEventArgs> NewValueAvailable;
 
     /// <summary>
-    /// Gets the value of the component.
+    /// Gets the measures of the component.
     /// </summary>
-    double Value { get; }
+    List<Measure<T>> Measures { get; }
 }

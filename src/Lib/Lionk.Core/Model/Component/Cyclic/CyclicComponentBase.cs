@@ -5,7 +5,7 @@ namespace Lionk.Core.Component;
 /// <summary>
 /// This abstract class defines a cyclic component.
 /// </summary>
-public abstract class CyclicComponentBase : ICyclicComponent
+public abstract class CyclicComponentBase : IExecutableComponent
 {
     private DateTime? _start;
 

@@ -4,6 +4,7 @@ using Lionk.Auth.Abstraction;
 using Lionk.Auth.Identity;
 using Lionk.Auth.Utils;
 using Lionk.Core.Component;
+using Lionk.Core.Model.Component.Cyclic;
 using Lionk.Core.TypeRegistery;
 using Lionk.Log;
 using Lionk.Log.Serilog;
@@ -12,6 +13,7 @@ using Lionk.Plugin.Blazor;
 using LionkApp.Components;
 using LionkApp.Components.Layout;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
 using ILoggerFactory = Lionk.Log.ILoggerFactory;
 
@@ -53,6 +55,13 @@ builder.Services.AddSingleton<IComponentService>(serviceProvider =>
 {
     ITypesProvider typesProvider = serviceProvider.GetRequiredService<IPluginManager>();
     return new ComponentService(typesProvider);
+});
+
+// Register CyclicExecutorService with a factory to resolve IComponentService
+builder.Services.AddSingleton<ICyclicExecutorService>(serviceProvider =>
+{
+    IComponentService componentService = serviceProvider.GetRequiredService<IComponentService>();
+    return new CyclicExecutorService(componentService);
 });
 
 WebApplication app = builder.Build();

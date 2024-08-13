@@ -1,7 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
 
-using Lionk.Core.Component;
 using Lionk.Core.Component.Mock;
+using Lionk.Core.Model.Component.Cyclic;
 using LionkTest.Core.Component.Mock;
 
 namespace LionkTest.Core.Component;
@@ -39,29 +39,6 @@ public class CyclicComponentTests
     /// Test for <see cref="CyclicComponentBase.Execute"/>.
     /// </summary>
     [Test]
-    public void Execute_ShouldExecuteActionOnlyWhenTimeIsElapsed()
-    {
-        // Arrange
-        int nbCycle = 5;
-        int cycleTimeMilliseconds = 1;
-        MockCyclicComponent component = new("ComponentTest", TimeSpan.FromMilliseconds(cycleTimeMilliseconds));
-
-        // Act
-        DateTime start = DateTime.UtcNow;
-        for (int i = 0; i < nbCycle; i++)
-        {
-            component.Execute();
-        }
-
-        // Assert
-        Assert.That(component.NbCycle, Is.EqualTo(1));
-        Assert.That(component.Value, Is.EqualTo(1));
-    }
-
-    /// <summary>
-    /// Test for <see cref="CyclicComponentBase.Execute"/>.
-    /// </summary>
-    [Test]
     public void ExecuteShouldExecuteActionAsync()
     {
         // Arrange
@@ -80,28 +57,5 @@ public class CyclicComponentTests
         // Assert
         Assert.That(component.NbCycle, Is.EqualTo(nbCycle));
         Assert.That(component.Value, Is.EqualTo(nbCycle));
-    }
-
-    /// <summary>
-    /// Test for <see cref="CyclicComponentBase.Execute"/>.
-    /// </summary>
-    [Test]
-    public void Execute_ShouldExecuteActionOnlyWhenTimeIsElapsedAsync()
-    {
-        // Arrange
-        int nbCycle = 5;
-        int cycleTimeMilliseconds = 1;
-        MockCyclicComponentAsync component = new("ComponentTest", TimeSpan.FromMilliseconds(cycleTimeMilliseconds));
-
-        // Act
-        DateTime start = DateTime.UtcNow;
-        for (int i = 0; i < nbCycle; i++)
-        {
-            component.Execute();
-        }
-
-        // Assert
-        Assert.That(component.NbCycle, Is.EqualTo(1));
-        Assert.That(component.Value, Is.EqualTo(1));
     }
 }

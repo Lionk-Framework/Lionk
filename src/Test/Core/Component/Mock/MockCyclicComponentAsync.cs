@@ -1,6 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
-using Lionk.Core.Component;
+using Lionk.Core.Model.Component.Cyclic;
 
 namespace LionkTest.Core.Component.Mock;
 
