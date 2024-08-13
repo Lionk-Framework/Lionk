@@ -7,8 +7,8 @@
 <div style="width: 600px;">
     <MudDataGrid T="User" Items="@Users" ReadOnly="false" EditMode="DataGridEditMode.Form" Bordered="true" Dense="true" EditTrigger="DataGridEditTrigger.Manual">
         <Columns>
-            <PropertyColumn Property="x => x.Email" Editable="true" />
-            <PropertyColumn Property="x => x.Username" Editable="false" />
+            <PropertyColumn Property="x => x.Username" Editable="true" />
+            <PropertyColumn Property="x => x.Email" Editable="false" />
             <TemplateColumn CellClass="d-flex justify-end">
                 <CellTemplate>
                     <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@context.Actions.StartEditingItemAsync" />
