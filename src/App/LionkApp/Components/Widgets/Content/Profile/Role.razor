@@ -96,6 +96,7 @@ else
         AddRole(user);
         RemoveRole(user);
         userService.Update(user);
+
         RoleToAdd = null;
         RoleToDelete = null;
 
@@ -105,6 +106,7 @@ else
     private void DeleteUser(Guid userId)
     {
         var userToRemove = Users?.FirstOrDefault(u => u.Id == userId);
+
         if (userToRemove != null)
         {
             userService.Delete(userToRemove);
