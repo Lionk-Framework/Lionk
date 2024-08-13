@@ -7,6 +7,8 @@ namespace Lionk.Core.Component;
 /// </summary>
 public abstract class CyclicComponentBase : IComponent
 {
+    private DateTime? _start;
+
     /// <inheritdoc/>
     public string? InstanceName { get; set; }
 
@@ -55,6 +57,20 @@ public abstract class CyclicComponentBase : IComponent
     /// </summary>
     public long NbCycle { get; protected set; }
 
+    private void PostExecution()
+    {
+        ArgumentNullException.ThrowIfNull(_start);
+        ExecutionDuration = DateTime.UtcNow - (DateTime)_start;
+        NbCycle++;
+        NextExecution = StartingDate.AddMilliseconds(CycleTime.TotalMilliseconds * NbCycle);
+    }
+
+    private void PreExecution()
+    {
+        LastExecution = DateTime.UtcNow;
+        _start = DateTime.UtcNow;
+    }
+
     /// <summary>
     /// Execute a cycle of the component asynchronously.
     /// </summary>
@@ -68,12 +84,9 @@ public abstract class CyclicComponentBase : IComponent
 
         if (diff >= TimeSpan.Zero)
         {
-            LastExecution = DateTime.UtcNow;
-            DateTime start = DateTime.UtcNow;
+            PreExecution();
             await AsyncTask(Args);
-            ExecutionDuration = DateTime.UtcNow - start;
-            NbCycle++;
-            NextExecution = StartingDate.AddMilliseconds(CycleTime.TotalMilliseconds * NbCycle);
+            PostExecution();
         }
 
         return diff;
@@ -92,12 +105,9 @@ public abstract class CyclicComponentBase : IComponent
 
         if (diff >= TimeSpan.Zero)
         {
-            LastExecution = DateTime.UtcNow;
-            DateTime start = DateTime.UtcNow;
+            PreExecution();
             SyncTask(Args);
-            ExecutionDuration = DateTime.UtcNow - start;
-            NbCycle++;
-            NextExecution = StartingDate.AddMilliseconds(CycleTime.TotalMilliseconds * NbCycle);
+            PostExecution();
         }
 
         return diff;
