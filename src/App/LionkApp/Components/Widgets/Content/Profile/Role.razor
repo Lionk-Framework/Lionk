@@ -4,25 +4,94 @@
 @inject UserAuthenticationStateProvider AuthStateProvider
 @inject UserService userService
 
-<div style="width: 600px;">
-    <MudDataGrid T="User" Items="@Users" ReadOnly="false" EditMode="DataGridEditMode.Form" Bordered="true" Dense="true" EditTrigger="DataGridEditTrigger.Manual">
-        <Columns>
-            <PropertyColumn Property="x => x.Username" Editable="true" />
-            <PropertyColumn Property="x => x.Email" Editable="false" />
-            <TemplateColumn CellClass="d-flex justify-end">
-                <CellTemplate>
-                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@context.Actions.StartEditingItemAsync" />
-                </CellTemplate>
-            </TemplateColumn>
-        </Columns>
-    </MudDataGrid>
-</div>
+@if (Users != null)
+{
+    <MudTable Items="Users" Bordered="true" Dense="true" Hover="true">
+        <HeaderContent>
+            <MudTh Style="text-align: center;">Username</MudTh>
+            <MudTh Style="text-align: center;">Email</MudTh>
+            <MudTh Style="text-align: center;">Current Roles</MudTh>
+            <MudTh Style="text-align: center;">Add Roles</MudTh>
+            <MudTh Style="text-align: center;">Save</MudTh>
+            <MudTh Style="text-align: center;">Delete</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd Style="text-align: center; vertical-align: middle;">@context.Username</MudTd>
+            <MudTd Style="text-align: center; vertical-align: middle;">@context.Email</MudTd>
+            <MudTd Style="text-align: center; vertical-align: middle;">
+                <MudList T="string" Style="display: inline-block;">
+                    @foreach (var role in @context.Roles)
+                    {
+                        <MudListItem Style="text-align: center;">
+                            <div style="display: flex; justify-content: center;">
+                                <span>@role</span>
+                            </div>
+                        </MudListItem>
+                    }
+                </MudList>
+            </MudTd>
+            <MudTd Style="text-align: center; vertical-align: middle;">
+                <MudSelect T="string" @bind-Value="selectedRole" Dense="true" Style="width: 150px; text-align: center;">
+                    @foreach (var role in availableRoles)
+                    {
+                        <MudSelectItem Value="@role">@role</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudTd>
+            <MudTd Style="text-align: center; vertical-align: middle;">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Style="margin-right: 10px; margin-top: 8px;" OnClick="() => SaveUser(context)">
+                    SAVE
+                </MudButton>
+            </MudTd>
+            <MudTd Style="text-align: center; vertical-align: middle;">
+                <MudButton Variant="Variant.Filled" Color="Color.Error" Style="margin-top: 8px;" OnClick="() => DeleteUser(context.Id)">
+                    DELETE
+                </MudButton>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+else
+{
+    <MudText Typo="Typo.body1" Align="Align.Left" Style="margin: 20px;">Loading users...</MudText>
+}
 
 @code {
     public HashSet<User>? Users;
+    private string? selectedRole;
+    private List<string> availableRoles = new List<string> { "Admin", "User", "Moderator" };
 
     protected override void OnInitialized()
     {
         Users = userService.GetUsers();
+    }
+
+    private void AddRole(User user)
+    {
+        if (!string.IsNullOrEmpty(selectedRole) && !user.Roles.Contains(selectedRole))
+        {
+            user.AddRole(selectedRole);
+        }
+    }
+
+    private void RemoveRole(User user, string role)
+    {
+        user.RemoveRole(role);
+    }
+
+    private void SaveUser(User user)
+    {
+        // Logic to save user changes, e.g., send them to the backend service
+        Console.WriteLine($"User {user.Username} saved.");
+    }
+
+    private void DeleteUser(Guid userId)
+    {
+        var userToRemove = Users?.FirstOrDefault(u => u.Id == userId);
+        if (userToRemove != null)
+        {
+            // Users.Remove(userToRemove);
+            // Optionally, notify backend service about the deletion
+        }
     }
 }
