@@ -78,17 +78,23 @@ else
                 user.AddRole(role);
             }
 
-            if (!currentRoleState && user.Roles.Contains(role) && (role != "Admin"))
+            if (!currentRoleState && user.Roles.Contains(role))
             {
-                if (user.Roles.Count > 1)
+                if (role == "Admin")
                 {
-                    user.RemoveRole(role);
+                    Snackbar.Add("You cannot remove the admin role", Severity.Warning);
+                    return;
                 }
-                else
+
+                if (user.Roles.Count <= 1)
                 {
-                    Snackbar.Add("You cannot remove the last remaining role or the admin role", Severity.Warning);
+                    Snackbar.Add("You cannot remove the only role", Severity.Warning);
+                    return;
                 }
+
+                user.RemoveRole(role);
             }
+
         }
 
         userService.Update(user);
@@ -103,8 +109,9 @@ else
                 SaveUser(user);
             }
         }
-   
-        Snackbar.Add("All user roles updated successfully.", Severity.Success);
+
+        Snackbar.Add("The user's roles have been successfully updated.", Severity.Warning);
+  
         StateHasChanged();
     }
 }
