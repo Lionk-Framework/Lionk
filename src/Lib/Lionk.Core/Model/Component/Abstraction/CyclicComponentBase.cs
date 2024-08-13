@@ -5,7 +5,7 @@ namespace Lionk.Core.Component;
 /// <summary>
 /// This abstract class defines a cyclic component.
 /// </summary>
-public abstract class CyclicComponentBase : IComponent
+public abstract class CyclicComponentBase : ICyclicComponent
 {
     private DateTime? _start;
 
@@ -38,21 +38,14 @@ public abstract class CyclicComponentBase : IComponent
     public DateTime StartingDate { get; private set; }
 
     /// <summary>
-    /// Gets or sets the asynchronous function to execute.
-    /// </summary>
-    public Func<Task>? AsyncTask { get; protected set; }
-
-    /// <summary>
-    /// Gets or sets the synchronous action to execute.
-    /// </summary>
-    public Action? SyncTask { get; protected set; }
-
-    /// <summary>
     /// Gets or sets the number of cycles executed.
     /// </summary>
     public long NbCycle { get; protected set; }
 
-    private void PostExecution()
+    /// <summary>
+    /// Method called after the execution of the action.
+    /// </summary>
+    protected void PostExecution()
     {
         ArgumentNullException.ThrowIfNull(_start);
         ExecutionDuration = DateTime.UtcNow - (DateTime)_start;
@@ -60,53 +53,20 @@ public abstract class CyclicComponentBase : IComponent
         NextExecution = StartingDate.AddMilliseconds(CycleTime.TotalMilliseconds * NbCycle);
     }
 
-    private void PreExecution()
+    /// <summary>
+    /// Method called before the execution of the action.
+    /// </summary>
+    protected void PreExecution()
     {
         LastExecution = DateTime.UtcNow;
         _start = DateTime.UtcNow;
     }
 
     /// <summary>
-    /// Execute a cycle of the component asynchronously.
+    /// Executes the action of the component.
     /// </summary>
-    /// <returns>The difference between the cycle time and the actual time.</returns>
-    public async Task<TimeSpan?> ExecuteAsync()
-    {
-        ArgumentNullException.ThrowIfNull(AsyncTask);
-
-        // Gets the difference between the last execution and the current time.
-        TimeSpan? diff = DateTime.UtcNow - LastExecution;
-
-        if (diff >= TimeSpan.Zero)
-        {
-            PreExecution();
-            await AsyncTask();
-            PostExecution();
-        }
-
-        return diff;
-    }
-
-    /// <summary>
-    /// Execute a cycle of the component synchronously.
-    /// </summary>
-    /// <returns>The difference between the cycle time and the actual time.</returns>
-    public TimeSpan? Execute()
-    {
-        ArgumentNullException.ThrowIfNull(SyncTask);
-
-        // Gets the difference between the last execution and the current time.
-        TimeSpan? diff = DateTime.UtcNow - LastExecution.AddMilliseconds(CycleTime.TotalMilliseconds);
-
-        if (diff >= TimeSpan.Zero)
-        {
-            PreExecution();
-            SyncTask();
-            PostExecution();
-        }
-
-        return diff;
-    }
+    /// <returns> The execution duration of the action. </returns>
+    public abstract TimeSpan? Execute();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CyclicComponentBase"/> class.
