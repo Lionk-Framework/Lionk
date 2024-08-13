@@ -7,8 +7,14 @@ namespace LionkTest.Core.Component;
 /// <summary>
 /// This class is used to test the cyclic component.
 /// </summary>
-public class CyclicComponentTests : CyclicComponentBase
+public class CyclicComponentTests : CyclicComponentBase, IMeasurableComponent
 {
+    /// <inheritdoc/>
+    public string? Unit => "x";
+
+    /// <inheritdoc/>
+    public double Value { get; private set; }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="CyclicComponentTests"/> class.
     /// </summary>
@@ -16,10 +22,8 @@ public class CyclicComponentTests : CyclicComponentBase
     /// <param name="action"> The action to execute. </param>
     /// <param name="cycleTime"> The cycle time of the component. </param>
     /// <param name="args"> The arguments of the action. </param>
-    public CyclicComponentTests(string componentName, Action<object?[]?> action, TimeSpan cycleTime, params object?[] args)
-        : base(componentName, cycleTime, action, args)
-    {
-    }
+    public CyclicComponentTests(string componentName, Action<object?[]?> action, TimeSpan cycleTime, params object?[]? args)
+        : base(componentName, cycleTime, action, args) => Value = 0;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CyclicComponentTests"/> class.
@@ -28,18 +32,14 @@ public class CyclicComponentTests : CyclicComponentBase
     /// <param name="func"> The function to execute. </param>
     /// <param name="cycleTime"> The cycle time of the component. </param>
     /// <param name="args"> The arguments of the function. </param>
-    public CyclicComponentTests(string componentName, Func<object?[]?, Task> func, TimeSpan cycleTime, params object?[] args)
-    : base(componentName, cycleTime, func, args)
-    {
-    }
+    public CyclicComponentTests(string componentName, Func<object?[]?, Task> func, TimeSpan cycleTime, params object?[]? args)
+    : base(componentName, cycleTime, func, args) => Value = 0;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CyclicComponentTests"/> class.
     /// </summary>
     public CyclicComponentTests()
-        : base("TestName", TimeSpan.FromSeconds(1), args => { }, null)
-    {
-    }
+        : base("TestName", TimeSpan.FromSeconds(1), args => { }, null) => Value = 0;
 
     /// <summary>
     /// Test for <see cref="CyclicComponentBase.Execute"/>.
