@@ -7,36 +7,36 @@
 
 @if (Users != null)
 {
-    <MudTable Items="Users" Bordered="true" Dense="true" Hover="true">
-        <HeaderContent>
-            <MudTh Style="text-align: center; font-size: 14px;">Username</MudTh>
-            <MudTh Style="text-align: center; font-size: 14px;">Email</MudTh>
-            <MudTh Style="text-align: center; font-size: 14px;">Roles</MudTh>
-            <MudTh Style="text-align: center; font-size: 14px;"></MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd Style="font-size: 14px;">@context.Username</MudTd>
-            <MudTd Style="font-size: 14px;">@context.Email</MudTd>
-            <MudTd>
-                <div style="display: flex; align-items: center;">
-                    @foreach (var role in AvailableRoles)
-                    {
-                        <div style="display: inline-flex; align-items: center; font-size: 14px; margin-right: 16px;">
-                            <span style="margin-right: 8px;">@role</span>
-                            <MudSwitch T="bool" @bind-Value="RoleStates[context.Id][role]" Color="Color.Primary" />
-                        </div>
-                    }
-                </div>
-            </MudTd>
-            <MudTd>
-                <div style="display: flex; align-items: center; margin-top: 8px;">
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Style="margin-right: 10px; font-size: 14px;" OnClick="() => SaveUser(context)">
-                        SAVE
-                    </MudButton>
-                </div>
-            </MudTd>
-        </RowTemplate>
-    </MudTable>
+    <MudContainer>
+        <MudTable Items="Users" Bordered="true" Dense="true" Hover="true">
+            <HeaderContent>
+                <MudTh Style="text-align: center; font-size: 14px;">Username</MudTh>
+                <MudTh Style="text-align: center; font-size: 14px;">Email</MudTh>
+                <MudTh Style="text-align: center; font-size: 14px;">Roles</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd Style="font-size: 14px;">@context.Username</MudTd>
+                <MudTd Style="font-size: 14px;">@context.Email</MudTd>
+                <MudTd>
+                    <div style="display: flex; align-items: center;">
+                        @foreach (var role in AvailableRoles)
+                        {
+                            <div style="display: inline-flex; align-items: center; font-size: 14px; margin-right: 16px;">
+                                <span style="margin-right: 8px;">@role</span>
+                                <MudSwitch T="bool" @bind-Value="RoleStates[context.Id][role]" Color="Color.Primary" />
+                            </div>
+                        }
+                    </div>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+
+        <div style="text-align: right; margin-top: 20px;">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveUsers" Style="font-size: 14px;">
+                Save
+            </MudButton>
+        </div>
+    </MudContainer>
 }
 else
 {
@@ -51,6 +51,7 @@ else
     protected override void OnInitialized()
     {
         base.OnInitialized();
+
         Users = userService.GetUsers();
 
         if (Users != null)
@@ -76,21 +77,34 @@ else
             {
                 user.AddRole(role);
             }
-            else if (!currentRoleState && user.Roles.Contains(role))
+
+            if (!currentRoleState && user.Roles.Contains(role) && (role != "Admin"))
             {
-                if (user.Roles.Count > 1 || role != "Admin")
+                if (user.Roles.Count > 1)
                 {
                     user.RemoveRole(role);
                 }
                 else
                 {
-                    Snackbar.Add("You cannot remove the last remaining role or the Admin role.", Severity.Warning);
+                    Snackbar.Add("You cannot remove the last remaining role or the admin role", Severity.Warning);
                 }
             }
         }
 
         userService.Update(user);
-        Snackbar.Add("User roles updated successfully.", Severity.Success);
+    }
+
+    private void SaveUsers()
+    {
+        if (Users != null)
+        {
+            foreach (var user in Users)
+            {
+                SaveUser(user);
+            }
+        }
+   
+        Snackbar.Add("All user roles updated successfully.", Severity.Success);
         StateHasChanged();
     }
 }
