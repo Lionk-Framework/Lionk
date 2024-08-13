@@ -65,11 +65,10 @@
 
         user.UpdateEmail(Model.NewEmail);
         userService.Update(user);
-
         CurrentEmail = Model.NewEmail;
         Model = new();
-
         Snackbar.Add("Email updated successfully", Severity.Success);
+
         StateHasChanged();
     }
 }
