@@ -18,19 +18,24 @@ def indent(elem, level=0):
         if level and (not elem.tail or not elem.tail.strip()):
             elem.tail = i
 
-def update_or_add_element(container, name, value):
+def update_or_add_element(container, name, value=None, attributes=None):
     element = container.find(name)
     if element is not None:
         # Modifier l'élément existant
         element.text = value
-    else:
-        # Ajouter un nouvel élément
+    elif value is not None:
+        # Ajouter un nouvel élément avec une valeur de texte
         new_element = ET.SubElement(container, name)
         new_element.text = value
+    else:
+        # Ajouter un nouvel élément avec des attributs
+        new_element = ET.SubElement(container, name)
+        if attributes:
+            for attr_name, attr_value in attributes.items():
+                new_element.set(attr_name, attr_value)
+        # Si aucune valeur de texte n'est spécifiée, laisser l'élément vide
 
-
-
-# get environment variables
+# Récupérer les variables d'environnement
 LIB_PATH = os.getenv("LIB_PATH")
 projects = os.getenv("PROJECTS").split()
 newversions = os.getenv("NEW_VERSION").split()
@@ -40,39 +45,36 @@ changelogs = json.loads(os.getenv("CHANGELOG"))
 for project in projects:
     project_path = os.path.join(LIB_PATH, project)
     csproj_file = os.path.join(project_path, f"{project}.csproj")
-    new_version = newversions[projects.index(project)]
     readme_file = os.path.join(project_path, "README.md")
-   
+    new_version = newversions[projects.index(project)]   
 
     if project in changelogs:
-        description = f"\n\n## Change Log"
+        changes = f"## {new_version} Changelog"
         for change in changelogs[project]:
-            description += f"\n- {change}"
-        description += "\n\n"
+            changes += f"\n- {change}"
     
-    if not os.path.exists(readme_file):
-            #create empty README.md
-            with open(readme_file, "w") as file:
-                file.write("")
-
-
-     # read description from README.md and add changelog
-    with open(readme_file, "r") as file:
-        description += file.read()
-
     tree = ET.parse(csproj_file)
     root = tree.getroot()
+
+    # Trouver ou créer PropertyGroup
     property_group = root.find('PropertyGroup')
+    if property_group is None:
+        property_group = ET.SubElement(root, 'PropertyGroup')
 
-    # update or add Version and Description elements
-    update_or_add_element(property_group ,"Version", new_version)
-    update_or_add_element(property_group ,"Description", description)
+    # Trouver ou créer ItemGroup
+    item_group = root.find('ItemGroup')
+    if item_group is None:
+        item_group = ET.SubElement(root, 'ItemGroup')
 
-    with open("description.txt", "w") as file:
-        file.write(description)
+    # Mettre à jour ou ajouter les éléments Version, PackageReleaseNotes et PackageReadmeFile
+    update_or_add_element(property_group, "Version", value=new_version)
+    update_or_add_element(property_group, "PackageReleaseNotes", value=changes)
+    if os.path.exists(readme_file):
+        update_or_add_element(property_group, "PackageReadmeFile", "README.md")
+        update_or_add_element(item_group, 'None', attributes={'Include': 'README.md', 'Pack': 'true', 'PackagePath': ''})
 
     indent(root)
     tree.write(csproj_file, encoding="utf-8", xml_declaration=True)
 
-    # show the updated csproj file
+    # Afficher le fichier .csproj mis à jour
     ET.dump(root)

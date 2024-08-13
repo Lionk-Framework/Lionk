@@ -1,6 +1,7 @@
 import subprocess
 import sys
 import os
+import json
 
 
 def run_command(command):
@@ -15,11 +16,16 @@ def run_command(command):
         sys.exit(1)
 
 def read_file_to_list(filename):
-    with open(filename, 'r') as file:
-        return [line.strip() for line in file.readlines()]
+    try:
+        with open(filename, 'r') as file:
+            return file.read().strip().split()
+    except FileNotFoundError:
+        print(f"File not found: {filename}")
+        sys.exit(1)
 
 bot_name = os.getenv('BOT_NAME')
 bot_mail = os.getenv('BOT_MAIL')
+changelogs = json.loads(os.getenv("CHANGELOG"))
 
 projects = read_file_to_list('projects.txt')
 newversions = read_file_to_list('newversions.txt')
@@ -46,10 +52,12 @@ for i, project in enumerate(projects):
     run_command(['git', 'push', 'origin', tag])
 
     # Extract description from description.txt
-    description = ""
-    with open("description.txt", 'r') as file:
-        description = file.read()
+    changelog = ""
+    if project in changelogs:
+        changes = f"##{newversion} Changelog"
+        for change in changelogs[project]:
+            changes += f"\n- {change}"
 
     # Create the release with the description
-    run_command(['gh', 'release', 'create', tag, '--title', tag, '--notes', description])
+    run_command(['gh', 'release', 'create', tag, '--title', tag, '--notes', changelog])
 
