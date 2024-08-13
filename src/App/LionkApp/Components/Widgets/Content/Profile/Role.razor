@@ -13,8 +13,7 @@
             <MudTh Style="text-align: center;">Roles</MudTh>
             <MudTh Style="text-align: center;">Add Role</MudTh>
             <MudTh Style="text-align: center;">Delete Role</MudTh>
-            <MudTh></MudTh>
-            <MudTh></MudTh>
+            <MudTh Style="text-align: center;">Actions</MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd>@context.Username</MudTd>
@@ -51,12 +50,11 @@
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" Style="margin-right: 10px; margin-top: 8px;" OnClick="() => SaveUser(context)">
                     SAVE
                 </MudButton>
-            </MudTd>
-            <MudTd>
                 <MudButton Variant="Variant.Filled" Color="Color.Error" Style="margin-top: 8px;" OnClick="() => DeleteUser(context.Id)">
                     DELETE
                 </MudButton>
             </MudTd>
+
         </RowTemplate>
     </MudTable>
 }
