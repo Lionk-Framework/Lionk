@@ -3,20 +3,20 @@
 
 @if (notifications != null)
 {
-    <MudTable Items="notifications" Hover="true" SortLabel="Trier par" Elevation="0" AllowUnsorted="false">
+    <MudTable Items="notifications" Hover="true" SortLabel="Sort by" Elevation="0" AllowUnsorted="false">
         <HeaderContent>
             <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<NotificationHistory, object>(x => x.Notification.Timestamp)">Date</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<NotificationHistory, object>(x => x.Notification.Content.Title)">Titre</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<NotificationHistory, object>(x => x.IsRead)">Statut</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<NotificationHistory, object>(x => x.Notification.Content.Title)">Title</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<NotificationHistory, object>(x => x.IsRead)">Status</MudTableSortLabel></MudTh>
             <MudTh>Actions</MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Date">@context.Notification.Timestamp.ToString("g")</MudTd>
-            <MudTd DataLabel="Titre">@context.Notification.Content.Title</MudTd>
-            <MudTd DataLabel="Statut">@context.IsRead ? "Lu" : "Non Lu"</MudTd>
+            <MudTd DataLabel="Title">@context.Notification.Content.Title</MudTd>
+            <MudTd DataLabel="Status">@context.IsRead ? "Read" : "Unread"</MudTd>
             <MudTd>
-                <MudButton OnClick="@(() => MarkAsRead(@context))">Marquer comme lu</MudButton>
-                <MudButton OnClick="@(() => MarkAsUnread(@context))">Marquer comme non lu</MudButton>
+                <MudButton OnClick="@(() => MarkAsRead(@context))">Mark as read</MudButton>
+                <MudButton OnClick="@(() => MarkAsUnread(@context))">Mark as unread</MudButton>
             </MudTd>
         </RowTemplate>
         <PagerContent>
