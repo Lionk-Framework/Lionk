@@ -29,7 +29,7 @@
                         }
                     </div>
                 </MudTd>
-                <MudTd>
+                <MudTd style="text-align: center; vertical-align: middle;">
                     <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => DeleteUser(context.Id)">
                         Delete
                     </MudButton>
@@ -37,8 +37,8 @@
             </RowTemplate>
         </MudTable>
 
-        <div style="text-align: right; margin-top: 20px;">
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveUsers">
+        <div style="text-align: right; margin-top: 20px; margin-right: 30px;">
+            <MudButton Style="width: 85px;"  Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveUsers">
                 Save
             </MudButton>
         </div>
