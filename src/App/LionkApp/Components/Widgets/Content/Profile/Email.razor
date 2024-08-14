@@ -51,7 +51,7 @@
     {
         var user = AuthStateProvider.CurrentUser;
 
-        if (user == null)
+        if (user is null)
         {
             Snackbar.Add("User is not authenticated.", Severity.Error);
             return;
