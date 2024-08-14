@@ -11,7 +11,7 @@ public interface IMeasurableComponent<T> : IComponent
     /// <summary>
     /// Raised when a new value is available.
     /// </summary>
-    event EventHandler<MeasureEventArgs<T>> NewValueAvailable;
+    event EventHandler<MeasureEventArgs<T>>? NewValueAvailable;
 
     /// <summary>
     /// Gets the measures of the component.

@@ -8,6 +8,8 @@ namespace Lionk.Core.Component;
 /// <typeparam name="T"> The type of the value. </typeparam>
 public class Measure<T>
 {
+    private T? _value;
+
     /// <summary>
     /// Gets the name of the measure.
     /// </summary>
@@ -16,7 +18,7 @@ public class Measure<T>
     /// <summary>
     /// Gets the time of the measure.
     /// </summary>
-    public DateTime Time { get; private set; }
+    public DateTime? Time { get; private set; }
 
     /// <summary>
     /// Gets the unit of the value.
@@ -24,33 +26,26 @@ public class Measure<T>
     public string Unit { get; private set; }
 
     /// <summary>
-    /// Gets the value of the measure.
+    /// Gets or sets the value of the measure.
     /// </summary>
-    public T Value { get; private set; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Measure{T}"/> class.
-    /// </summary>
-    /// <param name="measureName"> The name of the measure. </param>
-    /// <param name="unit"> The unit of the value. </param>
-    /// <param name="value"> The value of the measure. </param>
-    public Measure(string measureName, string unit, T value)
-        : this(measureName, DateTime.Now, unit, value)
+    public T? Value
     {
+        get => _value;
+        set
+        {
+            Time = DateTime.UtcNow;
+            _value = value;
+        }
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Measure{T}"/> class.
     /// </summary>
     /// <param name="measureName"> The name of the measure. </param>
-    /// <param name="time"> The time of the measure. </param>
     /// <param name="unit"> The unit of the value. </param>
-    /// <param name="value"> The value of the measure. </param>
-    public Measure(string measureName,  DateTime time, string unit, T value)
+    public Measure(string measureName, string unit)
     {
         MeasureName = measureName;
-        Time = time;
         Unit = unit;
-        Value = value;
     }
 }
