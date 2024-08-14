@@ -13,6 +13,7 @@
                 <MudTh>Username</MudTh>
                 <MudTh>Email</MudTh>
                 <MudTh>Roles</MudTh>
+                <MudTh>Actions</MudTh>
             </HeaderContent>
             <RowTemplate>
                 <MudTd>@context.Username</MudTd>
@@ -27,6 +28,11 @@
                             </div>
                         }
                     </div>
+                </MudTd>
+                <MudTd>
+                    <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => DeleteUser(context.Id)">
+                        Delete
+                    </MudButton>
                 </MudTd>
             </RowTemplate>
         </MudTable>
@@ -48,7 +54,6 @@ else
     private List<string> AvailableRoles = new List<string> { "Admin", "User", "Moderator" }; // TODO - Link to enum or global strings
     private Dictionary<Guid, Dictionary<string, bool>> RoleStates = new();
     private bool success = false;
-
 
     protected override void OnInitialized()
     {
@@ -120,11 +125,22 @@ else
             }
         }
 
-        if(success)
+        if (success)
         {
             Snackbar.Add("The user's roles have been successfully updated.", Severity.Success);
         }
-  
+
         StateHasChanged();
+    }
+
+    private void DeleteUser(Guid userId)
+    {
+        var user = Users?.FirstOrDefault(u => u.Id == userId);
+        if (user != null)
+        {
+            userService.Delete(user);
+            Snackbar.Add($"User {user.Username} has been deleted.", Severity.Success);
+            StateHasChanged();
+        }
     }
 }

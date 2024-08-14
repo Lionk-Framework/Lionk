@@ -76,7 +76,7 @@
         {
             await AuthStateProvider.LoginAsync(model.Username!, passwordHash);
             model = new RegisterAccountForm();
-            Snackbar.Add("User registered successfully!", Severity.Success);
+            Snackbar.Add("Registration successfull!", Severity.Success);
         }
         else
         {
