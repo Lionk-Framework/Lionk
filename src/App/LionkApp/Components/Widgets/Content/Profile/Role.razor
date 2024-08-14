@@ -138,6 +138,7 @@ else
         var user = Users?.FirstOrDefault(u => u.Id == userId);
         if (user != null)
         {
+            Users?.Remove(user);
             userService.Delete(user);
             Snackbar.Add($"User {user.Username} has been deleted.", Severity.Success);
             StateHasChanged();
