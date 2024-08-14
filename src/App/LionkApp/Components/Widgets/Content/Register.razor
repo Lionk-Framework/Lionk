@@ -1,19 +1,26 @@
-﻿@using System.ComponentModel.DataAnnotations
+﻿@page "/register"
+@using Lionk.Auth.Identity
+@using Lionk.Auth.Utils
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.ComponentModel.DataAnnotations
+@inject UserAuthenticationStateProvider AuthStateProvider
+@inject UserService userService
+@inject ISnackbar Snackbar
 
-<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+<EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
     <MudGrid>
         <MudItem xs="12" sm="12">
             <MudCard>
                 <MudCardContent>
-                    <MudTextField Label="First name" HelperText="Max. 8 characters"
-                                  @bind-Value="model.Username" For="@(() => model.Username)" />
+                    <MudTextField Label="Username" HelperText="Max. 20 characters"
+                                  @bind-Value="Model.Username" For="@(() => Model.Username)" />
                     <MudTextField Label="Email" Class="mt-3"
-                                  @bind-Value="model.Email" For="@(() => model.Email)" />
+                                  @bind-Value="Model.Email" For="@(() => Model.Email)" />
                     <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
-                                  @bind-Value="model.Password" For="@(() => model.Password)" InputType="InputType.Password" />
-                    <MudTextField Label="Password" HelperText="Repeat the password" Class="mt-3"
-                                  @bind-Value="model.Password2" For="@(() => model.Password2)" InputType="InputType.Password" />
+                                  @bind-Value="Model.Password" For="@(() => Model.Password)" InputType="InputType.Password" />
+                    <MudTextField Label="Confirm Password" HelperText="Repeat the password" Class="mt-3"
+                                  @bind-Value="Model.Password2" For="@(() => Model.Password2)" InputType="InputType.Password" />
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
@@ -22,13 +29,14 @@
         </MudItem>
     </MudGrid>
 </EditForm>
+
 @code {
-    RegisterAccountForm model = new RegisterAccountForm();
+    RegisterAccountForm Model = new RegisterAccountForm();
 
     public class RegisterAccountForm
     {
         [Required]
-        [StringLength(8, ErrorMessage = "Name length can't be more than 8.")]
+        [StringLength(20, ErrorMessage = "Username length can't be more than 20 characters.")]
         public string? Username { get; set; }
 
         [Required]
@@ -40,13 +48,33 @@
         public string? Password { get; set; }
 
         [Required]
-        [Compare(nameof(Password))]
+        [Compare(nameof(Password), ErrorMessage = "The password and confirmation password do not match.")]
         public string? Password2 { get; set; }
-
     }
 
-    private void OnValidSubmit(EditContext context)
+    private async Task OnValidSubmit()
     {
+        if (userService.IsUsernameExist(Model.Username!))
+        {
+            Snackbar.Add("Username already exists.", Severity.Warning);
+            return;
+        }
+
+        if (userService.IsEmailExist(Model.Email!))
+        {
+            Snackbar.Add("Email already exists.", Severity.Warning);
+            return;
+        }
+
+        var salt = PasswordUtils.GenerateSalt(16);
+        var passwordHash = PasswordUtils.HashPassword(Model.Password!, salt);
+        var registeredUser = userService.Insert(new User(Model.Username!, Model.Email!, passwordHash, salt, new List<string> { "User" }));
+        if (registeredUser != null)
+        {
+            await AuthStateProvider.LoginAsync(Model.Username!, passwordHash);
+            Model = new RegisterAccountForm();
+        }
+
         StateHasChanged();
     }
 }
