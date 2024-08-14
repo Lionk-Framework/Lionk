@@ -52,6 +52,11 @@ else
     {
         base.OnInitialized();
 
+        InitializeRoleStates();
+    }
+
+    private void InitializeRoleStates()
+    {
         Users = userService.GetUsers();
 
         if (Users != null)
@@ -110,7 +115,7 @@ else
             }
         }
 
-        Snackbar.Add("The user's roles have been successfully updated.", Severity.Warning);
+        Snackbar.Add("The user's roles have been successfully updated.", Severity.Success);
   
         StateHasChanged();
     }
