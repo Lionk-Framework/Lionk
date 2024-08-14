@@ -3,20 +3,13 @@
 @inject ICyclicExecutorService CyclicExecutorService
 @inject IComponentService ComponentService
 @inject ICyclicExecutorService CyclicExecutorService
-@using Lionk.TemperatureSensor
 @using Lionk.Core.Component
 @using LionkApp.Components.Widgets.Buttons
 
 <PageTitle>Dashboard</PageTitle>
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
-    <MudButton OnClick="testmethod">
-        Test
-    </MudButton>
-        <MudItem xs="12">
-            <TemperatureSensorWidget Sensor="@SimulatedTemperatureSensor" />
-        </MudItem>
     <MudGrid>
-
+        <Lionk.Core.Razor.Components.DashboardItem/>
         <MudItem xs="12" sm="6" md="4">
             <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
         </MudItem>
@@ -55,16 +48,4 @@
 
 @code {
 
-    private SimulatedTemperatureSensor? SimulatedTemperatureSensor { get; set; }
-
-    protected override void OnInitialized()
-    {
-        SimulatedTemperatureSensor = new SimulatedTemperatureSensor("SimTemp", TimeSpan.FromSeconds(5));
-        ComponentService.RegisterComponentInstance(SimulatedTemperatureSensor);
-        CyclicExecutorService.Start();
-    }
-    private void testmethod()
-    {
-        CyclicExecutorService.Start();
-    }
 }
