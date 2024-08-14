@@ -17,4 +17,9 @@ public interface IMeasurableComponent<T> : IComponent
     /// Gets the measures of the component.
     /// </summary>
     List<Measure<T>> Measures { get; }
+
+    /// <summary>
+    /// This method processes the measures.
+    /// </summary>
+    void Measure();
 }

@@ -26,4 +26,12 @@ This is the Lionk App README file.
     <ProjectReference Include="..\..\Lib\Lionk.Plugin.Blazor\Lionk.Plugin.Blazor.csproj" />
     <ProjectReference Include="..\..\Lib\Lionk.Plugin\Lionk.Plugin.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Lionk.TemperatureSensor">
+      <HintPath>..\..\..\..\Lionk-rpi-components\src\Lionk.TemperatureSensor.Razor\bin\Debug\net8.0\Lionk.TemperatureSensor.dll</HintPath>
+    </Reference>
+    <Reference Include="Lionk.TemperatureSensor.Razor">
+      <HintPath>..\..\..\..\Lionk-rpi-components\src\Lionk.TemperatureSensor.Razor\bin\Debug\net8.0\Lionk.TemperatureSensor.Razor.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>
