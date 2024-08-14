@@ -78,11 +78,13 @@ else
         {
             bool currentRoleState = RoleStates[user.Id][role];
 
+            // Add role
             if (currentRoleState && !user.Roles.Contains(role))
             {
                 user.AddRole(role);
             }
 
+            // Remove role
             if (!currentRoleState && user.Roles.Contains(role))
             {
                 if (role == "Admin")
