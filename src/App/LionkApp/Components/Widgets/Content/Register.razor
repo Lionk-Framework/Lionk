@@ -28,7 +28,7 @@
     public class RegisterAccountForm
     {
         [Required]
-        [StringLength(8, ErrorMessage = "Name length can't be more than 8.")]
+        [StringLength(20, ErrorMessage = "Name length can't be more than 20.")]
         public string? Username { get; set; }
 
         [Required]
