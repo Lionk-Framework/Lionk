@@ -10,18 +10,18 @@
     <MudContainer>
         <MudTable Items="Users" Bordered="true" Dense="true" Hover="true">
             <HeaderContent>
-                <MudTh Style="text-align: center; font-size: 14px;">Username</MudTh>
-                <MudTh Style="text-align: center; font-size: 14px;">Email</MudTh>
-                <MudTh Style="text-align: center; font-size: 14px;">Roles</MudTh>
+                <MudTh>Username</MudTh>
+                <MudTh>Email</MudTh>
+                <MudTh>Roles</MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd Style="font-size: 14px;">@context.Username</MudTd>
-                <MudTd Style="font-size: 14px;">@context.Email</MudTd>
+                <MudTd>@context.Username</MudTd>
+                <MudTd>@context.Email</MudTd>
                 <MudTd>
-                    <div style="display: flex; align-items: center;">
+                    <div>
                         @foreach (var role in AvailableRoles)
                         {
-                            <div style="display: inline-flex; align-items: center; font-size: 14px; margin-right: 16px;">
+                            <div style="display: inline-flex; align-items: center; margin-right: 16px;">
                                 <span style="margin-right: 8px;">@role</span>
                                 <MudSwitch T="bool" @bind-Value="RoleStates[context.Id][role]" Color="Color.Primary" />
                             </div>
@@ -32,7 +32,7 @@
         </MudTable>
 
         <div style="text-align: right; margin-top: 20px;">
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveUsers" Style="font-size: 14px;">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveUsers">
                 Save
             </MudButton>
         </div>
