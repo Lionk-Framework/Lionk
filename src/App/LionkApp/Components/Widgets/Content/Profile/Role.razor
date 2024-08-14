@@ -87,9 +87,9 @@ else
             // Remove role
             if (!currentRoleState && user.Roles.Contains(role))
             {
-                if (role == "Admin")
+                if ((user.Id == AuthStateProvider.CurrentUser?.Id) && (role == "Admin"))
                 {
-                    Snackbar.Add("You cannot remove the admin role", Severity.Warning);
+                    Snackbar.Add("You cannot remove your admin role", Severity.Warning);
                     return;
                 }
 
