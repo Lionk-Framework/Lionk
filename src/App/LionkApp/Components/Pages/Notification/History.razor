@@ -1,11 +1,7 @@
 ﻿@page "/history"
 @using Lionk.Notification
 
-@if (notifications == null)
-{
-    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
-}
-else
+@if (notifications != null)
 {
     <MudTable Items="notifications" Hover="true" SortLabel="Trier par" Elevation="0" AllowUnsorted="false">
         <HeaderContent>
