@@ -23,6 +23,7 @@
         <ProjectReference Include="..\..\Lib\Lionk.Core.Razor\Lionk.Core.Razor.csproj" />
         <ProjectReference Include="..\..\Lib\Lionk.Core\Lionk.Core.csproj" />
         <ProjectReference Include="..\..\Lib\Lionk.Logger\Lionk.Logger.csproj" />
+        <ProjectReference Include="..\..\Lib\Lionk.Notifications\Lionk.Notification.csproj" />
         <ProjectReference Include="..\..\Lib\Lionk.Plugin.Blazor\Lionk.Plugin.Blazor.csproj" />
         <ProjectReference Include="..\..\Lib\Lionk.Plugin\Lionk.Plugin.csproj" />
     </ItemGroup>
