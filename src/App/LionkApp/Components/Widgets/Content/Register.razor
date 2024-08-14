@@ -67,20 +67,13 @@
         }
 
         var salt = PasswordUtils.GenerateSalt(16);
-
         var passwordHash = PasswordUtils.HashPassword(model.Password!, salt);
-
         var registeredUser = userService.Insert(new User(model.Username!, model.Email!, passwordHash, salt, new List<string> { "User" }));
 
         if (registeredUser != null)
         {
             await AuthStateProvider.LoginAsync(model.Username!, passwordHash);
             model = new RegisterAccountForm();
-            Snackbar.Add("Registration successfull.", Severity.Success);
-        }
-        else
-        {
-            Snackbar.Add("Registration failed. Please try again.", Severity.Error);
         }
 
         StateHasChanged();
