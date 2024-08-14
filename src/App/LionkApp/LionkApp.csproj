@@ -28,7 +28,7 @@ This is the Lionk App README file.
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Lionk.TemperatureSensor">
-      <HintPath>..\..\..\..\Lionk-rpi-components\src\Lionk.TemperatureSensor.Razor\bin\Debug\net8.0\Lionk.TemperatureSensor.dll</HintPath>
+      <HintPath>..\..\..\..\Lionk-rpi-components\src\Lionk.TemperatureSensor\bin\Debug\net8.0\Lionk.TemperatureSensor.dll</HintPath>
     </Reference>
     <Reference Include="Lionk.TemperatureSensor.Razor">
       <HintPath>..\..\..\..\Lionk-rpi-components\src\Lionk.TemperatureSensor.Razor\bin\Debug\net8.0\Lionk.TemperatureSensor.Razor.dll</HintPath>

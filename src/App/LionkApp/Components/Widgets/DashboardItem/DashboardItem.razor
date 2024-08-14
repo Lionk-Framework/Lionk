@@ -1,0 +1,21 @@
+﻿@inherits MudItem
+
+<MudItem xs="@xs" sm="@sm" md="@md" lg="@lg" xl="@xl">
+    <MudPaper Class="pa-4" Style="position: relative; height:200px">
+        <MudIconButton Icon="@Icons.Material.Filled.Settings"
+                       Size="Size.Small"
+                       Style="position: absolute; top: 5px; right: 5px;"
+                       OnClick="OpenConfigurationDialog" />
+        @* @ChildContent *@
+    </MudPaper>
+</MudItem>
+
+
+@code {
+    [Parameter] public new RenderFragment? ChildContent { get; set; }
+
+    private void OpenConfigurationDialog()
+    {
+        // Logique pour ouvrir une boîte de dialogue de configuration
+    }
+}

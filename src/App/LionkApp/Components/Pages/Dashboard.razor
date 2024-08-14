@@ -2,14 +2,23 @@
 @inject ISnackbar Snackbar
 @inject ICyclicExecutorService CyclicExecutorService
 @inject IComponentService ComponentService
-@inject ICyclicExecutorService CyclicExecutorService
 @using Lionk.Core.Component
+@using Lionk.TemperatureSensor
 @using LionkApp.Components.Widgets.Buttons
+@using LionkApp.Components.Widgets.DashboardItem
+@using LionkApp.Components.Widgets.Clock
+
 
 <PageTitle>Dashboard</PageTitle>
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
     <MudGrid>
-        <Lionk.Core.Razor.Components.DashboardItem/>
+        @* foreach(IWidget in ComponentsWidget)
+        {
+        <DashboardItem OnEdit=edit> edit c'est le callback qui va ouvrir la boite de dialogue de configuration'
+            <DynamicComponent Type="@type" Parameters="@parameters"/>
+        </DashboardItem>
+        }
+        *@
         <MudItem xs="12" sm="6" md="4">
             <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
         </MudItem>
@@ -47,5 +56,17 @@
 <FloatingButton />
 
 @code {
+    SimulatedTemperatureSensor sensor = new SimulatedTemperatureSensor();
+    Dictionary<string, object> parameters = new Dictionary<string, object>();
+    Type type = typeof(TemperatureSensorWidget);
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        ComponentService.RegisterComponentInstance(sensor);
+        CyclicExecutorService.Start();
+
+        parameters.Add("Sensor", sensor);
+    }
 
 }
