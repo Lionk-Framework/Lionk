@@ -47,6 +47,8 @@ else
     public HashSet<User>? Users;
     private List<string> AvailableRoles = new List<string> { "Admin", "User", "Moderator" }; // TODO - Link to enum or global strings
     private Dictionary<Guid, Dictionary<string, bool>> RoleStates = new();
+    private bool success = false;
+
 
     protected override void OnInitialized()
     {
@@ -99,6 +101,7 @@ else
                     return;
                 }
 
+                success = true;
                 user.RemoveRole(role);
             }
 
@@ -117,7 +120,10 @@ else
             }
         }
 
-        Snackbar.Add("The user's roles have been successfully updated.", Severity.Success);
+        if(success)
+        {
+            Snackbar.Add("The user's roles have been successfully updated.", Severity.Success);
+        }
   
         StateHasChanged();
     }
