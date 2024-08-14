@@ -53,7 +53,7 @@ else
     public HashSet<User>? Users;
     private List<string> AvailableRoles = new List<string> { "Admin", "User"}; // TODO - Link to enum or global strings
     private Dictionary<Guid, Dictionary<string, bool>> RoleStates = new();
-    private bool success = true;
+    private bool Success = true;
 
     protected override void OnInitialized()
     {
@@ -97,14 +97,14 @@ else
                 if ((user.Id == AuthStateProvider.CurrentUser?.Id) && (role == "Admin"))
                 {
                     Snackbar.Add("You cannot remove your admin role", Severity.Warning);
-                    success = false;
+                    Success = false;
                     return;
                 }
 
                 if (user.Roles.Count <= 1)
                 {
                     Snackbar.Add("You cannot remove the only role", Severity.Warning);
-                    success = false;
+                    Success = false;
                     return;
                 }
 
@@ -125,7 +125,7 @@ else
             }
         }
 
-        if (success)
+        if (Success)
         {
             Snackbar.Add("The user's roles have been successfully updated.", Severity.Success);
         }
