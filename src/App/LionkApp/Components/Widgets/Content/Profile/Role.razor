@@ -1,0 +1,147 @@
+﻿@page "/role"
+@using Lionk.Auth.Identity
+@using Microsoft.AspNetCore.Components.Authorization
+@inject ISnackbar Snackbar
+@inject UserAuthenticationStateProvider AuthStateProvider
+@inject UserService userService
+
+@if (Users != null)
+{
+    <MudContainer>
+        <MudTable Items="Users" Bordered="true" Dense="true" Hover="true">
+            <HeaderContent>
+                <MudTh>Username</MudTh>
+                <MudTh>Email</MudTh>
+                <MudTh>Roles</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.Username</MudTd>
+                <MudTd>@context.Email</MudTd>
+                <MudTd>
+                    <div>
+                        @foreach (var role in AvailableRoles)
+                        {
+                            <div style="display: inline-flex; align-items: center; margin-right: 16px;">
+                                <span style="margin-right: 8px;">@role</span>
+                                <MudSwitch T="bool" @bind-Value="RoleStates[context.Id][role]" Color="Color.Primary" />
+                            </div>
+                        }
+                    </div>
+                </MudTd>
+                <MudTd style="text-align: center; vertical-align: middle;">
+                    <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => DeleteUser(context.Id)">
+                        Delete
+                    </MudButton>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+
+        <div style="text-align: right; margin-top: 20px; margin-right: 30px;">
+            <MudButton Style="width: 85px;"  Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveUsers">
+                Save
+            </MudButton>
+        </div>
+    </MudContainer>
+}
+else
+{
+    <MudText Typo="Typo.body1" Align="Align.Left" Style="margin: 20px; font-size: 14px;">Loading users...</MudText>
+}
+
+@code {
+    public HashSet<User>? Users;
+    private List<string> AvailableRoles = new List<string> { "Admin", "User"}; // TODO - Link to enum or global strings
+    private Dictionary<Guid, Dictionary<string, bool>> RoleStates = new();
+    private bool Success = true;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        InitializeRoleStates();
+    }
+
+    private void InitializeRoleStates()
+    {
+        Users = userService.GetUsers();
+
+        if (Users != null)
+        {
+            foreach (var user in Users)
+            {
+                RoleStates[user.Id] = new Dictionary<string, bool>();
+                foreach (var role in AvailableRoles)
+                {
+                    RoleStates[user.Id][role] = user.Roles.Contains(role);
+                }
+            }
+        }
+    }
+
+    private void SaveUser(User user)
+    {
+        foreach (var role in AvailableRoles)
+        {
+            bool currentRoleState = RoleStates[user.Id][role];
+
+            // Add role
+            if (currentRoleState && !user.Roles.Contains(role))
+            {
+                user.AddRole(role);
+            }
+
+            // Remove role
+            if (!currentRoleState && user.Roles.Contains(role))
+            {
+                if ((user.Id == AuthStateProvider.CurrentUser?.Id) && (role == "Admin"))
+                {
+                    Snackbar.Add("You cannot remove your admin role", Severity.Warning);
+                    Success = false;
+                    return;
+                }
+
+                if (user.Roles.Count <= 1)
+                {
+                    Snackbar.Add("You cannot remove the only role", Severity.Warning);
+                    Success = false;
+                    return;
+                }
+
+                user.RemoveRole(role);
+            }
+        }
+
+        userService.Update(user);
+    }
+
+    private void SaveUsers()
+    {
+        if (Users != null)
+        {
+            foreach (var user in Users)
+            {
+                SaveUser(user);
+            }
+        }
+
+        if (Success)
+        {
+            Snackbar.Add("The user's roles have been successfully updated.", Severity.Success);
+        }
+
+        StateHasChanged();
+    }
+
+    private void DeleteUser(Guid userId)
+    {
+        var user = Users?.FirstOrDefault(u => u.Id == userId);
+        if (user != null)
+        {
+            Users?.Remove(user);
+            userService.Delete(user);
+            Snackbar.Add($"User {user.Username} has been deleted.", Severity.Success);
+            StateHasChanged();
+        }
+    }
+}
