@@ -32,8 +32,6 @@
         bool isAuthenticated = authState?.User?.Identity?.IsAuthenticated ?? false;
         if (!isAuthenticated)
         {
-            string salt = PasswordUtils.GenerateSalt(16);
-            string passwordHash = PasswordUtils.HashPassword("admin", salt);
             base.OnInitialized();
         }
         else
