@@ -3,7 +3,7 @@
 @using Lionk.Core.Razor
 @using MudBlazor
 @inject ISnackbar Snackbar
-@implements IBlazorCyclicComponent
+@implements ICyclicComponent
 
 @attribute [NamedElement("Clock", "a sweet clock widget")]
 <MudCard>
@@ -16,6 +16,19 @@
 @code {
     private string currentTime = "No time setted";
 
+    public string? InstanceName { get; set; }
+    public TimeSpan ExecutionFrequency => TimeSpan.FromSeconds(1);
+    public DateTime LastExecution { get; }
+    public int NbCycle { get; set; }
+    public DateTime StartedDate { get; set; }
+
+    public TimeSpan? Execute()
+    {
+        DateTime start = DateTime.UtcNow;
+        Snackbar.Add($"Time updated", Severity.Success);
+        return DateTime.UtcNow - start;
+    }
+
     protected override void OnInitialized()
     {
         InstanceName = "Super Clock";
@@ -23,7 +36,6 @@
         var timer = new System.Timers.Timer(1000);
         timer.Elapsed += (sender, e) => InvokeAsync(UpdateTime);
         timer.Start();
-        CyclicComponent = new ClockCyclicComponent("Clock", TimeSpan.FromSeconds(1), Snackbar);
     }
 
     private void UpdateTime()
@@ -32,24 +44,4 @@
         StateHasChanged();
     }
 
-    public string? InstanceName { get; set; }
-
-    public CyclicComponent? CyclicComponent { get; private set; }
-
-    public class ClockCyclicComponent : CyclicComponent
-    {
-        public ClockCyclicComponent(string componentName, TimeSpan cycleTime, ISnackbar snackbar)
-            : base(componentName, cycleTime)
-        {
-            _snackbar = snackbar;
-            CyclicTask = UpdateTime;
-        }
-
-        private ISnackbar _snackbar;
-
-        private void UpdateTime()
-        {
-            _snackbar.Add($"Time updated", Severity.Success);
-        }
-    }
 }

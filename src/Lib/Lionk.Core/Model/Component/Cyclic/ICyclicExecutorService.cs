@@ -30,7 +30,7 @@ public interface ICyclicExecutorService
     /// <summary>
     /// Gets the components of the service.
     /// </summary>
-    IEnumerable<CyclicComponentBase> Components { get; }
+    IEnumerable<ICyclicComponent> Components { get; }
 
     /// <summary>
     /// Gets the component service.

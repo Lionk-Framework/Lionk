@@ -30,8 +30,7 @@ public class CyclicExecutorService : ICyclicExecutorService
                         Running();
                         break;
                     case CycleState.Stopped:
-                        State = CycleState.Stopping;
-                        _cancellationTokenSource.Cancel();
+                        Stopping();
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -44,13 +43,21 @@ public class CyclicExecutorService : ICyclicExecutorService
         }
     }
 
+    private void Stopping()
+    {
+        State = CycleState.Stopping;
+        _cancellationTokenSource.Cancel();
+    }
+
     private void Running()
     {
-        foreach (CyclicComponentBase component in Components)
+        foreach (ICyclicComponent component in Components)
         {
+            if (component.NextExecution > DateTime.UtcNow) continue;
             _timer.Start();
             component.Execute();
             _timer.Stop();
+            component.NbCycle++;
         }
     }
 
@@ -61,7 +68,7 @@ public class CyclicExecutorService : ICyclicExecutorService
     public TimeSpan WatchDogTime { get; private set; }
 
     /// <inheritdoc/>
-    public IEnumerable<CyclicComponentBase> Components => ComponentService.GetInstancesOfType<CyclicComponentBase>();
+    public IEnumerable<ICyclicComponent> Components => ComponentService.GetInstancesOfType<ICyclicComponent>();
 
     /// <inheritdoc/>
     public IComponentService ComponentService { get; private set; }
@@ -69,6 +76,12 @@ public class CyclicExecutorService : ICyclicExecutorService
     /// <inheritdoc/>
     public void Start()
     {
+        foreach (ICyclicComponent component in Components)
+        {
+            component.StartedDate = DateTime.UtcNow;
+            component.NbCycle = 0;
+        }
+
         State = CycleState.Running;
         _thread.Start();
     }
