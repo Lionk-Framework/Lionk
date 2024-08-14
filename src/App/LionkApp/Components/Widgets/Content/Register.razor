@@ -1,4 +1,11 @@
-﻿@using System.ComponentModel.DataAnnotations
+﻿@page "/register"
+@using Lionk.Auth.Identity
+@using Lionk.Auth.Utils
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.ComponentModel.DataAnnotations
+@inject UserAuthenticationStateProvider AuthStateProvider
+@inject UserService userService
+@inject ISnackbar Snackbar
 
 <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
@@ -6,13 +13,13 @@
         <MudItem xs="12" sm="12">
             <MudCard>
                 <MudCardContent>
-                    <MudTextField Label="First name" HelperText="Max. 8 characters"
+                    <MudTextField Label="Username" HelperText="Max. 20 characters"
                                   @bind-Value="model.Username" For="@(() => model.Username)" />
                     <MudTextField Label="Email" Class="mt-3"
                                   @bind-Value="model.Email" For="@(() => model.Email)" />
                     <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
                                   @bind-Value="model.Password" For="@(() => model.Password)" InputType="InputType.Password" />
-                    <MudTextField Label="Password" HelperText="Repeat the password" Class="mt-3"
+                    <MudTextField Label="Confirm Password" HelperText="Repeat the password" Class="mt-3"
                                   @bind-Value="model.Password2" For="@(() => model.Password2)" InputType="InputType.Password" />
                 </MudCardContent>
                 <MudCardActions>
@@ -22,13 +29,14 @@
         </MudItem>
     </MudGrid>
 </EditForm>
+
 @code {
     RegisterAccountForm model = new RegisterAccountForm();
 
     public class RegisterAccountForm
     {
         [Required]
-        [StringLength(20, ErrorMessage = "Name length can't be more than 20.")]
+        [StringLength(20, ErrorMessage = "Username length can't be more than 20 characters.")]
         public string? Username { get; set; }
 
         [Required]
@@ -40,13 +48,41 @@
         public string? Password { get; set; }
 
         [Required]
-        [Compare(nameof(Password))]
+        [Compare(nameof(Password), ErrorMessage = "The password and confirmation password do not match.")]
         public string? Password2 { get; set; }
-
     }
 
-    private void OnValidSubmit(EditContext context)
+    private async Task OnValidSubmit()
     {
+        if (userService.IsUsernameExist(model.Username!))
+        {
+            Snackbar.Add("Username already exists.", Severity.Warning);
+            return;
+        }
+
+        if (userService.IsEmailExist(model.Email!))
+        {
+            Snackbar.Add("Email already exists.", Severity.Warning);
+            return;
+        }
+
+        var salt = PasswordUtils.GenerateSalt(16);
+
+        var passwordHash = PasswordUtils.HashPassword(model.Password!, salt);
+
+        var registeredUser = userService.Insert(new User(model.Username!, model.Email!, passwordHash, salt, new List<string> { "User" }));
+
+        if (registeredUser != null)
+        {
+            Snackbar.Add("User registered successfully!", Severity.Success);
+            await AuthStateProvider.LoginAsync(model.Username!, passwordHash);
+            model = new RegisterAccountForm();
+        }
+        else
+        {
+            Snackbar.Add("Registration failed. Please try again.", Severity.Error);
+        }
+
         StateHasChanged();
     }
 }
