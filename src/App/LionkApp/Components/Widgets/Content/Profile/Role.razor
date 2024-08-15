@@ -13,17 +13,21 @@
                 <MudTh>Username</MudTh>
                 <MudTh>Email</MudTh>
                 <MudTh>Roles</MudTh>
-                <MudTh>Actions</MudTh>
+                <MudTh style="text-align: center;">Actions</MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd>@context.Username</MudTd>
-                <MudTd>@context.Email</MudTd>
+                <MudTd>
+                    <MudText>@context.Username</MudText>
+                </MudTd>
+                <MudTd>
+                    <MudText>@context.Email</MudText>
+                </MudTd>
                 <MudTd>
                     <div>
                         @foreach (var role in AvailableRoles)
                         {
                             <div style="display: inline-flex; align-items: center; margin-right: 16px;">
-                                <span style="margin-right: 8px;">@role</span>
+                                <MudText style="margin-right: 8px;">@role</MudText>
                                 <MudSwitch T="bool" Value=RoleStates[context.Id][role] ValueChanged="@(() => OnRoleChanged(context.Id, role, RoleStates[context.Id][role]))" Color="Color.Primary" />
                             </div>
                         }
