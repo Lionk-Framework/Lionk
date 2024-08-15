@@ -5,17 +5,12 @@
         <MudIconButton Icon="@Icons.Material.Filled.Settings"
                        Size="Size.Small"
                        Style="position: absolute; top: 5px; right: 5px;"
-                       OnClick="OpenConfigurationDialog" />
-        @* @ChildContent *@
+                       OnClick="ConfigurationClicked" />
+        @if(ChildContent is not null) @ChildContent
     </MudPaper>
 </MudItem>
 
 
 @code {
-    [Parameter] public new RenderFragment? ChildContent { get; set; }
-
-    private void OpenConfigurationDialog()
-    {
-        // Logique pour ouvrir une boîte de dialogue de configuration
-    }
+    [Parameter] public EventCallback ConfigurationClicked { get; set; }
 }
