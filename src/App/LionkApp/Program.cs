@@ -1,9 +1,11 @@
 // Copyright © 2024 Lionk Project
 
+using System.Reflection;
 using Lionk.Auth.Abstraction;
 using Lionk.Auth.Identity;
 using Lionk.Auth.Utils;
 using Lionk.Core.Component;
+using Lionk.Core.Component.Configuration;
 using Lionk.Core.Model.Component.Cyclic;
 using Lionk.Core.Service;
 using Lionk.Core.TypeRegistery;
@@ -11,13 +13,20 @@ using Lionk.Log;
 using Lionk.Log.Serilog;
 using Lionk.Plugin;
 using Lionk.Plugin.Blazor;
+using Lionk.TemperatureSensor;
+using Lionk.Utils;
 using LionkApp.Components;
 using LionkApp.Components.Layout;
+using LionkApp.Components.Widgets.DashboardItem;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor.Services;
+using Newtonsoft.Json;
 using ILoggerFactory = Lionk.Log.ILoggerFactory;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+// Configure Kestrel to listen on all IP addresses and port 5000
+// builder.WebHost.UseKestrel(options => options.Listen(System.Net.IPAddress.Any, 5000));
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -81,6 +90,46 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+// Component simulation
+SimulatedTemperatureSensor simSensor = new();
+DS18B20 dsSensor = new();
+simSensor.InstanceName = "Simulated Sensor";
+dsSensor.InstanceName = "DS18B20 Sensor";
+
+IComponentService componentService = app.Services.GetRequiredService<IComponentService>();
+componentService.RegisterComponentInstance(simSensor);
+componentService.RegisterComponentInstance(dsSensor);
+
+ICyclicExecutorService cyclicExecutorService = app.Services.GetRequiredService<ICyclicExecutorService>();
+cyclicExecutorService.Start();
+
+// Dashboard savedComponent simulation
+Type sensor1 = typeof(TemperatureSensorWidget);
+Type sensor2 = typeof(TemperatureSensorWidget);
+
+Dictionary<string, string> param1 = new();
+Dictionary<string, string> param2 = new();
+
+var sensors = componentService.GetInstancesOfType<ITemperatureSensor>().ToList();
+
+param1.Add("Sensor", sensors[0]?.InstanceName ?? string.Empty);
+param2.Add("Sensor", sensors[1]?.InstanceName ?? string.Empty);
+
+DashBoardItemModel item1 = new() { View = sensor1, PropertyAndInstanceName = param1 };
+DashBoardItemModel item2 = new() { View = sensor2, PropertyAndInstanceName = param2 };
+
+List<DashBoardItemModel> list = new();
+
+list.Add(item1);
+list.Add(item2);
+
+string dashboradJson = Newtonsoft.Json.JsonConvert.SerializeObject(list, Formatting.Indented);
+
+ConfigurationUtils.SaveFile("dashboard.json", dashboradJson, FolderType.Data);
+
+// Load all assemblies
+LoadAllAssemblies();
+
 #if DEBUG
 // Configure a default user for debug purposes if compiled in debug mode
 SetupDebugUser(app);
@@ -95,6 +144,33 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.Run();
+
+static void LoadAllAssemblies()
+{
+    var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
+    string currentPath = AppDomain.CurrentDomain.BaseDirectory;
+    string[] allFiles = Directory.GetFiles(currentPath, "*.dll");
+
+    foreach (string dll in allFiles)
+    {
+        var assemblyName = AssemblyName.GetAssemblyName(dll);
+        if (!loadedAssemblies.Any(a => a.FullName == assemblyName.FullName))
+        {
+            Assembly.Load(assemblyName);
+        }
+    }
+
+    var fraichementLoadedAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
+
+    foreach (Assembly? assembly in fraichementLoadedAssemblies)
+    {
+        Type[] types = assembly.GetTypes();
+        foreach (Type type in types)
+        {
+            type.GetCustomAttribute<ConfigurationView>();
+        }
+    }
+}
 
 static void SetupDebugUser(WebApplication app)
 {

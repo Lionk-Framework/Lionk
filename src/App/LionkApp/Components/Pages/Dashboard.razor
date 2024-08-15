@@ -4,73 +4,63 @@
 @inject IComponentService ComponentService
 @inject IDialogService DialogService
 @using Lionk.Core.Component
+@using Lionk.Utils;
 @using Lionk.TemperatureSensor
 @using LionkApp.Components.Widgets.Buttons
 @using LionkApp.Components.Widgets.DashboardItem
 
 <PageTitle>Dashboard</PageTitle>
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
-    <MudGrid>
-        <MudItem xs="12" sm="6" md="4">
-            <DashboardItem ConfigurationClicked="HandleConfigurationClicked">
-                <DynamicComponent Type="type" @ref=dynamicComponent Parameters="parameters" />
-            </DashboardItem>
 
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="12" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudGrid>
-                <MudItem xs="12">
-                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-                </MudItem>
-                <MudItem xs="12">
-                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-                </MudItem>
-            </MudGrid>
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%"></MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="12" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
-    </MudGrid>
+    @if (DashBoardItemsModels != null)
+    {
+        int i = 0;
+        @foreach (var item in DashBoardItemsModels)
+        {
+
+            Dictionary<string, object> parameters = new();
+            if (item.PropertyAndInstanceName != null)
+            {
+                foreach (var parameter in item.PropertyAndInstanceName)
+                {
+                    object? obj = ComponentService.GetInstanceByName(parameter.Value);
+                    if (obj != null)
+                    {
+                        parameters.Add(parameter.Key, obj);
+                    }
+                }
+            }
+            <DashboardItem ConfigurationClicked="() => HandleConfigurationClicked(dynamicComponentInstances[i])">
+                <DynamicComponent Type="@item.View" @ref=dynamicComponentInstances[i] Parameters="parameters" />
+            </DashboardItem>
+        }
+    }
+
 </MudContainer>
 
 <FloatingButton />
 
 @code {
-    SimulatedTemperatureSensor sensor = new SimulatedTemperatureSensor();
-    Dictionary<string, object> parameters = new Dictionary<string, object>();
-    Type? type;
-    private DynamicComponent? dynamicComponent;
 
+    List<DashBoardItemModel>? DashBoardItemsModels = new List<DashBoardItemModel>();
+    private Dictionary<int, DynamicComponent> dynamicComponentInstances = new Dictionary<int, DynamicComponent>();
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        RestoreModels();
+    }
 
-        ComponentService.RegisterComponentInstance(sensor);
-        CyclicExecutorService.Start();
-        type = typeof(TemperatureSensorWidget);
-        parameters.Add("Sensor", sensor);
-        if (dynamicComponent is null)
+    private void RestoreModels()
+    {
+        string json = ConfigurationUtils.ReadFile("dashboard.json", FolderType.Data);
+        DashBoardItemsModels = Newtonsoft.Json.JsonConvert.DeserializeObject<List<DashBoardItemModel>>(json);
+        for (int i = 0; i < DashBoardItemsModels?.Count; i++)
         {
-            dynamicComponent = null;
+            dynamicComponentInstances.Add(i, new DynamicComponent());
         }
     }
 
-    private async Task HandleConfigurationClicked()
+    private async Task HandleConfigurationClicked(DynamicComponent? dynamicComponent)
     {
         if (dynamicComponent?.Instance is IConfigurableComponent configurableComponent)
         {
