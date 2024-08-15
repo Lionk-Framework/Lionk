@@ -5,6 +5,7 @@ using Lionk.Auth.Identity;
 using Lionk.Auth.Utils;
 using Lionk.Core.Component;
 using Lionk.Core.Model.Component.Cyclic;
+using Lionk.Core.Service;
 using Lionk.Core.TypeRegistery;
 using Lionk.Log;
 using Lionk.Log.Serilog;
@@ -62,8 +63,10 @@ builder.Services.AddSingleton<ICyclicExecutorService>(serviceProvider =>
     IComponentService componentService = serviceProvider.GetRequiredService<IComponentService>();
     return new CyclicExecutorService(componentService);
 });
-
 WebApplication app = builder.Build();
+
+// Give all services access to the service provider
+ServiceProviderAccessor.ServiceProvider = app.Services;
 
 // Configure the LogService with the singleton logger
 ILoggerFactory loggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
