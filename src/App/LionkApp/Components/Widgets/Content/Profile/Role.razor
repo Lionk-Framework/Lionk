@@ -61,16 +61,14 @@ else
     private void InitializeRoleStates()
     {
         Users = userService.GetUsers();
+        if (Users is null) return;
 
-        if (Users != null)
+        foreach (var user in Users)
         {
-            foreach (var user in Users)
+            RoleStates[user.Id] = new Dictionary<string, bool>();
+            foreach (var role in AvailableRoles)
             {
-                RoleStates[user.Id] = new Dictionary<string, bool>();
-                foreach (var role in AvailableRoles)
-                {
-                    RoleStates[user.Id][role] = user.Roles.Contains(role);
-                }
+                RoleStates[user.Id][role] = user.Roles.Contains(role);
             }
         }
     }
@@ -78,7 +76,7 @@ else
     private void OnRoleChanged(Guid userID, string role, bool previousRoleState)
     {
         var user = Users?.FirstOrDefault(u => u.Id == userID);
-        if (user == null) return;
+        if (user is null) return;
 
         // Add role
         if ((previousRoleState == false) && !user.Roles.Contains(role))
@@ -112,7 +110,7 @@ else
     private void OnDeletePressed(Guid userID)
     {
         var user = Users?.FirstOrDefault(u => u.Id == userID);
-        if (user == null) return;
+        if (user is null) return;
 
         Users?.Remove(user);
         userService.Delete(user);
