@@ -24,12 +24,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lionk.Auth.Razor", "Lib\Lio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lionk.Plugin.Blazor", "Lib\Lionk.Plugin.Blazor\Lionk.Plugin.Blazor.csproj", "{67298732-D7D7-440E-8B26-2C5C95828B32}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lionk.ComponentTestClock", "Lib\Lionk.ComponentTestClock\Lionk.ComponentTestClock.csproj", "{45874493-1A99-4907-8559-594F02B32BD4}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lionk.TemperatureSensor", "..\..\Lionk-rpi-components\src\Lionk.TemperatureSensor\Lionk.TemperatureSensor.csproj", "{DDBA24DD-80B3-44DB-A4C5-2D1719ABB7B4}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lionk.TemperatureSensor.Razor", "..\..\Lionk-rpi-components\src\Lionk.TemperatureSensor.Razor\Lionk.TemperatureSensor.Razor.csproj", "{099BFA41-9785-48CE-B88A-21F8E601E6B4}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -172,42 +166,6 @@ Global
 		{67298732-D7D7-440E-8B26-2C5C95828B32}.Release|x64.Build.0 = Release|x64
 		{67298732-D7D7-440E-8B26-2C5C95828B32}.Release|x86.ActiveCfg = Release|x86
 		{67298732-D7D7-440E-8B26-2C5C95828B32}.Release|x86.Build.0 = Release|x86
-		{45874493-1A99-4907-8559-594F02B32BD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{45874493-1A99-4907-8559-594F02B32BD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{45874493-1A99-4907-8559-594F02B32BD4}.Debug|x64.ActiveCfg = Debug|x64
-		{45874493-1A99-4907-8559-594F02B32BD4}.Debug|x64.Build.0 = Debug|x64
-		{45874493-1A99-4907-8559-594F02B32BD4}.Debug|x86.ActiveCfg = Debug|x86
-		{45874493-1A99-4907-8559-594F02B32BD4}.Debug|x86.Build.0 = Debug|x86
-		{45874493-1A99-4907-8559-594F02B32BD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{45874493-1A99-4907-8559-594F02B32BD4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{45874493-1A99-4907-8559-594F02B32BD4}.Release|x64.ActiveCfg = Release|x64
-		{45874493-1A99-4907-8559-594F02B32BD4}.Release|x64.Build.0 = Release|x64
-		{45874493-1A99-4907-8559-594F02B32BD4}.Release|x86.ActiveCfg = Release|x86
-		{45874493-1A99-4907-8559-594F02B32BD4}.Release|x86.Build.0 = Release|x86
-		{DDBA24DD-80B3-44DB-A4C5-2D1719ABB7B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DDBA24DD-80B3-44DB-A4C5-2D1719ABB7B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DDBA24DD-80B3-44DB-A4C5-2D1719ABB7B4}.Debug|x64.ActiveCfg = Debug|x64
-		{DDBA24DD-80B3-44DB-A4C5-2D1719ABB7B4}.Debug|x64.Build.0 = Debug|x64
-		{DDBA24DD-80B3-44DB-A4C5-2D1719ABB7B4}.Debug|x86.ActiveCfg = Debug|x86
-		{DDBA24DD-80B3-44DB-A4C5-2D1719ABB7B4}.Debug|x86.Build.0 = Debug|x86
-		{DDBA24DD-80B3-44DB-A4C5-2D1719ABB7B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DDBA24DD-80B3-44DB-A4C5-2D1719ABB7B4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DDBA24DD-80B3-44DB-A4C5-2D1719ABB7B4}.Release|x64.ActiveCfg = Release|x64
-		{DDBA24DD-80B3-44DB-A4C5-2D1719ABB7B4}.Release|x64.Build.0 = Release|x64
-		{DDBA24DD-80B3-44DB-A4C5-2D1719ABB7B4}.Release|x86.ActiveCfg = Release|x86
-		{DDBA24DD-80B3-44DB-A4C5-2D1719ABB7B4}.Release|x86.Build.0 = Release|x86
-		{099BFA41-9785-48CE-B88A-21F8E601E6B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{099BFA41-9785-48CE-B88A-21F8E601E6B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{099BFA41-9785-48CE-B88A-21F8E601E6B4}.Debug|x64.ActiveCfg = Debug|x64
-		{099BFA41-9785-48CE-B88A-21F8E601E6B4}.Debug|x64.Build.0 = Debug|x64
-		{099BFA41-9785-48CE-B88A-21F8E601E6B4}.Debug|x86.ActiveCfg = Debug|x86
-		{099BFA41-9785-48CE-B88A-21F8E601E6B4}.Debug|x86.Build.0 = Debug|x86
-		{099BFA41-9785-48CE-B88A-21F8E601E6B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{099BFA41-9785-48CE-B88A-21F8E601E6B4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{099BFA41-9785-48CE-B88A-21F8E601E6B4}.Release|x64.ActiveCfg = Release|x64
-		{099BFA41-9785-48CE-B88A-21F8E601E6B4}.Release|x64.Build.0 = Release|x64
-		{099BFA41-9785-48CE-B88A-21F8E601E6B4}.Release|x86.ActiveCfg = Release|x86
-		{099BFA41-9785-48CE-B88A-21F8E601E6B4}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
