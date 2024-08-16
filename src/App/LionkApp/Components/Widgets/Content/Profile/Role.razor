@@ -13,35 +13,33 @@
                 <MudTh>Username</MudTh>
                 <MudTh>Email</MudTh>
                 <MudTh>Roles</MudTh>
-                <MudTh>Actions</MudTh>
+                <MudTh style="text-align: center;">Actions</MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd>@context.Username</MudTd>
-                <MudTd>@context.Email</MudTd>
+                <MudTd>
+                    <MudText>@context.Username</MudText>
+                </MudTd>
+                <MudTd>
+                    <MudText>@context.Email</MudText>
+                </MudTd>
                 <MudTd>
                     <div>
                         @foreach (var role in AvailableRoles)
                         {
                             <div style="display: inline-flex; align-items: center; margin-right: 16px;">
-                                <span style="margin-right: 8px;">@role</span>
-                                <MudSwitch T="bool" @bind-Value="RoleStates[context.Id][role]" Color="Color.Primary" />
+                                <MudText style="margin-right: 8px;">@role</MudText>
+                                <MudSwitch T="bool" Value=RoleStates[context.Id][role] ValueChanged="@(() => OnRoleChanged(context.Id, role, RoleStates[context.Id][role]))" Color="Color.Primary" />
                             </div>
                         }
                     </div>
                 </MudTd>
                 <MudTd style="text-align: center; vertical-align: middle;">
-                    <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => DeleteUser(context.Id)">
+                    <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => OnDeletePressed(context.Id)">
                         Delete
                     </MudButton>
                 </MudTd>
             </RowTemplate>
         </MudTable>
-
-        <div style="text-align: right; margin-top: 20px; margin-right: 30px;">
-            <MudButton Style="width: 85px;"  Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveUsers">
-                Save
-            </MudButton>
-        </div>
     </MudContainer>
 }
 else
@@ -53,95 +51,70 @@ else
     public HashSet<User>? Users;
     private List<string> AvailableRoles = new List<string> { "Admin", "User"}; // TODO - Link to enum or global strings
     private Dictionary<Guid, Dictionary<string, bool>> RoleStates = new();
-    private bool Success = true;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-
         InitializeRoleStates();
     }
 
     private void InitializeRoleStates()
     {
         Users = userService.GetUsers();
+        if (Users is null) return;
 
-        if (Users != null)
+        foreach (var user in Users)
         {
-            foreach (var user in Users)
+            RoleStates[user.Id] = new Dictionary<string, bool>();
+            foreach (var role in AvailableRoles)
             {
-                RoleStates[user.Id] = new Dictionary<string, bool>();
-                foreach (var role in AvailableRoles)
-                {
-                    RoleStates[user.Id][role] = user.Roles.Contains(role);
-                }
+                RoleStates[user.Id][role] = user.Roles.Contains(role);
             }
         }
     }
 
-    private void SaveUser(User user)
+    private void OnRoleChanged(Guid userID, string role, bool previousRoleState)
     {
-        foreach (var role in AvailableRoles)
-        {
-            bool currentRoleState = RoleStates[user.Id][role];
+        var user = Users?.FirstOrDefault(u => u.Id == userID);
+        if (user is null) return;
 
-            // Add role
-            if (currentRoleState && !user.Roles.Contains(role))
+        // Add role
+        if ((previousRoleState == false) && !user.Roles.Contains(role))
+        {
+            user.AddRole(role);
+            userService.Update(user);
+        }
+        // Remove role
+        else if ((previousRoleState == true) && user.Roles.Contains(role))
+        {
+            if ((user.Id == AuthStateProvider.CurrentUser?.Id) && (role == "Admin"))
             {
-                user.AddRole(role);
+                Snackbar.Add("You cannot remove your admin role", Severity.Warning);
+                return;
             }
 
-            // Remove role
-            if (!currentRoleState && user.Roles.Contains(role))
+            if (user.Roles.Count <= 1)
             {
-                if ((user.Id == AuthStateProvider.CurrentUser?.Id) && (role == "Admin"))
-                {
-                    Snackbar.Add("You cannot remove your admin role", Severity.Warning);
-                    Success = false;
-                    return;
-                }
-
-                if (user.Roles.Count <= 1)
-                {
-                    Snackbar.Add("You cannot remove the only role", Severity.Warning);
-                    Success = false;
-                    return;
-                }
-
-                user.RemoveRole(role);
+                Snackbar.Add("You cannot remove the only role", Severity.Warning);
+                return;
             }
+
+            user.RemoveRole(role);
+            userService.Update(user);
         }
 
-        userService.Update(user);
-    }
-
-    private void SaveUsers()
-    {
-        if (Users != null)
-        {
-            foreach (var user in Users)
-            {
-                SaveUser(user);
-            }
-        }
-
-        if (Success)
-        {
-            Snackbar.Add("The user's roles have been successfully updated.", Severity.Success);
-        }
-
+        RoleStates[userID][role] = !previousRoleState;
         StateHasChanged();
     }
 
-    private void DeleteUser(Guid userId)
+    private void OnDeletePressed(Guid userID)
     {
-        var user = Users?.FirstOrDefault(u => u.Id == userId);
-        if (user != null)
-        {
-            Users?.Remove(user);
-            userService.Delete(user);
-            Snackbar.Add($"User {user.Username} has been deleted.", Severity.Success);
-            StateHasChanged();
-        }
+        var user = Users?.FirstOrDefault(u => u.Id == userID);
+        if (user is null) return;
+
+        Users?.Remove(user);
+        userService.Delete(user);
+        Snackbar.Add($"User {user.Username} has been deleted.", Severity.Success);
+        StateHasChanged();
     }
 }
