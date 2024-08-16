@@ -70,7 +70,18 @@ public class PluginManager : IPluginManager
         var types = new List<Type>();
 
         foreach (Plugin plugin in _plugins)
-            types.AddRange(plugin.Assembly.GetTypes());
+        {
+            try
+            {
+                types.AddRange(plugin.Assembly.GetTypes());
+                plugin.IsLoaded = true;
+            }
+            catch (ReflectionTypeLoadException e)
+            {
+                plugin.IsLoaded = false;
+                LogService.LogApp(LogSeverity.Error, $"Failed to load types from plugin: {plugin.Name}. Error: {e.Message}");
+            }
+        }
 
         return types;
     }
