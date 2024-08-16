@@ -30,8 +30,13 @@
                 }
             }
 
-            <DashboardItem ConfigurationClicked="() => HandleConfigurationClicked(dynamicComponentInstances[i])">
-                <DynamicComponent Type="@item.View" @ref=dynamicComponentInstances[i] Parameters="parameters" />
+            <DashboardItem 
+                           ConfigurableClicked="() => HandleConfigurableClicked(dynamicComponentInstances[i])"
+                           DetailableClicked="() => HandleDetailableClicked(dynamicComponentInstances[i])"
+                           PageableClicked="() => HandlePageableClicked(dynamicComponentInstances[i])"
+                           ExecutableClicked="() => HandleExecutableClicked(dynamicComponentInstances[i])">
+
+                <DynamicComponent Type="@item.View" @ref=dynamicComponentInstances[i] Parameters="parameters"/>
             </DashboardItem>
         }
     }
@@ -43,7 +48,9 @@
 @code {
 
     List<DashBoardItemModel>? DashBoardItemsModels = new List<DashBoardItemModel>();
-    private Dictionary<int, DynamicComponent> dynamicComponentInstances = new Dictionary<int, DynamicComponent>();
+    volatile private Dictionary<int, DynamicComponent> dynamicComponentInstances = new Dictionary<int, DynamicComponent>();
+    volatile private List<DashboardItem> dashboardItems = new List<DashboardItem>();
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -60,7 +67,7 @@
         }
     }
 
-    private async Task HandleConfigurationClicked(DynamicComponent? dynamicComponent)
+    private async Task HandleConfigurableClicked(DynamicComponent? dynamicComponent)
     {
         if (dynamicComponent?.Instance is IConfigurableComponent configurableComponent)
         {
@@ -68,4 +75,28 @@
         }
     }
 
+    private async Task HandleDetailableClicked(DynamicComponent? dynamicComponent)
+    {
+        if (dynamicComponent?.Instance is IDetailableComponent configurableComponent)
+        {
+            await configurableComponent.OpenDetail();
+        }
+    }
+
+    private async Task HandlePageableClicked(DynamicComponent? dynamicComponent)
+    {
+        if (dynamicComponent?.Instance is IPageableComponent pageableComponent)
+        {
+            await pageableComponent.OpenComponentPage();
+        }
+    }
+
+    private void HandleExecutableClicked(DynamicComponent? dynamicComponent)
+    {
+        if (dynamicComponent?.Instance is IExecutableComponent executableComponent)
+        {
+            executableComponent.Execute();
+        }
+    }
 }
+

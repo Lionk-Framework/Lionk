@@ -8,18 +8,58 @@
               Style=" position: relative;
             height:100%;
             width:100%">
-        <MudIconButton Icon="@Icons.Material.Filled.Settings"
-                       Size="Size.Small"
-                       Style="position: absolute; top: 5px; right: 5px;"
-                       OnClick="ConfigurationClicked" />
+        <div style="position: absolute;
+                    top: 5px;
+                    right: 5px;
+                    display: flex;
+                    flex-direction: column;">
+
+
+
+                <MudIconButton Icon="@Icons.Material.Filled.Settings"
+                               Size="Size.Small"
+                               OnClick="ConfigurableClicked" />
+    
+        
+
+                <MudIconButton Icon="@Icons.Material.Filled.Details"
+                               Size="Size.Small"
+                               OnClick="DetailableClicked" />
+          
+
+                <MudIconButton Icon="@Icons.Material.Filled.Pageview"
+                               Size="Size.Small"
+                               OnClick="PageableClicked" />
+          
+
+                <MudIconButton Icon="@Icons.Material.Filled.Refresh"
+                               Size="Size.Small"
+                               OnClick="ExecutableClicked" />
+            
+        </div>
+
         @if (ChildContent is not null)
             @ChildContent
+
+
 
     </MudPaper>
 </MudItem>
 
 
+
 @code {
 
-    [Parameter] public EventCallback ConfigurationClicked { get; set; }
+    [Parameter] public EventCallback ConfigurableClicked { get; set; }
+    [Parameter] public EventCallback DetailableClicked { get; set; }
+    [Parameter] public EventCallback PageableClicked { get; set; }
+    [Parameter] public EventCallback ExecutableClicked { get; set; }
+    [Parameter] public EventCallback OnInitializationDone {get; set;}
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        OnInitializationDone.InvokeAsync();
+    }
+
 }
