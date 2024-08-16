@@ -12,13 +12,10 @@ using Lionk.Log;
 using Lionk.Log.Serilog;
 using Lionk.Plugin;
 using Lionk.Plugin.Blazor;
-using Lionk.TemperatureSensor;
-using Lionk.Utils;
 using LionkApp.Components;
 using LionkApp.Components.Layout;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor.Services;
-using Newtonsoft.Json;
 using ILoggerFactory = Lionk.Log.ILoggerFactory;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -88,43 +85,6 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
-// Component simulation
-SimulatedTemperatureSensor simSensor = new();
-DS18B20 dsSensor = new();
-simSensor.InstanceName = "Simulated Sensor";
-dsSensor.InstanceName = "DS18B20 Sensor";
-
-IComponentService componentService = app.Services.GetRequiredService<IComponentService>();
-componentService.RegisterComponentInstance(simSensor);
-componentService.RegisterComponentInstance(dsSensor);
-
-ICyclicExecutorService cyclicExecutorService = app.Services.GetRequiredService<ICyclicExecutorService>();
-cyclicExecutorService.Start();
-
-// Dashboard savedComponent simulation
-Type sensor1 = typeof(TemperatureSensorWidget);
-Type sensor2 = typeof(TemperatureSensorWidget);
-
-Dictionary<string, string> param1 = new();
-Dictionary<string, string> param2 = new();
-
-var sensors = componentService.GetInstancesOfType<ITemperatureSensor>().ToList();
-
-param1.Add("Sensor", sensors[0]?.InstanceName ?? string.Empty);
-param2.Add("Sensor", sensors[1]?.InstanceName ?? string.Empty);
-
-DashBoardItemModel item1 = new() { View = sensor1, PropertyAndInstanceName = param1 };
-DashBoardItemModel item2 = new() { View = sensor2, PropertyAndInstanceName = param2 };
-
-List<DashBoardItemModel> list = new();
-
-list.Add(item1);
-list.Add(item2);
-
-string dashboradJson = Newtonsoft.Json.JsonConvert.SerializeObject(list, Formatting.Indented);
-
-ConfigurationUtils.SaveFile("dashboard.json", dashboradJson, FolderType.Data);
 
 // Load all assemblies
 LoadAllAssemblies();
