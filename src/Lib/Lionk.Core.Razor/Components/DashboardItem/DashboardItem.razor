@@ -14,14 +14,11 @@
                     display: flex;
                     flex-direction: column;">
 
-
-
                 <MudIconButton Icon="@Icons.Material.Filled.Settings"
                                Size="Size.Small"
                                OnClick="ConfigurableClicked" />
     
-        
-
+       
                 <MudIconButton Icon="@Icons.Material.Filled.Details"
                                Size="Size.Small"
                                OnClick="DetailableClicked" />
@@ -40,9 +37,6 @@
 
         @if (ChildContent is not null)
             @ChildContent
-
-
-
     </MudPaper>
 </MudItem>
 
