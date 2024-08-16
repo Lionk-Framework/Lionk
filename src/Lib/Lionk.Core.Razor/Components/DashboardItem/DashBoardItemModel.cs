@@ -1,6 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
-namespace LionkApp.Components.Widgets.DashboardItem;
+namespace Lionk.Core.Component;
 
 /// <summary>
 /// This class is used to define the model of the dashboard item.

@@ -1,0 +1,38 @@
+﻿@inherits MudItem
+
+@namespace Lionk.Core.Component
+
+<MudItem Style=" margin-right:15px;
+            margin-bottom:15px;">
+    <MudPaper Class="pa-4"
+              Style=" position: relative;
+            height:100%;
+            width:100%">
+        <MudContainer Style="position: absolute; top: 5px; right: 5px;">
+            @if (ItemType is IConfigurableComponent configurableComponent)
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.Settings"
+                               Size="Size.Small"
+                               OnClick="configurableComponent.OpenConfiguration" />
+            }
+
+        </MudContainer>
+
+        @if (ChildContent is not null)
+            @ChildContent
+
+
+    </MudPaper>
+</MudItem>
+
+
+@code {
+
+    [Parameter] public EventCallback ConfigurationClicked { get; set; }
+    [Parameter] public Type? ItemType { get; set; }
+
+    private bool ChildContentImplement<T>(RenderFragment? childContent)
+    {
+        return childContent != null && childContent.GetType().GetInterface(nameof(T)) != null;
+    }
+}

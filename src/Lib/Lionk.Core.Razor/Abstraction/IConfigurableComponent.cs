@@ -7,5 +7,9 @@ namespace Lionk.Core.Component;
 /// </summary>
 public interface IConfigurableComponent
 {
+    /// <summary>
+    /// This method is used to open the configuration view of the component.
+    /// </summary>
+    /// <returns> A task that represents the asynchronous operation. </returns>
     Task OpenConfiguration();
 }

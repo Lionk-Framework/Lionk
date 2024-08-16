@@ -7,7 +7,6 @@
 @using Lionk.Utils;
 @using Lionk.TemperatureSensor
 @using LionkApp.Components.Widgets.Buttons
-@using LionkApp.Components.Widgets.DashboardItem
 
 <PageTitle>Dashboard</PageTitle>
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
@@ -30,6 +29,11 @@
                     }
                 }
             }
+            if (item.View is not null)
+            {
+                parameters.Add("ItemType", item.View);
+            }
+
             <DashboardItem ConfigurationClicked="() => HandleConfigurationClicked(dynamicComponentInstances[i])">
                 <DynamicComponent Type="@item.View" @ref=dynamicComponentInstances[i] Parameters="parameters" />
             </DashboardItem>

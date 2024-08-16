@@ -17,7 +17,6 @@ using Lionk.TemperatureSensor;
 using Lionk.Utils;
 using LionkApp.Components;
 using LionkApp.Components.Layout;
-using LionkApp.Components.Widgets.DashboardItem;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor.Services;
 using Newtonsoft.Json;
