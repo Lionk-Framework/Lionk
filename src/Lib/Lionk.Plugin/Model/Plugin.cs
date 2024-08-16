@@ -54,6 +54,11 @@ public class Plugin
     /// </summary>
     public string[] Dependencies { get; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether the plugin has been correctly loaded.
+    /// </summary>
+    public bool IsLoaded { get; set; }
+
     private T? GetAttribute<T>(Assembly assembly)
         where T : Attribute
     {

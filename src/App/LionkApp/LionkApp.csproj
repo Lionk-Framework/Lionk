@@ -1,31 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Web">
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Version>0.3.0</Version>
-    <Description>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Version>0.3.0</Version>
+        <Description>
 
-## Change Log
-- Deleting text
+            ## Change Log
+            - Deleting text
 
-# Lionk App
+            # Lionk App
 
-This is the Lionk App README file.
-</Description>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="MudBlazor" Version="7.6.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Lionk-rpi-components\src\Lionk.TemperatureSensor.Razor\Lionk.TemperatureSensor.Razor.csproj" />
-    <ProjectReference Include="..\..\..\..\Lionk-rpi-components\src\Lionk.TemperatureSensor\Lionk.TemperatureSensor.csproj" />
-    <ProjectReference Include="..\..\Lib\Lionk.Auth.Razor\Lionk.Auth.Razor.csproj" />
-    <ProjectReference Include="..\..\Lib\Lionk.Core.Razor\Lionk.Core.Razor.csproj" />
-    <ProjectReference Include="..\..\Lib\Lionk.Core\Lionk.Core.csproj" />
-    <ProjectReference Include="..\..\Lib\Lionk.Logger\Lionk.Logger.csproj" />
-    <ProjectReference Include="..\..\Lib\Lionk.Plugin.Blazor\Lionk.Plugin.Blazor.csproj" />
-    <ProjectReference Include="..\..\Lib\Lionk.Plugin\Lionk.Plugin.csproj" />
-  </ItemGroup>
+            This is the Lionk App README file.
+        </Description>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="MudBlazor" Version="7.6.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\Lib\Lionk.Auth.Razor\Lionk.Auth.Razor.csproj" />
+        <ProjectReference Include="..\..\Lib\Lionk.Core.Razor\Lionk.Core.Razor.csproj" />
+        <ProjectReference Include="..\..\Lib\Lionk.Core\Lionk.Core.csproj" />
+        <ProjectReference Include="..\..\Lib\Lionk.Logger\Lionk.Logger.csproj" />
+        <ProjectReference Include="..\..\Lib\Lionk.Plugin.Blazor\Lionk.Plugin.Blazor.csproj" />
+        <ProjectReference Include="..\..\Lib\Lionk.Plugin\Lionk.Plugin.csproj" />
+    </ItemGroup>
 </Project>

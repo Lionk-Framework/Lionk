@@ -1,0 +1,120 @@
+﻿@page "/role"
+@using Lionk.Auth.Identity
+@using Microsoft.AspNetCore.Components.Authorization
+@inject ISnackbar Snackbar
+@inject UserAuthenticationStateProvider AuthStateProvider
+@inject UserService userService
+
+@if (Users != null)
+{
+    <MudContainer>
+        <MudTable Items="Users" Bordered="true" Dense="true" Hover="true">
+            <HeaderContent>
+                <MudTh>Username</MudTh>
+                <MudTh>Email</MudTh>
+                <MudTh>Roles</MudTh>
+                <MudTh style="text-align: center;">Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>
+                    <MudText>@context.Username</MudText>
+                </MudTd>
+                <MudTd>
+                    <MudText>@context.Email</MudText>
+                </MudTd>
+                <MudTd>
+                    <div>
+                        @foreach (var role in AvailableRoles)
+                        {
+                            <div style="display: inline-flex; align-items: center; margin-right: 16px;">
+                                <MudText style="margin-right: 8px;">@role</MudText>
+                                <MudSwitch T="bool" Value=RoleStates[context.Id][role] ValueChanged="@(() => OnRoleChanged(context.Id, role, RoleStates[context.Id][role]))" Color="Color.Primary" />
+                            </div>
+                        }
+                    </div>
+                </MudTd>
+                <MudTd style="text-align: center; vertical-align: middle;">
+                    <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => OnDeletePressed(context.Id)">
+                        Delete
+                    </MudButton>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudContainer>
+}
+else
+{
+    <MudText Typo="Typo.body1" Align="Align.Left" Style="margin: 20px; font-size: 14px;">Loading users...</MudText>
+}
+
+@code {
+    public HashSet<User>? Users;
+    private List<string> AvailableRoles = new List<string> { "Admin", "User"}; // TODO - Link to enum or global strings
+    private Dictionary<Guid, Dictionary<string, bool>> RoleStates = new();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        InitializeRoleStates();
+    }
+
+    private void InitializeRoleStates()
+    {
+        Users = userService.GetUsers();
+        if (Users is null) return;
+
+        foreach (var user in Users)
+        {
+            RoleStates[user.Id] = new Dictionary<string, bool>();
+            foreach (var role in AvailableRoles)
+            {
+                RoleStates[user.Id][role] = user.Roles.Contains(role);
+            }
+        }
+    }
+
+    private void OnRoleChanged(Guid userID, string role, bool previousRoleState)
+    {
+        var user = Users?.FirstOrDefault(u => u.Id == userID);
+        if (user is null) return;
+
+        // Add role
+        if ((previousRoleState == false) && !user.Roles.Contains(role))
+        {
+            user.AddRole(role);
+            userService.Update(user);
+        }
+        // Remove role
+        else if ((previousRoleState == true) && user.Roles.Contains(role))
+        {
+            if ((user.Id == AuthStateProvider.CurrentUser?.Id) && (role == "Admin"))
+            {
+                Snackbar.Add("You cannot remove your admin role", Severity.Warning);
+                return;
+            }
+
+            if (user.Roles.Count <= 1)
+            {
+                Snackbar.Add("You cannot remove the only role", Severity.Warning);
+                return;
+            }
+
+            user.RemoveRole(role);
+            userService.Update(user);
+        }
+
+        RoleStates[userID][role] = !previousRoleState;
+        StateHasChanged();
+    }
+
+    private void OnDeletePressed(Guid userID)
+    {
+        var user = Users?.FirstOrDefault(u => u.Id == userID);
+        if (user is null) return;
+
+        Users?.Remove(user);
+        userService.Delete(user);
+        Snackbar.Add($"User {user.Username} has been deleted.", Severity.Success);
+        StateHasChanged();
+    }
+}

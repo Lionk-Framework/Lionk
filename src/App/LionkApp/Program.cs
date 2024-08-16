@@ -35,6 +35,7 @@ builder.Services.AddMudServices();
 builder.Services.AddScoped<LionkPalette>();
 
 // Add Basic Authentication services
+builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<UserServiceRazor>();
 builder.Services.AddSingleton<IUserRepository, UserFileHandler>();
 builder.Services.AddSingleton<IUserService>(sp => new UserService(sp.GetRequiredService<IUserRepository>()));
