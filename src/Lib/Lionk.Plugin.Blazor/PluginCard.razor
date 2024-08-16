@@ -14,12 +14,23 @@ else
 {
     <MudCard Class="floating-card" Outlined="true">
         <MudCardHeader>
-            <div>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div>
                 <MudText Typo="Typo.h6">@Plugin.Name</MudText>
                 <MudText Typo="Typo.subtitle2">@Plugin.Version</MudText>
+                </div>
             </div>
         </MudCardHeader>
         <MudCardContent>
+            @if (!Plugin.IsLoaded)
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.Error" Color="Color.Error" Style="cursor: pointer;">
+                    <MudTooltip Text="Plugin is not loaded. Hover to see error message.">
+                        <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Error" />
+                    </MudTooltip>
+                </MudIconButton>
+            }
+
             <MudText Typo="Typo.body1">@Plugin.Description</MudText>
             <MudText Typo="Typo.body2">Author: @Plugin.Author</MudText>
 
@@ -30,6 +41,7 @@ else
                     {
                         <MudListItem>@dependency</MudListItem>
                     }
+                }
                 </MudList>
             </MudCollapse>
         </MudCardContent>
