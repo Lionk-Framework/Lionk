@@ -29,10 +29,6 @@
                     }
                 }
             }
-            if (item.View is not null)
-            {
-                parameters.Add("ItemType", item.View);
-            }
 
             <DashboardItem ConfigurationClicked="() => HandleConfigurationClicked(dynamicComponentInstances[i])">
                 <DynamicComponent Type="@item.View" @ref=dynamicComponentInstances[i] Parameters="parameters" />
