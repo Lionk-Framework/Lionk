@@ -5,7 +5,6 @@ using Lionk.Auth.Abstraction;
 using Lionk.Auth.Identity;
 using Lionk.Auth.Utils;
 using Lionk.Core.Component;
-using Lionk.Core.Component.Configuration;
 using Lionk.Core.Model.Component.Cyclic;
 using Lionk.Core.Service;
 using Lionk.Core.TypeRegistery;
@@ -166,7 +165,7 @@ static void LoadAllAssemblies()
         Type[] types = assembly.GetTypes();
         foreach (Type type in types)
         {
-            type.GetCustomAttribute<ConfigurationView>();
+            type.GetCustomAttribute<ComponentView>();
         }
     }
 }
