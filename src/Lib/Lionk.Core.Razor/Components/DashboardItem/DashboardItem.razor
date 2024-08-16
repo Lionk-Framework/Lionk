@@ -13,30 +13,35 @@
                     right: 5px;
                     display: flex;
                     flex-direction: column;">
-
+            @if (_isConfigurable)
+            {
                 <MudIconButton Icon="@Icons.Material.Filled.Settings"
                                Size="Size.Small"
                                OnClick="ConfigurableClicked" />
-    
-       
+            }
+
+            @if (_isDetailable)
+            {
                 <MudIconButton Icon="@Icons.Material.Filled.Details"
                                Size="Size.Small"
                                OnClick="DetailableClicked" />
-          
-
+            }
+            @if (_isPageable)
+            {
                 <MudIconButton Icon="@Icons.Material.Filled.Pageview"
                                Size="Size.Small"
                                OnClick="PageableClicked" />
-          
-
-                <MudIconButton Icon="@Icons.Material.Filled.Refresh"
+            }
+            @if (_isExecutable)
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.PlayArrow"
                                Size="Size.Small"
                                OnClick="ExecutableClicked" />
-            
+            }
+
         </div>
 
-        @if (ChildContent is not null)
-            @ChildContent
+        <DynamicComponent @ref=_dynamicComponent Type="@View" Parameters="@Parameters" />
     </MudPaper>
 </MudItem>
 
@@ -44,16 +49,67 @@
 
 @code {
 
-    [Parameter] public EventCallback ConfigurableClicked { get; set; }
-    [Parameter] public EventCallback DetailableClicked { get; set; }
-    [Parameter] public EventCallback PageableClicked { get; set; }
-    [Parameter] public EventCallback ExecutableClicked { get; set; }
-    [Parameter] public EventCallback OnInitializationDone {get; set;}
+    [Parameter] public Type? View { get; set; }
+    [Parameter] public Dictionary<string, object>? Parameters { get; set; }
+
+    private bool _isConfigurable;
+    private bool _isDetailable;
+    private bool _isPageable;
+    private bool _isExecutable;
+
+    private DynamicComponent? _dynamicComponent;
+    private object? _instance => _dynamicComponent?.Instance;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        OnInitializationDone.InvokeAsync();
     }
 
+    private void DefineButtonsState()
+    {
+        if (_instance is null) return;
+        _isConfigurable = _instance is IConfigurableComponent;
+        _isDetailable = _instance is IDetailableComponent;
+        _isPageable = _instance is IPageableComponent;
+        _isExecutable = _instance is IExecutableComponent;
+        StateHasChanged();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        DefineButtonsState();
+    }
+
+    private void ConfigurableClicked()
+    {
+        if (_instance is IConfigurableComponent configurableComponent)
+        {
+            configurableComponent.OpenConfiguration();
+        }
+    }
+
+    private void DetailableClicked()
+    {
+        if (_instance is IDetailableComponent detailableComponent)
+        {
+            detailableComponent.OpenDetail();
+        }
+    }
+
+    private void PageableClicked()
+    {
+        if (_instance is IPageableComponent pageableComponent)
+        {
+            pageableComponent.OpenComponentPage();
+        }
+    }
+
+    private void ExecutableClicked()
+    {
+        if (_instance is IExecutableComponent executableComponent)
+        {
+            executableComponent.Execute();
+        }
+    }
 }

@@ -13,7 +13,6 @@
 
     @if (DashBoardItemsModels != null)
     {
-        int i = 0;
         @foreach (var item in DashBoardItemsModels)
         {
 
@@ -29,15 +28,7 @@
                     }
                 }
             }
-
-            <DashboardItem 
-                           ConfigurableClicked="() => HandleConfigurableClicked(dynamicComponentInstances[i])"
-                           DetailableClicked="() => HandleDetailableClicked(dynamicComponentInstances[i])"
-                           PageableClicked="() => HandlePageableClicked(dynamicComponentInstances[i])"
-                           ExecutableClicked="() => HandleExecutableClicked(dynamicComponentInstances[i])">
-
-                <DynamicComponent Type="@item.View" @ref=dynamicComponentInstances[i] Parameters="parameters"/>
-            </DashboardItem>
+            <DashboardItem View="@item.View" Parameters="parameters"/>
         }
     }
 
@@ -48,8 +39,6 @@
 @code {
 
     List<DashBoardItemModel>? DashBoardItemsModels = new List<DashBoardItemModel>();
-    volatile private Dictionary<int, DynamicComponent> dynamicComponentInstances = new Dictionary<int, DynamicComponent>();
-    volatile private List<DashboardItem> dashboardItems = new List<DashboardItem>();
 
     protected override void OnInitialized()
     {
@@ -61,10 +50,6 @@
     {
         string json = ConfigurationUtils.ReadFile("dashboard.json", FolderType.Data);
         DashBoardItemsModels = Newtonsoft.Json.JsonConvert.DeserializeObject<List<DashBoardItemModel>>(json);
-        for (int i = 0; i < DashBoardItemsModels?.Count; i++)
-        {
-            dynamicComponentInstances.Add(i, new DynamicComponent());
-        }
     }
 
     private async Task HandleConfigurableClicked(DynamicComponent? dynamicComponent)
