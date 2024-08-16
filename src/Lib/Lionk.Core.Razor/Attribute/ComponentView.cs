@@ -25,15 +25,16 @@ public class ComponentView : Attribute
     /// Gets the view that is used to configure the object.
     /// </summary>
     /// <param name="configurableType"> The type of the object that is being configured. </param>
+    /// <param name="mode"> The view mode that is used to configure the object. </param>
     /// <returns> The type of the view that is used to configure the object. </returns>
-    public static ComponentViewModel? GetConfigurationView(Type? configurableType)
+    public static ComponentViewModel? GetComponentView(Type? configurableType, ComponentViewMode mode)
     {
         if (configurableType is null)
         {
             return null;
         }
 
-        return ConfigurationViews.FirstOrDefault(x => x.ComponentType == configurableType);
+        return ConfigurationViews.FirstOrDefault(x => x.ComponentType == configurableType && x.ViewMode == mode);
     }
 }
 

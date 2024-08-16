@@ -51,37 +51,5 @@
         string json = ConfigurationUtils.ReadFile("dashboard.json", FolderType.Data);
         DashBoardItemsModels = Newtonsoft.Json.JsonConvert.DeserializeObject<List<DashBoardItemModel>>(json);
     }
-
-    private async Task HandleConfigurableClicked(DynamicComponent? dynamicComponent)
-    {
-        if (dynamicComponent?.Instance is IConfigurableComponent configurableComponent)
-        {
-            await configurableComponent.OpenConfiguration();
-        }
-    }
-
-    private async Task HandleDetailableClicked(DynamicComponent? dynamicComponent)
-    {
-        if (dynamicComponent?.Instance is IDetailableComponent configurableComponent)
-        {
-            await configurableComponent.OpenDetail();
-        }
-    }
-
-    private async Task HandlePageableClicked(DynamicComponent? dynamicComponent)
-    {
-        if (dynamicComponent?.Instance is IPageableComponent pageableComponent)
-        {
-            await pageableComponent.OpenComponentPage();
-        }
-    }
-
-    private void HandleExecutableClicked(DynamicComponent? dynamicComponent)
-    {
-        if (dynamicComponent?.Instance is IExecutableComponent executableComponent)
-        {
-            executableComponent.Execute();
-        }
-    }
 }
 
