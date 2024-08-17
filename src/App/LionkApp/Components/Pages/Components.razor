@@ -47,7 +47,7 @@
             </MudGrid>
 
             <IComponentInstanceList Components="InstantiatedComponents"
-                                    OnComponentSelected="OnComponentSelectedInstance"/>
+                                    OnComponentSelected="OnComponentSelectedInstance" />
         </MudPaper>
     </MudItem>
 </MudGrid>
@@ -91,7 +91,7 @@
     {
         if (_selectedInstanceComponent is not null)
         {
-            // TODO : Component must implement IDisposable to delete component correctly
+            _selectedInstanceComponent.Dispose();
             ComponentService.UnregisterComponentInstance(_selectedInstanceComponent);
             StateHasChanged();
         }
