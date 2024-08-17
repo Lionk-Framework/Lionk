@@ -48,8 +48,14 @@
 
 @code {
 
-    [Parameter] public Type? View { get; set; }
-    [Parameter] public Dictionary<string, object>? Parameters { get; set; }
+    [Parameter] public Type? View {
+        get;
+        set;
+    }
+    [Parameter] public Dictionary<string, object>? Parameters {
+        get;
+        set;
+    }
 
     private bool _isConfigurable;
     private bool _isDetailable;
@@ -61,7 +67,8 @@
 
     protected override void OnInitialized()
     {
-        
+        int i = 0;
+        i++;
     }
 
     private void DefineButtonsState()

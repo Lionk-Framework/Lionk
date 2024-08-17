@@ -10,20 +10,15 @@
 <PageTitle>Dashboard</PageTitle>
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
 
-    @if (DashBoardItems != null)
+    @if (_widgets != null)
     {
-        @foreach (Widget item in DashBoardItems)
+        @foreach (Widget widget in _widgets)
         {
-
             Dictionary<string, object> parameters = new();
-            string WidgetInstanceName = item.InstanceName ?? "No widget name";
-            if (item.Component is not null)
+            if (widget.Component is not null)
             {
-                Type view = item.GetType();
-
-                parameters.Add("ComponentParameter", item.Component);
-                parameters.Add("InstanceNameParameter", WidgetInstanceName);
-
+                Type view = widget.GetType();
+                parameters.Add("ComponentParameter", widget.Component);
                 <DashboardItem View="view" Parameters="parameters" />
             }
         }
@@ -34,23 +29,18 @@
 <FloatingButton NewWidgetAvailable="Refresh" />
 
 @code {
-    private List<Widget>? DashBoardItems;
+    private List<Widget>? _widgets;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        GetDashBoardItems();
+        _widgets = ComponentService.GetInstancesOfType<Widget>().ToList();
     }
 
     private void Refresh()
     {
-        GetDashBoardItems();
         StateHasChanged();
     }
 
-    private void GetDashBoardItems()
-    {
-        DashBoardItems = ComponentService.GetInstancesOfType<Widget>().ToList();
-    }
 }
 

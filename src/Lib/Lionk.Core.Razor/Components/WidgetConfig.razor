@@ -22,8 +22,7 @@
     {
         if (Type is not null)
         {
-            var all = ComponentService.GetInstances();
-            _components = all.ToList();
+            _components = ComponentService.GetInstances().Where(c => Type.IsInstanceOfType(c)).ToList();
         }
 
     }
