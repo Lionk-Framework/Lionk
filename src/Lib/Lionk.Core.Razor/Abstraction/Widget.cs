@@ -7,7 +7,7 @@ namespace Lionk.Core.Component;
 /// <summary>
 /// This interface is used to define an element that can be used as a widget.
 /// </summary>
-public abstract class Widget : ComponentBase, Lionk.Core.Component.IComponent
+public abstract class Widget : ComponentBase, IComponent
 {
     /// <summary>
     /// Gets or sets the name of the widget.
