@@ -6,25 +6,47 @@
 @using System.Collections
 @inject IComponentService ComponentService
 
-<MudPaper Class="pa-4">
-    <MudGrid>
-        <MudItem xs="12" md="8">
-            <MudText Typo="Typo.h4">Component Manager</MudText>
-        </MudItem>
-        <MudItem xs="12" md="4" Class="d-flex justify-end">
-            <MudButton Variant="Variant.Outlined"
-                       Color="Color.Primary"
-                       OnClick="AddComponent"
-                       Disabled="@(_selectedComponent == null)">
-                Add selected
-            </MudButton>
-        </MudItem>
-    </MudGrid>
+<MudGrid>
+    <MudItem xs="6">
+        <MudPaper Class="pa-4">
+            <MudGrid>
+                <MudItem xs="12" md="8">
+                    <MudText Typo="Typo.h4">Component Manager</MudText>
+                </MudItem>
+                <MudItem xs="12" md="4" Class="d-flex justify-end">
+                    <MudButton Variant="Variant.Outlined"
+                               Color="Color.Primary"
+                               OnClick="AddComponent"
+                               Disabled="@(_selectedComponent == null)">
+                        Add selected
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
 
-    <ComponentList TypesRegistery="@TypesRegistery"
-                   OnComponentSelected="OnComponentSelected" />
+            <ComponentList TypesRegistery="@TypesRegistery"
+                           OnComponentSelected="OnComponentSelected" />
+        </MudPaper>
+    </MudItem>
 
-</MudPaper>
+    <MudItem xs="6">
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.h4">Instantiated Components</MudText>
+
+            <!-- Champ de recherche -->
+            <MudTextField @bind-Value="SearchTerm" Label="Search" Variant="Variant.Outlined" />
+
+            <!-- Liste des composants filtrés -->
+            <MudList T="Lionk.Core.Component.IComponent">
+                @foreach (var component in FilteredComponents)
+                {
+                    <MudListItem>
+                        @component.InstanceName - @GetName(component)
+                    </MudListItem>
+                }
+            </MudList>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
 
 @code {
     private IReadOnlyDictionary<ComponentTypeDescription, Factory>? TypesRegistery
@@ -32,6 +54,18 @@
 
     // Propriété pour stocker le composant sélectionné
     private KeyValuePair<ComponentTypeDescription, Factory>? _selectedComponent;
+
+    private IEnumerable<Lionk.Core.Component.IComponent> InstantiatedComponents => ComponentService.GetInstances();
+
+    private string SearchTerm { get; set; } = string.Empty;
+
+    private IEnumerable<Lionk.Core.Component.IComponent> FilteredComponents =>
+        string.IsNullOrWhiteSpace(SearchTerm)
+        ? InstantiatedComponents
+        : InstantiatedComponents.Where(
+            x =>
+                (x.InstanceName?.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase) ?? false)
+                || GetName(x).Contains(SearchTerm, StringComparison.OrdinalIgnoreCase));
 
     protected override async Task OnInitializedAsync()
     {
@@ -51,7 +85,7 @@
 
     private void AddComponent()
     {
-        if(_selectedComponent.HasValue)
+        if (_selectedComponent.HasValue)
         {
             var factory = _selectedComponent.Value.Value;
             factory.CreateInstance();
@@ -74,6 +108,8 @@
     }
 
     public void Dispose()
-        =>  ComponentService.NewComponentAvailable -= (s, e) => OnNewTypesAvailable();
-    
+        => ComponentService.NewComponentAvailable -= (s, e) => OnNewTypesAvailable();
+
+    private string GetName(Lionk.Core.Component.IComponent component)
+        => TypesRegistery?.Where(x => x.Key.Type == component.GetType()).First().Key.Name ?? "Unknown";
 }

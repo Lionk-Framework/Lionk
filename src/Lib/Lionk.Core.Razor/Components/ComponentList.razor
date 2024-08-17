@@ -41,9 +41,8 @@
     public EventCallback<KeyValuePair<ComponentTypeDescription, Factory>> OnComponentSelected { get; set; }
 
     private MudTable<ComponentTypeDescription> _table = new();
-    private HashSet<ComponentTypeDescription>? _selectedItems;
     private List<ComponentTypeDescription> _componentTypeDescriptions = new List<ComponentTypeDescription>();
-    private List<string> Properties = new List<string> { "Name", "Description" };
+    private List<string> Properties = new List<string> {nameof(NamedElement.Name), nameof(NamedElement.Description)};
     private List<string> PropertiesFriendlyNames = new List<string> { "Type Name", "Description" };
 
     private ComponentTypeDescription? _selectedComponent;
