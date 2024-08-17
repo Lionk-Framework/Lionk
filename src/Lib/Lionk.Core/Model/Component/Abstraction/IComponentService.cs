@@ -7,7 +7,7 @@ namespace Lionk.Core.Component;
 /// <summary>
 /// Interface for component service.
 /// </summary>
-public interface IComponentService
+public interface IComponentService : IDisposable
 {
     /// <summary>
     /// Register a component.
@@ -39,7 +39,7 @@ public interface IComponentService
     /// </summary>
     /// <returns>A <see cref="IDictionary{TKey, TValue}"/>
     /// which contains information about registered components."/>.</returns>
-    public IDictionary<ComponentTypeDescription, Factory> GetRegisteredTypeDictionnary();
+    public IReadOnlyDictionary<ComponentTypeDescription, Factory> GetRegisteredTypeDictionnary();
 
     /// <summary>
     /// Get an instance by <see cref="IComponent.InstanceName"/>.
@@ -47,4 +47,9 @@ public interface IComponentService
     /// <param name="name">The instance name.</param>
     /// <returns>The <see cref="IComponent"/> define by its name, null if not registered.</returns>
     public IComponent? GetInstanceByName(string name);
+
+    /// <summary>
+    /// Event raised when a new type is available.
+    /// </summary>
+    public event EventHandler<EventArgs> NewComponentAvailable;
 }

@@ -10,7 +10,7 @@ namespace Lionk.Core;
 /// </remarks>
 /// <param name="name">The name.</param>
 /// <param name="description">The description.</param>
-[AttributeUsage(AttributeTargets.Class, Inherited = false)]
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, Inherited = false)]
 public class NamedElement(string name, string description) : Attribute
 {
     /// <summary>
