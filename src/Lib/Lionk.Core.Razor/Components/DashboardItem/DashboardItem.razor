@@ -40,7 +40,6 @@
             }
 
         </div>
-
         <DynamicComponent @ref=_dynamicComponent Type="@View" Parameters="@Parameters" />
     </MudPaper>
 </MudItem>
@@ -85,7 +84,7 @@
     {
         if (_instance is IConfigurableComponent configurableComponent)
         {
-            configurableComponent.OpenConfiguration();
+            configurableComponent.OpenConfigurationAsync();
         }
     }
 
@@ -93,7 +92,7 @@
     {
         if (_instance is IDetailableComponent detailableComponent)
         {
-            detailableComponent.OpenDetail();
+            detailableComponent.OpenDetailAsync();
         }
     }
 
@@ -101,7 +100,7 @@
     {
         if (_instance is IPageableComponent pageableComponent)
         {
-            pageableComponent.OpenComponentPage();
+            pageableComponent.OpenComponentPageAsync();
         }
     }
 

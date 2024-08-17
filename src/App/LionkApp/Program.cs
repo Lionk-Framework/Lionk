@@ -5,7 +5,6 @@ using Lionk.Auth.Identity;
 using Lionk.Auth.Utils;
 using Lionk.Core.Component;
 using Lionk.Core.Model.Component.Cyclic;
-using Lionk.Core.Service;
 using Lionk.Core.TypeRegistery;
 using Lionk.Log;
 using Lionk.Log.Serilog;
@@ -19,8 +18,10 @@ using ILoggerFactory = Lionk.Log.ILoggerFactory;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-// Configure Kestrel to listen on all IP addresses and port 5000
-// builder.WebHost.UseKestrel(options => options.Listen(System.Net.IPAddress.Any, 5000));
+#if !DEBUG
+ // Configure Kestrel to listen on all IP addresses and port 5000
+ builder.WebHost.UseKestrel(options => options.Listen(System.Net.IPAddress.Any, 5000));
+#endif
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -68,9 +69,6 @@ builder.Services.AddSingleton<ICyclicExecutorService>(serviceProvider =>
     return new CyclicExecutorService(componentService);
 });
 WebApplication app = builder.Build();
-
-// Give all services access to the service provider
-ServiceProviderAccessor.ServiceProvider = app.Services;
 
 // Configure the LogService with the singleton logger
 ILoggerFactory loggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
