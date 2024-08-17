@@ -34,6 +34,11 @@ public abstract class Widget : ComponentBase, IComponent
     public IComponent? InstanceNameParameter { get; set; }
 
     /// <summary>
+    /// Gets the type of the component that will be displayed in the widget.
+    /// </summary>
+    public abstract Type? ComponentType { get; }
+
+    /// <summary>
     /// This method is called when the component is initialized.
     /// </summary>
     protected override void OnInitialized()
