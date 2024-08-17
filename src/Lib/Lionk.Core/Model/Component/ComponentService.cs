@@ -84,7 +84,7 @@ public class ComponentService : IComponentService
         GC.SuppressFinalize(this);
     }
 
-    private const string DefaultComponentName = "Unamed";
+    private const string DefaultComponentName = "Component";
 
     private readonly ConcurrentDictionary<string, IComponent>
         _componentInstances = new();
