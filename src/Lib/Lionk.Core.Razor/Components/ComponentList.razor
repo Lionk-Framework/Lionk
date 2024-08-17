@@ -12,15 +12,14 @@
 <MudTable @ref="_table"
           T="ComponentTypeDescription"
           Items="@_componentTypeDescriptions"
-          Hover="true" @bind-SelectedItems="_selectedItems"
           OnRowClick="@RowClicked">
-    <HeaderContent >
-        <MudText Align="Align.Left" >Type Name</MudText>
+    <HeaderContent>
+        <MudText Align="Align.Left">Type Name</MudText>
     </HeaderContent>
 
     <RowTemplate>
         <MudTooltip Text="@context.Description" Placement="Placement.Right">
-            <MudTr>
+            <MudTr Class="@(context == _selectedComponent ? "selected-row" : "")">
                 <MudTd><MudIcon Icon="@Icons.Material.Filled.AutoAwesomeMosaic" /></MudTd>
                 <MudTd DataLabel="Type Name">@context.Name</MudTd>
             </MudTr>
@@ -47,6 +46,8 @@
     private List<string> Properties = new List<string> { "Name", "Description" };
     private List<string> PropertiesFriendlyNames = new List<string> { "Type Name", "Description" };
 
+    private ComponentTypeDescription? _selectedComponent;
+
     protected override void OnParametersSet()
     {
         if (TypesRegistery != null)
@@ -66,7 +67,20 @@
     {
         var componentTypeDescription = item.Item;
         if (componentTypeDescription is null) return;
+
+        _selectedComponent = componentTypeDescription;
+
         var factory = TypesRegistery[componentTypeDescription];
         OnComponentSelected.InvokeAsync(new KeyValuePair<ComponentTypeDescription, Factory>(componentTypeDescription, factory));
+        StateHasChanged();
     }
 }
+
+<style>
+    .selected-row {
+        background-color: #007acc;
+        color: #ffffff;
+        font-weight: bold;
+        border: 2px solid #005b99;
+    }
+</style>

@@ -1,0 +1,79 @@
+﻿@page "/components"
+@using LionkApp.Components.Widgets.Dialogs
+@using MudBlazor
+@using Lionk.Core.Component
+@using Lionk.Core.TypeRegistery
+@using System.Collections
+@inject IComponentService ComponentService
+
+<MudPaper Class="pa-4">
+    <MudGrid>
+        <MudItem xs="12" md="8">
+            <MudText Typo="Typo.h4">Component Manager</MudText>
+        </MudItem>
+        <MudItem xs="12" md="4" Class="d-flex justify-end">
+            <MudButton Variant="Variant.Outlined"
+                       Color="Color.Primary"
+                       OnClick="AddComponent"
+                       Disabled="@(_selectedComponent == null)">
+                Add selected
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+
+    <ComponentList TypesRegistery="@TypesRegistery"
+                   OnComponentSelected="OnComponentSelected" />
+
+</MudPaper>
+
+@code {
+    private IReadOnlyDictionary<ComponentTypeDescription, Factory>? TypesRegistery
+        => ComponentService.GetRegisteredTypeDictionnary();
+
+    // Propriété pour stocker le composant sélectionné
+    private KeyValuePair<ComponentTypeDescription, Factory>? _selectedComponent;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadComponentTypes();
+        ComponentService.NewComponentAvailable += (s, e) => OnNewTypesAvailable();
+    }
+
+    private async Task LoadComponentTypes()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void OnNewTypesAvailable()
+    {
+        StateHasChanged();
+    }
+
+    private void AddComponent()
+    {
+        if(_selectedComponent.HasValue)
+        {
+            var factory = _selectedComponent.Value.Value;
+            factory.CreateInstance();
+            StateHasChanged();
+        }
+    }
+
+    private void DeleteComponent()
+    {
+        if (_selectedComponent.HasValue)
+        {
+            var componentToDelete = _selectedComponent.Value;
+        }
+    }
+
+    private void OnComponentSelected(KeyValuePair<ComponentTypeDescription, Factory> selectedComponent)
+    {
+        _selectedComponent = selectedComponent;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+        =>  ComponentService.NewComponentAvailable -= (s, e) => OnNewTypesAvailable();
+    
+}

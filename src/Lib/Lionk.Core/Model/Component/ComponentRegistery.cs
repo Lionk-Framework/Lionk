@@ -78,6 +78,10 @@ public class ComponentRegistery(IComponentService service) : IDisposable
 
         foreach (Type type in types)
         {
+            Type[] interfaces = type.GetInterfaces();
+
+            bool contains = interfaces.Contains(typeof(IComponent));
+
             if (type.GetInterfaces().Contains(typeof(IComponent)) &&
                 !_registeredTypes.Contains(type))
             {

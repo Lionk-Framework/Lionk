@@ -71,16 +71,7 @@ public class PluginManager : IPluginManager
 
         foreach (Plugin plugin in _plugins)
         {
-            try
-            {
-                types.AddRange(plugin.Assembly.GetTypes());
-                plugin.IsLoaded = true;
-            }
-            catch (ReflectionTypeLoadException e)
-            {
-                plugin.IsLoaded = false;
-                LogService.LogApp(LogSeverity.Error, $"Failed to load types from plugin: {plugin.Name}. Error: {e.Message}");
-            }
+            types.AddRange(plugin.Assembly.GetTypes());
         }
 
         return types;
@@ -100,20 +91,25 @@ public class PluginManager : IPluginManager
 
     private void LoadPlugin(string path)
     {
+        Plugin? plugin = null;
+
         try
         {
             path = CopyPluginToTempStorage(path);
             var assembly = Assembly.LoadFrom(path);
-            var plugin = new Plugin(assembly);
+            plugin = new Plugin(assembly);
             _plugins.Add(plugin);
-
             NewTypesAvailable?.Invoke(this, new TypesEventArgs(plugin.Assembly.GetTypes()));
+            plugin.IsLoaded = true;
 
             LogService.LogApp(LogSeverity.Information, $"Plugin loaded: {plugin.Name}");
         }
         catch (Exception ex)
         {
             LogService.LogApp(LogSeverity.Error, $"Failed to load plugin from path: {path}. Error: {ex.Message}");
+
+            if (plugin is not null)
+                plugin.IsLoaded = false;
         }
     }
 
