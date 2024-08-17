@@ -10,24 +10,25 @@
 <PageTitle>Dashboard</PageTitle>
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
 
-    @if (DashBoardItemsModels != null)
+    @if (DashBoardItems != null)
     {
-        @foreach (var item in DashBoardItemsModels)
+        @foreach (Widget item in DashBoardItems)
         {
 
             Dictionary<string, object> parameters = new();
-            if (item.PropertyAndInstanceName != null)
+            string? instanceName = item.Component?.InstanceName;
+            string WidgetInstanceName = item.Component?.InstanceName ?? "No widget name";
+            if (!string.IsNullOrEmpty(instanceName))
             {
-                foreach (var parameter in item.PropertyAndInstanceName)
+                Type view = item.GetType();
+                object? component = ComponentService.GetInstanceByName(instanceName);
+                if (component != null)
                 {
-                    object? obj = ComponentService.GetInstanceByName(parameter.Value);
-                    if (obj != null)
-                    {
-                        parameters.Add(parameter.Key, obj);
-                    }
+                    parameters.Add("ComponentParameter", component);
+                    parameters.Add("InstanceNameParameter", WidgetInstanceName);
                 }
+                <DashboardItem View="view" Parameters="parameters" />
             }
-            <DashboardItem View="@item.View" Parameters="parameters"/>
         }
     }
 
@@ -37,18 +38,11 @@
 
 @code {
 
-    List<DashBoardItemModel>? DashBoardItemsModels = new List<DashBoardItemModel>();
+    private List<Widget>? DashBoardItems => ComponentService.GetInstancesOfType<Widget>().ToList();
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        RestoreModels();
-    }
-
-    private void RestoreModels()
-    {
-        string json = ConfigurationUtils.ReadFile("dashboard.json", FolderType.Data);
-        DashBoardItemsModels = Newtonsoft.Json.JsonConvert.DeserializeObject<List<DashBoardItemModel>>(json);
     }
 }
 

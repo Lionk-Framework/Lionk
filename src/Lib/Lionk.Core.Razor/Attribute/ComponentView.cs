@@ -19,7 +19,15 @@ public class ComponentView : Attribute
     /// <param name="configurableType"> The type of the object that is being configured. </param>
     /// <param name="configurableView"> The type of the view that is used to configure the object. </param>
     /// <param name="viewMode"> The view mode that is used to configure the object. </param>
-    public ComponentView(Type configurableType, Type configurableView, ComponentViewMode viewMode) => ConfigurationViews.Add(new ComponentViewModel(configurableType, configurableView, viewMode));
+    public ComponentView(
+        Type configurableType,
+        Type configurableView,
+        ComponentViewMode viewMode)
+            => ConfigurationViews.Add(
+                new ComponentViewModel(
+                    configurableType,
+                    configurableView,
+                    viewMode));
 
     /// <summary>
     /// Gets the view that is used to configure the object.
@@ -36,25 +44,4 @@ public class ComponentView : Attribute
 
         return ConfigurationViews.FirstOrDefault(x => x.ComponentType == configurableType && x.ViewMode == mode);
     }
-}
-
-/// <summary>
-/// This enum is used to specify the view that is used to configure the object.
-/// </summary>
-public enum ComponentViewMode
-{
-    /// <summary>
-    /// Defines the view as a configuration view.
-    /// </summary>
-    Configuration,
-
-    /// <summary>
-    /// Defines the view as a detail view.
-    /// </summary>
-    Detail,
-
-    /// <summary>
-    /// Defines the view as a page view.
-    /// </summary>
-    Page,
 }

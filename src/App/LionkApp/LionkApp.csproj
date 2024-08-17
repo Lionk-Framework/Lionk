@@ -19,6 +19,8 @@
         <PackageReference Include="MudBlazor" Version="7.6.0" />
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="..\..\..\..\Lionk-rpi-components\src\Lionk.Rpi.TemperatureSensor.Razor\Lionk.Rpi.TemperatureSensor.Razor.csproj" />
+        <ProjectReference Include="..\..\..\..\Lionk-rpi-components\src\Lionk.Rpi.TemperatureSensor\Lionk.Rpi.TemperatureSensor.csproj" />
         <ProjectReference Include="..\..\Lib\Lionk.Auth.Razor\Lionk.Auth.Razor.csproj" />
         <ProjectReference Include="..\..\Lib\Lionk.Core.Razor\Lionk.Core.Razor.csproj" />
         <ProjectReference Include="..\..\Lib\Lionk.Core\Lionk.Core.csproj" />

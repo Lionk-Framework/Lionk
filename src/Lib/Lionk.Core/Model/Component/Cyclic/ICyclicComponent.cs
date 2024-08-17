@@ -13,9 +13,9 @@ public interface ICyclicComponent : IExecutableComponent
     TimeSpan ExecutionFrequency { get; }
 
     /// <summary>
-    /// Gets the last execution time of the component.
+    /// Gets or sets the last execution time of the component.
     /// </summary>
-    DateTime LastExecution { get; }
+    DateTime LastExecution { get; set; }
 
     DateTime NextExecution => StartedDate.AddMilliseconds(ExecutionFrequency.TotalMilliseconds * NbCycle);
 
