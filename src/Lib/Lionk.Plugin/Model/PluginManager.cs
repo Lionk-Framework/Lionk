@@ -1,7 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using System.Reflection;
-using System.Text;
 using Lionk.Core.TypeRegistery;
 using Lionk.Log;
 using Lionk.Utils;
@@ -100,49 +99,45 @@ public class PluginManager : IPluginManager
             var assembly = Assembly.LoadFrom(path);
             plugin = new Plugin(assembly);
 
-            AssemblyName[] referencedAssemblies = assembly.GetReferencedAssemblies();
-            foreach (AssemblyName referencedAssembly in referencedAssemblies)
-            {
-                try
-                {
-                    Assembly.Load(referencedAssembly);
-                }
-                catch (Exception depEx)
-                {
-                    LogService.LogApp(LogSeverity.Error, $"Failed to load dependency '{referencedAssembly.FullName}' for plugin '{plugin.Name}' from path: {path}. Error: {depEx.Message}");
-                    plugin.IsLoaded = false;
-                    return;
-                }
-            }
+            List<Dependency> referencedAssemblies = plugin.Dependencies;
+            TryLoadDependencies(referencedAssemblies, plugin, path);
 
             _plugins.Add(plugin);
             Type[] types = assembly.GetTypes();
             NewTypesAvailable?.Invoke(this, new TypesEventArgs(types));
+
             plugin.IsLoaded = true;
 
             LogService.LogApp(LogSeverity.Information, $"Plugin loaded: {plugin.Name}");
         }
         catch (ReflectionTypeLoadException ex)
         {
-            var sb = new StringBuilder();
-            foreach (Exception? exSub in ex.LoaderExceptions)
-            {
-                sb.AppendLine(exSub?.Message);
-                var exFileNotFound = exSub as FileNotFoundException;
-                if (exFileNotFound != null)
-                {
-                    if (!string.IsNullOrEmpty(exFileNotFound.FusionLog))
-                    {
-                        sb.AppendLine("Fusion Log:");
-                        sb.AppendLine(exFileNotFound.FusionLog);
-                    }
-                }
+            LogService.LogApp(LogSeverity.Error, $"Failed to load plugin from path: {path}. Error: {ex.Message}");
 
-                sb.AppendLine();
-            }
-
-            string errorMessage = sb.ToString();
+            if (plugin is not null)
+                plugin.IsLoaded = false;
         }
+    }
+
+    private bool TryLoadDependencies(List<Dependency> referencedAssemblies, Plugin plugin, string path)
+    {
+        foreach (Dependency referencedAssembly in referencedAssemblies)
+        {
+            try
+            {
+                Assembly.Load(referencedAssembly.AssemblyName);
+                referencedAssembly.IsLoaded = true;
+            }
+            catch (Exception depEx)
+            {
+                LogService.LogApp(
+                    LogSeverity.Error,
+                    $"Failed to load dependency '{referencedAssembly.AssemblyName.FullName}' for plugin '{plugin.Name}' from path: {path}. Error: {depEx.Message}");
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void SavePluginPaths()

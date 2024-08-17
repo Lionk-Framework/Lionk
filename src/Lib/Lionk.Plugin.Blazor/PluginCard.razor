@@ -24,11 +24,10 @@ else
         <MudCardContent>
             @if (!Plugin.IsLoaded)
             {
-                <MudTooltip Text="Something went wrong during plugin loading, you must delete and readd your plugin.">
-                    <MudIconButton
-                        Icon="@Icons.Material.Filled.Error"
-                        Color="Color.Error"
-                        Style="cursor: pointer;">
+                <MudTooltip Text="Something went wrong during plugin loading, please check dependencies.">
+                    <MudIconButton Icon="@Icons.Material.Filled.Error"
+                                   Color="Color.Error"
+                                   Style="cursor: pointer;">
                     </MudIconButton>
                 </MudTooltip>
             }
@@ -41,8 +40,16 @@ else
                 <MudList T="string" Class="small-font non-selectable">
                     @foreach (var dependency in Plugin.Dependencies)
                     {
-                        <MudListItem>@dependency</MudListItem>
-                    }
+                        <MudListItem>
+                            @if (dependency.IsLoaded)
+                            {
+                                <MudText>@dependency.AssemblyName.FullName</MudText>
+                            }
+                            else
+                            {
+                                <MudText Color="Color.Error">@dependency.AssemblyName.FullName</MudText>
+                            }
+                        </MudListItem>
                     }
                 </MudList>
             </MudCollapse>
