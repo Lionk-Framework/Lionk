@@ -1,6 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using System.Reflection;
+using System.Text;
 using Lionk.Core.TypeRegistery;
 using Lionk.Log;
 using Lionk.Utils;
@@ -98,18 +99,50 @@ public class PluginManager : IPluginManager
             path = CopyPluginToTempStorage(path);
             var assembly = Assembly.LoadFrom(path);
             plugin = new Plugin(assembly);
+
+            AssemblyName[] referencedAssemblies = assembly.GetReferencedAssemblies();
+            foreach (AssemblyName referencedAssembly in referencedAssemblies)
+            {
+                try
+                {
+                    // Tenter de charger chaque dépendance référencée
+                    Assembly.Load(referencedAssembly);
+                }
+                catch (Exception depEx)
+                {
+                    LogService.LogApp(LogSeverity.Error, $"Failed to load dependency '{referencedAssembly.FullName}' for plugin '{plugin.Name}' from path: {path}. Error: {depEx.Message}");
+                    plugin.IsLoaded = false;
+                    return; // Arrêter le chargement du plugin si une dépendance manque
+                }
+            }
+
             _plugins.Add(plugin);
-            NewTypesAvailable?.Invoke(this, new TypesEventArgs(plugin.Assembly.GetTypes()));
+            Type[] types = assembly.GetTypes();
+            NewTypesAvailable?.Invoke(this, new TypesEventArgs(types));
             plugin.IsLoaded = true;
 
             LogService.LogApp(LogSeverity.Information, $"Plugin loaded: {plugin.Name}");
         }
-        catch (Exception ex)
+        catch (ReflectionTypeLoadException ex)
         {
-            LogService.LogApp(LogSeverity.Error, $"Failed to load plugin from path: {path}. Error: {ex.Message}");
+            var sb = new StringBuilder();
+            foreach (Exception? exSub in ex.LoaderExceptions)
+            {
+                sb.AppendLine(exSub?.Message);
+                var exFileNotFound = exSub as FileNotFoundException;
+                if (exFileNotFound != null)
+                {
+                    if (!string.IsNullOrEmpty(exFileNotFound.FusionLog))
+                    {
+                        sb.AppendLine("Fusion Log:");
+                        sb.AppendLine(exFileNotFound.FusionLog);
+                    }
+                }
 
-            if (plugin is not null)
-                plugin.IsLoaded = false;
+                sb.AppendLine();
+            }
+
+            string errorMessage = sb.ToString();
         }
     }
 
