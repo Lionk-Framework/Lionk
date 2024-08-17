@@ -40,10 +40,12 @@ else
                 <MudList T="string" Class="small-font non-selectable">
                     @foreach (var dependency in Plugin.Dependencies)
                     {
-                        <MudListItem>
+                        <MudListItem OnClick="() => OnDependencySelectAsync(dependency)">
                             @if (dependency.IsLoaded)
                             {
-                                <MudText>@dependency.AssemblyName.FullName</MudText>
+                                <MudText>
+                                    @dependency.AssemblyName.FullName
+                                </MudText>
                             }
                             else
                             {
@@ -71,11 +73,17 @@ else
         ShowDependencies = !ShowDependencies;
     }
 
+    private async Task OnDependencySelectAsync(Dependency dependency)
+    {
+        if (!dependency.IsLoaded)
+            await OnDependencySelect.InvokeAsync(dependency);
+    }
+
     [Parameter]
     public Plugin? Plugin { get; set; }
 
     [Parameter]
-    public EventCallback<Plugin> OnSelect { get; set; }
+    public EventCallback<Dependency> OnDependencySelect { get; set; }
 
     [Parameter]
     public EventCallback<Plugin> OnDelete { get; set; }
