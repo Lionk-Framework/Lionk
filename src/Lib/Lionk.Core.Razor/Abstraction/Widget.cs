@@ -36,7 +36,7 @@ public abstract class Widget : ComponentBase, IComponent
     /// <summary>
     /// Gets the type of the component that will be displayed in the widget.
     /// </summary>
-    public abstract Type? ComponentType { get; }
+    public Type? ComponentType => Component?.GetType();
 
     /// <summary>
     /// This method is called when the component is initialized.
