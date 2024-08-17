@@ -11,6 +11,7 @@
         <MudSpacer />
         <MudButton OnClick="ConfigureAsync">Configure </MudButton>
         <MudSpacer />
+        <MudButton OnClick="Submit">Ok</MudButton>
         <MudButton OnClick="Cancel">Cancel</MudButton>
     </DialogActions>
 </MudDialog>
@@ -20,16 +21,38 @@
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
     private List<Widget> _components => ComponentService.GetInstancesOfType<Widget>().ToList();
     private Widget? _selectedWidget;
+    private List<int> _componentsHash = new();
 
     private void WidgetSelected(Lionk.Core.Component.IComponent? component)
     {
         _selectedWidget = component as Widget;
     }
 
+    protected override void OnInitialized()
+    {
+        foreach (var widget in _components)
+        {
+            _componentsHash.Add(widget.GetHashCode());
+        }
+    }
+
+    public bool AlmostOneWidgetModified()
+    {
+        foreach (var widget in _components)
+        {
+            if (!_componentsHash.Contains(widget.GetHashCode()))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void Submit()
     {
         if (MudDialog is null) return;
-        MudDialog.Close(DialogResult.Ok(new { _components }));
+        bool modified = AlmostOneWidgetModified();
+        MudDialog.Close(DialogResult.Ok(new { modified }));
     }
 
     private void Cancel()
@@ -37,20 +60,26 @@
         if (MudDialog is null) return;
         MudDialog.Cancel();
     }
+
     private async Task ConfigureAsync()
     {
-        if (_selectedWidget is null) {
+        if (_selectedWidget is null)
+        {
             Snackbar.Add("Please select a widget", Severity.Error);
             return;
         }
 
-        DialogParameters parameters = new DialogParameters();
+        DialogParameters parameters = new();
         parameters.Add("Type", _selectedWidget.ComponentType);
-        var dialogResult = await DialogService.ShowAsync<WidgetConfig>("Widget configuration", parameters);
 
-        if (dialogResult != null)
+        var dialogReference = DialogService.Show<WidgetConfig>("Widget configuration", parameters);
+
+        var dialogResult = await dialogReference.Result;
+
+        if (dialogResult is not null && !dialogResult.Canceled)
         {
-            _selectedWidget.Component = dialogResult.Result as Lionk.Core.Component.IComponent;
+            Lionk.Core.Component.IComponent? component = dialogResult.Data as Lionk.Core.Component.IComponent;
+            _selectedWidget.Component = component;
         }
         else
         {

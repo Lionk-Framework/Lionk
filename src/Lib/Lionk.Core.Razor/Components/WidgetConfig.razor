@@ -22,17 +22,15 @@
     {
         if (Type is not null)
         {
-            _components = ComponentService.GetInstances()
-            .Where(c => c.GetType() == Type)
-            .Cast<Lionk.Core.Component.IComponent>()
-            .ToList();
+            var all = ComponentService.GetInstances();
+            _components = all.ToList();
         }
 
     }
 
     private void ComponentSelected(Lionk.Core.Component.IComponent? component)
     {
-        _selectedComponent = component as Widget;
+        _selectedComponent = component;
     }
 
     private void Submit()
@@ -44,7 +42,7 @@
             return;
         }
 
-        MudDialog.Close(DialogResult.Ok(new { _selectedComponent }));
+        MudDialog.Close(DialogResult.Ok(_selectedComponent));
     }
 
     private void Cancel()

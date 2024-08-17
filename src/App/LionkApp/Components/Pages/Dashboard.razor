@@ -16,17 +16,14 @@
         {
 
             Dictionary<string, object> parameters = new();
-            string? instanceName = item.Component?.InstanceName;
-            string WidgetInstanceName = item.Component?.InstanceName ?? "No widget name";
-            if (!string.IsNullOrEmpty(instanceName))
+            string WidgetInstanceName = item.InstanceName ?? "No widget name";
+            if (item.Component is not null)
             {
                 Type view = item.GetType();
-                object? component = ComponentService.GetInstanceByName(instanceName);
-                if (component != null)
-                {
-                    parameters.Add("ComponentParameter", component);
-                    parameters.Add("InstanceNameParameter", WidgetInstanceName);
-                }
+
+                parameters.Add("ComponentParameter", item.Component);
+                parameters.Add("InstanceNameParameter", WidgetInstanceName);
+
                 <DashboardItem View="view" Parameters="parameters" />
             }
         }
@@ -34,15 +31,26 @@
 
 </MudContainer>
 
-<FloatingButton />
+<FloatingButton NewWidgetAvailable="Refresh" />
 
 @code {
-
-    private List<Widget>? DashBoardItems => ComponentService.GetInstancesOfType<Widget>().ToList();
+    private List<Widget>? DashBoardItems;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        GetDashBoardItems();
+    }
+
+    private void Refresh()
+    {
+        GetDashBoardItems();
+        StateHasChanged();
+    }
+
+    private void GetDashBoardItems()
+    {
+        DashBoardItems = ComponentService.GetInstancesOfType<Widget>().ToList();
     }
 }
 

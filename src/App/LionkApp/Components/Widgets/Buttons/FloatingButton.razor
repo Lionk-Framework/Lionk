@@ -1,5 +1,6 @@
 ﻿@rendermode InteractiveServer
 @inject IDialogService DialogService
+@using Lionk.Core.Events
 @using Lionk.Core.Razor.Components
 @using LionkApp.Components.Widgets.Dialogs
 @using Lionk.Core
@@ -7,9 +8,19 @@
 <MudFab @onclick="OpenDialogAsync" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Add" Size="Size.Large" Style="position: fixed; bottom: 20px; right: 20px;" />
 
 @code {
-    private Task OpenDialogAsync()
+
+    [Parameter] public EventCallback NewWidgetAvailable { get; set; }
+
+    private async Task OpenDialogAsync()
     {
-        
-        return DialogService.ShowAsync<WidgetHandler>("Widget selection");
+        var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
+        var parameters = new DialogParameters();
+        var dialog = DialogService.Show<WidgetHandler>("Widget selection", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is not null && !result.Canceled)
+        {
+            await NewWidgetAvailable.InvokeAsync();
+        }
     }
 }
