@@ -144,7 +144,7 @@ public class ComponentServiceTests
         _componentService.RegisterComponentInstance(component.Object);
         _componentService.RegisterComponentInstance(component2.Object);
 
-        Assert.That(component.Object.InstanceName, Is.EqualTo("Unamed"));
-        Assert.That(component2.Object.InstanceName, Is.EqualTo("Unamed_1"));
+        Assert.That(component.Object.InstanceName, Is.EqualTo("Component"));
+        Assert.That(component2.Object.InstanceName, Is.EqualTo("Component_1"));
     }
 }
