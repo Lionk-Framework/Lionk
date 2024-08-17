@@ -105,14 +105,13 @@ public class PluginManager : IPluginManager
             {
                 try
                 {
-                    // Tenter de charger chaque dépendance référencée
                     Assembly.Load(referencedAssembly);
                 }
                 catch (Exception depEx)
                 {
                     LogService.LogApp(LogSeverity.Error, $"Failed to load dependency '{referencedAssembly.FullName}' for plugin '{plugin.Name}' from path: {path}. Error: {depEx.Message}");
                     plugin.IsLoaded = false;
-                    return; // Arrêter le chargement du plugin si une dépendance manque
+                    return;
                 }
             }
 
