@@ -71,6 +71,7 @@ public class PluginManager : IPluginManager
 
         foreach (Plugin plugin in _plugins)
         {
+            if (!plugin.IsLoaded) continue;
             types.AddRange(plugin.Assembly.GetTypes());
         }
 
