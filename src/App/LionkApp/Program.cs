@@ -86,9 +86,6 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// Load all assemblies
-LoadAllAssemblies();
-
 #if DEBUG
 // Configure a default user for debug purposes if compiled in debug mode
 SetupDebugUser(app);
@@ -103,33 +100,6 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.Run();
-
-static void LoadAllAssemblies()
-{
-    var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
-    string currentPath = AppDomain.CurrentDomain.BaseDirectory;
-    string[] allFiles = Directory.GetFiles(currentPath, "*.dll");
-
-    foreach (string dll in allFiles)
-    {
-        var assemblyName = AssemblyName.GetAssemblyName(dll);
-        if (!loadedAssemblies.Any(a => a.FullName == assemblyName.FullName))
-        {
-            Assembly.Load(assemblyName);
-        }
-    }
-
-    var fraichementLoadedAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
-
-    foreach (Assembly? assembly in fraichementLoadedAssemblies)
-    {
-        Type[] types = assembly.GetTypes();
-        foreach (Type type in types)
-        {
-            type.GetCustomAttribute<ComponentView>();
-        }
-    }
-}
 
 static void SetupDebugUser(WebApplication app)
 {

@@ -6,6 +6,8 @@
 @using System.Collections
 @inject IComponentService ComponentService
 
+@using IComponent = Lionk.Core.Component.IComponent
+
 <MudGrid>
     <MudItem xs="6">
         <MudPaper Class="pa-4">
@@ -30,20 +32,22 @@
 
     <MudItem xs="6">
         <MudPaper Class="pa-4">
-            <MudText Typo="Typo.h4">Instantiated Components</MudText>
+            <MudGrid>
+                <MudItem xs="12" md="8">
+                    <MudText Typo="Typo.h4">Existing components</MudText>
+                </MudItem>
+                <MudItem xs="12" md="4" Class="d-flex justify-end">
+                    <MudButton Variant="Variant.Outlined"
+                               Color="Color.Secondary"
+                               OnClick="DeleteComponent"
+                               Disabled="@(_selectedComponent == null)">
+                        Delete selected
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
 
-            <!-- Champ de recherche -->
-            <MudTextField @bind-Value="SearchTerm" Label="Search" Variant="Variant.Outlined" />
-
-            <!-- Liste des composants filtrés -->
-            <MudList T="Lionk.Core.Component.IComponent">
-                @foreach (var component in FilteredComponents)
-                {
-                    <MudListItem>
-                        @component.InstanceName - @GetName(component)
-                    </MudListItem>
-                }
-            </MudList>
+            <IComponentInstanceList Components="InstantiatedComponents"
+                                    OnComponentSelected="OnComponentSelectedInstance"/>
         </MudPaper>
     </MudItem>
 </MudGrid>
@@ -52,20 +56,10 @@
     private IReadOnlyDictionary<ComponentTypeDescription, Factory>? TypesRegistery
         => ComponentService.GetRegisteredTypeDictionnary();
 
-    // Propriété pour stocker le composant sélectionné
     private KeyValuePair<ComponentTypeDescription, Factory>? _selectedComponent;
+    private IComponent? _selectedInstanceComponent;
 
     private IEnumerable<Lionk.Core.Component.IComponent> InstantiatedComponents => ComponentService.GetInstances();
-
-    private string SearchTerm { get; set; } = string.Empty;
-
-    private IEnumerable<Lionk.Core.Component.IComponent> FilteredComponents =>
-        string.IsNullOrWhiteSpace(SearchTerm)
-        ? InstantiatedComponents
-        : InstantiatedComponents.Where(
-            x =>
-                (x.InstanceName?.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase) ?? false)
-                || GetName(x).Contains(SearchTerm, StringComparison.OrdinalIgnoreCase));
 
     protected override async Task OnInitializedAsync()
     {
@@ -95,9 +89,11 @@
 
     private void DeleteComponent()
     {
-        if (_selectedComponent.HasValue)
+        if (_selectedInstanceComponent is not null)
         {
-            var componentToDelete = _selectedComponent.Value;
+            // TODO : Component must implement IDisposable to delete component correctly
+            ComponentService.UnregisterComponentInstance(_selectedInstanceComponent);
+            StateHasChanged();
         }
     }
 
@@ -107,9 +103,12 @@
         StateHasChanged();
     }
 
+    private void OnComponentSelectedInstance(IComponent component)
+    {
+        _selectedInstanceComponent = component;
+        StateHasChanged();
+    }
+
     public void Dispose()
         => ComponentService.NewComponentAvailable -= (s, e) => OnNewTypesAvailable();
-
-    private string GetName(Lionk.Core.Component.IComponent component)
-        => TypesRegistery?.Where(x => x.Key.Type == component.GetType()).First().Key.Name ?? "Unknown";
 }
