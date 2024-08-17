@@ -1,0 +1,55 @@
+﻿@using Lionk.Core.Component
+@inject IComponentService ComponentService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <IComponentInstanceList Components="_components" OnComponentSelected="ComponentSelected" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Submit">Save</MudButton>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    [Parameter] public Type? Type { get; set; }
+    private List<Lionk.Core.Component.IComponent>? _components;
+    private Lionk.Core.Component.IComponent? _selectedComponent;
+
+    protected override void OnInitialized()
+    {
+        if (Type is not null)
+        {
+            _components = ComponentService.GetInstances()
+            .Where(c => c.GetType() == Type)
+            .Cast<Lionk.Core.Component.IComponent>()
+            .ToList();
+        }
+
+    }
+
+    private void ComponentSelected(Lionk.Core.Component.IComponent? component)
+    {
+        _selectedComponent = component as Widget;
+    }
+
+    private void Submit()
+    {
+        if (MudDialog is null) return;
+        if (_selectedComponent is null)
+        {
+            Snackbar.Add("Please select a component", Severity.Error);
+            return;
+        }
+
+        MudDialog.Close(DialogResult.Ok(new { _selectedComponent }));
+    }
+
+    private void Cancel()
+    {
+        if (MudDialog is null) return;
+        MudDialog.Cancel();
+    }
+}

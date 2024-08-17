@@ -1,20 +1,30 @@
 ﻿@using Lionk.Core.Component
+@inject IDialogService DialogService
 @inject IComponentService ComponentService
+@inject ISnackbar Snackbar
 
 <MudDialog>
     <DialogContent>
-        <IComponentInstanceList Components="_components" />
+        <IComponentInstanceList Components="_components" OnComponentSelected="WidgetSelected" />
     </DialogContent>
     <DialogActions>
         <MudSpacer />
-        <MudButton OnClick="Submit">Save</MudButton>
+        <MudButton OnClick="ConfigureAsync">Configure </MudButton>
+        <MudSpacer />
         <MudButton OnClick="Cancel">Cancel</MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
+
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
     private List<Widget> _components => ComponentService.GetInstancesOfType<Widget>().ToList();
+    private Widget? _selectedWidget;
+
+    private void WidgetSelected(Lionk.Core.Component.IComponent? component)
+    {
+        _selectedWidget = component as Widget;
+    }
 
     private void Submit()
     {
@@ -27,5 +37,24 @@
         if (MudDialog is null) return;
         MudDialog.Cancel();
     }
+    private async Task ConfigureAsync()
+    {
+        if (_selectedWidget is null) {
+            Snackbar.Add("Please select a widget", Severity.Error);
+            return;
+        }
 
+        DialogParameters parameters = new DialogParameters();
+        parameters.Add("Type", _selectedWidget.ComponentType);
+        var dialogResult = await DialogService.ShowAsync<WidgetConfig>("Widget configuration", parameters);
+
+        if (dialogResult != null)
+        {
+            _selectedWidget.Component = dialogResult.Result as Lionk.Core.Component.IComponent;
+        }
+        else
+        {
+            Snackbar.Add("Widget configuration cancelled", Severity.Warning);
+        }
+    }
 }
