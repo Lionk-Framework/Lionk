@@ -14,9 +14,9 @@
     {
         @foreach (Lionk.Core.Component.IComponent component in _components)
         {
-            if (component is not null )
+            if (component is not null)
             {
-                <DashboardItem Component=widget />
+                <DashboardItem Component=component />
             }
         }
     }

@@ -5,7 +5,7 @@ namespace Lionk.Core.Component;
 /// <summary>
 /// This interface is used to define an element that can be configured.
 /// </summary>
-public interface IConfigurableComponent : IComponent
+public interface IConfigurableComponent
 {
     /// <summary>
     /// This method is used to open the configuration view of the component.
