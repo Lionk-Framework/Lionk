@@ -1,32 +1,50 @@
 ﻿@page "/"
 @inject ISnackbar Snackbar
-@inject ICyclicExecutorService CyclicExecutorService
 @inject IComponentService ComponentService
 @inject IDialogService DialogService
 @using Lionk.Core.Component
 @using Lionk.Core.View
-@using Lionk.Utils;
-@using LionkApp.Components.Widgets.Buttons
+@using LionkApp.Components.Model
 @using IComponent = Lionk.Core.Component.IComponent
+@using LionkApp.Components.Widgets.Dialogs
 
 <PageTitle>Dashboard</PageTitle>
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
 
-
-    @foreach (Tuple<string, ComponentViewDescription> mappedView in DashboardRegistery)
+    @foreach (var item in DashboardRegistry)
     {
-        IComponent? component = ComponentService.GetInstanceByName(mappedView.Item1);
-        Type view = mappedView.Item2.ViewType;
+        IComponent? component = ComponentService.GetInstanceByName(item.ComponentInstanceName);
+        Type view = item.ViewType;
 
         if (component is not null && view is not null)
         {
-            <DashboardItem View="view" Component=component />
+            // TODO Alex : Add a way to pass parameters to the view
+            @* <DynamicComponent View="view" Component=component /> *@
         }
     }
 
 </MudContainer>
 
-@code {
-    public List<Tuple<String, ComponentViewDescription>> DashboardRegistery = new();
-}
+<MudFab @onclick="OpenDialogAsync" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Add" Size="Size.Large" Style="position: fixed; bottom: 20px; right: 20px;" />
 
+@code {
+    public List<DashboardItemModel> DashboardRegistry { get; set; } = new();
+
+    private async Task OpenDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
+        var parameters = new DialogParameters();
+        var dialog = DialogService.Show<WidgetAdder>("Widget selection", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is not null && !result.Canceled)
+        {
+            var newWidget = result.Data as DashboardItemModel;
+            if (newWidget != null)
+            {
+                DashboardRegistry.Add(newWidget);
+                StateHasChanged();
+            }
+        }
+    }
+}

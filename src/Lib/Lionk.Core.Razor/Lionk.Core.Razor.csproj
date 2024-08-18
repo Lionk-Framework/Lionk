@@ -19,12 +19,6 @@
     <ProjectReference Include="..\Lionk.Core\Lionk.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Update="Components\WidgetSelector.razor">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-    </Content>
-  </ItemGroup>
-
 
 
 </Project>
