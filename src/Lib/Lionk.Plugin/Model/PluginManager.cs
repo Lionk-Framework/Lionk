@@ -90,6 +90,8 @@ public class PluginManager : IPluginManager
     public int GetPluginCount()
         => _plugins.Count;
 
+    private readonly HashSet<string> _loadedAssemblies = [];
+
     private void LoadPlugin(string path)
     {
         Plugin? plugin = null;
@@ -126,7 +128,7 @@ public class PluginManager : IPluginManager
         {
             try
             {
-                Assembly.Load(referencedAssembly.AssemblyName);
+                InternalLoadDependencies(new[] { referencedAssembly.AssemblyName });
                 referencedAssembly.IsLoaded = true;
             }
             catch (Exception depEx)
@@ -139,6 +141,19 @@ public class PluginManager : IPluginManager
         }
 
         return true;
+    }
+
+    private void InternalLoadDependencies(AssemblyName[] assemblies)
+    {
+        foreach (AssemblyName assemblyName in assemblies)
+        {
+            if (!_loadedAssemblies.Contains(assemblyName.FullName))
+            {
+                var assembly = Assembly.Load(assemblyName);
+                _loadedAssemblies.Add(assemblyName.FullName);
+                InternalLoadDependencies(assembly.GetReferencedAssemblies());
+            }
+        }
     }
 
     private void SavePluginPaths()
