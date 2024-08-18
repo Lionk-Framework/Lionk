@@ -8,9 +8,9 @@ namespace Lionk.Core.Component;
 public interface ICyclicComponent : IExecutableComponent
 {
     /// <summary>
-    /// Gets the execution frequency of the component.
+    /// Gets or sets the execution frequency of the component.
     /// </summary>
-    TimeSpan ExecutionFrequency { get; }
+    TimeSpan ExecutionFrequency { get; set; }
 
     /// <summary>
     /// Gets or sets the last execution time of the component.

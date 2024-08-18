@@ -1,23 +1,23 @@
-﻿@using MudBlazor
+﻿@using Lionk.Core.View
+@using MudBlazor
 @using System.Reflection
 @namespace Lionk.Core.Dialog
 
-<MudDialog>
-    <DialogContent>
-        <MudCarousel Class="mud-width-full"
-                     Style="height:100%;"
-                     ShowArrows="true"
-                     ShowBullets="true"
+<MudDialog Style="height:50%">
+    <DialogContent >
+        <MudCarousel ShowArrows="true"
+                     ShowBullets="false"
                      EnableSwipeGesture="true"
                      AutoCycle="false"
                      TData="object"
-                     SelectedIndexChanged="ViewChanged">
-            @if (Views is not null && Views.Count > 0)
+                     SelectedIndexChanged="ViewChanged"
+                     Style="height:100%">
+            @if (ViewDescription is not null && ViewDescription.Count > 0)
             {
-                foreach (var view in Views)
+                foreach (var viewDescription in ViewDescription)
                 {
-                    <MudCarouselItem>
-                        <DynamicComponent Type="@view" Parameters="_parameter" />
+                    <MudCarouselItem Style="margin-left:50px; margin-right:50px; overflow-y: scroll;">
+                    <DynamicComponent Type="@viewDescription.ViewType" Parameters="_parameter"/>
                     </MudCarouselItem>
                 }
             }
@@ -35,7 +35,7 @@
 
 
     [Parameter] public object? Component { get; set; }
-    [Parameter] public List<Type>? Views { get; set; }
+    [Parameter] public List<ComponentViewDescription>? ViewDescription { get; set; }
     [Parameter] public int CurrentIndex { get; set; }
     private Dictionary<string, object> _parameter = new Dictionary<string, object>();
 

@@ -27,13 +27,13 @@
 
             @if (_isDetailable)
             {
-                <MudIconButton Icon="@Icons.Material.Filled.Details"
+                <MudIconButton Icon="@Icons.Material.Filled.ListAlt"
                                Size="Size.Small"
                                OnClick="DetailableClickedAsync" />
             }
             @if (_isPageable)
             {
-                <MudIconButton Icon="@Icons.Material.Filled.Pageview"
+                <MudIconButton Icon="@Icons.Material.Filled.Fullscreen"
                                Size="Size.Small"
                                OnClick="PageableClickedAsync" />
             }
@@ -118,9 +118,9 @@
         var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
         var parameters = new DialogParameters();
         parameters.Add("Component", Component);
-        parameters.Add("View", _configutionViews);
+        parameters.Add("ViewDescription", _configutionViews);
         parameters.Add("CurrentIndex", viewIndex);
-        var dialog = DialogService.Show<ComponentDialog>("", parameters, options);
+        var dialog = DialogService.Show<ComponentDialog>("Configuration", parameters, options);
         var result = await dialog.Result;
     }
 
@@ -136,6 +136,10 @@
 
     private void ExecutableClickedAsync()
     {
-
+        IExecutableComponent? cyclicComponent = Component as IExecutableComponent;
+        if (cyclicComponent is not null)
+        {
+            cyclicComponent.Execute();
+        }
     }
 }
