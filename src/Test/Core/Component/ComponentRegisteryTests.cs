@@ -104,6 +104,6 @@ public class ComponentRegisteryTests
 
     private class MockComponent : IComponent
     {
-        public string? InstanceName { get; set; }
+        public string InstanceName { get; set; } = string.Empty;
     }
 }

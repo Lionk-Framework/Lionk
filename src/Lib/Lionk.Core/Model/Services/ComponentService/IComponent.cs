@@ -10,7 +10,7 @@ public interface IComponent : IDisposable
     /// <summary>
     /// Gets or sets the name of the component.
     /// </summary>
-    string? InstanceName { get; set; }
+    string InstanceName { get; set; }
 
     /// <summary>
     /// Dispose methods.

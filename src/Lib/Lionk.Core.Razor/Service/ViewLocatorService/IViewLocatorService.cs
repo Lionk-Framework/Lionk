@@ -5,13 +5,13 @@ namespace Lionk.Core.View;
 /// <summary>
 /// Interface which define the service to locate the view of a component.
 /// </summary>
-public interface IViewLocatorService
+public interface IViewLocatorService : IDisposable
 {
     /// <summary>
     /// Get the view of a component depending on the context.
     /// </summary>
-    /// <typeparam name="T">The type of the component.</typeparam>
+    /// <param name="type">The type of the component.</param>
     /// <param name="context">The context.</param>
     /// <returns>A <see cref="Type"/> which define the view.</returns>
-    public IEnumerable<Type> GetViewOf<T>(ViewContext context);
+    public IEnumerable<Type> GetViewOf(Type type, ViewContext context);
 }

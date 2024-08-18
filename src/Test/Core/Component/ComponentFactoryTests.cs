@@ -56,6 +56,6 @@ public class ComponentFactoryTests
 
     private class MockComponent : IComponent
     {
-        public string? InstanceName { get; set; }
+        public string InstanceName { get; set; } = string.Empty;
     }
 }

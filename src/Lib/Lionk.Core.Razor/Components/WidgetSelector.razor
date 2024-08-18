@@ -1,5 +1,7 @@
 ﻿@using Lionk.Core.Component
+@using Lionk.Core.View
 @inject IComponentService ComponentService
+@inject IViewLocatorService ViewLocatorService
 @inject ISnackbar Snackbar
 
 <MudDialog>
@@ -25,8 +27,8 @@
 
 @code {
 
-    private MudTable<ComponentViewModel> _table = new();
-    private List<ComponentViewModel>? _availableWidgets = new List<ComponentViewModel>();
+    private MudTable<Type> _table = new();
+    private IEnumerable<Type>? _availableWidgets;
 
 
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
@@ -37,17 +39,17 @@
     {
         if (ComponentType is not null)
         {
-            _availableWidgets = ComponentView.GetComponentView(ComponentType, ComponentViewMode.Widget);
+            _availableWidgets = ViewLocatorService.GetViewOf(ComponentType, ViewContext.Widget);
         }
 
     }
 
-    private void ComponentSelected(ComponentViewModel availableWidget)
+    private void ComponentSelected(Type viewType)
     {
-        if (availableWidget is not null)
+        if (viewType is not null)
         {
             if (MudDialog is null) return;
-            MudDialog.Close(DialogResult.Ok(availableWidget));
+            MudDialog.Close(DialogResult.Ok(viewType));
         }
         Snackbar.Add("Widget is null", Severity.Error);
     }

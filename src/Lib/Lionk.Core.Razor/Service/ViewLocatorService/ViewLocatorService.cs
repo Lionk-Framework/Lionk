@@ -22,8 +22,8 @@ public class ViewLocatorService : IViewLocatorService
     }
 
     /// <inheritdoc/>
-    public IEnumerable<Type> GetViewOf<T>(ViewContext context)
-        => _views.Where(x => x.ComponentType == typeof(T) && x.ViewContext == context).Select(x => x.ViewType);
+    public IEnumerable<Type> GetViewOf(Type type, ViewContext context)
+        => _views.Where(x => x.ComponentType == type && x.ViewContext == context).Select(x => x.ViewType);
 
     /// <inheritdoc/>
     public void Dispose()

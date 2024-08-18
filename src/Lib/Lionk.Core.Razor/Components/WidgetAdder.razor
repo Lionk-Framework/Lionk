@@ -1,4 +1,5 @@
 ﻿@using Lionk.Core.Component
+@using Lionk.Core.View
 @inject IDialogService DialogService
 @inject IComponentService ComponentService
 @inject ISnackbar Snackbar
@@ -61,11 +62,10 @@
 
         var dialogResult = await dialogReference.Result;
 
-        ComponentViewModel? selectedWidget = dialogResult?.Data as ComponentViewModel;
+        ComponentViewDescription? selectedWidget = dialogResult?.Data as ComponentViewDescription;
 
-        ArgumentNullException.ThrowIfNullOrEmpty(_selectedComponent?.InstanceName);
-        ArgumentNullException.ThrowIfNull(selectedWidget?.View);
+        ArgumentNullException.ThrowIfNull(selectedWidget?.ViewType);
 
-       DashboardItemDefinition = new (_selectedComponent.InstanceName, selectedWidget.View);
+        DashboardItemDefinition = new(_selectedComponent.InstanceName, selectedWidget.ViewType);
     }
 }
