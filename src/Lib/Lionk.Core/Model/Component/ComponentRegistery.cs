@@ -40,8 +40,7 @@ public class ComponentRegistery(IComponentService service) : IDisposable
     /// <param name="service">The component service.</param>
     public ComponentRegistery(ITypesProvider provider, IComponentService service)
         : this(new List<ITypesProvider> { provider }, service)
-    {
-    }
+        => AddTypesToRegistery(provider.GetTypes());
 
     /// <summary>
     /// Used to add a provider.
@@ -71,8 +70,13 @@ public class ComponentRegistery(IComponentService service) : IDisposable
     }
 
     private void OnNewTypesAvailable(object? sender, TypesEventArgs e)
+        => AddTypesToRegistery(e.Types);
+
+    private void AddTypesToRegistery(IEnumerable<Type> types)
     {
-        foreach (Type type in e.Types)
+        bool newTypeAvailabe = false;
+
+        foreach (Type type in types)
         {
             if (type.GetInterfaces().Contains(typeof(IComponent)) &&
                 !_registeredTypes.Contains(type))
@@ -82,9 +86,18 @@ public class ComponentRegistery(IComponentService service) : IDisposable
 
                 _typesRegistery.Add(description, factory);
                 _registeredTypes.Add(type);
+                newTypeAvailabe = true;
             }
         }
+
+        if (newTypeAvailabe)
+            NewComponentAvailable?.Invoke(this, EventArgs.Empty);
     }
+
+    /// <summary>
+    /// Event raised when a new type is available.
+    /// </summary>
+    public event EventHandler<EventArgs>? NewComponentAvailable;
 
     private readonly IComponentService _componentService = service;
     private readonly Dictionary<ComponentTypeDescription, Factory> _typesRegistery = [];
