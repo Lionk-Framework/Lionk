@@ -4,47 +4,29 @@
 @inject IComponentService ComponentService
 @inject IDialogService DialogService
 @using Lionk.Core.Component
+@using Lionk.Core.View
 @using Lionk.Utils;
 @using LionkApp.Components.Widgets.Buttons
+@using IComponent = Lionk.Core.Component.IComponent
 
 <PageTitle>Dashboard</PageTitle>
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
 
-    @if (_components != null)
+
+    @foreach (Tuple<string, ComponentViewDescription> mappedView in DashboardRegistery)
     {
-        @foreach (Tuple<String, Type> mappedView in DashboardRegistery)
+        IComponent? component = ComponentService.GetInstanceByName(mappedView.Item1);
+        Type view = mappedView.Item2.ViewType;
+
+        if (component is not null && view is not null)
         {
-            Lionk.Core.Component.IComponent? component = ComponentService.GetInstanceByName(mappedView.Item1);
-            Type view = mappedView.Item2;
-            if (component is not null && view is not null)
-            {
-                <DashboardItem View="view" Component=component />
-            }
+            <DashboardItem View="view" Component=component />
         }
     }
 
 </MudContainer>
 
-<FloatingButton NewWidgetAvailable="Refresh" />
-
 @code {
-    private List<Lionk.Core.Component.IComponent>? _components;
-
-    // TODO doit être remplacé par un service
-    public static List<Tuple<String, Type>> DashboardRegistery = new();
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        _components = ComponentService.GetInstancesOfType<Lionk.Core.Component.IComponent>().ToList();
-        int i = 0;
-        i++;
-    }
-
-    private void Refresh()
-    {
-        StateHasChanged();
-    }
-
+    public List<Tuple<String, ComponentViewDescription>> DashboardRegistery = new();
 }
 

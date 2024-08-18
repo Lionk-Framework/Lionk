@@ -51,7 +51,10 @@
             if (MudDialog is null) return;
             MudDialog.Close(DialogResult.Ok(viewType));
         }
-        Snackbar.Add("Widget is null", Severity.Error);
+        else
+        {
+            Snackbar.Add("Widget is null", Severity.Error);
+        }
     }
 
     private void Cancel()
