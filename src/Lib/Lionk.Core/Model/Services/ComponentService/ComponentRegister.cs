@@ -78,8 +78,10 @@ public class ComponentRegister(IComponentService service) : IDisposable
 
         foreach (Type type in types)
         {
-            if (type.GetInterfaces().Contains(typeof(IComponent)) &&
-                !_registeredTypes.Contains(type))
+            if (type.GetInterfaces().Contains(typeof(IComponent))
+                && type.IsClass
+                && !type.IsAbstract
+                && !_registeredTypes.Contains(type))
             {
                 var factory = new ComponentFactory(type, _componentService);
                 var description = new ComponentTypeDescription(type);
