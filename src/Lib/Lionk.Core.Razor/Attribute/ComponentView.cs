@@ -16,15 +16,18 @@ public class ComponentView : Attribute
     /// <summary>
     /// Initializes a new instance of the <see cref="ComponentView"/> class.
     /// </summary>
+    /// <param name="name"> The name of the view. </param>
     /// <param name="configurableType"> The type of the object that is being configured. </param>
     /// <param name="configurableView"> The type of the view that is used to configure the object. </param>
     /// <param name="viewMode"> The view mode that is used to configure the object. </param>
     public ComponentView(
+        string name,
         Type configurableType,
         Type configurableView,
         ComponentViewMode viewMode)
             => ConfigurationViews.Add(
                 new ComponentViewModel(
+                    name,
                     configurableType,
                     configurableView,
                     viewMode));
@@ -35,13 +38,13 @@ public class ComponentView : Attribute
     /// <param name="configurableType"> The type of the object that is being configured. </param>
     /// <param name="mode"> The view mode that is used to configure the object. </param>
     /// <returns> The type of the view that is used to configure the object. </returns>
-    public static ComponentViewModel? GetComponentView(Type? configurableType, ComponentViewMode mode)
+    public static List<ComponentViewModel>? GetComponentView(Type? configurableType, ComponentViewMode mode)
     {
         if (configurableType is null)
         {
             return null;
         }
 
-        return ConfigurationViews.FirstOrDefault(x => x.ComponentType == configurableType && x.ViewMode == mode);
+        return ConfigurationViews.Where(x => x.ComponentType == configurableType && x.ViewMode == mode).ToList();
     }
 }

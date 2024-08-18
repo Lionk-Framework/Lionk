@@ -6,11 +6,11 @@
 
 <MudDialog>
     <DialogContent>
-        <IComponentInstanceList Components="_components" OnComponentSelected="WidgetSelected" />
+        <IComponentInstanceList Components="_components" OnComponentSelected="ComponentSelected" />
     </DialogContent>
     <DialogActions>
         <MudSpacer />
-        <MudButton OnClick="ConfigureAsync">Configure </MudButton>
+        <MudButton OnClick="ChooseWidgetToLink">Choose widget</MudButton>
         <MudSpacer />
         <MudButton OnClick="Submit">Ok</MudButton>
         <MudButton OnClick="Cancel">Cancel</MudButton>
@@ -20,40 +20,24 @@
 @code {
 
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
-    private List<Widget> _components => ComponentService.GetInstancesOfType<Widget>().Where(c => c.Component is null).ToList();
-    private Widget? _selectedWidget;
-    private List<int> _componentsHash = new();
+    private List<Lionk.Core.Component.IComponent> _components => ComponentService.GetInstancesOfType<Lionk.Core.Component.IComponent>().ToList();
+    private Lionk.Core.Component.IComponent? _selectedComponent;
+    Tuple<string, Type>? DashboardItemDefinition;
 
-    private void WidgetSelected(Lionk.Core.Component.IComponent? component)
+    private void ComponentSelected(Lionk.Core.Component.IComponent? component)
     {
-        _selectedWidget = component as Widget;
-    }
-
-    protected override void OnInitialized()
-    {
-        foreach (var widget in _components)
-        {
-            _componentsHash.Add(widget.GetHashCode());
-        }
-    }
-
-    public bool AlmostOneWidgetModified()
-    {
-        foreach (var widget in _components)
-        {
-            if (!_componentsHash.Contains(widget.GetHashCode()))
-            {
-                return true;
-            }
-        }
-        return false;
+        _selectedComponent = component;
     }
 
     private void Submit()
     {
         if (MudDialog is null) return;
-        bool modified = AlmostOneWidgetModified();
-        MudDialog.Close(DialogResult.Ok(new { modified }));
+        if (DashboardItemDefinition is null)
+        {
+            Snackbar.Add("Please select a widget", Severity.Error);
+            return;
+        }
+        MudDialog.Close(DialogResult.Ok(DashboardItemDefinition));
     }
 
     private void Cancel()
@@ -62,22 +46,26 @@
         MudDialog.Cancel();
     }
 
-    private async Task ConfigureAsync()
+    private async Task ChooseWidgetToLink()
     {
-        if (_selectedWidget is null)
+        if (_selectedComponent is null)
         {
             Snackbar.Add("Please select a widget", Severity.Error);
             return;
         }
 
         DialogParameters parameters = new();
-        parameters.Add("Widget", _selectedWidget);
+        parameters.Add("Widget", _selectedComponent);
 
-        var dialogReference = DialogService.Show<WidgetConfig>("Widget configuration", parameters);
+        var dialogReference = DialogService.Show<WidgetSelector>("Widget Selection", parameters);
 
         var dialogResult = await dialogReference.Result;
 
-        if (dialogResult is null || dialogResult.Canceled) Snackbar.Add("Widget configuration cancelled", Severity.Warning);
+        ComponentViewModel? selectedWidget = dialogResult?.Data as ComponentViewModel;
 
+        ArgumentNullException.ThrowIfNullOrEmpty(_selectedComponent?.InstanceName);
+        ArgumentNullException.ThrowIfNull(selectedWidget?.View);
+
+       DashboardItemDefinition = new (_selectedComponent.InstanceName, selectedWidget.View);
     }
 }

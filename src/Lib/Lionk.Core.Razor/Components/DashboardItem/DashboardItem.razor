@@ -55,13 +55,13 @@
             <MudMenu Icon="@Icons.Material.Filled.MoreVert">
                 <MudMenuItem IconSize="Size.Small"
                              Icon="@Icons.Material.Filled.Edit"
-                             OnClick="EditWidgetAsync">
+                            >
                     Edit
                 </MudMenuItem>
                 <MudMenuItem IconSize="Size.Small"
                              Icon="@Icons.Material.Filled.DeleteForever"
                              IconColor="Color.Error"
-                             OnClick="RemoveWidgetAsync">
+                             >
                     <MudText Color="Color.Error">Delete</MudText>
                 </MudMenuItem>
             </MudMenu>
@@ -84,7 +84,6 @@
 
     public Dictionary<string, object> _parameters = new();
 
-
     [Parameter]
     public Lionk.Core.Component.IComponent? Component { get; set; }
 
@@ -100,7 +99,8 @@
     {
         if (Component is not null)
         {
-            _view = ComponentView.GetComponentView(Component.GetType(), ComponentViewMode.Widget)?.View;
+            // TODO utiliser le service qui s'occupe de retourner les vues
+            _view = ComponentView.GetComponentView(Component.GetType(), ComponentViewMode.Widget)?[0]?.View;
             if (Component is not null)
             {
                 _parameters.Add("Component", Component);
@@ -124,48 +124,7 @@
         DefineButtonsState();
     }
 
-    private async Task EditWidgetAsync()
-    {
-        DialogParameters dialogParameters = new();
-        if (Widget is null)
-        {
-            Snackbar.Add("Widget not available", Severity.Error);
-            return;
-        }
-
-        dialogParameters.Add("Widget", Widget);
-
-        var dialogReference = DialogService.Show<WidgetConfig>("Widget edition", dialogParameters);
-
-        var dialogResult = await dialogReference.Result;
-
-        if (Widget.Component is not null)
-        {
-            // _parameters["ComponentParameter"] = Widget.Component;
-            // ParameterView parameterView = new();
-            // parameterView.SetParameterProperties(Widget.Component);
-            // await _dynamicComponent?.SetParametersAsync(parameterView);
-        }
-
-        if (dialogResult is null || dialogResult.Canceled) Snackbar.Add("Widget edition cancelled", Severity.Warning);
-    }
-
-    private async Task RemoveWidgetAsync()
-    {
-        if (Widget is null)
-        {
-            Snackbar.Add("Widget not available", Severity.Error);
-            return;
-        }
-
-        var dialogResult = await DialogService.ShowMessageBox("Delete widget", "Are you sure you want to delete this widget?", yesText: "Yes", noText: "No");
-
-        if (dialogResult == (bool)dialogResult)
-        {
-            Snackbar.Add("Widget deleted", Severity.Success);
-        }
-    }
-
+   
     private void ConfigurableClicked()
     {
         if (_instance is IConfigurableComponent configurableComponent)

@@ -1,6 +1,5 @@
 ﻿@rendermode InteractiveServer
 @inject IDialogService DialogService
-@using Lionk.Core.Events
 @using Lionk.Core.Razor.Components
 @using LionkApp.Components.Widgets.Dialogs
 @using Lionk.Core
@@ -9,7 +8,7 @@
 
 @code {
 
-    [Parameter] public EventCallback NewWidgetAvailable { get; set; }
+    [Parameter] public EventCallback<Tuple<string, Type>>NewWidgetAvailable { get; set; }
 
     private async Task OpenDialogAsync()
     {

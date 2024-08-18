@@ -8,6 +8,11 @@ namespace Lionk.Core.Component;
 public class ComponentViewModel
 {
     /// <summary>
+    /// Gets the name of the component.
+    /// </summary>
+    public string Name { get; private set; }
+
+    /// <summary>
     /// Gets the type of the object that is being configured.
     /// </summary>
     public Type ComponentType { get; private set; }
@@ -25,11 +30,13 @@ public class ComponentViewModel
     /// <summary>
     /// Initializes a new instance of the <see cref="ComponentViewModel"/> class.
     /// </summary>
+    /// <param name="name"> The name of the view. </param>
     /// <param name="componentType"> The type of the object that is being configured. </param>
     /// <param name="view"> The type of the view that is used to configure the object. </param>
     /// <param name="viewMode"> The view mode that is used to configure the object. </param>
-    public ComponentViewModel(Type componentType, Type view, ComponentViewMode viewMode)
+    public ComponentViewModel(string name, Type componentType, Type view, ComponentViewMode viewMode)
     {
+        Name = name;
         ComponentType = componentType;
         View = view;
         ViewMode = viewMode;

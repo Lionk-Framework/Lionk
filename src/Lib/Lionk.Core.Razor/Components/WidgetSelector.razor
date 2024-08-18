@@ -1,0 +1,60 @@
+﻿@using Lionk.Core.Component
+@inject IComponentService ComponentService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <MudTable @ref="_table"
+                  Items="@_availableWidgets">
+            <RowTemplate>
+                <MudTr>
+                    <MudTd>
+                        @context.Name
+                    </MudTd>
+                </MudTr>
+                <MudTr>
+                    <MudButton OnClick="() => ComponentSelected(context)">Select</MudButton>
+                </MudTr>
+            </RowTemplate>
+        </MudTable>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    private MudTable<ComponentViewModel> _table = new();
+    private List<ComponentViewModel>? _availableWidgets = new List<ComponentViewModel>();
+
+
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    [Parameter] public Type? ComponentType { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        if (ComponentType is not null)
+        {
+            _availableWidgets = ComponentView.GetComponentView(ComponentType, ComponentViewMode.Widget);
+        }
+
+    }
+
+    private void ComponentSelected(ComponentViewModel availableWidget)
+    {
+        if (availableWidget is not null)
+        {
+            if (MudDialog is null) return;
+            MudDialog.Close(DialogResult.Ok(availableWidget));
+        }
+        Snackbar.Add("Widget is null", Severity.Error);
+    }
+
+    private void Cancel()
+    {
+        if (MudDialog is null) return;
+        MudDialog.Cancel();
+    }
+}

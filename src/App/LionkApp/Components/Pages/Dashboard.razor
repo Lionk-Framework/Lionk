@@ -16,6 +16,8 @@
         {
             if (component is not null)
             {
+                // TODO Ici il fait pas passer des components qui ont pas été lié à un widget
+                // il faut plutot passer une DashboardItem avec son composent
                 <DashboardItem Component=component />
             }
         }
@@ -27,6 +29,9 @@
 
 @code {
     private List<Lionk.Core.Component.IComponent>? _components;
+
+    // TODO doit être remplacé par un service
+    public static List<Tuple<String, Type>> DashboardRegistery = new();
 
     protected override void OnInitialized()
     {
