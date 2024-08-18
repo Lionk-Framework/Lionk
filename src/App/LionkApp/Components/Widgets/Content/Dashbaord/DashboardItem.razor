@@ -1,6 +1,7 @@
 ﻿@inherits MudItem
 @inject IViewLocatorService ViewLocatorService
 @inject IDialogService DialogService
+@inject ISnackbar Snackbar
 @namespace Lionk.Core.Component
 @using Lionk.Core.Dialog
 @using Lionk.Core.View
@@ -105,27 +106,36 @@
         _isExecutable = Component is IExecutableComponent;
         StateHasChanged();
     }
-
+    
     private async Task ConfigurableClickedAsync()
     {
+        int viewIndex = DashboardItemModel?.Indexes[(int)ViewContext.Configuration] ?? 0;
+        if (_configutionViews is null || _configutionViews.Count() == 0)
+        {
+            Snackbar.Add("No configuration view found", Severity.Error);
+            return;
+        }
         var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
         var parameters = new DialogParameters();
-        var dialog = DialogService.Show<ComponentDialog>("Widget selection", parameters, options);
+        parameters.Add("Component", Component);
+        parameters.Add("View", _configutionViews);
+        parameters.Add("CurrentIndex", viewIndex);
+        var dialog = DialogService.Show<ComponentDialog>("", parameters, options);
         var result = await dialog.Result;
     }
 
     private void DetailableClickedAsync()
     {
-       
+
     }
 
     private void PageableClickedAsync()
     {
-       
+
     }
 
     private void ExecutableClickedAsync()
     {
-        
+
     }
 }

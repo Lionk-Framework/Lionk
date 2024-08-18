@@ -4,10 +4,27 @@
 
 <MudDialog>
     <DialogContent>
-        <DynamicComponent Type="View" Parameters="_parameter" />
+        <MudCarousel Class="mud-width-full"
+                     Style="height:100%;"
+                     ShowArrows="true"
+                     ShowBullets="true"
+                     EnableSwipeGesture="true"
+                     AutoCycle="false"
+                     TData="object"
+                     SelectedIndexChanged="ViewChanged">
+            @if (Views is not null && Views.Count > 0)
+            {
+                foreach (var view in Views)
+                {
+                    <MudCarouselItem>
+                        <DynamicComponent Type="@view" Parameters="_parameter" />
+                    </MudCarouselItem>
+                }
+            }
+        </MudCarousel>
     </DialogContent>
     <DialogActions>
-        <MudSpacer/>
+        <MudSpacer />
         <MudButton OnClick="Submit">Ok</MudButton>
     </DialogActions>
 </MudDialog>
@@ -15,10 +32,12 @@
 @code {
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
 
-    [Parameter] public object? Component { get; set; }
-    [Parameter] public Type? View { get; set; }
-    private Dictionary<string, object> _parameter = new Dictionary<string, object>();
 
+
+    [Parameter] public object? Component { get; set; }
+    [Parameter] public List<Type>? Views { get; set; }
+    [Parameter] public int CurrentIndex { get; set; }
+    private Dictionary<string, object> _parameter = new Dictionary<string, object>();
 
     protected override void OnInitialized()
     {
@@ -29,7 +48,8 @@
     private void Submit()
     {
         if (MudDialog is null) return;
-        MudDialog.Close(DialogResult.Ok(true));
+        MudDialog.Close(DialogResult.Ok(CurrentIndex));
     }
 
+    private void ViewChanged(int index) => CurrentIndex = index;
 }
