@@ -1,6 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using System.Collections.Concurrent;
+using System.Reflection;
 using Lionk.Core.TypeRegistery;
 
 namespace Lionk.Core.Component;
@@ -23,7 +24,10 @@ public class ComponentService : IComponentService
     /// <inheritdoc/>
     public void RegisterComponentInstance(IComponent component)
     {
-        string baseName = component.InstanceName ?? DefaultComponentName;
+        if (component.GetType().GetCustomAttribute<NamedElement>() is NamedElement attribute)
+            component.InstanceName = attribute.Name;
+
+        string baseName = component.InstanceName == string.Empty ? DefaultComponentName : component.InstanceName;
         string uniqueName = GenerateUniqueName(baseName);
         component.InstanceName = uniqueName;
         _componentInstances.TryAdd(uniqueName, component);
@@ -48,7 +52,7 @@ public class ComponentService : IComponentService
     /// <inheritdoc/>
     public IComponent? GetInstanceByName(string name)
     {
-        _componentInstances.TryGetValue(name, out IComponent? component);
+        IComponent? component = _componentInstances.Values.Where(x => x.InstanceName == name).FirstOrDefault();
         return component;
     }
 
