@@ -1,5 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
 
+using Lionk.Core.DataModel;
+
 namespace Lionk.Core.Component;
 
 /// <summary>

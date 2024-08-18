@@ -1,6 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
-namespace Lionk.Core.Component;
+namespace Lionk.Core.DataModel;
 
 /// <summary>
 /// Represents a measure.
