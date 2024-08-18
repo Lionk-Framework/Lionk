@@ -71,6 +71,7 @@ public class PluginManager : IPluginManager
 
         foreach (Plugin plugin in _plugins)
         {
+            if (!plugin.IsLoaded) continue;
             types.AddRange(plugin.Assembly.GetTypes());
         }
 
@@ -89,6 +90,8 @@ public class PluginManager : IPluginManager
     public int GetPluginCount()
         => _plugins.Count;
 
+    private readonly HashSet<string> _loadedAssemblies = [];
+
     private void LoadPlugin(string path)
     {
         Plugin? plugin = null;
@@ -98,18 +101,58 @@ public class PluginManager : IPluginManager
             path = CopyPluginToTempStorage(path);
             var assembly = Assembly.LoadFrom(path);
             plugin = new Plugin(assembly);
+
+            List<Dependency> referencedAssemblies = plugin.Dependencies;
+            TryLoadDependencies(referencedAssemblies, plugin, path);
+
             _plugins.Add(plugin);
-            NewTypesAvailable?.Invoke(this, new TypesEventArgs(plugin.Assembly.GetTypes()));
+            Type[] types = assembly.GetTypes();
+            NewTypesAvailable?.Invoke(this, new TypesEventArgs(types));
+
             plugin.IsLoaded = true;
 
             LogService.LogApp(LogSeverity.Information, $"Plugin loaded: {plugin.Name}");
         }
-        catch (Exception ex)
+        catch (ReflectionTypeLoadException ex)
         {
             LogService.LogApp(LogSeverity.Error, $"Failed to load plugin from path: {path}. Error: {ex.Message}");
 
             if (plugin is not null)
                 plugin.IsLoaded = false;
+        }
+    }
+
+    private bool TryLoadDependencies(List<Dependency> referencedAssemblies, Plugin plugin, string path)
+    {
+        foreach (Dependency referencedAssembly in referencedAssemblies)
+        {
+            try
+            {
+                InternalLoadDependencies(new[] { referencedAssembly.AssemblyName });
+                referencedAssembly.IsLoaded = true;
+            }
+            catch (Exception depEx)
+            {
+                LogService.LogApp(
+                    LogSeverity.Error,
+                    $"Failed to load dependency '{referencedAssembly.AssemblyName.FullName}' for plugin '{plugin.Name}' from path: {path}. Error: {depEx.Message}");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void InternalLoadDependencies(AssemblyName[] assemblies)
+    {
+        foreach (AssemblyName assemblyName in assemblies)
+        {
+            if (!_loadedAssemblies.Contains(assemblyName.FullName))
+            {
+                var assembly = Assembly.Load(assemblyName);
+                _loadedAssemblies.Add(assemblyName.FullName);
+                InternalLoadDependencies(assembly.GetReferencedAssemblies());
+            }
         }
     }
 

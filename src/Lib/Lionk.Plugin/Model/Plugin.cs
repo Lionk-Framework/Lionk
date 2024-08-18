@@ -21,7 +21,15 @@ public class Plugin
         Version = assembly.GetName().Version?.ToString() ?? "Unknown";
         Description = GetAttribute<AssemblyDescriptionAttribute>(assembly)?.Description ?? "No description";
         Author = GetAttribute<AssemblyCompanyAttribute>(assembly)?.Company ?? "Unknown";
-        Dependencies = assembly.GetReferencedAssemblies().Select(a => a.FullName).ToArray();
+
+        AssemblyName[] assemblies = assembly.GetReferencedAssemblies();
+
+        Dependencies = new List<Dependency>(assemblies.Length);
+
+        foreach (AssemblyName assemblyName in assemblies)
+        {
+            Dependencies.Add(new Dependency(false, assemblyName));
+        }
     }
 
     /// <summary>
@@ -52,7 +60,7 @@ public class Plugin
     /// <summary>
     /// Gets the dependencies of the plugin as an array of strings.
     /// </summary>
-    public string[] Dependencies { get; }
+    public List<Dependency> Dependencies { get; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the plugin has been correctly loaded.

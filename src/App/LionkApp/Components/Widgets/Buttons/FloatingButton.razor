@@ -1,13 +1,14 @@
 ﻿@rendermode InteractiveServer
 @inject IDialogService DialogService
+@using Lionk.Core.Razor.Components
 @using LionkApp.Components.Widgets.Dialogs
+@using Lionk.Core
 
 <MudFab @onclick="OpenDialogAsync" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Add" Size="Size.Large" Style="position: fixed; bottom: 20px; right: 20px;" />
 
 @code {
     private Task OpenDialogAsync()
     {
-        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true };
-        return DialogService.ShowAsync<PluginSelector>("Plugin selection", options);
+        return DialogService.ShowAsync<WidgetHandler>("Widget selection");
     }
 }
