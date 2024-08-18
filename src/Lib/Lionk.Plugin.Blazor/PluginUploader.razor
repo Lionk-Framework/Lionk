@@ -21,7 +21,7 @@
             {
                 <MudItem xs="12" sm="6" md="4" lg="3">
                     <PluginCard Plugin="@plugin"
-                                OnSelect="SelectPlugin"
+                                OnDependencySelect="OpenFilePickerAsync"
                                 OnDelete="DeletePlugin" />
                 </MudItem>
             }
@@ -68,7 +68,6 @@
     private const string DefaultDragClass = "relative rounded-lg border-2 border-dashed pa-4 mud-width-full mud-height-full";
     private string _dragClass = DefaultDragClass;
     private MudFileUpload<IReadOnlyList<IBrowserFile>>? _fileUpload;
-    private Plugin? SelectedPlugin { get; set; }
 
     private void DeletePlugin(Plugin plugin)
     {
@@ -76,9 +75,6 @@
         Snackbar.Add($"Plugin {plugin.Name} deleted successfully!", Severity.Success);
         StateHasChanged();
     }
-
-    private void SelectPlugin(Plugin plugin)
-    => SelectedPlugin = plugin;
 
     private Task OpenFilePickerAsync()
         => _fileUpload?.OpenFilePickerAsync() ?? Task.CompletedTask;

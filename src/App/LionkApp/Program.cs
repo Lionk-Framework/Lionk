@@ -4,6 +4,7 @@ using Lionk.Auth.Abstraction;
 using Lionk.Auth.Identity;
 using Lionk.Auth.Utils;
 using Lionk.Core.Component;
+using Lionk.Core.Model.Component.Cyclic;
 using Lionk.Core.TypeRegistery;
 using Lionk.Log;
 using Lionk.Log.Serilog;
@@ -16,6 +17,11 @@ using MudBlazor.Services;
 using ILoggerFactory = Lionk.Log.ILoggerFactory;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+#if !DEBUG
+ // Configure Kestrel to listen on all IP addresses and port 5000
+ builder.WebHost.UseKestrel(options => options.Listen(System.Net.IPAddress.Any, 5000));
+#endif
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -56,6 +62,12 @@ builder.Services.AddSingleton<IComponentService>(serviceProvider =>
     return new ComponentService(typesProvider);
 });
 
+// Register CyclicExecutorService with a factory to resolve IComponentService
+builder.Services.AddSingleton<ICyclicExecutorService>(serviceProvider =>
+{
+    IComponentService componentService = serviceProvider.GetRequiredService<IComponentService>();
+    return new CyclicExecutorService(componentService);
+});
 WebApplication app = builder.Build();
 
 // Configure the LogService with the singleton logger

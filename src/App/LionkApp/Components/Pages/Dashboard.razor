@@ -1,41 +1,48 @@
 ﻿@page "/"
+@inject ISnackbar Snackbar
+@inject ICyclicExecutorService CyclicExecutorService
+@inject IComponentService ComponentService
+@inject IDialogService DialogService
+@using Lionk.Core.Component
+@using Lionk.Utils;
 @using LionkApp.Components.Widgets.Buttons
 
 <PageTitle>Dashboard</PageTitle>
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
-    <MudGrid>
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="12" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudGrid>
-                <MudItem xs="12">
-                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-                </MudItem>
-                <MudItem xs="12">
-                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-                </MudItem>
-            </MudGrid>
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%"></MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="12" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
-    </MudGrid>
+
+    @if (DashBoardItems != null)
+    {
+        @foreach (Widget item in DashBoardItems)
+        {
+
+            Dictionary<string, object> parameters = new();
+            string? instanceName = item.Component?.InstanceName;
+            string WidgetInstanceName = item.Component?.InstanceName ?? "No widget name";
+            if (!string.IsNullOrEmpty(instanceName))
+            {
+                Type view = item.GetType();
+                object? component = ComponentService.GetInstanceByName(instanceName);
+                if (component != null)
+                {
+                    parameters.Add("ComponentParameter", component);
+                    parameters.Add("InstanceNameParameter", WidgetInstanceName);
+                }
+                <DashboardItem View="view" Parameters="parameters" />
+            }
+        }
+    }
+
 </MudContainer>
 
-<FloatingButton/>
+<FloatingButton />
+
+@code {
+
+    private List<Widget>? DashBoardItems => ComponentService.GetInstancesOfType<Widget>().ToList();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+}
+

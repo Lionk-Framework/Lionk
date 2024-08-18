@@ -14,12 +14,24 @@ else
 {
     <MudCard Class="floating-card" Outlined="true">
         <MudCardHeader>
-            <div>
-                <MudText Typo="Typo.h6">@Plugin.Name</MudText>
-                <MudText Typo="Typo.subtitle2">@Plugin.Version</MudText>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <MudText Typo="Typo.h6" Style="word-wrap: break-word; overflow-wrap: break-word; word-break: break-word;">@Plugin.Name</MudText>
+                    <MudText Typo="Typo.subtitle2">@Plugin.Version</MudText>
+                </div>
             </div>
         </MudCardHeader>
         <MudCardContent>
+            @if (!Plugin.IsLoaded)
+            {
+                <MudTooltip Text="Something went wrong during plugin loading, please check dependencies.">
+                    <MudIconButton Icon="@Icons.Material.Filled.Error"
+                                   Color="Color.Error"
+                                   Style="cursor: pointer;">
+                    </MudIconButton>
+                </MudTooltip>
+            }
+
             <MudText Typo="Typo.body1">@Plugin.Description</MudText>
             <MudText Typo="Typo.body2">Author: @Plugin.Author</MudText>
 
@@ -28,7 +40,18 @@ else
                 <MudList T="string" Class="small-font non-selectable">
                     @foreach (var dependency in Plugin.Dependencies)
                     {
-                        <MudListItem>@dependency</MudListItem>
+                        <MudListItem OnClick="() => OnDependencySelectAsync(dependency)">
+                            @if (dependency.IsLoaded)
+                            {
+                                <MudText>
+                                    @dependency.AssemblyName.FullName
+                                </MudText>
+                            }
+                            else
+                            {
+                                <MudText Color="Color.Error">@dependency.AssemblyName.FullName</MudText>
+                            }
+                        </MudListItem>
                     }
                 </MudList>
             </MudCollapse>
@@ -50,11 +73,17 @@ else
         ShowDependencies = !ShowDependencies;
     }
 
+    private async Task OnDependencySelectAsync(Dependency dependency)
+    {
+        if (!dependency.IsLoaded)
+            await OnDependencySelect.InvokeAsync(dependency);
+    }
+
     [Parameter]
     public Plugin? Plugin { get; set; }
 
     [Parameter]
-    public EventCallback<Plugin> OnSelect { get; set; }
+    public EventCallback<Dependency> OnDependencySelect { get; set; }
 
     [Parameter]
     public EventCallback<Plugin> OnDelete { get; set; }
