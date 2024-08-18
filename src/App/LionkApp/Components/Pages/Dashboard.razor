@@ -18,8 +18,12 @@
 
         if (component is not null && view is not null)
         {
-            // TODO Alex : Add a way to pass parameters to the view
-            @* <DynamicComponent View="view" Component=component /> *@
+            var parameters = new Dictionary<string, object>
+            {
+                { "Component", component }
+            };
+
+            <DynamicComponent Type="view" Parameters="parameters" />
         }
     }
 
