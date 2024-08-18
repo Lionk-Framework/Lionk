@@ -13,5 +13,5 @@ public interface IViewLocatorService : IDisposable
     /// <param name="type">The type of the component.</param>
     /// <param name="context">The context.</param>
     /// <returns>A <see cref="Type"/> which define the view.</returns>
-    public IEnumerable<Type> GetViewOf(Type type, ViewContext context);
+    public IEnumerable<ComponentViewDescription> GetViewOf(Type type, ViewContext context);
 }

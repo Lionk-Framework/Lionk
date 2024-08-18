@@ -27,8 +27,8 @@
 
 @code {
 
-    private MudTable<Type> _table = new();
-    private IEnumerable<Type>? _availableWidgets;
+    private MudTable<ComponentViewDescription> _table = new();
+    private IEnumerable<ComponentViewDescription>? _availableWidgets;
 
 
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
@@ -44,7 +44,7 @@
 
     }
 
-    private void ComponentSelected(Type viewType)
+    private void ComponentSelected(ComponentViewDescription viewType)
     {
         if (viewType is not null)
         {
