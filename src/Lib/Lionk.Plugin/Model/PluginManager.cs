@@ -151,7 +151,6 @@ public class PluginManager : IPluginManager
             {
                 var assembly = Assembly.Load(assemblyName);
                 _loadedAssemblies.Add(assemblyName.FullName);
-                assembly.GetCustomAttributes();
                 InternalLoadDependencies(assembly.GetReferencedAssemblies());
             }
         }
