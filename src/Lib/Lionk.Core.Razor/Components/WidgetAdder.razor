@@ -55,7 +55,7 @@
         }
 
         DialogParameters parameters = new();
-        parameters.Add("Widget", _selectedComponent);
+        parameters.Add("ComponentType", _selectedComponent.GetType());
 
         var dialogReference = DialogService.Show<WidgetSelector>("Widget Selection", parameters);
 

@@ -54,14 +54,12 @@
 
             <MudMenu Icon="@Icons.Material.Filled.MoreVert">
                 <MudMenuItem IconSize="Size.Small"
-                             Icon="@Icons.Material.Filled.Edit"
-                            >
+                             Icon="@Icons.Material.Filled.Edit">
                     Edit
                 </MudMenuItem>
                 <MudMenuItem IconSize="Size.Small"
                              Icon="@Icons.Material.Filled.DeleteForever"
-                             IconColor="Color.Error"
-                             >
+                             IconColor="Color.Error">
                     <MudText Color="Color.Error">Delete</MudText>
                 </MudMenuItem>
             </MudMenu>
@@ -69,7 +67,7 @@
 
 
         </div>
-        <DynamicComponent @ref=_dynamicComponent Type="@_view" Parameters="@_parameters" />
+        <DynamicComponent @ref=_dynamicComponent Type="@View" Parameters="@_parameters" />
     </MudPaper>
 </MudItem>
 
@@ -79,13 +77,11 @@
 
     private const string _marginPixels = "5px";
 
-    private Type? _view;
-
-
     public Dictionary<string, object> _parameters = new();
 
     [Parameter]
     public Lionk.Core.Component.IComponent? Component { get; set; }
+    [Parameter] public Type? View { get; set; }
 
     private bool _isConfigurable;
     private bool _isDetailable;
@@ -99,12 +95,7 @@
     {
         if (Component is not null)
         {
-            // TODO utiliser le service qui s'occupe de retourner les vues
-            _view = ComponentView.GetComponentView(Component.GetType(), ComponentViewMode.Widget)?[0]?.View;
-            if (Component is not null)
-            {
-                _parameters.Add("Component", Component);
-            }
+            _parameters.Add("Component", Component);
         }
     }
 
@@ -124,7 +115,7 @@
         DefineButtonsState();
     }
 
-   
+
     private void ConfigurableClicked()
     {
         if (_instance is IConfigurableComponent configurableComponent)

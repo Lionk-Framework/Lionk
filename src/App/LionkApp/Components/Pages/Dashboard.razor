@@ -12,13 +12,13 @@
 
     @if (_components != null)
     {
-        @foreach (Lionk.Core.Component.IComponent component in _components)
+        @foreach (Tuple<String, Type> mappedView in DashboardRegistery)
         {
-            if (component is not null)
+            Lionk.Core.Component.IComponent? component = ComponentService.GetInstanceByName(mappedView.Item1);
+            Type view = mappedView.Item2;
+            if (component is not null && view is not null)
             {
-                // TODO Ici il fait pas passer des components qui ont pas été lié à un widget
-                // il faut plutot passer une DashboardItem avec son composent
-                <DashboardItem Component=component />
+                <DashboardItem View="view" Component=component />
             }
         }
     }
@@ -37,6 +37,8 @@
     {
         base.OnInitialized();
         _components = ComponentService.GetInstancesOfType<Lionk.Core.Component.IComponent>().ToList();
+        int i = 0;
+        i++;
     }
 
     private void Refresh()
