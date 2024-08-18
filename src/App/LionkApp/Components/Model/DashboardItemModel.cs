@@ -1,5 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
 
+using Lionk.Core.View;
+
 namespace LionkApp.Components.Model;
 
 /// <summary>
@@ -21,4 +23,9 @@ public class DashboardItemModel(string componentName, Type viewType)
     /// Gets or sets the view type.
     /// </summary>
     public Type ViewType { get; set; } = viewType;
+
+    /// <summary>
+    /// Gets the indexes of selected views.
+    /// </summary>
+    public int[] Indexes => new int[Enum.GetValues(typeof(ViewContext)).Length];
 }

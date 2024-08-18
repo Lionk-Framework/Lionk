@@ -1,0 +1,131 @@
+﻿@inherits MudItem
+@inject IViewLocatorService ViewLocatorService
+@inject IDialogService DialogService
+@namespace Lionk.Core.Component
+@using Lionk.Core.Dialog
+@using Lionk.Core.View
+@using LionkApp.Components.Model
+
+<MudItem Style=" margin-right:15px;
+            margin-bottom:15px;">
+    <MudPaper Class="pa-4"
+              Style=" position: relative;
+            height:100%;
+            width:100%">
+        <div style="position: absolute;
+                    top: 5px;
+                    right: 5px;
+                    display: flex;
+                    flex-direction: column;">
+            @if (_isConfigurable)
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.Settings"
+                               Size="Size.Small"
+                               OnClick="ConfigurableClickedAsync" />
+            }
+
+            @if (_isDetailable)
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.Details"
+                               Size="Size.Small"
+                               OnClick="DetailableClickedAsync" />
+            }
+            @if (_isPageable)
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.Pageview"
+                               Size="Size.Small"
+                               OnClick="PageableClickedAsync" />
+            }
+            @if (_isExecutable)
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.PlayArrow"
+                               Size="Size.Small"
+                               OnClick="ExecutableClickedAsync" />
+            }
+
+        </div>
+
+        <DynamicComponent @ref=_dynamicComponent Type="@_view" Parameters="@_parameters" />
+    </MudPaper>
+</MudItem>
+
+
+
+@code {
+    [Parameter] public DashboardItemModel? DashboardItemModel { get; set; }
+    [Parameter] public IComponent? Component { get; set; }
+
+    private Type? _view;
+    private Dictionary<string, object> _parameters = new();
+
+    private List<ComponentViewDescription>? _configutionViews;
+    private List<ComponentViewDescription>? _detailViews;
+    private List<ComponentViewDescription>? _pageViews;
+
+
+    private bool _isConfigurable;
+    private bool _isDetailable;
+    private bool _isPageable;
+    private bool _isExecutable;
+
+    private DynamicComponent? _dynamicComponent;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (DashboardItemModel is not null) _view = DashboardItemModel.ViewType;
+        if (Component is null) return;
+
+        _parameters.Add("Component", Component);
+
+        Type componentType = Component.GetType();
+
+        _configutionViews = ViewLocatorService.GetViewOf(
+            componentType,
+            ViewContext.Configuration)
+            .ToList();
+
+        _detailViews = ViewLocatorService.GetViewOf(
+            componentType,
+            ViewContext.Detail)
+            .ToList();
+
+        _pageViews = ViewLocatorService.GetViewOf(
+            componentType,
+            ViewContext.Page)
+            .ToList();
+        DefineButtonsState();
+    }
+
+    private void DefineButtonsState()
+    {
+        _isConfigurable = _configutionViews is not null && _configutionViews.Count() > 0;
+        _isDetailable = _detailViews is not null && _detailViews.Count() > 0;
+        _isPageable = _pageViews is not null && _pageViews.Count() > 0;
+        _isExecutable = Component is IExecutableComponent;
+        StateHasChanged();
+    }
+
+    private async Task ConfigurableClickedAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
+        var parameters = new DialogParameters();
+        var dialog = DialogService.Show<ComponentDialog>("Widget selection", parameters, options);
+        var result = await dialog.Result;
+    }
+
+    private void DetailableClickedAsync()
+    {
+       
+    }
+
+    private void PageableClickedAsync()
+    {
+       
+    }
+
+    private void ExecutableClickedAsync()
+    {
+        
+    }
+}

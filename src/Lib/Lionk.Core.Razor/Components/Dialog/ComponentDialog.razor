@@ -1,15 +1,14 @@
 ﻿@using MudBlazor
 @using System.Reflection
-@namespace Lionk.Core.Component.Dialog
+@namespace Lionk.Core.Dialog
 
 <MudDialog>
     <DialogContent>
-        <DynamicComponent Type="ConfigType" Parameters="_parameter" />
+        <DynamicComponent Type="View" Parameters="_parameter" />
     </DialogContent>
     <DialogActions>
         <MudSpacer/>
-        <MudButton OnClick="Submit">Save</MudButton>
-        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton OnClick="Submit">Ok</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -17,7 +16,7 @@
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
 
     [Parameter] public object? Component { get; set; }
-    [Parameter] public Type? ConfigType { get; set; }
+    [Parameter] public Type? View { get; set; }
     private Dictionary<string, object> _parameter = new Dictionary<string, object>();
 
 
@@ -27,16 +26,10 @@
         _parameter.Add("Component", Component);
     }
 
-
     private void Submit()
     {
         if (MudDialog is null) return;
-        MudDialog.Close(DialogResult.Ok(new { Component }));
+        MudDialog.Close(DialogResult.Ok(true));
     }
 
-    private void Cancel()
-    {
-        if (MudDialog is null) return;
-        MudDialog.Cancel();
-    }
 }

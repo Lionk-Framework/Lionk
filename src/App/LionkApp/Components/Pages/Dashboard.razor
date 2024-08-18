@@ -14,16 +14,9 @@
     @foreach (var item in DashboardRegistry)
     {
         IComponent? component = ComponentService.GetInstanceByName(item.ComponentInstanceName);
-        Type view = item.ViewType;
-
-        if (component is not null && view is not null)
+        if (component is not null)
         {
-            var parameters = new Dictionary<string, object>
-            {
-                { "Component", component }
-            };
-
-            <DynamicComponent Type="view" Parameters="parameters" />
+            <DashboardItem DashboardItemModel=item Component="component" />
         }
     }
 
