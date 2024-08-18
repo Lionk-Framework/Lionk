@@ -7,14 +7,14 @@ using Moq;
 namespace LionkTest.Core;
 
 /// <summary>
-/// Test class for <see cref="ComponentRegistery"/>.
+/// Test class for <see cref="ComponentRegister"/>.
 /// </summary>
 [TestFixture]
 public class ComponentRegisteryTests
 {
     private Mock<IComponentService> _mockComponentService;
     private Mock<ITypesProvider> _mockTypesProvider;
-    private ComponentRegistery _componentRegistery;
+    private ComponentRegister _componentRegistery;
 
     /// <summary>
     /// Method used to set up before each test.
@@ -24,7 +24,7 @@ public class ComponentRegisteryTests
     {
         _mockComponentService = new Mock<IComponentService>();
         _mockTypesProvider = new Mock<ITypesProvider>();
-        _componentRegistery = new ComponentRegistery(_mockTypesProvider.Object, _mockComponentService.Object);
+        _componentRegistery = new ComponentRegister(_mockTypesProvider.Object, _mockComponentService.Object);
     }
 
     /// <summary>
@@ -55,7 +55,7 @@ public class ComponentRegisteryTests
     }
 
     /// <summary>
-    /// Test for <see cref="ComponentRegistery.AddProvider(ITypesProvider)"/>.
+    /// Test for <see cref="ComponentRegister.AddProvider(ITypesProvider)"/>.
     /// </summary>
     [Test]
     public void AddProvider_ShouldAddNewProvider_WhenCalled()
@@ -69,7 +69,7 @@ public class ComponentRegisteryTests
     }
 
     /// <summary>
-    /// Test for <see cref="ComponentRegistery.DeleteProvider(ITypesProvider)"/>.
+    /// Test for <see cref="ComponentRegister.DeleteProvider(ITypesProvider)"/>.
     /// </summary>
     [Test]
     public void DeleteProvider_ShouldRemoveProvider_WhenCalled()
@@ -86,7 +86,7 @@ public class ComponentRegisteryTests
     }
 
     /// <summary>
-    /// Test for <see cref="ComponentRegistery.Dispose"/>.
+    /// Test for <see cref="ComponentRegister.Dispose"/>.
     /// </summary>
     [Test]
     public void Dispose_ShouldUnsubscribeFromAllProviders_WhenCalled()
@@ -104,6 +104,6 @@ public class ComponentRegisteryTests
 
     private class MockComponent : IComponent
     {
-        public string? InstanceName { get; set; }
+        public string InstanceName { get; set; } = string.Empty;
     }
 }

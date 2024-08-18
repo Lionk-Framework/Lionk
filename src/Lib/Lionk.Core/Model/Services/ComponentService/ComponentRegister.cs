@@ -10,23 +10,23 @@ namespace Lionk.Core.Component;
 /// Elements can be extended using the <see cref="ITypesProvider"/> to provide new types.
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="ComponentRegistery"/> class.
+/// Initializes a new instance of the <see cref="ComponentRegister"/> class.
 /// </remarks>
 /// <param name="service">The component service.</param>
-public class ComponentRegistery(IComponentService service) : IDisposable
+public class ComponentRegister(IComponentService service) : IDisposable
 {
     /// <summary>
     /// Gets a dictionnary containing all registered Type and theirs factory.
     /// </summary>
     public ReadOnlyDictionary<ComponentTypeDescription, Factory> TypesRegistery
-        => _typesRegistery.AsReadOnly();
+        => _typesRegister.AsReadOnly();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ComponentRegistery"/> class.
+    /// Initializes a new instance of the <see cref="ComponentRegister"/> class.
     /// </summary>
     /// <param name="providers">A list of component providers.</param>
     /// <param name="service">The component service.</param>
-    public ComponentRegistery(IEnumerable<ITypesProvider> providers, IComponentService service)
+    public ComponentRegister(IEnumerable<ITypesProvider> providers, IComponentService service)
         : this(service)
     {
         _providers = providers.ToList();
@@ -34,11 +34,11 @@ public class ComponentRegistery(IComponentService service) : IDisposable
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ComponentRegistery"/> class.
+    /// Initializes a new instance of the <see cref="ComponentRegister"/> class.
     /// </summary>
     /// <param name="provider">A <see cref="ITypesProvider"/> to poll for new types.</param>
     /// <param name="service">The component service.</param>
-    public ComponentRegistery(ITypesProvider provider, IComponentService service)
+    public ComponentRegister(ITypesProvider provider, IComponentService service)
         : this(new List<ITypesProvider> { provider }, service)
         => AddTypesToRegistery(provider.GetTypes());
 
@@ -84,7 +84,7 @@ public class ComponentRegistery(IComponentService service) : IDisposable
                 var factory = new ComponentFactory(type, _componentService);
                 var description = new ComponentTypeDescription(type);
 
-                _typesRegistery.Add(description, factory);
+                _typesRegister.Add(description, factory);
                 _registeredTypes.Add(type);
                 newTypeAvailabe = true;
             }
@@ -100,7 +100,7 @@ public class ComponentRegistery(IComponentService service) : IDisposable
     public event EventHandler<EventArgs>? NewComponentAvailable;
 
     private readonly IComponentService _componentService = service;
-    private readonly Dictionary<ComponentTypeDescription, Factory> _typesRegistery = [];
+    private readonly Dictionary<ComponentTypeDescription, Factory> _typesRegister = [];
     private readonly HashSet<Type> _registeredTypes = [];
     private readonly List<ITypesProvider> _providers = [];
 }

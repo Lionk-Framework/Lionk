@@ -1,48 +1,54 @@
 ﻿@page "/"
 @inject ISnackbar Snackbar
-@inject ICyclicExecutorService CyclicExecutorService
 @inject IComponentService ComponentService
 @inject IDialogService DialogService
 @using Lionk.Core.Component
-@using Lionk.Utils;
-@using LionkApp.Components.Widgets.Buttons
+@using Lionk.Core.View
+@using LionkApp.Components.Model
+@using IComponent = Lionk.Core.Component.IComponent
+@using LionkApp.Components.Widgets.Dialogs
 
 <PageTitle>Dashboard</PageTitle>
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
 
-    @if (DashBoardItems != null)
+    @foreach (var item in DashboardRegistry)
     {
-        @foreach (Widget item in DashBoardItems)
-        {
+        IComponent? component = ComponentService.GetInstanceByName(item.ComponentInstanceName);
+        Type view = item.ViewType;
 
-            Dictionary<string, object> parameters = new();
-            string? instanceName = item.Component?.InstanceName;
-            string WidgetInstanceName = item.Component?.InstanceName ?? "No widget name";
-            if (!string.IsNullOrEmpty(instanceName))
+        if (component is not null && view is not null)
+        {
+            var parameters = new Dictionary<string, object>
             {
-                Type view = item.GetType();
-                object? component = ComponentService.GetInstanceByName(instanceName);
-                if (component != null)
-                {
-                    parameters.Add("ComponentParameter", component);
-                    parameters.Add("InstanceNameParameter", WidgetInstanceName);
-                }
-                <DashboardItem View="view" Parameters="parameters" />
-            }
+                { "Component", component }
+            };
+
+            <DynamicComponent Type="view" Parameters="parameters" />
         }
     }
 
 </MudContainer>
 
-<FloatingButton />
+<MudFab @onclick="OpenDialogAsync" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Add" Size="Size.Large" Style="position: fixed; bottom: 20px; right: 20px;" />
 
 @code {
+    public List<DashboardItemModel> DashboardRegistry { get; set; } = new();
 
-    private List<Widget>? DashBoardItems => ComponentService.GetInstancesOfType<Widget>().ToList();
-
-    protected override void OnInitialized()
+    private async Task OpenDialogAsync()
     {
-        base.OnInitialized();
+        var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
+        var parameters = new DialogParameters();
+        var dialog = DialogService.Show<WidgetAdder>("Widget selection", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is not null && !result.Canceled)
+        {
+            var newWidget = result.Data as DashboardItemModel;
+            if (newWidget != null)
+            {
+                DashboardRegistry.Add(newWidget);
+                StateHasChanged();
+            }
+        }
     }
 }
-

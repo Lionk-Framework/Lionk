@@ -6,6 +6,7 @@ using Lionk.Auth.Utils;
 using Lionk.Core.Component;
 using Lionk.Core.Model.Component.Cyclic;
 using Lionk.Core.TypeRegistery;
+using Lionk.Core.View;
 using Lionk.Log;
 using Lionk.Log.Serilog;
 using Lionk.Plugin;
@@ -60,6 +61,12 @@ builder.Services.AddSingleton<IComponentService>(serviceProvider =>
 {
     ITypesProvider typesProvider = serviceProvider.GetRequiredService<IPluginManager>();
     return new ComponentService(typesProvider);
+});
+
+builder.Services.AddSingleton<IViewLocatorService>(serviceProvider =>
+{
+    ITypesProvider typesProvider = serviceProvider.GetRequiredService<IPluginManager>();
+    return new ViewLocatorService(typesProvider);
 });
 
 // Register CyclicExecutorService with a factory to resolve IComponentService

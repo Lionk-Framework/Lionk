@@ -24,8 +24,6 @@ public class Plugin
 
         AssemblyName[] assemblies = assembly.GetReferencedAssemblies();
 
-        Dependencies = new List<Dependency>(assemblies.Length);
-
         foreach (AssemblyName assemblyName in assemblies)
         {
             Dependencies.Add(new Dependency(false, assemblyName));
@@ -60,7 +58,7 @@ public class Plugin
     /// <summary>
     /// Gets the dependencies of the plugin as an array of strings.
     /// </summary>
-    public List<Dependency> Dependencies { get; }
+    public List<Dependency> Dependencies { get; } = [];
 
     /// <summary>
     /// Gets or sets a value indicating whether the plugin has been correctly loaded.
