@@ -86,12 +86,7 @@
 
 
     [Parameter]
-    public Widget? Widget
-    {
-        get;
-        set;
-    }
-
+    public Lionk.Core.Component.IComponent? Component { get; set; }
 
     private bool _isConfigurable;
     private bool _isDetailable;
@@ -103,13 +98,12 @@
 
     protected override void OnInitialized()
     {
-        if (Widget is not null)
+        if (Component is not null)
         {
-            _view = Widget.GetType();
-            if (Widget.Component is not null && Widget.InstanceName is not null)
+            _view = ComponentView.GetComponentView(Component.GetType(), ComponentViewMode.Widget)?.View;
+            if (Component is not null)
             {
-                _parameters.Add("ComponentParameter", Widget.Component);
-                _parameters.Add("InstanceNameParameter", Widget.InstanceName);
+                _parameters.Add("Component", Component);
             }
         }
     }

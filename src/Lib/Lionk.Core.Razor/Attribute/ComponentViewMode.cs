@@ -21,4 +21,9 @@ public enum ComponentViewMode
     /// Defines the view as a page view.
     /// </summary>
     Page,
+
+    /// <summary>
+    /// Defines the view as a widget view.
+    /// </summary>
+    Widget,
 }

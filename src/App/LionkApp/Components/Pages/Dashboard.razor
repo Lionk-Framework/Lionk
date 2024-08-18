@@ -10,16 +10,13 @@
 <PageTitle>Dashboard</PageTitle>
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
 
-    @if (_widgets != null)
+    @if (_components != null)
     {
-        @foreach (Widget widget in _widgets)
+        @foreach (Lionk.Core.Component.IComponent component in _components)
         {
-            Lionk.Core.Component.IComponent? component = widget.Component;
-           
-            if (widget.Component is not null )
+            if (component is not null )
             {
-
-                <DashboardItem Widget=widget />
+                <DashboardItem Component=widget />
             }
         }
     }
@@ -29,12 +26,12 @@
 <FloatingButton NewWidgetAvailable="Refresh" />
 
 @code {
-    private List<Widget>? _widgets;
+    private List<Lionk.Core.Component.IComponent>? _components;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        _widgets = ComponentService.GetInstancesOfType<Widget>().ToList();
+        _components = ComponentService.GetInstancesOfType<Lionk.Core.Component.IComponent>().ToList();
     }
 
     private void Refresh()
