@@ -12,7 +12,7 @@
     </DialogContent>
     <DialogActions>
         <MudSpacer />
-        <MudButton OnClick="ChooseWidgetToLink">Choose widget</MudButton>
+        <MudButton OnClick="ChooseWidgetToLinkAsync">Choose widget</MudButton>
         <MudSpacer />
         <MudButton OnClick="Submit">Ok</MudButton>
         <MudButton OnClick="Cancel">Cancel</MudButton>
@@ -30,7 +30,7 @@
         _selectedComponent = component;
     }
 
-    private async Task ChooseWidgetToLink()
+    private async Task ChooseWidgetToLinkAsync()
     {
         if (_selectedComponent is null)
         {
