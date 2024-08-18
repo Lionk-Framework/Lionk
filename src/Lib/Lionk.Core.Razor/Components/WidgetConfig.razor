@@ -40,17 +40,9 @@
     {
         if (Widget is not null)
         {
-            string instanceName = Widget.InstanceName ?? string.Empty;
-            Lionk.Core.Component.IComponent? instance = ComponentService.GetInstanceByName(instanceName);
-            if (instance is not null && instance is Widget widget)
-            {
-                
-
             Widget.Component = component;
-            widget.Component = component;
             Snackbar.Add("Component selected", Severity.Success);
             return;
-            }
         }
         Snackbar.Add("Widget is null", Severity.Error);
     }

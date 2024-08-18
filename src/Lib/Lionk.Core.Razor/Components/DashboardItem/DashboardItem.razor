@@ -132,25 +132,33 @@
 
     private async Task EditWidgetAsync()
     {
-        DialogParameters parameters = new();
-        if (_instance is null)
+        DialogParameters dialogParameters = new();
+        if (Widget is null)
         {
             Snackbar.Add("Widget not available", Severity.Error);
             return;
         }
 
-        parameters.Add("Widget", _instance);
+        dialogParameters.Add("Widget", Widget);
 
-        var dialogReference = DialogService.Show<WidgetConfig>("Widget edition", parameters);
+        var dialogReference = DialogService.Show<WidgetConfig>("Widget edition", dialogParameters);
 
         var dialogResult = await dialogReference.Result;
+
+        if (Widget.Component is not null)
+        {
+            // _parameters["ComponentParameter"] = Widget.Component;
+            // ParameterView parameterView = new();
+            // parameterView.SetParameterProperties(Widget.Component);
+            // await _dynamicComponent?.SetParametersAsync(parameterView);
+        }
 
         if (dialogResult is null || dialogResult.Canceled) Snackbar.Add("Widget edition cancelled", Severity.Warning);
     }
 
     private async Task RemoveWidgetAsync()
     {
-        if (_instance is null)
+        if (Widget is null)
         {
             Snackbar.Add("Widget not available", Severity.Error);
             return;
