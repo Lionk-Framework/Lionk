@@ -17,7 +17,7 @@ public class ComponentService : IComponentService
     /// <param name="provider">The type provider.</param>
     public ComponentService(ITypesProvider provider)
     {
-        _componentRegistery = new ComponentRegistery(provider, this);
+        _componentRegistery = new ComponentRegister(provider, this);
         _componentRegistery.NewComponentAvailable += (s, e) => OnNewTypesAvailable();
     }
 
@@ -93,5 +93,5 @@ public class ComponentService : IComponentService
     private readonly ConcurrentDictionary<string, IComponent>
         _componentInstances = new();
 
-    private readonly ComponentRegistery _componentRegistery;
+    private readonly ComponentRegister _componentRegistery;
 }
