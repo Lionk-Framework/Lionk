@@ -23,9 +23,12 @@ public class ViewLocatorService : IViewLocatorService
 
     /// <inheritdoc/>
     public IEnumerable<ComponentViewDescription> GetViewOf(Type type, ViewContext context)
-        => _views.Where(
-            x => type.IsAssignableFrom(x.ComponentType)
-            && x.ViewContext == context);
+    {
+        List<ComponentViewDescription> assignableView;
+        assignableView = _views.Where(view => type.IsAssignableTo(view.ComponentType)).ToList();
+        assignableView = assignableView.Where(view => view.ViewContext == context).ToList();
+        return assignableView.ToList();
+    }
 
     /// <inheritdoc/>
     public void Dispose()

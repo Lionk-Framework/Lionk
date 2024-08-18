@@ -28,7 +28,7 @@
 @code {
 
     private MudTable<ComponentViewDescription> _table = new();
-    private IEnumerable<ComponentViewDescription>? _availableWidgets;
+    private List<ComponentViewDescription>? _availableWidgets;
 
 
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
@@ -39,7 +39,7 @@
     {
         if (ComponentType is not null)
         {
-            _availableWidgets = ViewLocatorService.GetViewOf(ComponentType, ViewContext.Widget);
+            _availableWidgets = ViewLocatorService.GetViewOf(ComponentType, ViewContext.Widget).ToList();
         }
 
     }
