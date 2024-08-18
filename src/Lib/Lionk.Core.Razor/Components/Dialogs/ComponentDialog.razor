@@ -4,7 +4,7 @@
 @namespace Lionk.Core.Dialog
 
 <MudDialog Style="height:50%">
-    <DialogContent >
+    <DialogContent>
         <MudCarousel ShowArrows="true"
                      ShowBullets="false"
                      EnableSwipeGesture="true"
@@ -17,23 +17,27 @@
                 foreach (var viewDescription in ViewDescription)
                 {
                     <MudCarouselItem Style="margin-left:50px; margin-right:50px; overflow-y: scroll;">
-                    <DynamicComponent Type="@viewDescription.ViewType" Parameters="_parameter"/>
+                        <MudGrid Style="width:inherit%">
+                            <MudItem>
+                                <MudText Typo="Typo.h6">@viewDescription.Name</MudText>
+                            </MudItem>
+                            <MudItem Style="width:inherit">
+                                <DynamicComponent Type="@viewDescription.ViewType" Parameters="_parameter" />
+                            </MudItem>
+                        </MudGrid>
                     </MudCarouselItem>
+
                 }
             }
         </MudCarousel>
     </DialogContent>
     <DialogActions>
-        <MudSpacer />
         <MudButton OnClick="Submit">Ok</MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
-
-
-
     [Parameter] public object? Component { get; set; }
     [Parameter] public List<ComponentViewDescription>? ViewDescription { get; set; }
     [Parameter] public int CurrentIndex { get; set; }
