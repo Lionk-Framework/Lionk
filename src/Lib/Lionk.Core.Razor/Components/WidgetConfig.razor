@@ -4,44 +4,53 @@
 
 <MudDialog>
     <DialogContent>
+        <MudTextField Label="Name" @bind-Value=_widgetName />
         <IComponentInstanceList Components="_components" OnComponentSelected="ComponentSelected" />
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Submit">Save</MudButton>
+        <MudButton OnClick="Submit">Ok</MudButton>
         <MudButton OnClick="Cancel">Cancel</MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
-    [Parameter] public Type? Type { get; set; }
+    [Parameter] public Widget? Widget { get; set; }
+
+    private string _widgetName
+    {
+        get => Widget?.InstanceName ?? string.Empty;
+        set
+        {
+            if (Widget is not null) Widget.InstanceName = value;
+        }
+    }
     private List<Lionk.Core.Component.IComponent>? _components;
-    private Lionk.Core.Component.IComponent? _selectedComponent;
 
     protected override void OnInitialized()
     {
-        if (Type is not null)
+        if (Widget?.ComponentType is not null)
         {
-            _components = ComponentService.GetInstances().Where(c => Type.IsInstanceOfType(c)).ToList();
+            _components = ComponentService.GetInstances().Where(c => Widget.ComponentType.IsInstanceOfType(c)).ToList();
         }
 
     }
 
     private void ComponentSelected(Lionk.Core.Component.IComponent? component)
     {
-        _selectedComponent = component;
+        if (Widget is not null)
+        {
+            Widget.Component = component;
+            Snackbar.Add("Component selected", Severity.Success);
+            return;
+        }
+        Snackbar.Add("Widget is null", Severity.Error);
     }
 
     private void Submit()
     {
         if (MudDialog is null) return;
-        if (_selectedComponent is null)
-        {
-            Snackbar.Add("Please select a component", Severity.Error);
-            return;
-        }
-
-        MudDialog.Close(DialogResult.Ok(_selectedComponent));
+        MudDialog.Close(DialogResult.Ok(Widget));
     }
 
     private void Cancel()

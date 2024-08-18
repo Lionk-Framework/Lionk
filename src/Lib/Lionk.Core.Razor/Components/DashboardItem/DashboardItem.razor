@@ -1,6 +1,10 @@
 ﻿@inherits MudItem
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject IComponentService ComponentService
 
 @namespace Lionk.Core.Component
+@using Lionk.Core.Razor.Components
 
 <MudItem Style=" margin-right:15px;
             margin-bottom:15px;">
@@ -9,8 +13,8 @@
             height:100%;
             width:100%">
         <div style="position: absolute;
-                    top: 5px;
-                    right: 5px;
+                    top: @_marginPixels;
+                    right: @_marginPixels;
                     display: flex;
                     flex-direction: column;">
             @if (_isConfigurable)
@@ -40,6 +44,31 @@
             }
 
         </div>
+        <div style="position: absolute;
+                    bottom: @_marginPixels;
+                    right: @_marginPixels;
+                    display: flex;
+                    flex-direction: column;">
+
+
+
+            <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                <MudMenuItem IconSize="Size.Small"
+                             Icon="@Icons.Material.Filled.Edit"
+                             OnClick="EditWidgetAsync">
+                    Edit
+                </MudMenuItem>
+                <MudMenuItem IconSize="Size.Small"
+                             Icon="@Icons.Material.Filled.DeleteForever"
+                             IconColor="Color.Error"
+                             OnClick="RemoveWidgetAsync">
+                    <MudText Color="Color.Error">Delete</MudText>
+                </MudMenuItem>
+            </MudMenu>
+
+
+
+        </div>
         <DynamicComponent @ref=_dynamicComponent Type="@View" Parameters="@Parameters" />
     </MudPaper>
 </MudItem>
@@ -48,11 +77,17 @@
 
 @code {
 
-    [Parameter] public Type? View {
+    private const string _marginPixels = "5px";
+
+    [Parameter]
+    public Type? View
+    {
         get;
         set;
     }
-    [Parameter] public Dictionary<string, object>? Parameters {
+    [Parameter]
+    public Dictionary<string, object>? Parameters
+    {
         get;
         set;
     }
@@ -85,6 +120,38 @@
     {
         base.OnAfterRender(firstRender);
         DefineButtonsState();
+    }
+
+    private async Task EditWidgetAsync()
+    {
+        DialogParameters parameters = new();
+        if (_instance is null) {
+            Snackbar.Add("Widget not available", Severity.Error);
+            return;
+        }
+
+        parameters.Add("Widget", _instance);
+
+        var dialogReference = DialogService.Show<WidgetConfig>("Widget edition", parameters);
+
+        var dialogResult = await dialogReference.Result;
+
+        if (dialogResult is null || dialogResult.Canceled) Snackbar.Add("Widget edition cancelled", Severity.Warning);
+    }
+
+    private async Task RemoveWidgetAsync()
+    {
+        if (_instance is null) {
+            Snackbar.Add("Widget not available", Severity.Error);
+            return;
+        }
+
+        var dialogResult = await DialogService.ShowMessageBox("Delete widget", "Are you sure you want to delete this widget?", yesText: "Yes", noText: "No");
+
+        if (dialogResult == (bool)dialogResult)
+        {
+            Snackbar.Add("Widget deleted", Severity.Success);
+        }
     }
 
     private void ConfigurableClicked()

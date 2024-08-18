@@ -3,6 +3,7 @@
 @inject IComponentService ComponentService
 @inject ISnackbar Snackbar
 
+
 <MudDialog>
     <DialogContent>
         <IComponentInstanceList Components="_components" OnComponentSelected="WidgetSelected" />
@@ -19,7 +20,7 @@
 @code {
 
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
-    private List<Widget> _components => ComponentService.GetInstancesOfType<Widget>().ToList();
+    private List<Widget> _components => ComponentService.GetInstancesOfType<Widget>().Where(c => c.Component is null).ToList();
     private Widget? _selectedWidget;
     private List<int> _componentsHash = new();
 
@@ -70,20 +71,13 @@
         }
 
         DialogParameters parameters = new();
-        parameters.Add("Type", _selectedWidget.ComponentType);
+        parameters.Add("Widget", _selectedWidget);
 
         var dialogReference = DialogService.Show<WidgetConfig>("Widget configuration", parameters);
 
         var dialogResult = await dialogReference.Result;
 
-        if (dialogResult is not null && !dialogResult.Canceled)
-        {
-            Lionk.Core.Component.IComponent? component = dialogResult.Data as Lionk.Core.Component.IComponent;
-            _selectedWidget.Component = component;
-        }
-        else
-        {
-            Snackbar.Add("Widget configuration cancelled", Severity.Warning);
-        }
+        if (dialogResult is null || dialogResult.Canceled) Snackbar.Add("Widget configuration cancelled", Severity.Warning);
+
     }
 }
