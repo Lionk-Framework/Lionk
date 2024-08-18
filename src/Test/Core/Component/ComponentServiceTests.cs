@@ -139,7 +139,7 @@ public class ComponentServiceTests
         var component2 = new Mock<IComponent>();
 
         foreach (Mock<IComponent>? c in new[] { component, component2 })
-            c.SetupProperty(c => c.InstanceName, null);
+            c.SetupProperty(c => c.InstanceName, string.Empty);
 
         _componentService.RegisterComponentInstance(component.Object);
         _componentService.RegisterComponentInstance(component2.Object);
