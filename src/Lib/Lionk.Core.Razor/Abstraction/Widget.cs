@@ -17,11 +17,7 @@ public abstract class Widget : ComponentBase, IComponent
     /// <summary>
     /// Gets or sets the component to display in the widget.
     /// </summary>
-    public IComponent? Component
-    {
-        get;
-        set;
-    }
+    public IComponent? Component { get; set; }
 
     /// <summary>
     /// Gets or sets the component to display in the widget.
@@ -35,7 +31,7 @@ public abstract class Widget : ComponentBase, IComponent
     /// </summary>
     /// <remarks> This property must have [Parameter] attribute. </remarks>
     [Parameter]
-    public IComponent? InstanceNameParameter
+    public string? InstanceNameParameter
     {
         get;
         set;
@@ -53,6 +49,6 @@ public abstract class Widget : ComponentBase, IComponent
     {
         base.OnInitialized();
         if (ComponentParameter != null) Component = ComponentParameter;
-        if (InstanceNameParameter != null) InstanceName = InstanceNameParameter?.InstanceName;
+        if (InstanceNameParameter != null) InstanceName = InstanceNameParameter;
     }
 }

@@ -14,12 +14,12 @@
     {
         @foreach (Widget widget in _widgets)
         {
-            Dictionary<string, object> parameters = new();
-            if (widget.Component is not null)
+            Lionk.Core.Component.IComponent? component = widget.Component;
+           
+            if (widget.Component is not null )
             {
-                Type view = widget.GetType();
-                parameters.Add("ComponentParameter", widget.Component);
-                <DashboardItem View="view" Parameters="parameters" />
+
+                <DashboardItem Widget=widget />
             }
         }
     }

@@ -69,7 +69,7 @@
 
 
         </div>
-        <DynamicComponent @ref=_dynamicComponent Type="@View" Parameters="@Parameters" />
+        <DynamicComponent @ref=_dynamicComponent Type="@_view" Parameters="@_parameters" />
     </MudPaper>
 </MudItem>
 
@@ -79,18 +79,19 @@
 
     private const string _marginPixels = "5px";
 
+    private Type? _view;
+
+
+    public Dictionary<string, object> _parameters = new();
+
+
     [Parameter]
-    public Type? View
+    public Widget? Widget
     {
         get;
         set;
     }
-    [Parameter]
-    public Dictionary<string, object>? Parameters
-    {
-        get;
-        set;
-    }
+
 
     private bool _isConfigurable;
     private bool _isDetailable;
@@ -102,8 +103,15 @@
 
     protected override void OnInitialized()
     {
-        int i = 0;
-        i++;
+        if (Widget is not null)
+        {
+            _view = Widget.GetType();
+            if (Widget.Component is not null && Widget.InstanceName is not null)
+            {
+                _parameters.Add("ComponentParameter", Widget.Component);
+                _parameters.Add("InstanceNameParameter", Widget.InstanceName);
+            }
+        }
     }
 
     private void DefineButtonsState()
@@ -125,7 +133,8 @@
     private async Task EditWidgetAsync()
     {
         DialogParameters parameters = new();
-        if (_instance is null) {
+        if (_instance is null)
+        {
             Snackbar.Add("Widget not available", Severity.Error);
             return;
         }
@@ -141,7 +150,8 @@
 
     private async Task RemoveWidgetAsync()
     {
-        if (_instance is null) {
+        if (_instance is null)
+        {
             Snackbar.Add("Widget not available", Severity.Error);
             return;
         }
