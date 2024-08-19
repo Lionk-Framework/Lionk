@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Components\Views\Component\ComponentView.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
@@ -21,18 +17,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Lionk.Core\Lionk.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Components\Views\Component\ComponentView.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Components\Views\Component\ComponentView.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Components\Views\Component\ComponentView.razor" />
   </ItemGroup>
 
 
