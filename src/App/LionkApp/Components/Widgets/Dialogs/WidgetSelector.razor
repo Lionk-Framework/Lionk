@@ -6,16 +6,17 @@
 
 <MudDialog>
     <DialogContent>
-        <MudTable @ref="_table"
-                  Items="@_availableWidgets">
+        <MudTable @ref="_table" Hover="true"
+                  Items="@_availableWidgets"
+                    Style="width:fit-content">
             <RowTemplate>
                 <MudTr>
                     <MudTd>
                         @context.Name
                     </MudTd>
-                </MudTr>
-                <MudTr>
-                    <MudButton OnClick="() => ComponentSelected(context)">Select</MudButton>
+                    <MudTd>
+                        <MudButton OnClick="() => ComponentSelected(context)">Select</MudButton>
+                    </MudTd>
                 </MudTr>
             </RowTemplate>
         </MudTable>
