@@ -5,7 +5,7 @@
 @attribute [ViewOfAttribute("Component base configuration", typeof(IComponent), typeof(ComponentView), ViewContext.Configuration)]
 
 <MudText Typo="Typo.subtitle2">Component Id: @id.ToString() </MudText>
-<MudTextField @bind-Value="_instanceName" Label="Update frequency in s" T="string" />
+<MudTextField @bind-Value="_instanceName" Label="Component name" T="string" />
 
 @code {
     [Parameter] public IComponent? Component { get; set; }

@@ -80,10 +80,6 @@
     </MudBadge>
 </MudItem>
 
-
-
-
-
 @code {
     [Parameter] public DashboardItemModel? DashboardItemModel { get; set; }
     [Parameter] public IComponent? Component { get; set; }
@@ -118,7 +114,10 @@
         }
         else
         {
-            _parameters.Add("InstanceName", DashboardItemModel.ComponentUniqueID);
+
+            string text = $"Component from type {DashboardItemModel.ViewType.Name} not found.";
+
+            _parameters.Add("Text", text);
             _view = typeof(NoComponentView);
             _IsNotInstancied = true;
             BadgeColor = Color.Warning;
@@ -223,8 +222,8 @@
             int newIndex = result.Data as int? ?? 0;
             if (DashboardItemModel is not null && newIndex != viewIndex)
             {
-                await OnUpdate.InvokeAsync(DashboardItemModel);
                 DashboardItemModel.SaveCurrentIndex(viewContext, newIndex);
+                await OnUpdate.InvokeAsync(DashboardItemModel);
             }
         }
     }
