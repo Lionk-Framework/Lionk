@@ -31,10 +31,8 @@
     private MudTable<ComponentViewDescription> _table = new();
     private List<ComponentViewDescription>? _availableWidgets;
 
-
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
     [Parameter] public Type? ComponentType { get; set; }
-
 
     protected override void OnInitialized()
     {
@@ -42,7 +40,6 @@
         {
             _availableWidgets = ViewLocatorService.GetViewOf(ComponentType, ViewContext.Widget).ToList();
         }
-
     }
 
     private void ComponentSelected(ComponentViewDescription viewType)
