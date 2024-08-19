@@ -12,18 +12,22 @@
 
 <PageTitle>Dashboard</PageTitle>
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
-
     @foreach (var item in DashboardRegistry)
     {
         IComponent? component = ComponentService.GetInstanceByName(item.ComponentInstanceName);
-
-        <DashboardItem DashboardItemModel=item Component="component" OnUpdate="UpdateDashboardItem" OnDelete="RemoveDashboardItem" Style="min-height:200px" />
-
+        <DashboardItem DashboardItemModel=item
+                       Component="component"
+                       OnUpdate="UpdateDashboardItem"
+                       OnDelete="RemoveDashboardItem"
+                       Style="min-height:200px" />
     }
-
 </MudContainer>
 
-<MudFab @onclick="OpenDialogAsync" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Add" Size="Size.Large" Style="position: fixed; bottom: 20px; right: 20px;" />
+<MudFab @onclick="OpenDialogAsync"
+        Color="Color.Secondary"
+        StartIcon="@Icons.Material.Filled.Add"
+        Size="Size.Large"
+        Style="position: fixed; bottom: 20px; right: 20px;" />
 
 @code {
     public List<DashboardItemModel> DashboardRegistry { get; set; } = new();

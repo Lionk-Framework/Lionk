@@ -13,6 +13,7 @@
                      SelectedIndexChanged="ViewChanged"
                      Style="height:100%"
                      SelectedIndex="CurrentIndex">
+
             @if (ViewDescription is not null && ViewDescription.Count > 0)
             {
                 foreach (var viewDescription in ViewDescription)
@@ -27,7 +28,6 @@
                             </MudItem>
                         </MudGrid>
                     </MudCarouselItem>
-
                 }
             }
         </MudCarousel>

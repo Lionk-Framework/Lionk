@@ -12,12 +12,14 @@
                  margin-bottom:15px;
                  width:fit-content;
                  height:fit-content;">
+
     <MudBadge Color="BadgeColor" Overlap="true" Class="mx-6 my-4">
         <MudPaper Class="pa-4"
                   Style=" position: relative;
                       height:inherit;
                       width:inherit;
                       min-height:80px">
+
             <div style="position: absolute;
                     top: 5px;
                     right: 5px;
@@ -28,12 +30,10 @@
                 {
                     <MudIconButton Icon="@Icons.Material.Filled.DeviceHub"
                                    Size="Size.Small"
-                                   OnClick="GoToComponent" />
+                                   OnClick="GoToComponentsPage" />
                 }
                 else
                 {
-
-
                     @if (_isConfigurable)
                     {
                         <MudIconButton Icon="@Icons.Material.Filled.Settings"
@@ -60,6 +60,7 @@
                                        OnClick="ExecutableClickedAsync" />
                     }
                 }
+
                 <MudMenu Icon="@Icons.Material.Filled.MoreVert"
                          Color="Color.Primary">
                     <MudMenuItem OnClick="DeleteClickedAsync">
@@ -67,7 +68,6 @@
                         <MudText Color="Color.Error">Delete</MudText>
                     </MudMenuItem>
                 </MudMenu>
-
             </div>
             <div style="margin-right:50px">
                 <DynamicComponent @ref=_dynamicComponent Type="@_view" Parameters="@_parameters" />
@@ -111,7 +111,7 @@
         if (Component is not null)
         {
             _view = DashboardItemModel.ViewType;
-            InitializeComponentView();
+            InitializeComponentViews();
         }
         else
         {
@@ -122,7 +122,7 @@
         }
     }
 
-    private void InitializeComponentView()
+    private void InitializeComponentViews()
     {
         if (Component is null) return;
         _parameters.Add("Component", Component);
@@ -143,10 +143,10 @@
         componentType,
         ViewContext.Page)
         .ToList();
-        DefineButtonsState();
+        DefineButtons();
     }
 
-    private void DefineButtonsState()
+    private void DefineButtons()
     {
         _isConfigurable = _configutionViews is not null && _configutionViews.Count() > 0;
         _isDetailable = _detailViews is not null && _detailViews.Count() > 0;
@@ -172,27 +172,29 @@
 
     private void ExecutableClickedAsync()
     {
-        IExecutableComponent? cyclicComponent = Component as IExecutableComponent;
-        if (cyclicComponent is not null)
+        IExecutableComponent? executableComponent = Component as IExecutableComponent;
+        if (executableComponent is not null)
         {
-            cyclicComponent.Execute();
+            executableComponent.Execute();
         }
     }
 
     private async Task DialogFromContextAsync(ViewContext viewContext, List<ComponentViewDescription>? Views)
     {
-
-        int viewIndex = DashboardItemModel?.Indexes[(int)viewContext] ?? 0;
         if (Views is null || Views.Count() == 0)
         {
             Snackbar.Add($"No {viewContext.ToString()} view found", Severity.Error);
             return;
         }
+
+        int viewIndex = DashboardItemModel?.Indexes[(int)viewContext] ?? 0;
+
         var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
         var parameters = new DialogParameters();
         parameters.Add("Component", Component);
         parameters.Add("ViewDescription", Views);
         parameters.Add("CurrentIndex", viewIndex);
+
         var dialog = DialogService.Show<ComponentDialog>("Configuration", parameters, options);
         var result = await dialog.Result;
         if (result is not null && !result.Canceled)
@@ -214,25 +216,16 @@
     { x => x.ButtonText, "Delete" },
     { x => x.Color, Color.Error }
     };
-
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
         var dialog = DialogService.Show<SimpleQuestionDialog>("Delete", parameters, options);
         var result = await dialog.Result;
         return result?.Data as bool? ?? false;
-
     }
 
     private async Task DeleteClickedAsync()
     {
         bool delete = await DeleteDialogAsync();
-        if (delete)
-        {
-            await OnDelete.InvokeAsync(DashboardItemModel);
-        }
+        if (delete) await OnDelete.InvokeAsync(DashboardItemModel);
     }
-
-    private void GoToComponent()
-    {
-        NavigationManager.NavigateTo("/components");
-    }
+    private void GoToComponentsPage() => NavigationManager.NavigateTo("/components");
 }
