@@ -3,12 +3,12 @@
 @namespace Lionk.Core.View
 @attribute [ViewOfAttribute("Cyclic component configuration", typeof(ICyclicComponent), typeof(CyclicComponentConfig), ViewContext.Configuration)]
 
-<MudTextField @bind-Value="seconds" Label="Update frequency in s" T="int" />
+<MudTextField @bind-Value="_seconds" Label="Update frequency in s" T="int" />
 
 @code {
     [Parameter] public ICyclicComponent? Component { get; set; }
 
-    private int seconds
+    private int _seconds
     {
         get
         {
