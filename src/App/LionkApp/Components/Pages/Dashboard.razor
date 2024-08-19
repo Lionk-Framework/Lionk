@@ -14,7 +14,7 @@
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
     @foreach (var item in DashboardRegistry)
     {
-        IComponent? component = ComponentService.GetInstanceByName(item.ComponentInstanceName);
+        IComponent? component = ComponentService.GetInstanceByID(item.ComponentUniqueID);
         <DashboardItem DashboardItemModel=item
                        Component="component"
                        OnUpdate="UpdateDashboardItem"

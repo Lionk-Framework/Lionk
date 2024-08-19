@@ -115,7 +115,7 @@
         }
         else
         {
-            _parameters.Add("InstanceName", DashboardItemModel.ComponentInstanceName);
+            _parameters.Add("InstanceName", DashboardItemModel.ComponentUniqueID);
             _view = typeof(NoComponentView);
             _IsNotInstancied = true;
             BadgeColor = Color.Warning;

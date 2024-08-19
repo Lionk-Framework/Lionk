@@ -13,6 +13,11 @@ public interface IComponent : IDisposable
     string InstanceName { get; set; }
 
     /// <summary>
+    /// Gets the unique identifier of the component.
+    /// </summary>
+    Guid UniqueID { get; }
+
+    /// <summary>
     /// Dispose methods.
     /// </summary>
     void IDisposable.Dispose()

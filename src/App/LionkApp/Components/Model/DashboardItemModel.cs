@@ -18,11 +18,11 @@ public class DashboardItemModel
     /// <summary>
     /// Initializes a new instance of the <see cref="DashboardItemModel"/> class.
     /// </summary>
-    /// <param name="componentName"> The component instance name.</param>
+    /// <param name="componentId"> The component unique id.</param>
     /// <param name="viewType"> The view type.</param>
-    public DashboardItemModel(string componentName, Type viewType)
+    public DashboardItemModel(Guid componentId, Type viewType)
     {
-        ComponentInstanceName = componentName;
+        ComponentUniqueID = componentId;
         ViewType = viewType;
         Indexes = new int[Enum.GetValues<ViewContext>().Length];
     }
@@ -31,14 +31,14 @@ public class DashboardItemModel
     /// Initializes a new instance of the <see cref="DashboardItemModel"/> class.
     /// </summary>
     /// <param name="id"> The unique identifier of the dashboard item model.</param>
-    /// <param name="componentName"> The component instance name.</param>
+    /// <param name="componentId"> The component instance name.</param>
     /// <param name="viewType"> The view type.</param>
     /// <param name="indexes"> The indexes of selected views.</param>
     [JsonConstructor]
-    public DashboardItemModel(Guid id, string componentName, Type viewType, int[] indexes)
+    public DashboardItemModel(Guid id, Guid componentId, Type viewType, int[] indexes)
     {
         Id = id;
-        ComponentInstanceName = componentName;
+        ComponentUniqueID = componentId;
         ViewType = viewType;
         Indexes = indexes;
     }
@@ -46,7 +46,7 @@ public class DashboardItemModel
     /// <summary>
     /// Gets or sets the component instance name.
     /// </summary>
-    public string ComponentInstanceName { get; set; }
+    public Guid ComponentUniqueID { get; set; }
 
     /// <summary>
     /// Gets or sets the view type.

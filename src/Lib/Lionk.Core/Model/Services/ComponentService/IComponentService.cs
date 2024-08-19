@@ -49,6 +49,13 @@ public interface IComponentService : IDisposable
     public IComponent? GetInstanceByName(string name);
 
     /// <summary>
+    /// Get an instance by its unique identifier.
+    /// </summary>
+    /// <param name="id">The id.</param>
+    /// <returns>A component with id, or null if no component exist.</returns>
+    public IComponent? GetInstanceByID(Guid id);
+
+    /// <summary>
     /// Event raised when a new type is available.
     /// </summary>
     public event EventHandler<EventArgs> NewComponentAvailable;

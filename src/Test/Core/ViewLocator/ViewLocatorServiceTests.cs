@@ -88,11 +88,15 @@ public class ViewLocatorServiceTests
     private class TestComponent : IComponent
     {
         public string InstanceName { get; set; } = string.Empty;
+
+        public Guid UniqueID { get; } = Guid.NewGuid();
     }
 
     private class NoViewAttributeComponent : IComponent
     {
         public string InstanceName { get; set; } = string.Empty;
+
+        public Guid UniqueID { get; } = Guid.NewGuid();
     }
 
     [ViewOf("test", typeof(TestComponent), typeof(TestView), ViewContext.Widget)]

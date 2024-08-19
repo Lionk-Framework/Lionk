@@ -30,12 +30,12 @@ public class ComponentService : IComponentService
         string baseName = component.InstanceName == string.Empty ? DefaultComponentName : component.InstanceName;
         string uniqueName = GenerateUniqueName(baseName);
         component.InstanceName = uniqueName;
-        _componentInstances.TryAdd(uniqueName, component);
+        _componentInstances.TryAdd(component.UniqueID, component);
     }
 
     /// <inheritdoc/>
     public void UnregisterComponentInstance(IComponent component)
-        => _componentInstances.TryRemove(component.InstanceName ?? DefaultComponentName, out _);
+        => _componentInstances.TryRemove(component.UniqueID, out _);
 
     /// <inheritdoc/>
     public IEnumerable<T> GetInstancesOfType<T>()
@@ -72,7 +72,7 @@ public class ComponentService : IComponentService
         string uniqueName = baseName;
         int suffix = 0;
 
-        while (_componentInstances.ContainsKey(uniqueName))
+        while (_componentInstances.Values.Any(x => x.InstanceName == uniqueName))
         {
             suffix++;
             uniqueName = $"{baseName}_{suffix}";
@@ -88,9 +88,13 @@ public class ComponentService : IComponentService
         GC.SuppressFinalize(this);
     }
 
+    /// <inheritdoc/>
+    public IComponent? GetInstanceByID(Guid id)
+        => _componentInstances.TryGetValue(id, out IComponent? component) ? component : null;
+
     private const string DefaultComponentName = "Component";
 
-    private readonly ConcurrentDictionary<string, IComponent>
+    private readonly ConcurrentDictionary<Guid, IComponent>
         _componentInstances = new();
 
     private readonly ComponentRegister _componentRegistery;
