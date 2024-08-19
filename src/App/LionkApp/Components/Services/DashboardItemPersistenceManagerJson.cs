@@ -1,5 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
+using Lionk.Log;
 using Lionk.Utils;
 using LionkApp.Components.Model;
 using Newtonsoft.Json;
@@ -66,7 +67,12 @@ public class DashboardItemPersistenceManagerJson : IDashboardItemPersistenceMana
         string json = ConfigurationUtils.ReadFile(FilePath, _folderType);
         List<DashboardItemModel>? items = JsonConvert.DeserializeObject<List<DashboardItemModel>>(json);
 
-        ArgumentNullException.ThrowIfNull(items, "Failed to deserialize dashboard items.");
+        if (items is null)
+        {
+            items = [];
+            LogService.LogApp(LogSeverity.Warning, "Can't load dashboard");
+        }
+
         _items = items;
     }
 }
