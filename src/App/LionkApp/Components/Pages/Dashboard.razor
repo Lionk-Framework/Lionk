@@ -16,10 +16,9 @@
     @foreach (var item in DashboardRegistry)
     {
         IComponent? component = ComponentService.GetInstanceByName(item.ComponentInstanceName);
-        if (component is not null)
-        {
-            <DashboardItem DashboardItemModel=item Component="component" OnUpdate="UpdateDashboardItem" OnDelete="RemoveDashboardItem"/>
-        }
+
+        <DashboardItem DashboardItemModel=item Component="component" OnUpdate="UpdateDashboardItem" OnDelete="RemoveDashboardItem" Style="min-height:200px" />
+
     }
 
 </MudContainer>
