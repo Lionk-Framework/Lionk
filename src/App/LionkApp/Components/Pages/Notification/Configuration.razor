@@ -4,6 +4,7 @@
 
 <MudPaper Elevation="2" Class="pa-4 mb-4">
     <MudText Typo="Typo.h6">Notifier List</MudText>
+    <MudSpacer />
     <MudTable Items="notifyers" Hover="true" Elevation="1">
         <RowTemplate>
             <MudTd DataLabel="Name">@context.Name</MudTd>
@@ -12,7 +13,11 @@
 </MudPaper>
 
 <MudPaper Elevation="2" Class="pa-4">
-    <MudText Typo="Typo.h6">Channel List</MudText>
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+        <MudText Typo="Typo.h6">Channel List</MudText>
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="AddChannel">ADD</MudButton>
+    </div>
+    <MudSpacer />
     <MudTable Items="channels" Hover="true" Elevation="1">
         <RowTemplate>
             <MudTd DataLabel="Name">@context.Name</MudTd>
@@ -51,6 +56,7 @@
 
         public void Send(INotifyer notifyer, Content content)
         {
+            // Implémentation de l'envoi
         }
 
         public bool Equals(IChannel? other)
@@ -75,7 +81,13 @@
 
     protected override void OnInitialized()
     {
+        // Uncomment to unmock
         // notifyers = NotificationService.Notifyers.ToList();
         // channels = NotificationService.Channels.ToList();
+    }
+
+    private void AddChannel()
+    {
+        channels.Add(new MockChannel { Guid = Guid.NewGuid(), Name = "New channel", IsInitialized = true });
     }
 }
