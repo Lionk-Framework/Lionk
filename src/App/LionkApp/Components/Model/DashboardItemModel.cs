@@ -1,6 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using Lionk.Core.View;
+using Newtonsoft.Json;
 
 namespace LionkApp.Components.Model;
 
@@ -9,6 +10,11 @@ namespace LionkApp.Components.Model;
 /// </summary>
 public class DashboardItemModel
 {
+    /// <summary>
+    /// Gets the unique identifier of the dashboard history.
+    /// </summary>
+    public Guid Id { get; private set; } = Guid.NewGuid();
+
     /// <summary>
     /// Initializes a new instance of the <see cref="DashboardItemModel"/> class.
     /// </summary>
@@ -19,6 +25,22 @@ public class DashboardItemModel
         ComponentInstanceName = componentName;
         ViewType = viewType;
         Indexes = new int[Enum.GetValues<ViewContext>().Length];
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DashboardItemModel"/> class.
+    /// </summary>
+    /// <param name="id"> The unique identifier of the dashboard item model.</param>
+    /// <param name="componentName"> The component instance name.</param>
+    /// <param name="viewType"> The view type.</param>
+    /// <param name="indexes"> The indexes of selected views.</param>
+    [JsonConstructor]
+    public DashboardItemModel(Guid id, string componentName, Type viewType, int[] indexes)
+    {
+        Id = id;
+        ComponentInstanceName = componentName;
+        ViewType = viewType;
+        Indexes = indexes;
     }
 
     /// <summary>
