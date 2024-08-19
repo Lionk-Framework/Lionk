@@ -3,7 +3,7 @@
 using System.Collections.Concurrent;
 using System.Reflection;
 using Lionk.Core.Observable;
-using Lionk.Core.TypeRegistery;
+using Lionk.Core.TypeRegister;
 using Lionk.Log;
 using Lionk.Utils;
 using Newtonsoft.Json;

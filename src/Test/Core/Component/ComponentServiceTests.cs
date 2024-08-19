@@ -1,7 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using Lionk.Core.Component;
-using Lionk.Core.TypeRegistery;
+using Lionk.Core.TypeRegister;
 using Moq;
 
 namespace LionkTest.Core;
