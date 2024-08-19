@@ -36,7 +36,7 @@ public class ComponentService : IComponentService
         string uniqueName = GenerateUniqueName(baseName);
         component.InstanceName = uniqueName;
 
-        if (_componentInstances.TryAdd(component.UniqueID, component))
+        if (_componentInstances.TryAdd(component.Id, component))
             SaveConfiguration();
 
         if (component is ObservableElement observable)
@@ -49,7 +49,7 @@ public class ComponentService : IComponentService
         if (component is ObservableElement observable)
             observable.PropertyChanged -= (s, e) => SaveConfiguration();
 
-        if (_componentInstances.TryRemove(component.UniqueID, out _))
+        if (_componentInstances.TryRemove(component.Id, out _))
             SaveConfiguration();
     }
 

@@ -58,6 +58,6 @@ public class ComponentFactoryTests
     {
         public string InstanceName { get; set; } = string.Empty;
 
-        public Guid UniqueID { get; } = Guid.NewGuid();
+        public Guid Id { get; } = Guid.NewGuid();
     }
 }

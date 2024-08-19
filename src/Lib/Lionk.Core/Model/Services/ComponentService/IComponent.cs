@@ -15,7 +15,7 @@ public interface IComponent : IDisposable
     /// <summary>
     /// Gets the unique identifier of the component.
     /// </summary>
-    Guid UniqueID { get; }
+    Guid Id { get; }
 
     /// <summary>
     /// Dispose methods.

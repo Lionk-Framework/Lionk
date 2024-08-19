@@ -43,13 +43,13 @@ public class ComponentTypeDescriptionTests
     {
         public string InstanceName { get; set; } = string.Empty;
 
-        public Guid UniqueID { get; } = Guid.NewGuid();
+        public Guid Id { get; } = Guid.NewGuid();
     }
 
     private class MockComponentWithoutAttributes : IComponent
     {
         public string InstanceName { get; set; } = string.Empty;
 
-        public Guid UniqueID { get; } = Guid.NewGuid();
+        public Guid Id { get; } = Guid.NewGuid();
     }
 }
