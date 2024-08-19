@@ -13,7 +13,7 @@
                  width:fit-content;
                  height:fit-content;">
 
-    <MudBadge Color="BadgeColor" Overlap="true" Class="mx-6 my-4">
+    <MudBadge Color="_badgeColor" Overlap="true" Class="mx-6 my-4">
         <MudPaper Class="pa-4"
                   Style=" position: relative;
                       height:inherit;
@@ -93,7 +93,7 @@
     private List<ComponentViewDescription>? _detailViews;
     private List<ComponentViewDescription>? _pageViews;
 
-    private Color BadgeColor = Color.Transparent;
+    private Color _badgeColor = Color.Transparent;
 
     private bool _isConfigurable;
     private bool _isDetailable;
@@ -114,13 +114,11 @@
         }
         else
         {
-
             string text = $"Component from type {DashboardItemModel.ViewType.Name} not found.";
-
             _parameters.Add("Text", text);
             _view = typeof(NoComponentView);
             _IsNotInstancied = true;
-            BadgeColor = Color.Warning;
+            _badgeColor = Color.Warning;
         }
     }
 
@@ -154,13 +152,6 @@
         _isDetailable = _detailViews is not null && _detailViews.Count() > 0;
         _isPageable = _pageViews is not null && _pageViews.Count() > 0;
         _isExecutable = Component is IExecutableComponent;
-#if DEBUG
-        _isConfigurable = true;
-        _isDetailable = true;
-        _isPageable = true;
-        _isExecutable = true;
-#endif
-
         StateHasChanged();
     }
 
@@ -196,8 +187,6 @@
             //executableComponent.Suspend();
         }
     }
-
-
 
     private async Task DialogFromContextAsync(ViewContext viewContext, List<ComponentViewDescription>? Views)
     {
