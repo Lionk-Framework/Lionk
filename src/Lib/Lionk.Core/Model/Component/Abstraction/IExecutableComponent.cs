@@ -7,5 +7,13 @@ namespace Lionk.Core.Component;
 /// </summary>
 public interface IExecutableComponent : IComponent
 {
-    TimeSpan? Execute();
+    /// <summary>
+    /// Executes the component.
+    /// </summary>
+    void Execute();
+
+    /// <summary>
+    /// Gets a value indicating whether the component can be executed.
+    /// </summary>
+    public bool CanExecute { get; }
 }
