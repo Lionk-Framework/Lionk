@@ -91,20 +91,22 @@ public class ComponentServiceTests
     [Test]
     public void GetInstances_ShouldReturnAllRegisteredComponents()
     {
-        var component1 = new Mock<IComponent>();
-        component1.SetupProperty(c => c.InstanceName, "TestComponent1");
+        TestUtils.DeleteAllConfigFile();
+        _componentService = new ComponentService(_mockTypesProvider.Object);
+        var component1 = new TestComponent();
+        component1.InstanceName = "TestComponent1";
 
-        var component2 = new Mock<IComponent>();
-        component2.SetupProperty(c => c.InstanceName, "TestComponent2");
+        var component2 = new TestComponent();
+        component2.InstanceName = "TestComponent2";
 
-        _componentService.RegisterComponentInstance(component1.Object);
-        _componentService.RegisterComponentInstance(component2.Object);
+        _componentService.RegisterComponentInstance(component1);
+        _componentService.RegisterComponentInstance(component2);
 
         IEnumerable<IComponent> result = _componentService.GetInstances();
 
         Assert.That(result.Count(), Is.EqualTo(2));
-        Assert.That(result.ToList(), Does.Contain(component1.Object));
-        Assert.That(result.ToList(), Does.Contain(component2.Object));
+        Assert.That(result.ToList(), Does.Contain(component1));
+        Assert.That(result.ToList(), Does.Contain(component2));
     }
 
     /// <summary>
@@ -113,20 +115,22 @@ public class ComponentServiceTests
     [Test]
     public void GetInstancesOfType_ShouldReturnAllComponentsOfType_WhenTypeIsSpecified()
     {
-        var component1 = new Mock<IComponent>();
-        component1.SetupProperty(c => c.InstanceName, "TestComponent1");
+        TestUtils.DeleteAllConfigFile();
+        _componentService = new ComponentService(_mockTypesProvider.Object);
+        var component1 = new TestComponent();
+        component1.InstanceName = "TestComponent1";
 
-        var component2 = new Mock<IComponent>();
-        component2.SetupProperty(c => c.InstanceName, "TestComponent2");
+        var component2 = new TestComponent();
+        component2.InstanceName = "TestComponent2";
 
-        _componentService.RegisterComponentInstance(component1.Object);
-        _componentService.RegisterComponentInstance(component2.Object);
+        _componentService.RegisterComponentInstance(component1);
+        _componentService.RegisterComponentInstance(component2);
 
         IEnumerable<IComponent> result = _componentService.GetInstancesOfType<IComponent>();
 
         Assert.That(result.Count(), Is.EqualTo(2));
-        Assert.That(result.ToList(), Does.Contain(component1.Object));
-        Assert.That(result.ToList(), Does.Contain(component2.Object));
+        Assert.That(result.ToList(), Does.Contain(component1));
+        Assert.That(result.ToList(), Does.Contain(component2));
     }
 
     /// <summary>
@@ -135,16 +139,21 @@ public class ComponentServiceTests
     [Test]
     public void RegisterComponentInstance_ShouldAssignDefaultName_WhenNameIsNull()
     {
-        var component = new Mock<IComponent>();
-        var component2 = new Mock<IComponent>();
+        TestUtils.DeleteAllConfigFile();
+        var component = new TestComponent();
+        var component2 = new TestComponent();
 
-        foreach (Mock<IComponent>? c in new[] { component, component2 })
-            c.SetupProperty(c => c.InstanceName, string.Empty);
+        _componentService.RegisterComponentInstance(component);
+        _componentService.RegisterComponentInstance(component2);
 
-        _componentService.RegisterComponentInstance(component.Object);
-        _componentService.RegisterComponentInstance(component2.Object);
+        Assert.That(component.InstanceName, Is.EqualTo("Component"));
+        Assert.That(component2.InstanceName, Is.EqualTo("Component_1"));
+    }
 
-        Assert.That(component.Object.InstanceName, Is.EqualTo("Component"));
-        Assert.That(component2.Object.InstanceName, Is.EqualTo("Component_1"));
+    private class TestComponent : IComponent
+    {
+        public string InstanceName { get; set; } = string.Empty;
+
+        public Guid UniqueID { get; } = Guid.NewGuid();
     }
 }
