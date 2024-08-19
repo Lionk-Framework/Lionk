@@ -5,9 +5,6 @@
 <MudPaper Elevation="2" Class="pa-4 mb-4">
     <MudText Typo="Typo.h6">Notifier List</MudText>
     <MudTable Items="notifyers" Hover="true" Elevation="1">
-        <HeaderContent>
-            <MudTh>Name</MudTh>
-        </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Name">@context.Name</MudTd>
         </RowTemplate>
@@ -17,9 +14,6 @@
 <MudPaper Elevation="2" Class="pa-4">
     <MudText Typo="Typo.h6">Channel List</MudText>
     <MudTable Items="channels" Hover="true" Elevation="1">
-        <HeaderContent>
-            <MudTh>Name</MudTh>
-        </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Name">@context.Name</MudTd>
         </RowTemplate>
@@ -67,16 +61,16 @@
 
     private List<INotifyer> notifyers = new List<INotifyer>
     {
-        new MockNotifyer { Id = Guid.NewGuid(), Name = "Notifier 1" },
-        new MockNotifyer { Id = Guid.NewGuid(), Name = "Notifier 2" },
-        new MockNotifyer { Id = Guid.NewGuid(), Name = "Notifier 3" }
+        new MockNotifyer { Id = Guid.NewGuid(), Name = "Chimpey" },
+        new MockNotifyer { Id = Guid.NewGuid(), Name = "Clock alarm" },
+        new MockNotifyer { Id = Guid.NewGuid(), Name = "MX321" }
     };
 
     private List<IChannel> channels = new List<IChannel>
     {
-        new MockChannel { Guid = Guid.NewGuid(), Name = "Channel 1", IsInitialized = true },
-        new MockChannel { Guid = Guid.NewGuid(), Name = "Channel 2", IsInitialized = false },
-        new MockChannel { Guid = Guid.NewGuid(), Name = "Channel 3", IsInitialized = true }
+        new MockChannel { Guid = Guid.NewGuid(), Name = "Discord", IsInitialized = true },
+        new MockChannel { Guid = Guid.NewGuid(), Name = "Telegram", IsInitialized = false },
+        new MockChannel { Guid = Guid.NewGuid(), Name = "Push bullet", IsInitialized = true }
     };
 
     protected override void OnInitialized()
