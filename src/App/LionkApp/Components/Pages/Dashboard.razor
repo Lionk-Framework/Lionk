@@ -4,6 +4,7 @@
 @inject IDialogService DialogService
 @using Lionk.Core.Component
 @using Lionk.Core.View
+@using Lionk.Plugin
 @using LionkApp.Components.Model
 @using IComponent = Lionk.Core.Component.IComponent
 @using LionkApp.Components.Widgets.Dialogs
@@ -12,7 +13,7 @@
 
 <PageTitle>Dashboard</PageTitle>
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
-    @foreach (var item in DashboardRegistry)
+    @foreach (var item in DashboardRegistry ?? [])
     {
         IComponent? component = ComponentService.GetInstanceByID(item.ComponentUniqueID);
         <DashboardItem DashboardItemModel=item
@@ -30,12 +31,12 @@
         Style="position: fixed; bottom: 20px; right: 20px;" />
 
 @code {
-    public List<DashboardItemModel> DashboardRegistry { get; set; } = new();
-    private IDashboardItemPersistenceManager _persistenceManager
-        = new DashboardItemPersistenceManagerJson();
+    public List<DashboardItemModel>? DashboardRegistry { get; set; } = new();
+    private IDashboardItemPersistenceManager? _persistenceManager;
 
     protected override void OnInitialized()
     {
+        _persistenceManager = new DashboardItemPersistenceManagerJson();
         RestoreDashboard();
     }
 
@@ -51,7 +52,7 @@
             var newWidget = result.Data as DashboardItemModel;
             if (newWidget != null)
             {
-                _persistenceManager.SaveDashboardItem(newWidget);
+                _persistenceManager?.SaveDashboardItem(newWidget);
                 RestoreDashboard();
                 StateHasChanged();
             }
@@ -60,20 +61,20 @@
 
     private void RestoreDashboard()
     {
-        DashboardRegistry.Clear();
-        DashboardRegistry = _persistenceManager.GetDashboardItems();
+        DashboardRegistry?.Clear();
+        DashboardRegistry = _persistenceManager?.GetDashboardItems();
         StateHasChanged();
     }
 
     private void UpdateDashboardItem(DashboardItemModel item)
     {
-        _persistenceManager.UpdateDashboardItem(item);
+        _persistenceManager?.UpdateDashboardItem(item);
         RestoreDashboard();
     }
 
     private void RemoveDashboardItem(DashboardItemModel item)
     {
-        _persistenceManager.RemoveDashboardItemModel(item);
+        _persistenceManager?.RemoveDashboardItemModel(item);
         RestoreDashboard();
     }
 }
