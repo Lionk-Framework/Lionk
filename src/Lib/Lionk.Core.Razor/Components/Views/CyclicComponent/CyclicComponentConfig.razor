@@ -8,8 +8,9 @@
 <MudRadioGroup T="CyclicComputationMethod" @bind-Value="_cycleComputationMethode">
     @foreach (CyclicComputationMethod method in Enum.GetValues(typeof(CyclicComputationMethod)))
     {
-    <MudTooltip Content="@method.GetDescription()"> 
-        <MudRadio T="CyclicComputationMethod" Label="@method" Value="@method" GroupName="CyclicComputationMethod" />
+    <MudTooltip Text="@method.GetDescription()"> 
+        <MudRadio Value="@method">@method.ToFriendlyString()</MudRadio>
+        <MudRadio Value="@method">@method.ToFriendlyString()</MudRadio>
     </MudTooltip>
     }
 </MudRadioGroup>
