@@ -1,6 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
-using Lionk.Core.TypeRegistery;
+using Lionk.Core.TypeRegister;
 using Lionk.Log;
 
 namespace Lionk.Core.Component;

@@ -2,7 +2,7 @@
 
 using System.Reflection;
 using Lionk.Core.Component;
-using Lionk.Core.TypeRegistery;
+using Lionk.Core.TypeRegister;
 using Lionk.Core.View;
 using Moq;
 

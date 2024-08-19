@@ -1,7 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using System.Collections.ObjectModel;
-using Lionk.Core.TypeRegistery;
+using Lionk.Core.TypeRegister;
 
 namespace Lionk.Core.Component;
 

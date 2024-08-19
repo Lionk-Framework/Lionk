@@ -1,7 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using System.Reflection;
-using Lionk.Core.TypeRegistery;
+using Lionk.Core.TypeRegister;
 using Lionk.Log;
 using Lionk.Utils;
 using Newtonsoft.Json;

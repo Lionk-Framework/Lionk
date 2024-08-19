@@ -25,7 +25,7 @@ public class ComponentFactoryTests
     }
 
     /// <summary>
-    /// Test for <see cref="Lionk.Core.TypeRegistery.Factory.CreateInstance"/>.
+    /// Test for <see cref="Lionk.Core.TypeRegister.Factory.CreateInstance"/>.
     /// </summary>
     [Test]
     public void CreateInstance_ShouldRegisterComponent_WhenInstanceIsCreated()
@@ -39,7 +39,7 @@ public class ComponentFactoryTests
     }
 
     /// <summary>
-    /// Test for <see cref="Lionk.Core.TypeRegistery.Factory.CreateInstance"/>.
+    /// Test for <see cref="Lionk.Core.TypeRegister.Factory.CreateInstance"/>.
     /// </summary>
     [Test]
     public void CreateInstance_ShouldLogError_WhenInstanceIsNotComponent()
