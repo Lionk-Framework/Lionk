@@ -5,6 +5,7 @@ using Lionk.Auth.Identity;
 using Lionk.Auth.Utils;
 using Lionk.Core.Component;
 using Lionk.Core.Model.Component.Cyclic;
+using Lionk.Core.Razor.Service;
 using Lionk.Core.TypeRegister;
 using Lionk.Core.View;
 using Lionk.Log;
@@ -75,6 +76,8 @@ builder.Services.AddSingleton<ICyclicExecutorService>(serviceProvider =>
     IComponentService componentService = serviceProvider.GetRequiredService<IComponentService>();
     return new CyclicExecutorService(componentService);
 });
+
+builder.Services.AddHostedService<CyclicExecutorHostedService>();
 
 WebApplication app = builder.Build();
 
