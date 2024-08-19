@@ -31,6 +31,8 @@
 
 @code {
     public List<DashboardItemModel> DashboardRegistry { get; set; } = new();
+    private IDashboardItemPersistenceManager _persistenceManager
+        = new DashboardItemPersistenceManagerJson();
 
     protected override void OnInitialized()
     {
@@ -49,7 +51,7 @@
             var newWidget = result.Data as DashboardItemModel;
             if (newWidget != null)
             {
-                DashboardItemService.SaveDashboardItem(newWidget);
+                _persistenceManager.SaveDashboardItem(newWidget);
                 RestoreDashboard();
                 StateHasChanged();
             }
@@ -59,19 +61,19 @@
     private void RestoreDashboard()
     {
         DashboardRegistry.Clear();
-        DashboardRegistry = DashboardItemService.GetDashboardItems();
+        DashboardRegistry = _persistenceManager.GetDashboardItems();
         StateHasChanged();
     }
 
     private void UpdateDashboardItem(DashboardItemModel item)
     {
-        DashboardItemService.UpdateDashboardItem(item);
+        _persistenceManager.UpdateDashboardItem(item);
         RestoreDashboard();
     }
 
     private void RemoveDashboardItem(DashboardItemModel item)
     {
-        DashboardItemService.RemoveDashboardItemModel(item);
+        _persistenceManager.RemoveDashboardItemModel(item);
         RestoreDashboard();
     }
 }
