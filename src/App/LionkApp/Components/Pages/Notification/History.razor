@@ -6,13 +6,17 @@
     <MudTable Items="notifications" Hover="true" SortLabel="Sort by" Elevation="0" AllowUnsorted="false">
         <HeaderContent>
             <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<NotificationHistory, object>(x => x.Notification.Timestamp)">Date</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<NotificationHistory, object>(x => x.Notification.Content.Title)">Title</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<NotificationHistory, object>(x => x.IsRead)">Status</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<NotificationHistory, object>(x => x.Notification.Content.Level)">Severity</MudTableSortLabel></MudTh>
+            <MudTh>Title</MudTh>
+            <MudTh>Message</MudTh>
+            <MudTh>Status</MudTh>
             <MudTh>Actions</MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Date">@context.Notification.Timestamp.ToString("g")</MudTd>
+            <MudTd DataLabel="Severity">@context.Notification.Content.Level.ToString()</MudTd>
             <MudTd DataLabel="Title">@context.Notification.Content.Title</MudTd>
+            <MudTd DataLabel="Message">@context.Notification.Content.Message</MudTd>
             <MudTd DataLabel="Status">@context.IsRead ? "Read" : "Unread"</MudTd>
             <MudTd>
                 <MudButton OnClick="@(() => MarkAsRead(@context))">Mark as read</MudButton>
