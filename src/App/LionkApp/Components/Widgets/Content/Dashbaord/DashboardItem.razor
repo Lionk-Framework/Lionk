@@ -18,7 +18,7 @@
                   Style=" position: relative;
                       height:inherit;
                       width:inherit;
-                      min-height:80px">
+                      min-height:200px">
 
             <div style="position: absolute;
                     top: 5px;
@@ -53,19 +53,22 @@
                                        Size="Size.Small"
                                        OnClick="PageableClickedAsync" />
                     }
+
                     @if (_isExecutable)
                     {
                         <MudIconButton Icon="@Icons.Material.Filled.PlayArrow"
                                        Size="Size.Small"
-                                       OnClick="ExecutableClickedAsync" />
+                                       OnClick="ExecutableStartClickedAsync" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Stop"
+                                       Size="Size.Small"
+                                       OnClick="ExecutableStopClickedAsync" />
                     }
                 }
-
+                <MudSpacer />
                 <MudMenu Icon="@Icons.Material.Filled.MoreVert"
                          Color="Color.Primary">
                     <MudMenuItem OnClick="DeleteClickedAsync">
-                        <MudIcon Icon="@Icons.Material.Filled.Delete" Color="Color.Error" />
-                        <MudText Color="Color.Error">Delete</MudText>
+                        <MudText Color="Color.Error">Delete Item</MudText>
                     </MudMenuItem>
                 </MudMenu>
             </div>
@@ -152,6 +155,13 @@
         _isDetailable = _detailViews is not null && _detailViews.Count() > 0;
         _isPageable = _pageViews is not null && _pageViews.Count() > 0;
         _isExecutable = Component is IExecutableComponent;
+#if DEBUG
+        _isConfigurable = true;
+        _isDetailable = true;
+        _isPageable = true;
+        _isExecutable = true;
+#endif
+
         StateHasChanged();
     }
 
@@ -170,7 +180,7 @@
         // not implemented yet
     }
 
-    private void ExecutableClickedAsync()
+    private void ExecutableStartClickedAsync()
     {
         IExecutableComponent? executableComponent = Component as IExecutableComponent;
         if (executableComponent is not null)
@@ -178,6 +188,17 @@
             executableComponent.Execute();
         }
     }
+
+    private void ExecutableStopClickedAsync()
+    {
+        IExecutableComponent? executableComponent = Component as IExecutableComponent;
+        if (executableComponent is not null)
+        {
+            //executableComponent.Suspend();
+        }
+    }
+
+
 
     private async Task DialogFromContextAsync(ViewContext viewContext, List<ComponentViewDescription>? Views)
     {
