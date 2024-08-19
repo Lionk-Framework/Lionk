@@ -106,13 +106,38 @@
         _isExecutable = Component is IExecutableComponent;
         StateHasChanged();
     }
-    
+
     private async Task ConfigurableClickedAsync()
     {
-        int viewIndex = DashboardItemModel?.Indexes[(int)ViewContext.Configuration] ?? 0;
+        await DialogFromContextAsync(ViewContext.Configuration);
+    }
+
+    private async void DetailableClickedAsync()
+    {
+        await DialogFromContextAsync(ViewContext.Detail);
+    }
+
+    private void PageableClickedAsync()
+    {
+        // not implemented yet
+    }
+
+    private void ExecutableClickedAsync()
+    {
+        IExecutableComponent? cyclicComponent = Component as IExecutableComponent;
+        if (cyclicComponent is not null)
+        {
+            cyclicComponent.Execute();
+        }
+    }
+
+    private async Task DialogFromContextAsync(ViewContext viewContext)
+    {
+
+        int viewIndex = DashboardItemModel?.Indexes[(int)viewContext] ?? 0;
         if (_configutionViews is null || _configutionViews.Count() == 0)
         {
-            Snackbar.Add("No configuration view found", Severity.Error);
+            Snackbar.Add($"No {viewContext.ToString()} view found", Severity.Error);
             return;
         }
         var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
@@ -122,24 +147,13 @@
         parameters.Add("CurrentIndex", viewIndex);
         var dialog = DialogService.Show<ComponentDialog>("Configuration", parameters, options);
         var result = await dialog.Result;
-    }
-
-    private void DetailableClickedAsync()
-    {
-
-    }
-
-    private void PageableClickedAsync()
-    {
-
-    }
-
-    private void ExecutableClickedAsync()
-    {
-        IExecutableComponent? cyclicComponent = Component as IExecutableComponent;
-        if (cyclicComponent is not null)
+        if (result is not null && !result.Canceled)
         {
-            cyclicComponent.Execute();
+            int newIndex = result.Data as int? ?? 0;
+            if (DashboardItemModel is not null)
+            {
+                DashboardItemModel.SaveCurrentIndex(viewContext, newIndex);
+            }
         }
     }
 }
