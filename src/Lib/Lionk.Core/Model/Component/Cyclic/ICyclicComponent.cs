@@ -18,21 +18,7 @@ public interface ICyclicComponent : IExecutableComponent
     /// </summary>
     DateTime LastExecution { get; set; }
 
-    DateTime NextExecution
-    {
-        get
-        {
-            switch (CyclicComputationMethod)
-            {
-                case CyclicComputationMethod.RelativeToLastExecution:
-                    return LastExecution + Periode;
-                case CyclicComputationMethod.RelativeToStartTime:
-                    return StartedDate + (Periode * NbCycle);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(CyclicComputationMethod), CyclicComputationMethod, null);
-            }
-        }
-    }
+    DateTime NextExecution => CyclicComputationMethod.GetNextExecution(this);
 
     /// <summary>
     /// Gets or Sets the number of cycles executed.
