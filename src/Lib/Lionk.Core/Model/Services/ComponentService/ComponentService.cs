@@ -2,6 +2,7 @@
 
 using System.Collections.Concurrent;
 using System.Reflection;
+using Lionk.Core.Observable;
 using Lionk.Core.TypeRegistery;
 using Lionk.Log;
 using Lionk.Utils;
@@ -37,11 +38,17 @@ public class ComponentService : IComponentService
 
         if (_componentInstances.TryAdd(uniqueName, component))
             SaveConfiguration();
+
+        if (component is ObservableElement observable)
+            observable.PropertyChanged += (s, e) => SaveConfiguration();
     }
 
     /// <inheritdoc/>
     public void UnregisterComponentInstance(IComponent component)
     {
+        if (component is ObservableElement observable)
+            observable.PropertyChanged -= (s, e) => SaveConfiguration();
+
         if (_componentInstances.TryRemove(component.InstanceName ?? DefaultComponentName, out _))
             SaveConfiguration();
     }
@@ -69,6 +76,13 @@ public class ComponentService : IComponentService
     public void Dispose()
     {
         SaveConfiguration();
+
+        foreach (IComponent component in _componentInstances.Values)
+        {
+            if (component is ObservableElement observable)
+                observable.PropertyChanged -= (s, e) => SaveConfiguration();
+        }
+
         _componentRegistery.NewComponentAvailable -= (s, e) => OnNewTypesAvailable();
         GC.SuppressFinalize(this);
     }
