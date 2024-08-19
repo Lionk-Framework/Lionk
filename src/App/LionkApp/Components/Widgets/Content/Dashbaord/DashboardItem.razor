@@ -43,6 +43,13 @@
                                Size="Size.Small"
                                OnClick="ExecutableClickedAsync" />
             }
+            <MudMenu Icon="@Icons.Material.Filled.MoreVert"
+                     Color="Color.Primary">
+                <MudMenuItem OnClick="DeleteClickedAsync">
+                    <MudIcon Icon="@Icons.Material.Filled.Delete" Color="Color.Error" />
+                    <MudText Color="Color.Error">Delete</MudText>
+                </MudMenuItem>
+            </MudMenu>
 
         </div>
 
@@ -55,6 +62,8 @@
 @code {
     [Parameter] public DashboardItemModel? DashboardItemModel { get; set; }
     [Parameter] public IComponent? Component { get; set; }
+    [Parameter] public EventCallback<DashboardItemModel> OnUpdate { get; set; }
+    [Parameter] public EventCallback<DashboardItemModel> OnDelete { get; set; }
 
     private Type? _view;
     private Dictionary<string, object> _parameters = new();
@@ -150,10 +159,34 @@
         if (result is not null && !result.Canceled)
         {
             int newIndex = result.Data as int? ?? 0;
-            if (DashboardItemModel is not null)
+            if (DashboardItemModel is not null && newIndex != viewIndex)
             {
+                await OnUpdate.InvokeAsync(DashboardItemModel);
                 DashboardItemModel.SaveCurrentIndex(viewContext, newIndex);
             }
+        }
+    }
+
+    private async Task<bool> DeleteDialogAsync()
+    {
+        var parameters = new DialogParameters<SimpleQuestionDialog>
+        {
+            { x => x.ContentText, "Do you really want to delete these widget? This process cannot be undone." },
+            { x => x.ButtonText, "Delete" },
+            { x => x.Color, Color.Error }
+        };
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        var dialog = DialogService.Show<SimpleQuestionDialog>("Delete", parameters, options);
+        var result = await dialog.Result;
+        return result?.Data as bool? ?? false;
+
+    }
+
+    private async Task DeleteClickedAsync()  {
+        bool delete = await DeleteDialogAsync();
+        if (delete) {
+            await OnDelete.InvokeAsync(DashboardItemModel);
         }
     }
 }
