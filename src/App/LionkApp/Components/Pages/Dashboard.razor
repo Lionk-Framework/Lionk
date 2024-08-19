@@ -7,6 +7,8 @@
 @using LionkApp.Components.Model
 @using IComponent = Lionk.Core.Component.IComponent
 @using LionkApp.Components.Widgets.Dialogs
+@using LionkApp.Services
+@namespace LionkApp.Components.Pages
 
 <PageTitle>Dashboard</PageTitle>
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
@@ -16,7 +18,7 @@
         IComponent? component = ComponentService.GetInstanceByName(item.ComponentInstanceName);
         if (component is not null)
         {
-            <DashboardItem DashboardItemModel=item Component="component" />
+            <DashboardItem DashboardItemModel=item Component="component" OnUpdate="UpdateDashboardItem" OnDelete="RemoveDashboardItem"/>
         }
     }
 
@@ -26,6 +28,11 @@
 
 @code {
     public List<DashboardItemModel> DashboardRegistry { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        RestoreDashboard();
+    }
 
     private async Task OpenDialogAsync()
     {
@@ -39,9 +46,29 @@
             var newWidget = result.Data as DashboardItemModel;
             if (newWidget != null)
             {
-                DashboardRegistry.Add(newWidget);
+                DashboardItemService.SaveDashboardItem(newWidget);
+                RestoreDashboard();
                 StateHasChanged();
             }
         }
+    }
+
+    private void RestoreDashboard()
+    {
+        DashboardRegistry.Clear();
+        DashboardRegistry = DashboardItemService.GetDashboardItems();
+        StateHasChanged();
+    }
+
+    private void UpdateDashboardItem(DashboardItemModel item)
+    {
+        DashboardItemService.UpdateDashboardItem(item);
+        RestoreDashboard();
+    }
+
+    private void RemoveDashboardItem(DashboardItemModel item)
+    {
+        DashboardItemService.RemoveDashboardItemModel(item);
+        RestoreDashboard();
     }
 }
