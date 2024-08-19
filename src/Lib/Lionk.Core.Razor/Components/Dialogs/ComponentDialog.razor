@@ -11,12 +11,13 @@
                      AutoCycle="false"
                      TData="object"
                      SelectedIndexChanged="ViewChanged"
-                     Style="height:100%">
+                     Style="height:100%"
+                     SelectedIndex="CurrentIndex">
             @if (ViewDescription is not null && ViewDescription.Count > 0)
             {
                 foreach (var viewDescription in ViewDescription)
                 {
-                    <MudCarouselItem Style="margin-left:50px; margin-right:50px; overflow-y: scroll;">
+                    <MudCarouselItem Style="padding-left:50px; padding-right:50px; overflow-y: scroll;">
                         <MudGrid Style="width:inherit%">
                             <MudItem>
                                 <MudText Typo="Typo.h6">@viewDescription.Name</MudText>
@@ -47,6 +48,7 @@
     {
         if (Component is null) return;
         _parameter.Add("Component", Component);
+        if (CurrentIndex >= ViewDescription?.Count) CurrentIndex = 0;
     }
 
     private void Submit()
