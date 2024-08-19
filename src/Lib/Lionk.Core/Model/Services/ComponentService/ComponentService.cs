@@ -2,7 +2,11 @@
 
 using System.Collections.Concurrent;
 using System.Reflection;
-using Lionk.Core.TypeRegistery;
+using Lionk.Core.Observable;
+using Lionk.Core.TypeRegister;
+using Lionk.Log;
+using Lionk.Utils;
+using Newtonsoft.Json;
 
 namespace Lionk.Core.Component;
 
@@ -19,6 +23,7 @@ public class ComponentService : IComponentService
     {
         _componentRegistery = new ComponentRegister(provider, this);
         _componentRegistery.NewComponentAvailable += (s, e) => OnNewTypesAvailable();
+        LoadConfiguration();
     }
 
     /// <inheritdoc/>
@@ -30,12 +35,23 @@ public class ComponentService : IComponentService
         string baseName = component.InstanceName == string.Empty ? DefaultComponentName : component.InstanceName;
         string uniqueName = GenerateUniqueName(baseName);
         component.InstanceName = uniqueName;
-        _componentInstances.TryAdd(uniqueName, component);
+
+        if (_componentInstances.TryAdd(uniqueName, component))
+            SaveConfiguration();
+
+        if (component is ObservableElement observable)
+            observable.PropertyChanged += (s, e) => SaveConfiguration();
     }
 
     /// <inheritdoc/>
     public void UnregisterComponentInstance(IComponent component)
-        => _componentInstances.TryRemove(component.InstanceName ?? DefaultComponentName, out _);
+    {
+        if (component is ObservableElement observable)
+            observable.PropertyChanged -= (s, e) => SaveConfiguration();
+
+        if (_componentInstances.TryRemove(component.InstanceName ?? DefaultComponentName, out _))
+            SaveConfiguration();
+    }
 
     /// <inheritdoc/>
     public IEnumerable<T> GetInstancesOfType<T>()
@@ -54,6 +70,21 @@ public class ComponentService : IComponentService
     {
         IComponent? component = _componentInstances.Values.Where(x => x.InstanceName == name).FirstOrDefault();
         return component;
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        SaveConfiguration();
+
+        foreach (IComponent component in _componentInstances.Values)
+        {
+            if (component is ObservableElement observable)
+                observable.PropertyChanged -= (s, e) => SaveConfiguration();
+        }
+
+        _componentRegistery.NewComponentAvailable -= (s, e) => OnNewTypesAvailable();
+        GC.SuppressFinalize(this);
     }
 
     /// <inheritdoc/>
@@ -81,17 +112,67 @@ public class ComponentService : IComponentService
         return uniqueName;
     }
 
-    /// <inheritdoc/>
-    public void Dispose()
+    /// <summary>
+    /// Saves the current component instances to a JSON file using Newtonsoft.Json.
+    /// </summary>
+    private void SaveConfiguration()
     {
-        _componentRegistery.NewComponentAvailable -= (s, e) => OnNewTypesAvailable();
-        GC.SuppressFinalize(this);
+        try
+        {
+            string json = JsonConvert.SerializeObject(
+                _componentInstances,
+                Formatting.Indented,
+                new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+
+            ConfigurationUtils.SaveFile(ConfigurationFileName, json, FolderType.Config);
+        }
+        catch (Exception ex)
+        {
+            LogService.LogApp(LogSeverity.Error, $"Failed to save component configuration. Error: {ex.Message}");
+        }
     }
 
+    /// <summary>
+    /// Loads the component instances from a JSON file using Newtonsoft.Json.
+    /// </summary>
+    private void LoadConfiguration()
+    {
+        if (ConfigurationUtils.FileExists(ConfigurationFileName, FolderType.Config))
+        {
+            string json = ConfigurationUtils.ReadFile(ConfigurationFileName, FolderType.Config);
+
+            try
+            {
+                ConcurrentDictionary<string, IComponent>? savedInstances
+                    = JsonConvert.DeserializeObject<ConcurrentDictionary<string, IComponent>>(
+                        json,
+                        new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+
+                if (savedInstances != null)
+                {
+                    _componentInstances = savedInstances;
+                }
+                else
+                {
+                    LogService.LogApp(LogSeverity.Error, "Failed to load component instances. The configuration file might be corrupted.");
+                }
+            }
+            catch (JsonException ex)
+            {
+                LogService.LogApp(LogSeverity.Error, $"Failed to deserialize component configuration. Error: {ex.Message}");
+            }
+        }
+        else
+        {
+            LogService.LogApp(LogSeverity.Information, "Component configuration file not found.");
+        }
+    }
+
+    private const string ConfigurationFileName = "ComponentServiceConfiguration.json";
     private const string DefaultComponentName = "Component";
 
-    private readonly ConcurrentDictionary<string, IComponent>
-        _componentInstances = new();
-
     private readonly ComponentRegister _componentRegistery;
+
+    private ConcurrentDictionary<string, IComponent>
+        _componentInstances = new();
 }

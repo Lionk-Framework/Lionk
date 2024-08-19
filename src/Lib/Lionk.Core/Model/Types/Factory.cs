@@ -2,7 +2,7 @@
 
 using Lionk.Log;
 
-namespace Lionk.Core.TypeRegistery;
+namespace Lionk.Core.TypeRegister;
 
 /// <summary>
 /// Class that create instances of a type.
