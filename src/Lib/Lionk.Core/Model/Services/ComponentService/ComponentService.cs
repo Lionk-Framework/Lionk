@@ -21,8 +21,8 @@ public class ComponentService : IComponentService
     /// <param name="provider">The type provider.</param>
     public ComponentService(ITypesProvider provider)
     {
-        _componentRegistery = new ComponentRegister(provider, this);
-        _componentRegistery.NewComponentAvailable += (s, e) => OnNewTypesAvailable();
+        _componentRegister = new ComponentRegister(provider, this);
+        _componentRegister.NewComponentAvailable += (s, e) => OnNewTypesAvailable();
         LoadConfiguration();
     }
 
@@ -36,7 +36,7 @@ public class ComponentService : IComponentService
         string uniqueName = GenerateUniqueName(baseName);
         component.InstanceName = uniqueName;
 
-        if (_componentInstances.TryAdd(uniqueName, component))
+        if (_componentInstances.TryAdd(component.Id, component))
             SaveConfiguration();
 
         if (component is ObservableElement observable)
@@ -49,7 +49,7 @@ public class ComponentService : IComponentService
         if (component is ObservableElement observable)
             observable.PropertyChanged -= (s, e) => SaveConfiguration();
 
-        if (_componentInstances.TryRemove(component.InstanceName ?? DefaultComponentName, out _))
+        if (_componentInstances.TryRemove(component.Id, out _))
             SaveConfiguration();
     }
 
@@ -63,7 +63,7 @@ public class ComponentService : IComponentService
 
     /// <inheritdoc/>
     public IReadOnlyDictionary<ComponentTypeDescription, Factory> GetRegisteredTypeDictionnary()
-        => _componentRegistery.TypesRegistery.AsReadOnly();
+        => _componentRegister.TypesRegistery.AsReadOnly();
 
     /// <inheritdoc/>
     public IComponent? GetInstanceByName(string name)
@@ -71,6 +71,10 @@ public class ComponentService : IComponentService
         IComponent? component = _componentInstances.Values.Where(x => x.InstanceName == name).FirstOrDefault();
         return component;
     }
+
+    /// <inheritdoc/>
+    public IComponent? GetInstanceByID(Guid id)
+        => _componentInstances.TryGetValue(id, out IComponent? component) ? component : null;
 
     /// <inheritdoc/>
     public void Dispose()
@@ -83,7 +87,7 @@ public class ComponentService : IComponentService
                 observable.PropertyChanged -= (s, e) => SaveConfiguration();
         }
 
-        _componentRegistery.NewComponentAvailable -= (s, e) => OnNewTypesAvailable();
+        _componentRegister.NewComponentAvailable -= (s, e) => OnNewTypesAvailable();
         GC.SuppressFinalize(this);
     }
 
@@ -103,7 +107,7 @@ public class ComponentService : IComponentService
         string uniqueName = baseName;
         int suffix = 0;
 
-        while (_componentInstances.ContainsKey(uniqueName))
+        while (_componentInstances.Values.Any(x => x.InstanceName == uniqueName))
         {
             suffix++;
             uniqueName = $"{baseName}_{suffix}";
@@ -143,8 +147,8 @@ public class ComponentService : IComponentService
 
             try
             {
-                ConcurrentDictionary<string, IComponent>? savedInstances
-                    = JsonConvert.DeserializeObject<ConcurrentDictionary<string, IComponent>>(
+                ConcurrentDictionary<Guid, IComponent>? savedInstances
+                    = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, IComponent>>(
                         json,
                         new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
 
@@ -171,8 +175,8 @@ public class ComponentService : IComponentService
     private const string ConfigurationFileName = "ComponentServiceConfiguration.json";
     private const string DefaultComponentName = "Component";
 
-    private readonly ComponentRegister _componentRegistery;
+    private readonly ComponentRegister _componentRegister;
 
-    private ConcurrentDictionary<string, IComponent>
+    private ConcurrentDictionary<Guid, IComponent>
         _componentInstances = new();
 }

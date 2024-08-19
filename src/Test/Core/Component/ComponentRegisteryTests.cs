@@ -105,5 +105,7 @@ public class ComponentRegisteryTests
     private class MockComponent : IComponent
     {
         public string InstanceName { get; set; } = string.Empty;
+
+        public Guid Id { get; } = Guid.NewGuid();
     }
 }

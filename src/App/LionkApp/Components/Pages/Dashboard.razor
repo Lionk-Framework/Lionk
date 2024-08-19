@@ -4,35 +4,41 @@
 @inject IDialogService DialogService
 @using Lionk.Core.Component
 @using Lionk.Core.View
+@using Lionk.Plugin
 @using LionkApp.Components.Model
 @using IComponent = Lionk.Core.Component.IComponent
 @using LionkApp.Components.Widgets.Dialogs
+@using LionkApp.Services
+@namespace LionkApp.Components.Pages
 
 <PageTitle>Dashboard</PageTitle>
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
-
-    @foreach (var item in DashboardRegistry)
+    @foreach (var item in DashboardRegistry ?? [])
     {
-        IComponent? component = ComponentService.GetInstanceByName(item.ComponentInstanceName);
-        Type view = item.ViewType;
-
-        if (component is not null && view is not null)
-        {
-            var parameters = new Dictionary<string, object>
-            {
-                { "Component", component }
-            };
-
-            <DynamicComponent Type="view" Parameters="parameters" />
-        }
+        IComponent? component = ComponentService.GetInstanceByID(item.ComponentUniqueID);
+        <DashboardItem DashboardItemModel=item
+                       Component="component"
+                       OnUpdate="UpdateDashboardItem"
+                       OnDelete="RemoveDashboardItem"
+                       Style="min-height:200px" />
     }
-
 </MudContainer>
 
-<MudFab @onclick="OpenDialogAsync" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Add" Size="Size.Large" Style="position: fixed; bottom: 20px; right: 20px;" />
+<MudFab @onclick="OpenDialogAsync"
+        Color="Color.Secondary"
+        StartIcon="@Icons.Material.Filled.Add"
+        Size="Size.Large"
+        Style="position: fixed; bottom: 20px; right: 20px;" />
 
 @code {
-    public List<DashboardItemModel> DashboardRegistry { get; set; } = new();
+    public List<DashboardItemModel>? DashboardRegistry { get; set; } = new();
+    private IDashboardItemPersistenceManager? _persistenceManager;
+
+    protected override void OnInitialized()
+    {
+        _persistenceManager = new DashboardItemPersistenceManagerJson();
+        RestoreDashboard();
+    }
 
     private async Task OpenDialogAsync()
     {
@@ -46,9 +52,29 @@
             var newWidget = result.Data as DashboardItemModel;
             if (newWidget != null)
             {
-                DashboardRegistry.Add(newWidget);
+                _persistenceManager?.SaveDashboardItem(newWidget);
+                RestoreDashboard();
                 StateHasChanged();
             }
         }
+    }
+
+    private void RestoreDashboard()
+    {
+        DashboardRegistry?.Clear();
+        DashboardRegistry = _persistenceManager?.GetDashboardItems();
+        StateHasChanged();
+    }
+
+    private void UpdateDashboardItem(DashboardItemModel item)
+    {
+        _persistenceManager?.UpdateDashboardItem(item);
+        RestoreDashboard();
+    }
+
+    private void RemoveDashboardItem(DashboardItemModel item)
+    {
+        _persistenceManager?.RemoveDashboardItemModel(item);
+        RestoreDashboard();
     }
 }

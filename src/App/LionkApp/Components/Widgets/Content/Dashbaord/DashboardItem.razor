@@ -1,0 +1,231 @@
+﻿@inherits MudItem
+@inject IViewLocatorService ViewLocatorService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+@namespace Lionk.Core.Component
+@using Lionk.Core.Dialog
+@using Lionk.Core.View
+@using LionkApp.Components.Model
+
+<MudItem Style=" margin-right:15px;
+                 margin-bottom:15px;
+                 width:fit-content;
+                 height:fit-content;">
+
+    <MudBadge Color="BadgeColor" Overlap="true" Class="mx-6 my-4">
+        <MudPaper Class="pa-4"
+                  Style=" position: relative;
+                      height:inherit;
+                      width:inherit;
+                      min-height:80px">
+
+            <div style="position: absolute;
+                    top: 5px;
+                    right: 5px;
+                    display: flex;
+                    flex-direction: column;">
+
+                @if (_IsNotInstancied)
+                {
+                    <MudIconButton Icon="@Icons.Material.Filled.DeviceHub"
+                                   Size="Size.Small"
+                                   OnClick="GoToComponentsPage" />
+                }
+                else
+                {
+                    @if (_isConfigurable)
+                    {
+                        <MudIconButton Icon="@Icons.Material.Filled.Settings"
+                                       Size="Size.Small"
+                                       OnClick="ConfigurableClickedAsync" />
+                    }
+
+                    @if (_isDetailable)
+                    {
+                        <MudIconButton Icon="@Icons.Material.Filled.ListAlt"
+                                       Size="Size.Small"
+                                       OnClick="DetailableClickedAsync" />
+                    }
+                    @if (_isPageable)
+                    {
+                        <MudIconButton Icon="@Icons.Material.Filled.Fullscreen"
+                                       Size="Size.Small"
+                                       OnClick="PageableClickedAsync" />
+                    }
+                    @if (_isExecutable)
+                    {
+                        <MudIconButton Icon="@Icons.Material.Filled.PlayArrow"
+                                       Size="Size.Small"
+                                       OnClick="ExecutableClickedAsync" />
+                    }
+                }
+
+                <MudMenu Icon="@Icons.Material.Filled.MoreVert"
+                         Color="Color.Primary">
+                    <MudMenuItem OnClick="DeleteClickedAsync">
+                        <MudIcon Icon="@Icons.Material.Filled.Delete" Color="Color.Error" />
+                        <MudText Color="Color.Error">Delete</MudText>
+                    </MudMenuItem>
+                </MudMenu>
+            </div>
+            <div style="margin-right:50px">
+                <DynamicComponent @ref=_dynamicComponent Type="@_view" Parameters="@_parameters" />
+            </div>
+
+        </MudPaper>
+    </MudBadge>
+</MudItem>
+
+
+
+
+
+@code {
+    [Parameter] public DashboardItemModel? DashboardItemModel { get; set; }
+    [Parameter] public IComponent? Component { get; set; }
+    [Parameter] public EventCallback<DashboardItemModel> OnUpdate { get; set; }
+    [Parameter] public EventCallback<DashboardItemModel> OnDelete { get; set; }
+
+    private Type? _view;
+    private Dictionary<string, object> _parameters = new();
+
+    private List<ComponentViewDescription>? _configutionViews;
+    private List<ComponentViewDescription>? _detailViews;
+    private List<ComponentViewDescription>? _pageViews;
+
+    private Color BadgeColor = Color.Transparent;
+
+    private bool _isConfigurable;
+    private bool _isDetailable;
+    private bool _isPageable;
+    private bool _isExecutable;
+    private bool _IsNotInstancied;
+
+    private DynamicComponent? _dynamicComponent;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (DashboardItemModel is null) return;
+        if (Component is not null)
+        {
+            _view = DashboardItemModel.ViewType;
+            InitializeComponentViews();
+        }
+        else
+        {
+            _parameters.Add("InstanceName", DashboardItemModel.ComponentUniqueID);
+            _view = typeof(NoComponentView);
+            _IsNotInstancied = true;
+            BadgeColor = Color.Warning;
+        }
+    }
+
+    private void InitializeComponentViews()
+    {
+        if (Component is null) return;
+        _parameters.Add("Component", Component);
+
+        Type componentType = Component.GetType();
+
+        _configutionViews = ViewLocatorService.GetViewOf(
+        componentType,
+        ViewContext.Configuration)
+        .ToList();
+
+        _detailViews = ViewLocatorService.GetViewOf(
+        componentType,
+        ViewContext.Detail)
+        .ToList();
+
+        _pageViews = ViewLocatorService.GetViewOf(
+        componentType,
+        ViewContext.Page)
+        .ToList();
+        DefineButtons();
+    }
+
+    private void DefineButtons()
+    {
+        _isConfigurable = _configutionViews is not null && _configutionViews.Count() > 0;
+        _isDetailable = _detailViews is not null && _detailViews.Count() > 0;
+        _isPageable = _pageViews is not null && _pageViews.Count() > 0;
+        _isExecutable = Component is IExecutableComponent;
+        StateHasChanged();
+    }
+
+    private async Task ConfigurableClickedAsync()
+    {
+        await DialogFromContextAsync(ViewContext.Configuration, _configutionViews);
+    }
+
+    private async void DetailableClickedAsync()
+    {
+        await DialogFromContextAsync(ViewContext.Detail, _detailViews);
+    }
+
+    private void PageableClickedAsync()
+    {
+        // not implemented yet
+    }
+
+    private void ExecutableClickedAsync()
+    {
+        IExecutableComponent? executableComponent = Component as IExecutableComponent;
+        if (executableComponent is not null)
+        {
+            executableComponent.Execute();
+        }
+    }
+
+    private async Task DialogFromContextAsync(ViewContext viewContext, List<ComponentViewDescription>? Views)
+    {
+        if (Views is null || Views.Count() == 0)
+        {
+            Snackbar.Add($"No {viewContext.ToString()} view found", Severity.Error);
+            return;
+        }
+
+        int viewIndex = DashboardItemModel?.Indexes[(int)viewContext] ?? 0;
+
+        var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
+        var parameters = new DialogParameters();
+        parameters.Add("Component", Component);
+        parameters.Add("ViewDescription", Views);
+        parameters.Add("CurrentIndex", viewIndex);
+
+        var dialog = DialogService.Show<ComponentDialog>("Configuration", parameters, options);
+        var result = await dialog.Result;
+        if (result is not null && !result.Canceled)
+        {
+            int newIndex = result.Data as int? ?? 0;
+            if (DashboardItemModel is not null && newIndex != viewIndex)
+            {
+                await OnUpdate.InvokeAsync(DashboardItemModel);
+                DashboardItemModel.SaveCurrentIndex(viewContext, newIndex);
+            }
+        }
+    }
+
+    private async Task<bool> DeleteDialogAsync()
+    {
+        var parameters = new DialogParameters<SimpleQuestionDialog>
+    {
+    { x => x.ContentText, "Do you really want to delete these widget? This process cannot be undone." },
+    { x => x.ButtonText, "Delete" },
+    { x => x.Color, Color.Error }
+    };
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        var dialog = DialogService.Show<SimpleQuestionDialog>("Delete", parameters, options);
+        var result = await dialog.Result;
+        return result?.Data as bool? ?? false;
+    }
+
+    private async Task DeleteClickedAsync()
+    {
+        bool delete = await DeleteDialogAsync();
+        if (delete) await OnDelete.InvokeAsync(DashboardItemModel);
+    }
+    private void GoToComponentsPage() => NavigationManager.NavigateTo("/components");
+}

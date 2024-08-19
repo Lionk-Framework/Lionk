@@ -75,6 +75,7 @@ builder.Services.AddSingleton<ICyclicExecutorService>(serviceProvider =>
     IComponentService componentService = serviceProvider.GetRequiredService<IComponentService>();
     return new CyclicExecutorService(componentService);
 });
+
 WebApplication app = builder.Build();
 
 // Configure the LogService with the singleton logger
