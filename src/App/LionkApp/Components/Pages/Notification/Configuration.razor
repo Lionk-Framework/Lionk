@@ -2,10 +2,9 @@
 
 @using Lionk.Notification
 
-<MudPaper Elevation="2" Class="pa-4 mb-4">
+<MudPaper Elevation="2" Class="pa-4">
     <MudText Typo="Typo.h6">Notifier List</MudText>
-    <MudSpacer />
-    <MudTable Items="notifyers" Hover="true" Elevation="1">
+    <MudTable Items="notifyers" Hover="true" Class="mt-4">
         <RowTemplate>
             <MudTd DataLabel="Name">@context.Name</MudTd>
         </RowTemplate>
@@ -17,8 +16,7 @@
         <MudText Typo="Typo.h6">Channel List</MudText>
         <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="AddChannel">ADD</MudButton>
     </div>
-    <MudSpacer />
-    <MudTable Items="channels" Hover="true" Elevation="1">
+    <MudTable Items="channels" Hover="true" Class="mt-4">
         <RowTemplate>
             <MudTd DataLabel="Name">@context.Name</MudTd>
         </RowTemplate>
