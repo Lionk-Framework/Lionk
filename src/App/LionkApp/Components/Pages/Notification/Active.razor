@@ -17,10 +17,9 @@
             <MudTd DataLabel="Severity">@context.Notification.Content.Level.ToString()</MudTd>
             <MudTd DataLabel="Title">@context.Notification.Content.Title</MudTd>
             <MudTd DataLabel="Message">@context.Notification.Content.Message</MudTd>
-            <MudTd DataLabel="Status">@context.IsRead ? "Read" : "Unread"</MudTd>
+            <MudTd DataLabel="Status">Unread</MudTd>
             <MudTd>
                 <MudButton OnClick="@(() => MarkAsRead(@context))">Mark as read</MudButton>
-                <MudButton OnClick="@(() => MarkAsUnread(@context))">Mark as unread</MudButton>
             </MudTd>
         </RowTemplate>
         <PagerContent>
@@ -34,16 +33,13 @@
 
     protected override void OnInitialized()
     {
-        notifications = NotificationService.GetNotifications();
+        notifications = NotificationService.GetNotifications()
+                                           .Where(n => !n.IsRead)
+                                           .ToList();
     }
 
     private void MarkAsRead(NotificationHistory notification)
     {
         notification.Read();
-    }
-
-    private void MarkAsUnread(NotificationHistory notification)
-    {
-        notification.Unread();
     }
 }

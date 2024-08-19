@@ -10,7 +10,6 @@
             <MudTh>Title</MudTh>
             <MudTh>Message</MudTh>
             <MudTh>Status</MudTh>
-            <MudTh>Actions</MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Date">@context.Notification.Timestamp.ToString("g")</MudTd>
@@ -18,10 +17,6 @@
             <MudTd DataLabel="Title">@context.Notification.Content.Title</MudTd>
             <MudTd DataLabel="Message">@context.Notification.Content.Message</MudTd>
             <MudTd DataLabel="Status">@context.IsRead ? "Read" : "Unread"</MudTd>
-            <MudTd>
-                <MudButton OnClick="@(() => MarkAsRead(@context))">Mark as read</MudButton>
-                <MudButton OnClick="@(() => MarkAsUnread(@context))">Mark as unread</MudButton>
-            </MudTd>
         </RowTemplate>
         <PagerContent>
             <MudTablePager PageSizeOptions="new int[]{50, 100}" />
