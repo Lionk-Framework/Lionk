@@ -1,24 +1,36 @@
 ﻿@page "/configuration"
 
-@using LionkApp.Components.Model
-@using LionkApp.Components.Widgets.Content
+@using Lionk.Notification
 
-<SwitchList SwitchListTitle="Notifier list" Switchs=NotifierList />
+<div class="notifyer-list">
+    <h3>Notifier List</h3>
+    <MudTable Items="notifyers" Hover="true" Elevation="1">
+        <RowTemplate>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</div>
 
-<SwitchList SwitchListTitle="Channel list" Switchs=ChannelList />
+<div class="channel-list">
+    <h3>Channel List</h3>
+    <MudTable Items="channels" Hover="true" Elevation="1">
+        <RowTemplate>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</div>
 
 @code {
-    private List<Switch> NotifierList = new List<Switch>
-    {
-        new Switch { Label = "Chimpey", IsEnabled = true },
-        new Switch { Label = "Nastaran", IsEnabled = true },
-        new Switch { Label = "Ronflex", IsEnabled = true }
-    };
+    private List<INotifyer> notifyers = new();
+    private List<IChannel> channels = new();
 
-    private List<Switch> ChannelList = new List<Switch>
+    protected override void OnInitialized()
     {
-        new Switch { Label = "Discord", IsEnabled = true },
-        new Switch { Label = "Telegram", IsEnabled = true },
-        new Switch { Label = "Push", IsEnabled = true }
-    };
+        notifyers = NotificationService.Notifyers.ToList();
+        channels = NotificationService.Channels.ToList();
+    }
 }
