@@ -2,35 +2,86 @@
 
 @using Lionk.Notification
 
-<div class="notifyer-list">
-    <h3>Notifier List</h3>
+<MudPaper Elevation="2" Class="pa-4 mb-4">
+    <MudText Typo="Typo.h6">Notifier List</MudText>
     <MudTable Items="notifyers" Hover="true" Elevation="1">
+        <HeaderContent>
+            <MudTh>Name</MudTh>
+        </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Name">@context.Name</MudTd>
-            <MudTd>
-            </MudTd>
         </RowTemplate>
     </MudTable>
-</div>
+</MudPaper>
 
-<div class="channel-list">
-    <h3>Channel List</h3>
+<MudPaper Elevation="2" Class="pa-4">
+    <MudText Typo="Typo.h6">Channel List</MudText>
     <MudTable Items="channels" Hover="true" Elevation="1">
+        <HeaderContent>
+            <MudTh>Name</MudTh>
+        </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Name">@context.Name</MudTd>
-            <MudTd>
-            </MudTd>
         </RowTemplate>
     </MudTable>
-</div>
+</MudPaper>
 
 @code {
-    private List<INotifyer> notifyers = new();
-    private List<IChannel> channels = new();
+    public class MockNotifyer : INotifyer
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+
+        public bool Equals(INotifyer? other)
+        {
+            return other != null && Id == other.Id;
+        }
+    }
+
+    public class MockChannel : IChannel
+    {
+        public Guid Guid { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public List<IRecipient> Recipients { get; set; } = new();
+        public bool IsInitialized { get; set; } = false;
+
+        public void AddRecipients(params IRecipient[] recipients)
+        {
+            Recipients.AddRange(recipients);
+        }
+
+        public void Initialize()
+        {
+            IsInitialized = true;
+        }
+
+        public void Send(INotifyer notifyer, Content content)
+        {
+        }
+
+        public bool Equals(IChannel? other)
+        {
+            return other != null && Guid == other.Guid;
+        }
+    }
+
+    private List<INotifyer> notifyers = new List<INotifyer>
+    {
+        new MockNotifyer { Id = Guid.NewGuid(), Name = "Notifier 1" },
+        new MockNotifyer { Id = Guid.NewGuid(), Name = "Notifier 2" },
+        new MockNotifyer { Id = Guid.NewGuid(), Name = "Notifier 3" }
+    };
+
+    private List<IChannel> channels = new List<IChannel>
+    {
+        new MockChannel { Guid = Guid.NewGuid(), Name = "Channel 1", IsInitialized = true },
+        new MockChannel { Guid = Guid.NewGuid(), Name = "Channel 2", IsInitialized = false },
+        new MockChannel { Guid = Guid.NewGuid(), Name = "Channel 3", IsInitialized = true }
+    };
 
     protected override void OnInitialized()
     {
-        notifyers = NotificationService.Notifyers.ToList();
-        channels = NotificationService.Channels.ToList();
+        // notifyers = NotificationService.Notifyers.ToList();
+        // channels = NotificationService.Channels.ToList();
     }
 }
