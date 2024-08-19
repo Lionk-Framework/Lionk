@@ -1,10 +1,10 @@
 ﻿<MudDialog>
     <DialogContent>
         <MudSelect T="string" Label="Available channel" AnchorOrigin="Origin.BottomCenter" Class="mb-4">
-            <MudSelectItem Value="@("Cappuccino")" />
-            <MudSelectItem Value="@("Cafe Latte")" />
-            <MudSelectItem Value="@("Espresso")" />
-            <MudSelectItem Value="@("Irish Coffee")" />
+            @foreach (var channel in Channels)
+            {
+                <MudSelectItem Value="@channel">@channel</MudSelectItem>
+            }
         </MudSelect>
         <MudTextField T="string" Label="Name" Class="mb-4"></MudTextField>
     </DialogContent>
@@ -15,6 +15,9 @@
 </MudDialog>
 
 @code {
+    [Parameter]
+    public List<string> Channels { get; set; } = new List<string>();
+
     [CascadingParameter]
     private MudDialogInstance? MudDialog { get; set; }
 

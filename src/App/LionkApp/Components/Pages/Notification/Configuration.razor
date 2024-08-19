@@ -82,7 +82,7 @@
 
     protected override void OnInitialized()
     {
-        // Uncomment to unmock
+        // TODO - Get notifyers and channels when ready
         // notifyers = NotificationService.Notifyers.ToList();
         // channels = NotificationService.Channels.ToList();
     }
@@ -94,8 +94,11 @@
 
     private Task OpenDialogAsync()
     {
+        // TODO - Get available channels when ready
+        var channelList = new DialogParameters {{ "Channels", new List<string> { "Teams", "Facebook", "Nastaran" }}};
+
         var options = new DialogOptions { CloseOnEscapeKey = true };
 
-        return DialogService.ShowAsync<ChannelSelector>("Select channel", options);
+        return DialogService.ShowAsync<ChannelSelector>("Select channel", channelList, options);
     }
 }
