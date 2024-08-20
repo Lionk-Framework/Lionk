@@ -1,11 +1,11 @@
 ﻿@inject IDialogService DialogService
-@using Lionk.Notification
 @using LionkApp.Components.Widgets.Dialogs
+@using Lionk.Notification
 
 <MudPaper Elevation="2" Class="pa-4 mb-10">
     <div style="display: flex; justify-content: space-between;">
         <MudText Typo="Typo.h6">Channels</MudText>
-        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" @onclick="OnAddChannelClicked">ADD</MudButton>
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" @onclick="OnAddClicked">ADD</MudButton>
     </div>
     <MudList T="string" Class="mt-4">
         @foreach (var channel in Channels)
@@ -14,8 +14,8 @@
                 <div style="display: flex; justify-content: space-between; width: 100%; height: 30px;">
                     <MudText>@channel.Name</MudText>
                     <div style="display: flex;">
-                        <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Primary" @onclick="OnConfigureChannelClicked" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" @onclick="() => OnChannelDeleteClicked(channel.Guid)" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Primary" @onclick="OnConfigureClicked" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" @onclick="() => OnDeleteClicked(channel.Guid)" />
                     </div>
                 </div>
             </MudListItem>
@@ -27,7 +27,7 @@
     [Parameter]
     public List<IChannel> Channels { get; set; } = new List<IChannel>();
 
-    private Task OnAddChannelClicked()
+    private Task OnAddClicked()
     {
         // TODO - Get available channels when ready
         var channelList = new DialogParameters { { "Channels", Channels } };
@@ -37,12 +37,12 @@
         return DialogService.ShowAsync<ChannelAdder>("Add channel", channelList, options);
     }
 
-    private void OnConfigureChannelClicked()
+    private void OnConfigureClicked()
     {
         // TODO - Retrieve the configurable view from dll
     }
 
-    private async Task OnChannelDeleteClicked(Guid channelGuid)
+    private async Task OnDeleteClicked(Guid channelGuid)
     {
         bool? result = await DialogService.ShowMessageBox(
             "Confirm Delete",
