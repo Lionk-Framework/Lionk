@@ -12,8 +12,12 @@ public interface IExecutableComponent : IComponent
     /// </summary>
     void Execute();
 
+    void Abort();
+
     /// <summary>
-    /// Gets a value indicating whether the component can be executed.
+    /// Gets  a value indicating whether the component can be executed.
     /// </summary>
-    public bool CanExecute { get; }
+    bool CanExecute { get; }
+
+    bool IsRunning { get; }
 }

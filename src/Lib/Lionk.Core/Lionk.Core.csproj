@@ -15,8 +15,4 @@
     <ProjectReference Include="..\Lionk.Logger\Lionk.Logger.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Model\Component\BaseClass\" />
-  </ItemGroup>
-
 </Project>
