@@ -18,7 +18,7 @@
                     <MudText>@notifyer.Name</MudText>
                     <div style="display: flex;">
                         <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" @onclick="OnEditNotifierClicked" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" @onclick="() => OnNotifierDeleteClicked(notifyer.Id)" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" @onclick="() => OnNotifierDeleteClicked(notifyer.Id)" />
                     </div>
                 </div>
             </MudListItem>
@@ -39,7 +39,7 @@
                     <MudText>@channel.Name</MudText>
                     <div style="display: flex;">
                         <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Primary" @onclick="OnConfigureChannelClicked" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" @onclick="() => OnChannelDeleteClicked(channel.Guid)" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" @onclick="() => OnChannelDeleteClicked(channel.Guid)" />
                     </div>
                 </div>
             </MudListItem>
