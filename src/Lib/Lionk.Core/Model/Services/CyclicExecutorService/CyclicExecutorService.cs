@@ -1,117 +1,197 @@
 ﻿// Copyright © 2024 Lionk Project
 
-using System.Timers;
+using Lionk.Core.Observable;
 using Lionk.Log;
+using Lionk.Notification;
 
 namespace Lionk.Core.Component.Cyclic;
 
 /// <summary>
-/// This class is used to execute cyclic components.
+/// Service responsible for executing cyclic components and managing their execution cycle.
 /// </summary>
-public class CyclicExecutorService : ICyclicExecutorService
+public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
 {
+    private readonly object _stateLock = new();
+    private readonly IComponentService _componentService;
+    private CancellationTokenSource _cancellationTokenSource = new();
+    private Task? _executionTask;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="CyclicExecutorService"/> class.
     /// </summary>
-    /// <param name="componentService"> The component service. </param>
+    /// <param name="componentService">The service that provides access to components.</param>
     public CyclicExecutorService(IComponentService componentService)
     {
-        ComponentService = componentService;
-        WatchDogTime = TimeSpan.FromSeconds(3600);
-        _timer = new(WatchDogTime);
-        _timer.Elapsed += CallWatchDog;
+        _componentService = componentService;
+        WatchDogTimeout = TimeSpan.FromSeconds(10);
         State = CycleState.Stopped;
-        _thread = new(Execute);
     }
 
-    private readonly CancellationTokenSource _cancellationTokenSource = new();
-    private readonly System.Timers.Timer _timer;
-    private Thread _thread;
+    private CycleState _cycleState;
 
-    private void Execute()
+    /// <inheritdoc/>
+    public CycleState State
     {
-        try
-        {
-            while (!_cancellationTokenSource.Token.IsCancellationRequested)
-            {
-                switch (State)
-                {
-                    case CycleState.Paused:
-                        continue;
-                    case CycleState.Running:
-                        Running();
-                        break;
-                    case CycleState.Stopped:
-                        Stopping();
-                        break;
-                    case CycleState.Stopping:
-                        // job when the cycle is stopping
-                        break;
-                    case CycleState.Aborted:
-                        // job when the cycle is aborted
-                        break;
-
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-        }
-        catch (ThreadInterruptedException)
-        {
-            State = CycleState.Aborted;
-        }
-    }
-
-    private void Stopping()
-    {
-        State = CycleState.Stopping;
-        _cancellationTokenSource.Cancel();
-    }
-
-    private void Running()
-    {
-        foreach (ICyclicComponent component in Components)
-        {
-            DateTime now = DateTime.UtcNow;
-            if (component.NextExecution > now) continue;
-            _timer.Start();
-            component.Execute();
-            _timer.Stop();
-        }
+        get => _cycleState;
+        set => SetField(ref _cycleState, value);
     }
 
     /// <inheritdoc/>
-    public CycleState State { get; private set; }
+    public TimeSpan WatchDogTimeout { get; set; }
 
     /// <inheritdoc/>
-    public TimeSpan WatchDogTime { get; private set; }
-
-    /// <inheritdoc/>
-    public IEnumerable<ICyclicComponent> Components => ComponentService.GetInstancesOfType<ICyclicComponent>();
-
-    /// <inheritdoc/>
-    public IComponentService ComponentService { get; private set; }
+    public IEnumerable<ICyclicComponent> Components => _componentService.GetInstancesOfType<ICyclicComponent>();
 
     /// <inheritdoc/>
     public void Start()
     {
-        if (State == CycleState.Running) return;
-
-        foreach (ICyclicComponent component in Components)
+        lock (_stateLock)
         {
-        }
+            if (State == CycleState.Running) return;
 
-        State = CycleState.Running;
-        _thread.Start();
+            _cancellationTokenSource = new CancellationTokenSource();
+            State = CycleState.Running;
+
+            _executionTask = Task.Run(Execute, _cancellationTokenSource.Token);
+        }
     }
 
     /// <inheritdoc/>
-    public void Stop() => _cancellationTokenSource.Cancel();
-
-    private void CallWatchDog(object? sender, ElapsedEventArgs e)
+    public void Pause()
     {
-        LogService.LogApp(LogSeverity.Critical, "Watch dog has been called.");
-        _thread.Interrupt();
-        _thread = new(Execute);
+        lock (_stateLock)
+        {
+            if (State == CycleState.Running)
+                State = CycleState.Paused;
+        }
+    }
+
+    /// <inheritdoc/>
+    public void Resume()
+    {
+        lock (_stateLock)
+        {
+            if (State == CycleState.Paused)
+                State = CycleState.Running;
+        }
+    }
+
+    /// <inheritdoc/>
+    public void Stop()
+    {
+        lock (_stateLock)
+        {
+            if (State == CycleState.Stopped || State == CycleState.Stopping) return;
+
+            State = CycleState.Stopping;
+            _cancellationTokenSource?.Cancel();
+
+            try
+            {
+                _executionTask?.Wait();
+            }
+            catch (AggregateException ex) when (ex.InnerExceptions.All(e => e is TaskCanceledException))
+            {
+                LogService.LogApp(LogSeverity.Warning, $"Cyclic execution service was stopped with error : {ex}");
+            }
+            finally
+            {
+                foreach (ICyclicComponent component in Components)
+                    component.Abort();
+
+                State = CycleState.Stopped;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Main execution loop that handles the cyclic execution of components.
+    /// It checks the state of the service and executes components based on their schedule.
+    /// </summary>
+    private async Task Execute()
+    {
+        while (!_cancellationTokenSource.Token.IsCancellationRequested)
+        {
+            if (State == CycleState.Paused)
+            {
+                await Task.Delay(100, _cancellationTokenSource.Token); // Sleep briefly while paused
+                continue;
+            }
+
+            // Create a cancellation token that combines the service's cancellation with the watchdog timeout
+            var componentCancellationSource = new CancellationTokenSource(WatchDogTimeout);
+
+            CancellationToken combinedToken
+                = CancellationTokenSource
+                .CreateLinkedTokenSource(
+                    _cancellationTokenSource.Token,
+                    componentCancellationSource.Token)
+                .Token;
+
+            await ExecuteComponents(combinedToken);
+
+            await Task.Delay(10, _cancellationTokenSource.Token); // Delay between cycles
+        }
+    }
+
+    /// <summary>
+    /// Iterates through all cyclic components and executes those that are ready and not in error.
+    /// </summary>
+    /// <param name="combinedToken">A combined cancellation token that includes both the service's and the watchdog's cancellation tokens.</param>
+    private async Task ExecuteComponents(CancellationToken combinedToken)
+    {
+        foreach (ICyclicComponent component in Components)
+        {
+            if (_cancellationTokenSource.Token.IsCancellationRequested)
+                break;
+
+            if (component.NextExecution <= DateTime.UtcNow && component.CanExecute && !component.IsInError)
+            {
+                await ExecuteComponent(component, combinedToken);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Executes a single cyclic component, handling cancellation and errors.
+    /// If the execution fails or times out, the component is aborted.
+    /// </summary>
+    /// <param name="component">The cyclic component to execute.</param>
+    /// <param name="combinedToken">A combined cancellation token that includes both the service's and the watchdog's cancellation tokens.</param>
+    private async Task ExecuteComponent(ICyclicComponent component, CancellationToken combinedToken)
+    {
+        try
+        {
+            var task = Task.Run(component.Execute, combinedToken);
+            await task;
+
+            if (task.IsCanceled)
+                LogService.LogApp(LogSeverity.Warning, $"{component.InstanceName} execution was canceled or timed out.");
+        }
+        catch (Exception ex)
+        {
+            component.Abort(); // Abort the component if an exception occurs
+
+            Content content = new(
+                    Severity.Warning,
+                    "Device crash during cycle execution",
+                    $"The device : {component.InstanceName} has been aborted during the cycle execution, error message : {ex.Message}");
+
+            var notification = new Notification.Notification(content, _notifyer);
+            NotificationService.Send(notification);
+
+            LogService.LogApp(LogSeverity.Error, $"{component.InstanceName} failed during execution: {ex.Message}");
+        }
+    }
+
+    private readonly INotifyer _notifyer = new ServiceNotifyer();
+
+    private class ServiceNotifyer : INotifyer
+    {
+        public Guid Id => Guid.NewGuid();
+
+        public string Name => "Cyclic executor service";
+
+        public bool Equals(INotifyer? obj) => obj is ServiceNotifyer && obj.Id == Id;
     }
 }

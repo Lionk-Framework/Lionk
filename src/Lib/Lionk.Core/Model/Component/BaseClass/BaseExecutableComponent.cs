@@ -2,14 +2,18 @@
 
 namespace Lionk.Core.Component;
 
- /// <summary>
+/// <summary>
 /// Base class that implements the <see cref="IExecutableComponent"/> interface.
 /// Provides a template for components that can be executed with a defined life cycle,
-/// including initialization, execution, and termination phases.
+/// including initialization, execution, termination phases, and error handling.
 /// </summary>
 public abstract class BaseExecutableComponent : BaseComponent, IExecutableComponent
 {
     private CancellationTokenSource _cancellationTokenSource = new();
+
+    private bool _isRunning;
+    private bool _isInitialized;
+    private bool _isInError;
 
     /// <summary>
     /// Gets a value indicating whether the component can be executed.
@@ -29,17 +33,32 @@ public abstract class BaseExecutableComponent : BaseComponent, IExecutableCompon
     }
 
     /// <summary>
+    /// Gets a value indicating whether the component is currently in an error state.
+    /// This value is set to true if the component encounters an error during execution,
+    /// or if it is aborted. A component in an error state cannot be executed until it is reset.
+    /// </summary>
+    public bool IsInError
+    {
+        get => _isInError;
+        private set => SetField(ref _isInError, value);
+    }
+
+    /// <summary>
     /// Executes the component by initializing it (if not already initialized),
     /// then running the execution logic, and finally terminating the execution.
     /// </summary>
     /// <exception cref="InvalidOperationException">
-    /// Thrown if the component cannot be executed because it is either not ready
-    /// (as determined by <see cref="CanExecute"/>) or is already running.
+    /// Thrown if the component cannot be executed because it is either in an error state
+    /// (as indicated by <see cref="IsInError"/>), is not ready to execute (as determined by
+    /// <see cref="CanExecute"/>), or is already running.
     /// </exception>
     public void Execute()
     {
+        if (IsInError)
+            throw new InvalidOperationException("The component is in error and cannot be executed.");
+
         if (!CanExecute)
-            throw new InvalidOperationException("The component can't be executed when it is not ready.");
+            throw new InvalidOperationException("The component cannot be executed because it is not ready.");
 
         if (IsRunning)
             throw new InvalidOperationException("The component is already running.");
@@ -52,18 +71,44 @@ public abstract class BaseExecutableComponent : BaseComponent, IExecutableCompon
         {
             OnExecute(_cancellationTokenSource.Token);
         }
+        catch (Exception)
+        {
+            Abort(); // Abort the execution and mark as in error
+            throw; // Re-throw the exception to propagate the error
+        }
         finally
         {
-            OnTerminate();
+            OnTerminate(); // Ensure that termination logic is executed
         }
     }
 
     /// <summary>
     /// Aborts the component's execution by canceling the ongoing operation.
-    /// Can be overridden by derived classes to implement custom abort logic.
+    /// This method sets the <see cref="IsInError"/> flag to true, preventing further executions
+    /// until the component is reset. Can be overridden by derived classes to implement custom abort logic.
     /// </summary>
     public virtual void Abort()
-        => _cancellationTokenSource.Cancel();
+    {
+        IsInError = true;
+        IsRunning = false;
+        _cancellationTokenSource.Cancel();
+    }
+
+    /// <summary>
+    /// Resets the component, clearing the error state and allowing it to be executed again.
+    /// This method cannot be called while the component is running.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if the component is running when an attempt is made to reset it.
+    /// </exception>
+    public void Reset()
+    {
+        if (IsRunning)
+            throw new InvalidOperationException("Cannot reset the component while it is running.");
+
+        _isInitialized = false;
+        IsInError = false;
+    }
 
     /// <summary>
     /// Called once before the component is executed, if it hasn't been initialized yet.
@@ -91,7 +136,8 @@ public abstract class BaseExecutableComponent : BaseComponent, IExecutableCompon
         => IsRunning = false;
 
     /// <summary>
-    /// Inherited from <see cref="BaseComponent"/> but with additional logic to abort the execution.
+    /// Disposes of the component, ensuring that any running execution is aborted before disposal.
+    /// This method should be called when the component is no longer needed to release resources.
     /// </summary>
     public override void Dispose()
     {
@@ -100,7 +146,4 @@ public abstract class BaseExecutableComponent : BaseComponent, IExecutableCompon
 
         base.Dispose();
     }
-
-    private bool _isRunning;
-    private bool _isInitialized;
 }

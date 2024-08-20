@@ -18,6 +18,11 @@ public interface IExecutableComponent : IComponent
     void Abort();
 
     /// <summary>
+    /// Used to reset the component.
+    /// </summary>
+    void Reset();
+
+    /// <summary>
     /// Gets  a value indicating whether the component can be executed.
     /// </summary>
     bool CanExecute { get; }
@@ -26,4 +31,9 @@ public interface IExecutableComponent : IComponent
     /// Gets a value indicating whether the component is running.
     /// </summary>
     bool IsRunning { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether gets a value indicating wether the component is in error.
+    /// </summary>
+    bool IsInError { get; }
 }

@@ -3,37 +3,42 @@
 namespace Lionk.Core.Component.Cyclic;
 
 /// <summary>
-/// This interface defines a cyclic executor service.
+/// Interface for a service that manages the execution of cyclic components.
 /// </summary>
 public interface ICyclicExecutorService
 {
     /// <summary>
-    /// This method starts the service.
+    /// Starts the cyclic execution service.
     /// </summary>
     void Start();
 
     /// <summary>
-    /// This method stop the service.
+    /// Pauses the cyclic execution service, halting the execution of components without stopping the service.
+    /// </summary>
+    void Pause();
+
+    /// <summary>
+    /// Resumes the cyclic execution service from a paused state.
+    /// </summary>
+    void Resume();
+
+    /// <summary>
+    /// Stops the cyclic execution service, including all ongoing component executions.
     /// </summary>
     void Stop();
 
     /// <summary>
-    /// Gets the state of the service.
+    /// Gets the current state of the service.
     /// </summary>
     CycleState State { get; }
 
     /// <summary>
-    /// Gets the watch dog of the service.
+    /// Gets or sets the watchdog timeout. If a component's execution exceeds this duration, the service will take appropriate action.
     /// </summary>
-    TimeSpan WatchDogTime { get; }
+    TimeSpan WatchDogTimeout { get; set; }
 
     /// <summary>
-    /// Gets the components of the service.
+    /// Gets the collection of cyclic components managed by the service.
     /// </summary>
     IEnumerable<ICyclicComponent> Components { get; }
-
-    /// <summary>
-    /// Gets the component service.
-    /// </summary>
-    IComponentService ComponentService { get; }
 }
