@@ -12,6 +12,9 @@ public interface IExecutableComponent : IComponent
     /// </summary>
     void Execute();
 
+    /// <summary>
+    /// Abort the current execution.
+    /// </summary>
     void Abort();
 
     /// <summary>
@@ -19,5 +22,8 @@ public interface IExecutableComponent : IComponent
     /// </summary>
     bool CanExecute { get; }
 
+    /// <summary>
+    /// Gets a value indicating whether the component is running.
+    /// </summary>
     bool IsRunning { get; }
 }
