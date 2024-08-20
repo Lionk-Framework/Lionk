@@ -1,6 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
-namespace Lionk.Core.TypeRegistery;
+namespace Lionk.Core.TypeRegister;
 
 /// <summary>
 /// Provides data for the TypeAvailable event.

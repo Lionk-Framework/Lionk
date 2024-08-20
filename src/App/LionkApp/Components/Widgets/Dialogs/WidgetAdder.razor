@@ -1,0 +1,74 @@
+﻿@using Lionk.Core.Component
+@using Lionk.Core.View
+@using LionkApp.Components.Model
+@using IComponent = Lionk.Core.Component.IComponent
+@inject IComponentService ComponentService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+        <IComponentInstanceList Components="_components" OnComponentSelected="ComponentSelected" />
+    </DialogContent>
+    <DialogActions>
+        <MudSpacer />
+        <MudButton OnClick="ChooseWidgetToLinkAsync">Choose widget</MudButton>
+        <MudSpacer />
+        <MudButton OnClick="Submit">Ok</MudButton>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    private List<IComponent> _components => ComponentService.GetInstancesOfType<IComponent>().ToList();
+    private IComponent? _selectedComponent;
+    private Type? _selectedViewType;
+
+    private void ComponentSelected(IComponent? component)
+    {
+        _selectedComponent = component;
+    }
+
+    private async Task ChooseWidgetToLinkAsync()
+    {
+        if (_selectedComponent is null)
+        {
+            Snackbar.Add("Please select a widget", Severity.Error);
+            return;
+        }
+
+        DialogParameters parameters = new();
+        parameters.Add("ComponentType", _selectedComponent.GetType());
+
+        var dialogReference = DialogService.Show<WidgetSelector>("Widget Selection", parameters);
+
+        var dialogResult = await dialogReference.Result;
+
+        if (dialogResult is not null && !dialogResult.Canceled)
+        {
+            var selectedWidget = dialogResult.Data as ComponentViewDescription;
+            if (selectedWidget != null)
+            {
+                _selectedViewType = selectedWidget.ViewType;
+            }
+        }
+    }
+
+    private void Submit()
+    {
+        if (_selectedComponent is null || _selectedViewType is null)
+        {
+            Snackbar.Add("Please select a widget and a view type", Severity.Error);
+            return;
+        }
+
+        var dashboardItem = new DashboardItemModel(_selectedComponent.Id, _selectedViewType);
+        MudDialog?.Close(DialogResult.Ok(dashboardItem));
+    }
+
+    private void Cancel()
+    {
+        MudDialog?.Cancel();
+    }
+}
