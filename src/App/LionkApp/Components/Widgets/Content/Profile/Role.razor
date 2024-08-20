@@ -34,7 +34,7 @@
                     </div>
                 </MudTd>
                 <MudTd style="text-align: center; vertical-align: middle;">
-                    <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => OnDeletePressed(context.Id)">
+                    <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => OnDeleteClicked(context.Id)">
                         Delete
                     </MudButton>
                 </MudTd>
@@ -107,7 +107,7 @@ else
         StateHasChanged();
     }
 
-    private void OnDeletePressed(Guid userID)
+    private void OnDeleteClicked(Guid userID)
     {
         var user = Users?.FirstOrDefault(u => u.Id == userID);
         if (user is null) return;

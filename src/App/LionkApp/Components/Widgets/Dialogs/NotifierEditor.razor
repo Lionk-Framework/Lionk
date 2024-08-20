@@ -1,12 +1,12 @@
-﻿<MudDialog>
+﻿<MudDialog Style="min-width: 300px;">
     <DialogContent>
         <MudList T="string">
             @foreach (var channel in Channels)
             {
                 <MudListItem>
-                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; height: 30px;">
                         <MudText>@channel</MudText>
-                        <MudIconButton Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Primary" OnClick="() => Submit()" />
+                        <MudIconButton Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Primary" />
                     </div>
                 </MudListItem>
             }
@@ -28,4 +28,5 @@
     private void Cancel() => MudDialog?.Cancel();
 
     private void Submit() => MudDialog?.Close(DialogResult.Ok(true));
+
 }
