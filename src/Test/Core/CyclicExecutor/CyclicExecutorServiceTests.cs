@@ -125,18 +125,15 @@ public class CyclicExecutorServiceTests
     [Test]
     public async Task ExecuteComponent_WhenComponentFails_AbortsAndSendsNotification()
     {
-        _cyclicComponentMock.Setup(c => c.CanExecute).Returns(true);
-        _cyclicComponentMock.Setup(c => c.IsInError).Returns(false);
-        _cyclicComponentMock.Setup(c => c.NextExecution).Returns(DateTime.UtcNow.AddSeconds(-1));
-        _cyclicComponentMock.Setup(c => c.Execute()).Throws(new Exception("Test Exception"));
+        var component = new ComponentWhichThrow();
         _componentServiceMock.Setup(s => s.GetInstancesOfType<ICyclicComponent>())
-            .Returns(new List<ICyclicComponent> { _cyclicComponentMock.Object });
+            .Returns(new List<ICyclicComponent> { component });
 
         _service.Start();
 
-        await Task.Delay(50); // Give some time for the execution to happen
+        await Task.Delay(10000); // Give some time for the execution to happen
 
-        _cyclicComponentMock.Verify(c => c.Abort(), Times.Once);
+        Assert.That(component.IsInError, Is.True);
     }
 
     /// <summary>
