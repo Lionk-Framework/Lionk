@@ -138,7 +138,7 @@
 
     private Task OnEditNotifierClicked()
     {
-        var channelList = new DialogParameters { { "Channels", new List<string> { "Teams", "Facebook", "Nastaran" } } };
+        var channelList = new DialogParameters { { "Channels", MockChannels } };
 
         var options = new DialogOptions { CloseOnEscapeKey = true };
 
@@ -148,7 +148,7 @@
     private Task OnAddChannelClicked()
     {
         // TODO - Get available channels when ready
-        var channelList = new DialogParameters {{ "Channels", new List<string> { "Teams", "Facebook", "Nastaran" }}};
+        var channelList = new DialogParameters { { "Channels", MockChannels } };
 
         var options = new DialogOptions { CloseOnEscapeKey = true };
 
