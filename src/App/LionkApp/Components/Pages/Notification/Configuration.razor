@@ -32,12 +32,15 @@
 <MudPaper Elevation="2" Class="pa-4 mb-10">
     <div style="display: flex; align-items: center; justify-content: space-between;">
         <MudText Typo="Typo.h6">Channel List</MudText>
-        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" @onclick="OpenDialogAsync">ADD</MudButton>
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" @onclick="OnAddChannelClicked">ADD</MudButton>
     </div>
-    <MudList T="string" Class="mt-4">
+    <MudList T="string" Class="mt-4 ml-4 mr-4">
         @foreach (var channel in mockchannels)
         {
-            <MudListItem Text="@channel.Name"></MudListItem>
+            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                <MudText>@channel.Name</MudText>
+                <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Primary" @onclick="OnConfigureChannelClicked" />
+            </div>
         }
     </MudList>
 </MudPaper>
@@ -124,7 +127,7 @@
         // channels = NotificationService.Channels;
     }
 
-    private Task OpenDialogAsync()
+    private Task OnAddChannelClicked()
     {
         // TODO - Get available channels when ready
         var channelList = new DialogParameters {{ "Channels", new List<string> { "Teams", "Facebook", "Nastaran" }}};
@@ -132,5 +135,10 @@
         var options = new DialogOptions { CloseOnEscapeKey = true };
 
         return DialogService.ShowAsync<ChannelSelector>("Select channel", channelList, options);
+    }
+
+    private void OnConfigureChannelClicked()
+    {
+        // TODO - Retrieve the configurable view from dll
     }
 }
