@@ -2,7 +2,6 @@
 @inject IDialogService DialogService
 @using Lionk.Notification
 @using LionkApp.Components.Widgets.Dialogs
-@using System.Collections.ObjectModel
 
 <MudPaper Elevation="2" Class="pa-4">
     <div style="display: flex; align-items: center; justify-content: space-between;">
@@ -11,11 +10,14 @@
     <MudList T="string" Class="mt-4">
         @foreach (var notifyer in mocknotifyers)
         {
-            <MudListItem Text="@notifyer.Name" Expanded="false">
+            <MudListItem Text="@notifyer.Name" Expanded="false"> 
                 <NestedList>
-                    <MudListItem>
-                        Details
-                    </MudListItem>
+                    <MudList T="string" Class="mt-4">
+                        @foreach (var channel in mockchannels)
+                        {
+                            <MudListItem Text="@channel.Name" Class="ml-4"></MudListItem>
+                        }
+                    </MudList>
                 </NestedList>
             </MudListItem>
         }
@@ -91,6 +93,18 @@
         new MockChannel { Guid = Guid.NewGuid(), Name = "Telegram", IsInitialized = false },
         new MockChannel { Guid = Guid.NewGuid(), Name = "Push bullet", IsInitialized = true }
     };
+
+    private Dictionary<Guid, List<IChannel>> NotifyerChannels;
+
+    public Configuration()
+    {
+        NotifyerChannels = new Dictionary<Guid, List<IChannel>>
+        {
+            { mocknotifyers[0].Id, new List<IChannel> { mockchannels[0], mockchannels[1] } },
+            { mocknotifyers[1].Id, new List<IChannel> { mockchannels[2] } },
+            { mocknotifyers[2].Id, new List<IChannel> { mockchannels[0], mockchannels[2] } }
+        };
+    }
     // **********************************
     // ********************************** 
     // **********************************
