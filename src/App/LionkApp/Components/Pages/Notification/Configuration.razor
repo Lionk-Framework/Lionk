@@ -4,28 +4,35 @@
 @using LionkApp.Components.Widgets.Dialogs
 @using System.Collections.ObjectModel
 
-<MudPaper Elevation="2" Class="pa-4 mb-10">
-    <MudText Typo="Typo.h6">Notifier List</MudText>
-    <MudTable Items="notifyers" Hover="true" Class="mt-4">
-        <RowTemplate>
-            <MudTd DataLabel="Name">@context.Name</MudTd>
-        </RowTemplate>
-        <ChildRowContent >
-
-        </ChildRowContent>
-    </MudTable>
+<MudPaper Elevation="2" Class="pa-4">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+        <MudText Typo="Typo.h6">Notifier List</MudText>
+    </div>
+    <MudList T="string" Class="mt-4">
+        @foreach (var notifyer in mocknotifyers)
+        {
+            <MudListItem Text="@notifyer.Name" Expanded="false">
+                <NestedList>
+                    <MudListItem>
+                        Details
+                    </MudListItem>
+                </NestedList>
+            </MudListItem>
+        }
+    </MudList>
 </MudPaper>
 
-<MudPaper Elevation="2" Class="pa-4">
+<MudPaper Elevation="2" Class="pa-4 mt-10">
     <div style="display: flex; align-items: center; justify-content: space-between;">
         <MudText Typo="Typo.h6">Channel List</MudText>
         <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" @onclick="OpenDialogAsync">ADD</MudButton>
     </div>
-    <MudTable Items="channels" Hover="true" Class="mt-4">
-        <RowTemplate>
-            <MudTd DataLabel="Name">@context.Name</MudTd>
-        </RowTemplate>
-    </MudTable>
+    <MudList T="string" Class="mt-4">
+        @foreach (var channel in mockchannels)
+        {
+            <MudListItem Text="@channel.Name"></MudListItem>
+        }
+    </MudList>
 </MudPaper>
 
 @code {
@@ -88,17 +95,14 @@
     // ********************************** 
     // **********************************
 
-    private ReadOnlyCollection<INotifyer>? notifyers;
-    private ReadOnlyCollection<IChannel>? channels;
+    // private ReadOnlyCollection<INotifyer>? notifyers;
+    // private ReadOnlyCollection<IChannel>? channels;
 
     protected override void OnInitialized()
     {
-        NotificationService.AddChannels(mockchannels.ToArray());
-        NotificationService.AddNotifyers(mocknotifyers.ToArray());
-
         // TODO - Get notifyers and channels when ready
-        notifyers = NotificationService.Notifyers;
-        channels = NotificationService.Channels;
+        // notifyers = NotificationService.Notifyers;
+        // channels = NotificationService.Channels;
     }
 
     private Task OpenDialogAsync()
