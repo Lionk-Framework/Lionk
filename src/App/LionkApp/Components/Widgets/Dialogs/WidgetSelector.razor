@@ -6,16 +6,17 @@
 
 <MudDialog>
     <DialogContent>
-        <MudTable @ref="_table"
-                  Items="@_availableWidgets">
+        <MudTable @ref="_table" Hover="true"
+                  Items="@_availableWidgets"
+                    Style="width:fit-content">
             <RowTemplate>
                 <MudTr>
                     <MudTd>
                         @context.Name
                     </MudTd>
-                </MudTr>
-                <MudTr>
-                    <MudButton OnClick="() => ComponentSelected(context)">Select</MudButton>
+                    <MudTd>
+                        <MudButton OnClick="() => ComponentSelected(context)">Select</MudButton>
+                    </MudTd>
                 </MudTr>
             </RowTemplate>
         </MudTable>
@@ -30,10 +31,8 @@
     private MudTable<ComponentViewDescription> _table = new();
     private List<ComponentViewDescription>? _availableWidgets;
 
-
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
     [Parameter] public Type? ComponentType { get; set; }
-
 
     protected override void OnInitialized()
     {
@@ -41,7 +40,6 @@
         {
             _availableWidgets = ViewLocatorService.GetViewOf(ComponentType, ViewContext.Widget).ToList();
         }
-
     }
 
     private void ComponentSelected(ComponentViewDescription viewType)

@@ -13,12 +13,12 @@
                  width:fit-content;
                  height:fit-content;">
 
-    <MudBadge Color="BadgeColor" Overlap="true" Class="mx-6 my-4">
+    <MudBadge Color="_badgeColor" Overlap="true" Class="mx-6 my-4">
         <MudPaper Class="pa-4"
                   Style=" position: relative;
                       height:inherit;
                       width:inherit;
-                      min-height:80px">
+                      min-height:200px">
 
             <div style="position: absolute;
                     top: 5px;
@@ -53,19 +53,21 @@
                                        Size="Size.Small"
                                        OnClick="PageableClickedAsync" />
                     }
+
                     @if (_isExecutable)
                     {
                         <MudIconButton Icon="@Icons.Material.Filled.PlayArrow"
                                        Size="Size.Small"
-                                       OnClick="ExecutableClickedAsync" />
+                                       OnClick="ExecutableStartClickedAsync" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Stop"
+                                       Size="Size.Small"
+                                       OnClick="ExecutableStopClickedAsync" />
                     }
                 }
-
                 <MudMenu Icon="@Icons.Material.Filled.MoreVert"
                          Color="Color.Primary">
                     <MudMenuItem OnClick="DeleteClickedAsync">
-                        <MudIcon Icon="@Icons.Material.Filled.Delete" Color="Color.Error" />
-                        <MudText Color="Color.Error">Delete</MudText>
+                        <MudText Color="Color.Error">Delete Item</MudText>
                     </MudMenuItem>
                 </MudMenu>
             </div>
@@ -76,10 +78,6 @@
         </MudPaper>
     </MudBadge>
 </MudItem>
-
-
-
-
 
 @code {
     [Parameter] public DashboardItemModel? DashboardItemModel { get; set; }
@@ -94,7 +92,7 @@
     private List<ComponentViewDescription>? _detailViews;
     private List<ComponentViewDescription>? _pageViews;
 
-    private Color BadgeColor = Color.Transparent;
+    private Color _badgeColor = Color.Transparent;
 
     private bool _isConfigurable;
     private bool _isDetailable;
@@ -115,10 +113,11 @@
         }
         else
         {
-            _parameters.Add("InstanceName", DashboardItemModel.ComponentUniqueID);
+            string text = $"Component from type {DashboardItemModel.ViewType.Name} not found.";
+            _parameters.Add("Text", text);
             _view = typeof(NoComponentView);
             _IsNotInstancied = true;
-            BadgeColor = Color.Warning;
+            _badgeColor = Color.Warning;
         }
     }
 
@@ -170,12 +169,21 @@
         // not implemented yet
     }
 
-    private void ExecutableClickedAsync()
+    private void ExecutableStartClickedAsync()
     {
         IExecutableComponent? executableComponent = Component as IExecutableComponent;
         if (executableComponent is not null)
         {
             executableComponent.Execute();
+        }
+    }
+
+    private void ExecutableStopClickedAsync()
+    {
+        IExecutableComponent? executableComponent = Component as IExecutableComponent;
+        if (executableComponent is not null)
+        {
+            //executableComponent.Suspend();
         }
     }
 
@@ -202,8 +210,8 @@
             int newIndex = result.Data as int? ?? 0;
             if (DashboardItemModel is not null && newIndex != viewIndex)
             {
-                await OnUpdate.InvokeAsync(DashboardItemModel);
                 DashboardItemModel.SaveCurrentIndex(viewContext, newIndex);
+                await OnUpdate.InvokeAsync(DashboardItemModel);
             }
         }
     }
