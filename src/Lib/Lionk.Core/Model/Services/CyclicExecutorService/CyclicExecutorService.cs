@@ -101,21 +101,10 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
                 return;
             }
 
-            try
-            {
-                _executionTask?.Wait();
-            }
-            catch (AggregateException ex) when (ex.InnerExceptions.All(e => e is TaskCanceledException))
-            {
-                LogService.LogApp(LogSeverity.Warning, $"Cyclic execution service was stopped: {ex.Message}");
-            }
-            finally
-            {
-                foreach (ICyclicComponent component in Components)
-                    component.Abort();
+            foreach (ICyclicComponent component in Components)
+                component.Abort();
 
-                State = CycleState.Stopped;
-            }
+            State = CycleState.Stopped;
         }
     }
 
@@ -147,6 +136,8 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
             {
                 if (watchdogCancellationSource.Token.IsCancellationRequested && !_cancellationTokenSource.Token.IsCancellationRequested)
                 {
+                    Stop();
+
                     Content content = new(
                         Severity.Warning,
                         "Watchdog timeout",
