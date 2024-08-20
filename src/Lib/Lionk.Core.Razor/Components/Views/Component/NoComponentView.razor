@@ -1,8 +1,12 @@
 ﻿@namespace Lionk.Core.View
 
-<MudText>There is no instancied component named @InstanceName</MudText>
+<MudText Style="font-size:50px">:(</MudText>
+<MudText>Your component has encountered a problem and needs to be created again</MudText>
+<br/>
+<MudText>Informations:</MudText>
+<MudText Typo="Typo.caption">@Text</MudText>
 
 @code {
 
-    [Parameter] public string InstanceName { get; set; } = string.Empty;
+    [Parameter] public string Text{ get; set; } = string.Empty;
 }
