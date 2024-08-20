@@ -59,4 +59,9 @@ public interface IComponentService : IDisposable
     /// Event raised when a new type is available.
     /// </summary>
     public event EventHandler<EventArgs> NewComponentAvailable;
+
+    /// <summary>
+    /// Event raised when a new instance is registered.
+    /// </summary>
+    public event EventHandler<EventArgs> NewInstanceRegistered;
 }
