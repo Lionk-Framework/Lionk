@@ -1,9 +1,11 @@
-﻿<MudDialog>
+﻿@using Lionk.Notification
+
+<MudDialog>
     <DialogContent>
         <MudSelect T="string" Label="Available channel" AnchorOrigin="Origin.BottomCenter" Class="mb-4">
             @foreach (var channel in Channels)
             {
-                <MudSelectItem Value="@channel">@channel</MudSelectItem>
+                <MudSelectItem Value="@channel.Name">@channel.Name</MudSelectItem>
             }
         </MudSelect>
         <MudTextField T="string" Label="Name" Class="mb-4"></MudTextField>
@@ -16,7 +18,7 @@
 
 @code {
     [Parameter]
-    public List<string> Channels { get; set; } = new List<string>();
+    public List<IChannel> Channels { get; set; } = new List<IChannel>();
 
     [CascadingParameter]
     private MudDialogInstance? MudDialog { get; set; }

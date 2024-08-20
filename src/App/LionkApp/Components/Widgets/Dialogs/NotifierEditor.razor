@@ -1,11 +1,13 @@
-﻿<MudDialog Style="min-width: 300px;">
+﻿@using Lionk.Notification
+
+<MudDialog Style="min-width: 300px;">
     <DialogContent>
         <MudList T="string">
             @foreach (var channel in Channels)
             {
                 <MudListItem>
                     <div style="display: flex; justify-content: space-between; align-items: center; height: 30px;">
-                        <MudText>@channel</MudText>
+                        <MudText>@channel.Name</MudText>
                         <MudIconButton Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Primary" />
                     </div>
                 </MudListItem>
@@ -20,7 +22,7 @@
 
 @code {
     [Parameter]
-    public List<string> Channels { get; set; } = new List<string>();
+    public List<IChannel> Channels { get; set; } = new List<IChannel>();
 
     [CascadingParameter]
     private MudDialogInstance? MudDialog { get; set; }
