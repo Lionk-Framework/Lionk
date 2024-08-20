@@ -28,9 +28,6 @@ public abstract class BaseExecutableComponent : BaseComponent, IExecutableCompon
         private set => SetField(ref _isRunning, value);
     }
 
-    private bool _isRunning;
-    private bool _isInitialized;
-
     /// <summary>
     /// Executes the component by initializing it (if not already initialized),
     /// then running the execution logic, and finally terminating the execution.
@@ -92,4 +89,18 @@ public abstract class BaseExecutableComponent : BaseComponent, IExecutableCompon
     /// </summary>
     protected virtual void OnTerminate()
         => IsRunning = false;
+
+    /// <summary>
+    /// Inherited from <see cref="BaseComponent"/> but with additional logic to abort the execution.
+    /// </summary>
+    public override void Dispose()
+    {
+        if (IsRunning)
+            Abort();
+
+        base.Dispose();
+    }
+
+    private bool _isRunning;
+    private bool _isInitialized;
 }
