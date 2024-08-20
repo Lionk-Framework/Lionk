@@ -182,4 +182,15 @@ public class CyclicExecutorServiceTests
         Assert.That(_service.State, Is.EqualTo(CycleState.Stopped));
         _cyclicComponentMock.Verify(c => c.Abort(), Times.Once);
     }
+
+    private class ComponentWhichThrow : BaseCyclicComponent
+    {
+        public override bool CanExecute => true;
+
+        protected override void OnExecute(CancellationToken cancellationToken)
+        {
+            base.OnExecute(cancellationToken);
+            throw new Exception("Test Exception");
+        }
+    }
 }

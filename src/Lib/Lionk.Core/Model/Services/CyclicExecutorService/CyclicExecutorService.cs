@@ -14,6 +14,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     private readonly object _stateLock = new();
     private readonly IComponentService _componentService;
     private CancellationTokenSource _cancellationTokenSource = new();
+    private Task _componentsTask = Task.CompletedTask;
 
     #region Constructor
 
@@ -68,8 +69,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
 
             _cancellationTokenSource = new CancellationTokenSource();
             State = CycleState.Running;
-
-            Task.Run(Execute, _cancellationTokenSource.Token);
+            _componentsTask = Task.Run(Execute, _cancellationTokenSource.Token);
         }
     }
 
@@ -103,16 +103,31 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
             State = CycleState.Stopping;
             _cancellationTokenSource?.Cancel();
 
-            foreach (ICyclicComponent component in Components)
-                component.Abort();
+            while (State != CycleState.Stopped
+                  && !_componentsTask.IsCompleted)
+            {
+                Thread.Sleep(10);
+            }
 
             State = CycleState.Stopped;
         }
     }
 
+    /// <summary>
+    /// Abort method.
+    /// </summary>
+    public void Abort()
+    {
+        foreach (ICyclicComponent component in Components)
+            component.Abort();
+
+        State = CycleState.Stopped;
+    }
+
     #endregion
 
     #region private methods
+
     /// <summary>
     /// Main execution loop that handles the cyclic execution of components.
     /// It checks the state of the service and executes components based on their schedule.
@@ -141,7 +156,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
             {
                 if (watchdogCancellationSource.Token.IsCancellationRequested && !_cancellationTokenSource.Token.IsCancellationRequested)
                 {
-                    Stop();
+                    Abort();
 
                     Content content = new(
                         Severity.Warning,
@@ -195,7 +210,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
                 if (combinedToken.IsCancellationRequested)
                     throw new TaskCanceledException("Watchdog timeout exceeded");
 
-                await Task.Delay(1); // Petit délai pour ne pas saturer le CPU
+                await Task.Delay(1);
             }
 
             if (task.IsCanceled && !combinedToken.IsCancellationRequested)

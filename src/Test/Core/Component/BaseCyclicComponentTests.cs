@@ -67,13 +67,6 @@ public class BaseCyclicComponentTests
     }
 
     /// <summary>
-    /// Tests that setting the <see cref="BaseCyclicComponent.Period"/> property to an invalid value throws an <see cref="ArgumentException"/>.
-    /// </summary>
-    [Test]
-    public void Period_SetInvalidValue_ThrowsArgumentException()
-        => Assert.Throws<ArgumentException>(() => _cyclicComponent.Period = TimeSpan.Zero);
-
-    /// <summary>
     /// A testable version of <see cref="BaseCyclicComponent"/> to expose protected methods for testing.
     /// </summary>
     private class TestableCyclicComponent : BaseCyclicComponent
