@@ -1,0 +1,31 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudList T="string">
+            @foreach (var channel in Channels)
+            {
+                <MudListItem>
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <MudText>@channel</MudText>
+                        <MudIconButton Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Primary" OnClick="() => Submit()" />
+                    </div>
+                </MudListItem>
+            }
+        </MudList>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter]
+    public List<string> Channels { get; set; } = new List<string>();
+
+    [CascadingParameter]
+    private MudDialogInstance? MudDialog { get; set; }
+
+    private void Cancel() => MudDialog?.Cancel();
+
+    private void Submit() => MudDialog?.Close(DialogResult.Ok(true));
+}

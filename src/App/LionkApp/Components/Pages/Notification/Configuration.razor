@@ -16,7 +16,7 @@
             <MudListItem>
                 <div style="display: flex; justify-content: space-between; width: 100%; height: 30px;">
                     <MudText>@notifyer.Name</MudText>
-                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" @onclick="OnConfigureNotifierClicked" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" @onclick="OnEditNotifierClicked" />
                 </div>
             </MudListItem>
         }
@@ -136,8 +136,13 @@
         return MockNotifyers.Where(n => n.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase));
     }
 
-    private void OnConfigureNotifierClicked()
+    private Task OnEditNotifierClicked()
     {
+        var channelList = new DialogParameters { { "Channels", new List<string> { "Teams", "Facebook", "Nastaran" } } };
+
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+
+        return DialogService.ShowAsync<NotifierEditor>("Edit notifier", channelList, options);
     }
 
     private Task OnAddChannelClicked()
@@ -147,7 +152,7 @@
 
         var options = new DialogOptions { CloseOnEscapeKey = true };
 
-        return DialogService.ShowAsync<ChannelSelector>("Select channel", channelList, options);
+        return DialogService.ShowAsync<ChannelConfigurer>("Select channel", channelList, options);
     }
 
     private void OnConfigureChannelClicked()
