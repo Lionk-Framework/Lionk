@@ -14,7 +14,8 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     private readonly object _stateLock = new();
     private readonly IComponentService _componentService;
     private CancellationTokenSource _cancellationTokenSource = new();
-    private Task? _executionTask;
+
+    #region Constructor
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CyclicExecutorService"/> class.
@@ -27,7 +28,9 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
 
         State = CycleState.Stopped;
     }
+    #endregion
 
+    #region Observable properties
     private CycleState _cycleState;
 
     /// <inheritdoc/>
@@ -45,10 +48,16 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
         get => _watchdogTimeout;
         set => SetField(ref _watchdogTimeout, value);
     }
+    #endregion
+
+    #region properties
 
     /// <inheritdoc/>
     public IEnumerable<ICyclicComponent> Components
         => _componentService.GetInstancesOfType<ICyclicComponent>();
+    #endregion
+
+    #region public methods
 
     /// <inheritdoc/>
     public void Start()
@@ -60,7 +69,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
             _cancellationTokenSource = new CancellationTokenSource();
             State = CycleState.Running;
 
-            _executionTask = Task.Run(Execute, _cancellationTokenSource.Token);
+            Task.Run(Execute, _cancellationTokenSource.Token);
         }
     }
 
@@ -101,6 +110,9 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
         }
     }
 
+    #endregion
+
+    #region private methods
     /// <summary>
     /// Main execution loop that handles the cyclic execution of components.
     /// It checks the state of the service and executes components based on their schedule.
@@ -209,6 +221,10 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
         }
     }
 
+    #endregion
+
+    #region notification
+
     private readonly INotifyer _notifyer = new ServiceNotifyer();
 
     private class ServiceNotifyer : INotifyer
@@ -219,4 +235,6 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
 
         public bool Equals(INotifyer? obj) => obj is ServiceNotifyer && obj.Id == Id;
     }
+
+    #endregion
 }
