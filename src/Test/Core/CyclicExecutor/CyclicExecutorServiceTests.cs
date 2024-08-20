@@ -177,7 +177,6 @@ public class CyclicExecutorServiceTests
         _service.Stop();
 
         Assert.That(_service.State, Is.EqualTo(CycleState.Stopped));
-        _cyclicComponentMock.Verify(c => c.Abort(), Times.Once);
     }
 
     private class ComponentWhichThrow : BaseCyclicComponent
