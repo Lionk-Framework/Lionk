@@ -16,10 +16,4 @@ public interface IComponent : IDisposable
     /// Gets the unique identifier of the component.
     /// </summary>
     Guid Id { get; }
-
-    /// <summary>
-    /// Dispose methods.
-    /// </summary>
-    void IDisposable.Dispose()
-        => GC.SuppressFinalize(this);
 }
