@@ -5,7 +5,7 @@
 
 <MudPaper Elevation="2" Class="pa-4 mb-10">
     <div style="display: flex; justify-content: space-between;">
-        <MudText Typo="Typo.h6">Notifier List</MudText>
+        <MudText Typo="Typo.h6">Notifiers</MudText>
         <div style="width:25%">
             <MudTextField @bind-Value="SearchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" />
         </div>
@@ -25,7 +25,7 @@
 
 <MudPaper Elevation="2" Class="pa-4 mb-10">
     <div style="display: flex; justify-content: space-between;">
-        <MudText Typo="Typo.h6">Channel List</MudText>
+        <MudText Typo="Typo.h6">Channels</MudText>
         <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" @onclick="OnAddChannelClicked">ADD</MudButton>
     </div>
     <MudList T="string" Class="mt-4">
