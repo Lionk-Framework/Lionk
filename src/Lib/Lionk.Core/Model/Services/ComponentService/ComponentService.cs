@@ -41,6 +41,8 @@ public class ComponentService : IComponentService
 
         if (component is ObservableElement observable)
             observable.PropertyChanged += (s, e) => SaveConfiguration();
+
+        NewInstanceRegistered?.Invoke(this, EventArgs.Empty);
     }
 
     /// <inheritdoc/>
@@ -93,6 +95,9 @@ public class ComponentService : IComponentService
 
     /// <inheritdoc/>
     public event EventHandler<EventArgs>? NewComponentAvailable;
+
+    /// <inheritdoc/>
+    public event EventHandler<EventArgs>? NewInstanceRegistered;
 
     private void OnNewTypesAvailable()
         => NewComponentAvailable?.Invoke(this, EventArgs.Empty);
