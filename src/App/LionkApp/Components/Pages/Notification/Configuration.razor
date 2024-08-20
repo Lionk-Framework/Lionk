@@ -2,6 +2,7 @@
 @inject IDialogService DialogService
 @using Lionk.Notification
 @using LionkApp.Components.Widgets.Dialogs
+@using System.Collections.ObjectModel
 
 <MudPaper Elevation="2" Class="pa-4 mb-10">
     <MudText Typo="Typo.h6">Notifier List</MudText>
@@ -9,6 +10,9 @@
         <RowTemplate>
             <MudTd DataLabel="Name">@context.Name</MudTd>
         </RowTemplate>
+        <ChildRowContent >
+
+        </ChildRowContent>
     </MudTable>
 </MudPaper>
 
@@ -67,14 +71,14 @@
         }
     }
 
-    private List<INotifyer> notifyers = new List<INotifyer>
+    private List<INotifyer> mocknotifyers = new List<INotifyer>
     {
         new MockNotifyer { Id = Guid.NewGuid(), Name = "Chimpey" },
         new MockNotifyer { Id = Guid.NewGuid(), Name = "Clock alarm" },
         new MockNotifyer { Id = Guid.NewGuid(), Name = "MX321" }
     };
 
-    private List<IChannel> channels = new List<IChannel>
+    private List<IChannel> mockchannels = new List<IChannel>
     {
         new MockChannel { Guid = Guid.NewGuid(), Name = "Discord", IsInitialized = true },
         new MockChannel { Guid = Guid.NewGuid(), Name = "Telegram", IsInitialized = false },
@@ -84,11 +88,17 @@
     // ********************************** 
     // **********************************
 
+    private ReadOnlyCollection<INotifyer>? notifyers;
+    private ReadOnlyCollection<IChannel>? channels;
+
     protected override void OnInitialized()
     {
+        NotificationService.AddChannels(mockchannels.ToArray());
+        NotificationService.AddNotifyers(mocknotifyers.ToArray());
+
         // TODO - Get notifyers and channels when ready
-        // notifyers = NotificationService.Notifyers.ToList();
-        // channels = NotificationService.Channels.ToList();
+        notifyers = NotificationService.Notifyers;
+        channels = NotificationService.Channels;
     }
 
     private Task OpenDialogAsync()
