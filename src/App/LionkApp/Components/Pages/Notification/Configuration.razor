@@ -3,19 +3,24 @@
 @using Lionk.Notification
 @using LionkApp.Components.Widgets.Dialogs
 
-<MudPaper Elevation="2" Class="pa-4">
+<MudPaper Elevation="2" Class="pa-4 mb-10">
     <div style="display: flex; align-items: center; justify-content: space-between;">
         <MudText Typo="Typo.h6">Notifier List</MudText>
     </div>
     <MudList T="string" Class="mt-4">
         @foreach (var notifyer in mocknotifyers)
         {
-            <MudListItem Text="@notifyer.Name" Expanded="false"> 
+            <MudListItem Text="@notifyer.Name" Expanded="false">
                 <NestedList>
-                    <MudList T="string" Class="mt-4">
+                    <MudList T="string" Class="ml-4 mr-4">
                         @foreach (var channel in mockchannels)
                         {
-                            <MudListItem Text="@channel.Name" Class="ml-4"></MudListItem>
+                            <MudListItem>
+                                <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                                    <MudText>@channel.Name</MudText>
+                                    <MudSwitch Value="true" />
+                                </div>
+                            </MudListItem>
                         }
                     </MudList>
                 </NestedList>
@@ -24,7 +29,7 @@
     </MudList>
 </MudPaper>
 
-<MudPaper Elevation="2" Class="pa-4 mt-10">
+<MudPaper Elevation="2" Class="pa-4 mb-10">
     <div style="display: flex; align-items: center; justify-content: space-between;">
         <MudText Typo="Typo.h6">Channel List</MudText>
         <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" @onclick="OpenDialogAsync">ADD</MudButton>
