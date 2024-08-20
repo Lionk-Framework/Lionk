@@ -59,5 +59,9 @@ public class ComponentFactoryTests
         public string InstanceName { get; set; } = string.Empty;
 
         public Guid Id { get; } = Guid.NewGuid();
+
+        public void Dispose()
+        {
+        }
     }
 }

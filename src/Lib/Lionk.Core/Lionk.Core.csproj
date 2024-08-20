@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Lionk.Logger\Lionk.Logger.csproj" />
+    <ProjectReference Include="..\Lionk.Notifications\Lionk.Notification.csproj" />
   </ItemGroup>
 
 </Project>

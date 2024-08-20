@@ -90,6 +90,10 @@ public class ViewLocatorServiceTests
         public string InstanceName { get; set; } = string.Empty;
 
         public Guid Id { get; } = Guid.NewGuid();
+
+        public void Dispose()
+        {
+        }
     }
 
     private class NoViewAttributeComponent : IComponent
@@ -97,6 +101,10 @@ public class ViewLocatorServiceTests
         public string InstanceName { get; set; } = string.Empty;
 
         public Guid Id { get; } = Guid.NewGuid();
+
+        public void Dispose()
+        {
+        }
     }
 
     [ViewOf("test", typeof(TestComponent), typeof(TestView), ViewContext.Widget)]

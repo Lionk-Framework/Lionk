@@ -44,6 +44,10 @@ public class ComponentTypeDescriptionTests
         public string InstanceName { get; set; } = string.Empty;
 
         public Guid Id { get; } = Guid.NewGuid();
+
+        public void Dispose()
+        {
+        }
     }
 
     private class MockComponentWithoutAttributes : IComponent
@@ -51,5 +55,9 @@ public class ComponentTypeDescriptionTests
         public string InstanceName { get; set; } = string.Empty;
 
         public Guid Id { get; } = Guid.NewGuid();
+
+        public void Dispose()
+        {
+        }
     }
 }

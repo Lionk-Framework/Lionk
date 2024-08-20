@@ -22,12 +22,12 @@
         get
         {
             if (Component is null) return 0;
-            return Component.Periode.Seconds;
+            return Component.Period.Seconds;
         }
         set
         {
             if (Component is null) return;
-            Component.Periode = new TimeSpan(0, 0, value);
+            Component.Period = new TimeSpan(0, 0, value);
         }
     }
 

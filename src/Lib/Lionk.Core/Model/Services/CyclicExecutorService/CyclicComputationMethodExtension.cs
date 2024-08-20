@@ -18,9 +18,9 @@ public static class CyclicComputationMethodExtension
         switch (method)
         {
             case CyclicComputationMethod.RelativeToLastExecution:
-                return component.LastExecution + component.Periode;
+                return component.LastExecution + component.Period;
             case CyclicComputationMethod.RelativeToStartTime:
-                return component.StartedDate + (component.Periode * component.NbCycle);
+                return component.StartedDate + (component.Period * component.NbCycle);
             default:
                 throw new ArgumentOutOfRangeException(nameof(method), method, null);
         }
