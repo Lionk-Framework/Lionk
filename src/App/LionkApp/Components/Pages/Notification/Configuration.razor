@@ -1,16 +1,17 @@
 ﻿@page "/configuration"
 @inject IDialogService DialogService
+@implements IDisposable
 @using LionkApp.Components.Widgets.Content.Notification
 @using LionkApp.Components.Widgets.Dialogs
 @using Lionk.Notification
+@using System.Collections.ObjectModel
 
-<NotifierList Notifiers="MockNotifyers" Channels="MockChannels" />
-<ChannelList Channels="MockChannels" />
+<NotifierList/>
+<ChannelList/>
 
 @code {
 
-    // Mock
-
+    // ********************************** Mock
     public class MockNotifyer : INotifyer
     {
         public Guid Id { get; set; }
@@ -62,4 +63,39 @@
         new MockChannel { Guid = Guid.NewGuid(), Name = "Telegram", IsInitialized = false },
         new MockChannel { Guid = Guid.NewGuid(), Name = "Push bullet", IsInitialized = true }
     };
+    // **********************************
+
+    public ReadOnlyCollection<INotifyer> Notifiers { get; set; } = new List<INotifyer>().AsReadOnly();
+
+    public ReadOnlyCollection<IChannel> Channels { get; set; } = new List<IChannel>().AsReadOnly();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        NotificationService.AddNotifyers(MockNotifyers[0], MockNotifyers[1], MockNotifyers[2]);
+        NotificationService.AddChannels(MockChannels[0], MockChannels[1], MockChannels[2]);
+        NotificationService.MapNotifyerToChannel(MockNotifyers[0], MockChannels[0], MockChannels[1]);
+        NotificationService.MapNotifyerToChannel(MockNotifyers[1], MockChannels[1], MockChannels[2]);
+        NotificationService.MapNotifyerToChannel(MockNotifyers[2], MockChannels[2], MockChannels[0]);
+
+        Notifiers = NotificationService.Notifyers;
+        Channels = NotificationService.Channels;
+    }
+
+    public void Dispose()
+    {
+        foreach (var notifier in Notifiers.ToList())
+        {
+            NotificationService.RemoveNotifyer(notifier);
+        }
+
+        foreach (var channel in Channels.ToList())
+        {
+            NotificationService.RemoveChannel(channel);
+        }
+
+        Notifiers  = new List<INotifyer>().AsReadOnly();
+        Channels = new List<IChannel>().AsReadOnly();
+    }
 }

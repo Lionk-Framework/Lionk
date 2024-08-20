@@ -1,6 +1,7 @@
 ﻿@inject IDialogService DialogService
 @using LionkApp.Components.Widgets.Dialogs
 @using Lionk.Notification
+@using System.Collections.ObjectModel
 
 <MudPaper Elevation="2" Class="pa-4 mb-10">
     <div style="display: flex; justify-content: space-between;">
@@ -26,12 +27,6 @@
 </MudPaper>
 
 @code {
-    [Parameter]
-    public List<INotifyer> Notifiers { get; set; } = new List<INotifyer>();
-
-    [Parameter]
-    public List<IChannel> Channels { get; set; } = new List<IChannel>();
-
     private string SearchString = "";
 
     private IEnumerable<INotifyer> FilteredNotifiers => FilterNotifiers(SearchString);
@@ -39,14 +34,14 @@
     private IEnumerable<INotifyer> FilterNotifiers(string searchString)
     {
         if (string.IsNullOrWhiteSpace(searchString))
-            return Notifiers;
+            return NotificationService.Notifyers;
 
-        return Notifiers.Where(n => n.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase));
+        return NotificationService.Notifyers.Where(n => n.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase));
     }
 
     private Task OnEditClicked()
     {
-        var dialogParameters = new DialogParameters { { "Channels", Channels } };
+        var dialogParameters = new DialogParameters { { "Channels", NotificationService.Channels } };
 
         var options = new DialogOptions { CloseOnEscapeKey = true };
 
@@ -55,6 +50,7 @@
 
     private async Task OnDeleteClicked(Guid notifierId)
     {
+        // TODO - Use RemoveNotifyer
         bool? result = await DialogService.ShowMessageBox(
             "Confirm Delete",
             "Are you sure you want to delete this notifier?",
@@ -62,10 +58,10 @@
 
         if (result == true)
         {
-            var notifier = Notifiers.FirstOrDefault(n => n.Id == notifierId);
+            var notifier = NotificationService.Notifyers.FirstOrDefault(n => n.Id == notifierId);
             if (notifier != null)
             {
-                Notifiers.Remove(notifier);
+                NotificationService.RemoveNotifyer(notifier);
                 StateHasChanged();
             }
         }

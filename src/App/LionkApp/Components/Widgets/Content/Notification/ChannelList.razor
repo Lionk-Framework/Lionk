@@ -1,6 +1,7 @@
 ﻿@inject IDialogService DialogService
 @using LionkApp.Components.Widgets.Dialogs
 @using Lionk.Notification
+@using System.Collections.ObjectModel
 
 <MudPaper Elevation="2" Class="pa-4 mb-10">
     <div style="display: flex; justify-content: space-between;">
@@ -8,7 +9,7 @@
         <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" @onclick="OnAddClicked">ADD</MudButton>
     </div>
     <MudList T="string" Class="mt-4">
-        @foreach (var channel in Channels)
+        @foreach (var channel in NotificationService.Channels)
         {
             <MudListItem>
                 <div style="display: flex; justify-content: space-between; width: 100%; height: 30px;">
@@ -24,13 +25,10 @@
 </MudPaper>
 
 @code {
-    [Parameter]
-    public List<IChannel> Channels { get; set; } = new List<IChannel>();
-
     private Task OnAddClicked()
     {
         // TODO - Get available channels when ready
-        var dialogParameters = new DialogParameters { { "Channels", Channels } };
+        var dialogParameters = new DialogParameters { { "Channels", NotificationService.Channels } };
 
         var options = new DialogOptions { CloseOnEscapeKey = true };
 
@@ -51,10 +49,10 @@
 
         if (result == true)
         {
-            var channel = Channels.FirstOrDefault(c => c.Guid == channelGuid);
+            var channel = NotificationService.Channels.FirstOrDefault(c => c.Guid == channelGuid);
             if (channel != null)
             {
-                Channels.Remove(channel);
+                NotificationService.RemoveChannel(channel);
                 StateHasChanged();
             }
         }
