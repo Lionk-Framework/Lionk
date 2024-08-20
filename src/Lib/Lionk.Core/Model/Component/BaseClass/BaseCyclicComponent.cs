@@ -1,6 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using Lionk.Core.Component.Cyclic;
+using Newtonsoft.Json;
 
 namespace Lionk.Core.Component;
 
@@ -19,6 +20,7 @@ public abstract class BaseCyclicComponent : BaseExecutableComponent, ICyclicComp
     /// Gets the date and time when the component was started.
     /// This property is updated automatically when the component is initialized.
     /// </summary>
+    [JsonIgnore]
     public DateTime StartedDate
     {
         get => _startedDate;
@@ -64,6 +66,7 @@ public abstract class BaseCyclicComponent : BaseExecutableComponent, ICyclicComp
     /// Gets the number of execution cycles that have been completed by the component.
     /// This count is incremented automatically with each execution.
     /// </summary>
+    [JsonIgnore]
     public int NbCycle
     {
         get => _nbCycle;

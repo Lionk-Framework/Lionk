@@ -1,5 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
 
+using Newtonsoft.Json;
+
 namespace Lionk.Core.Component;
 
 /// <summary>
@@ -26,6 +28,7 @@ public abstract class BaseExecutableComponent : BaseComponent, IExecutableCompon
     /// Gets a value indicating whether the component is currently running.
     /// This value is managed internally and should not be modified directly.
     /// </summary>
+    [JsonIgnore]
     public bool IsRunning
     {
         get => _isRunning;
@@ -37,6 +40,7 @@ public abstract class BaseExecutableComponent : BaseComponent, IExecutableCompon
     /// This value is set to true if the component encounters an error during execution,
     /// or if it is aborted. A component in an error state cannot be executed until it is reset.
     /// </summary>
+    [JsonIgnore]
     public bool IsInError
     {
         get => _isInError;
