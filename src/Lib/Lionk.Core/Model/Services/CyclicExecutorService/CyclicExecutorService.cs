@@ -74,11 +74,9 @@ public class CyclicExecutorService : ICyclicExecutorService
         {
             DateTime now = DateTime.UtcNow;
             if (component.NextExecution > now) continue;
-            component.LastExecution = now;
             _timer.Start();
             component.Execute();
             _timer.Stop();
-            component.NbCycle++;
         }
     }
 
@@ -101,8 +99,6 @@ public class CyclicExecutorService : ICyclicExecutorService
 
         foreach (ICyclicComponent component in Components)
         {
-            component.StartedDate = DateTime.UtcNow;
-            component.NbCycle = 0;
         }
 
         State = CycleState.Running;

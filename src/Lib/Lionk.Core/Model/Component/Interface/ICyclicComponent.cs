@@ -14,9 +14,9 @@ public interface ICyclicComponent : IExecutableComponent
     DateTime StartedDate { get; }
 
     /// <summary>
-    /// Gets the period of the component.
+    /// Gets or sets the period of the component.
     /// </summary>
-    TimeSpan Period { get; }
+    TimeSpan Period { get; set; }
 
     /// <summary>
     /// Gets the last execution time of the component.
