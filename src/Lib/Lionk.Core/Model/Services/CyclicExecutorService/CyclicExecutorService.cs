@@ -25,10 +25,6 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
         _componentService = componentService;
         WatchDogTimeout = TimeSpan.FromSeconds(10);
 
-#if DEBUG
-        WatchDogTimeout = TimeSpan.FromHours(24);
-#endif
-
         State = CycleState.Stopped;
     }
 
@@ -98,14 +94,6 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
             State = CycleState.Stopping;
             _cancellationTokenSource?.Cancel();
 
-            if (Task.CurrentId == _executionTask?.Id)
-            {
-                // If Stop() is called from within the execution task, do not wait to avoid deadlock
-                LogService.LogDebug(
-                    "Stop called from within the execution task. Skipping Wait to avoid deadlock.");
-                return;
-            }
-
             foreach (ICyclicComponent component in Components)
                 component.Abort();
 
@@ -149,8 +137,9 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
                         "something caused a watchdog timeout.");
 
                     var notification = new Notification.Notification(content, _notifyer);
-                    NotificationService.Send(notification);
 
+                    // TODO CJS -> Uncomment when notification work
+                    // NotificationService.Send(notification);
                     LogService.LogApp(LogSeverity.Warning, $"Watchdog timeout exceeded");
                 }
             }
@@ -188,10 +177,17 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
         try
         {
             var task = Task.Run(component.Execute, combinedToken);
-            await task;
+
+            while (!task.IsCompleted)
+            {
+                if (combinedToken.IsCancellationRequested)
+                    throw new TaskCanceledException("Watchdog timeout exceeded");
+
+                await Task.Delay(1); // Petit délai pour ne pas saturer le CPU
+            }
 
             if (task.IsCanceled && !combinedToken.IsCancellationRequested)
-                throw new OperationCanceledException("Watchdog timeout exceeded");
+                throw new TaskCanceledException("Watchdog timeout exceeded");
         }
         catch (TaskCanceledException)
         {
