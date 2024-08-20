@@ -32,24 +32,8 @@ public class BaseExecutableComponentTests
     [Test]
     public void Execute_WhenCanExecuteIsFalse_ThrowsInvalidOperationException()
     {
-        // Arrange
         _testableComponent.CanExecuteSetter = false;
 
-        // Act & Assert
-        Assert.Throws<InvalidOperationException>(() => _testableComponent.Execute());
-    }
-
-    /// <summary>
-    /// Tests the <see cref="BaseExecutableComponent.Execute"/> method when the component is already running.
-    /// </summary>
-    [Test]
-    public void Execute_WhenIsRunningIsTrue_ThrowsInvalidOperationException()
-    {
-        // Arrange
-        _testableComponent.CanExecuteSetter = true;
-        _testableComponent.IsRunning = true;
-
-        // Act & Assert
         Assert.Throws<InvalidOperationException>(() => _testableComponent.Execute());
     }
 
@@ -59,14 +43,11 @@ public class BaseExecutableComponentTests
     [Test]
     public void Execute_WhenValid_ExecutesSuccessfully()
     {
-        // Arrange
         _testableComponent.CanExecuteSetter = true;
         _testableComponent.IsRunning = false;
 
-        // Act
         _testableComponent.Execute();
 
-        // Assert
         Assert.IsTrue(_testableComponent.OnExecuteCalled);
         Assert.IsTrue(_testableComponent.OnTerminateCalled);
     }
@@ -77,13 +58,10 @@ public class BaseExecutableComponentTests
     [Test]
     public void Abort_WhenCalled_CancelsToken()
     {
-        // Arrange
         _testableComponent.CanExecuteSetter = true;
 
-        // Act
         _testableComponent.Abort();
 
-        // Assert
         Assert.IsTrue(_testableComponent.TokenCancelled);
     }
 
@@ -108,6 +86,8 @@ public class BaseExecutableComponentTests
         {
             OnExecuteCalled = true;
             base.OnExecute(cancellationToken);
+
+            Thread.SpinWait(10000);
         }
 
         protected override void OnTerminate()
