@@ -9,26 +9,29 @@ namespace Lionk.Core.Component;
 public interface ICyclicComponent : IExecutableComponent
 {
     /// <summary>
-    /// Gets or sets the starting date of the component.
+    /// Gets the starting date of the component.
     /// </summary>
-    DateTime StartedDate { get; set; }
+    DateTime StartedDate { get; }
 
     /// <summary>
-    /// Gets or sets the execution frequency of the component.
+    /// Gets the period of the component.
     /// </summary>
-    TimeSpan Periode { get; set; }
+    TimeSpan Period { get; }
 
     /// <summary>
-    /// Gets or sets the last execution time of the component.
+    /// Gets the last execution time of the component.
     /// </summary>
-    DateTime LastExecution { get; set; }
+    DateTime LastExecution { get; }
 
+    /// <summary>
+    /// Gets the next execution time of the component depending on the <see cref="CyclicComputationMethod"/>.
+    /// </summary>
     DateTime NextExecution => CyclicComputationMethod.GetNextExecution(this);
 
     /// <summary>
-    /// Gets or Sets the number of cycles executed.
+    /// Gets the number of cycles executed.
     /// </summary>
-    int NbCycle { get; set; }
+    int NbCycle { get; }
 
     /// <summary>
     /// Gets or sets the cyclic computation method.

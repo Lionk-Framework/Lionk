@@ -2,7 +2,7 @@
 
 namespace Lionk.Core.Component;
 
-/// <summary>
+ /// <summary>
 /// Base class that implements the <see cref="IExecutableComponent"/> interface.
 /// Provides a template for components that can be executed with a defined life cycle,
 /// including initialization, execution, and termination phases.
