@@ -1,11 +1,9 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using System.Timers;
-
-using Lionk.Core.Component;
 using Lionk.Log;
 
-namespace Lionk.Core.Model.Component.Cyclic;
+namespace Lionk.Core.Component.Cyclic;
 
 /// <summary>
 /// This class is used to execute cyclic components.

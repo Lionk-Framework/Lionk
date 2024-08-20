@@ -1,6 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
-namespace Lionk.Core.Component;
+namespace Lionk.Core.Component.Cyclic;
 
 /// <summary>
 /// This interface defines a cyclic executor service.

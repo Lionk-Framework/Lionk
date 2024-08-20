@@ -1,6 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
-using Lionk.Core.Component;
+using Lionk.Core.Component.Cyclic;
 using Microsoft.Extensions.Hosting;
 
 namespace Lionk.Core.Razor.Service;

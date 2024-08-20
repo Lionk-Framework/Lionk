@@ -4,7 +4,7 @@ using Lionk.Auth.Abstraction;
 using Lionk.Auth.Identity;
 using Lionk.Auth.Utils;
 using Lionk.Core.Component;
-using Lionk.Core.Model.Component.Cyclic;
+using Lionk.Core.Component.Cyclic;
 using Lionk.Core.Razor.Service;
 using Lionk.Core.TypeRegister;
 using Lionk.Core.View;
