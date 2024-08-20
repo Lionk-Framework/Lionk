@@ -152,7 +152,7 @@
 
         var options = new DialogOptions { CloseOnEscapeKey = true };
 
-        return DialogService.ShowAsync<ChannelConfigurer>("Configure channel", channelList, options);
+        return DialogService.ShowAsync<ChannelAdder>("Add channel", channelList, options);
     }
 
     private void OnConfigureChannelClicked()

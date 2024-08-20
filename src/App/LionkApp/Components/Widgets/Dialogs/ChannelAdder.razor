@@ -12,7 +12,7 @@
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+        <MudButton Color="Color.Primary" OnClick="OpenComponentConfigurer">Ok</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -26,5 +26,5 @@
     private void Cancel() => MudDialog?.Cancel();
 
     // TODO - Use view from plugin when ready
-    private void Submit() => MudDialog?.Close(DialogResult.Ok(true));
+    private void OpenComponentConfigurer() => MudDialog?.Close(DialogResult.Ok(true));
 }
