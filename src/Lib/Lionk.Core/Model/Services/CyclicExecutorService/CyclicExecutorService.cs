@@ -24,6 +24,11 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     {
         _componentService = componentService;
         WatchDogTimeout = TimeSpan.FromSeconds(10);
+
+#if DEBUG
+        WatchDogTimeout = TimeSpan.FromHours(24);
+#endif
+
         State = CycleState.Stopped;
     }
 
@@ -165,7 +170,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
             if (_cancellationTokenSource.Token.IsCancellationRequested)
                 break;
 
-            if (component.NextExecution <= DateTime.UtcNow && component.CanExecute && !component.IsInError)
+            if (component.NextExecution <= DateTime.Now && component.CanExecute && !component.IsInError)
             {
                 await ExecuteComponent(component, combinedToken);
             }

@@ -40,7 +40,7 @@ public abstract class BaseCyclicComponent : BaseExecutableComponent, ICyclicComp
         set
         {
             if (value <= TimeSpan.Zero)
-                throw new ArgumentException($"{InstanceName} : The period must be greater than zero.");
+                value = TimeSpan.FromMilliseconds(10);
 
             SetField(ref _period, value);
         }
