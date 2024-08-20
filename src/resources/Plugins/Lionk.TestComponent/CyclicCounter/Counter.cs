@@ -1,6 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using Lionk.Core;
+using Lionk.Core.Component;
 
 namespace Lionk.TestComponent;
 
@@ -10,7 +11,7 @@ namespace Lionk.TestComponent;
 [NamedElement("Counter test", "test cyclic element")]
 public class Counter : BaseCyclicComponent
 {
-    private readonly int _counter;
+    private int _counter;
 
     /// <summary>
     /// Gets or sets counter value.
