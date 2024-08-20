@@ -306,4 +306,25 @@ public class NotificationServiceTests
         Assert.That(notifyers.Count, Is.EqualTo(2), "The number of notifyers is not the same.");
         Assert.That(notifyers2.Count, Is.EqualTo(1), "The number of notifyers is not the same.");
     }
+
+    /// <summary>
+    /// This method tests if the notification service ignore sending a notification if the channel is null.
+    /// </summary>
+    [Test]
+    public void SendWithNullChannelMustBeIgnored()
+    {
+        // Arrange
+        MockNotifyer notifyer = new("NotifyerNotifiationServiceTest1");
+
+        Content content = new(Severity.Information, "Test", "Test");
+        Notification notification = new(content, notifyer);
+
+        // Act
+        NotificationService.AddNotifyers(notifyer);
+
+        NotificationService.Send(notification);
+
+        // Assert
+        Assert.Pass();
+    }
 }

@@ -61,14 +61,17 @@ public static class NotificationService
     public static void Send(Notification notification)
     {
         ArgumentNullException.ThrowIfNull(notification, nameof(notification));
-        List<IChannel> channels = NotifyerChannels[notification.Notifyer.Id];
-        foreach (IChannel channel in channels)
-        {
-            channel.Send(notification.Notifyer, notification.Content);
-        }
 
-        SaveNotificationHistory(notification);
-        NotificationSent?.Invoke(null, new NotificationEventArgs(notification, channels));
+        if (NotifyerChannels.TryGetValue(notification.Notifyer.Id, out List<IChannel>? channels))
+        {
+            foreach (IChannel channel in channels)
+            {
+                channel.Send(notification.Notifyer, notification.Content);
+            }
+
+            SaveNotificationHistory(notification);
+            NotificationSent?.Invoke(null, new NotificationEventArgs(notification, channels));
+        }
     }
 
     /// <summary>
