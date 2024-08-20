@@ -4,26 +4,15 @@
 @using LionkApp.Components.Widgets.Dialogs
 
 <MudPaper Elevation="2" Class="pa-4 mb-10">
-    <div style="display: flex; align-items: center; justify-content: space-between;">
-        <MudText Typo="Typo.h6">Notifier List</MudText>
-    </div>
+    <MudText Typo="Typo.h6">Notifier List</MudText>
     <MudList T="string" Class="mt-4">
         @foreach (var notifyer in mocknotifyers)
         {
-            <MudListItem Text="@notifyer.Name" Expanded="false">
-                <NestedList>
-                    <MudList T="string" Class="ml-4 mr-4">
-                        @foreach (var channel in mockchannels)
-                        {
-                            <MudListItem>
-                                <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                                    <MudText>@channel.Name</MudText>
-                                    <MudSwitch Value="true" />
-                                </div>
-                            </MudListItem>
-                        }
-                    </MudList>
-                </NestedList>
+            <MudListItem>
+                <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; height: 30px;">
+                    <MudText>@notifyer.Name</MudText>
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" @onclick="OnConfigureNotifierClicked" />
+                </div>
             </MudListItem>
         }
     </MudList>
@@ -34,13 +23,15 @@
         <MudText Typo="Typo.h6">Channel List</MudText>
         <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" @onclick="OnAddChannelClicked">ADD</MudButton>
     </div>
-    <MudList T="string" Class="mt-4 ml-4 mr-4">
+    <MudList T="string" Class="mt-4">
         @foreach (var channel in mockchannels)
         {
-            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                <MudText>@channel.Name</MudText>
-                <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Primary" @onclick="OnConfigureChannelClicked" />
-            </div>
+            <MudListItem>
+                <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; height: 30px;">
+                    <MudText>@channel.Name</MudText>
+                    <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Primary" @onclick="OnConfigureChannelClicked" />
+                </div>
+            </MudListItem>
         }
     </MudList>
 </MudPaper>
@@ -125,6 +116,10 @@
         // TODO - Get notifyers and channels when ready
         // notifyers = NotificationService.Notifyers;
         // channels = NotificationService.Channels;
+    }
+
+    private void OnConfigureNotifierClicked()
+    {
     }
 
     private Task OnAddChannelClicked()
