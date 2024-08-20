@@ -30,11 +30,11 @@
     private Task OnAddClicked()
     {
         // TODO - Get available channels when ready
-        var channelList = new DialogParameters { { "Channels", Channels } };
+        var dialogParameters = new DialogParameters { { "Channels", Channels } };
 
         var options = new DialogOptions { CloseOnEscapeKey = true };
 
-        return DialogService.ShowAsync<ChannelAdder>("Add channel", channelList, options);
+        return DialogService.ShowAsync<ChannelAdder>("Add channel", dialogParameters, options);
     }
 
     private void OnConfigureClicked()

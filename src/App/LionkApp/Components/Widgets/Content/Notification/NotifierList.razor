@@ -46,11 +46,11 @@
 
     private Task OnEditClicked()
     {
-        var channelList = new DialogParameters { { "Channels", Channels } };
+        var dialogParameters = new DialogParameters { { "Channels", Channels } };
 
         var options = new DialogOptions { CloseOnEscapeKey = true };
 
-        return DialogService.ShowAsync<NotifierEditor>("Edit notifier", channelList, options);
+        return DialogService.ShowAsync<NotifierEditor>("Edit notifier", dialogParameters, options);
     }
 
     private async Task OnDeleteClicked(Guid notifierId)
