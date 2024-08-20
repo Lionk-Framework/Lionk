@@ -4,12 +4,17 @@
 @using LionkApp.Components.Widgets.Dialogs
 
 <MudPaper Elevation="2" Class="pa-4 mb-10">
-    <MudText Typo="Typo.h6">Notifier List</MudText>
+    <div style="display: flex; justify-content: space-between;">
+        <MudText Typo="Typo.h6">Notifier List</MudText>
+        <div style="width:25%">
+            <MudTextField @bind-Value="SearchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" />
+        </div>
+    </div>
     <MudList T="string" Class="mt-4">
-        @foreach (var notifyer in mocknotifyers)
+        @foreach (var notifyer in FilteredNotifiers)
         {
             <MudListItem>
-                <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; height: 30px;">
+                <div style="display: flex; justify-content: space-between; width: 100%; height: 30px;">
                     <MudText>@notifyer.Name</MudText>
                     <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" @onclick="OnConfigureNotifierClicked" />
                 </div>
@@ -19,7 +24,7 @@
 </MudPaper>
 
 <MudPaper Elevation="2" Class="pa-4 mb-10">
-    <div style="display: flex; align-items: center; justify-content: space-between;">
+    <div style="display: flex; justify-content: space-between;">
         <MudText Typo="Typo.h6">Channel List</MudText>
         <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" @onclick="OnAddChannelClicked">ADD</MudButton>
     </div>
@@ -27,7 +32,7 @@
         @foreach (var channel in mockchannels)
         {
             <MudListItem>
-                <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; height: 30px;">
+                <div style="display: flex; justify-content: space-between; width: 100%; height: 30px;">
                     <MudText>@channel.Name</MudText>
                     <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Primary" @onclick="OnConfigureChannelClicked" />
                 </div>
@@ -109,13 +114,26 @@
     // **********************************
 
     // private ReadOnlyCollection<INotifyer>? notifyers;
+
     // private ReadOnlyCollection<IChannel>? channels;
+
+    private string SearchString = "";
+
+    private IEnumerable<INotifyer> FilteredNotifiers => FilterNotifyers(SearchString);
 
     protected override void OnInitialized()
     {
         // TODO - Get notifyers and channels when ready
         // notifyers = NotificationService.Notifyers;
         // channels = NotificationService.Channels;
+    }
+
+    private IEnumerable<INotifyer> FilterNotifyers(string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return mocknotifyers;
+
+        return mocknotifyers.Where(n => n.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase));
     }
 
     private void OnConfigureNotifierClicked()
