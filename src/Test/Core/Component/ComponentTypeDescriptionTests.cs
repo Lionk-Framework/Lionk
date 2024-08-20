@@ -41,11 +41,15 @@ public class ComponentTypeDescriptionTests
     [NamedElement("TestComponent", "Test description.")]
     private class MockComponentWithAttributes : IComponent
     {
-        public string? InstanceName { get; set; }
+        public string InstanceName { get; set; } = string.Empty;
+
+        public Guid Id { get; } = Guid.NewGuid();
     }
 
     private class MockComponentWithoutAttributes : IComponent
     {
-        public string? InstanceName { get; set; }
+        public string InstanceName { get; set; } = string.Empty;
+
+        public Guid Id { get; } = Guid.NewGuid();
     }
 }

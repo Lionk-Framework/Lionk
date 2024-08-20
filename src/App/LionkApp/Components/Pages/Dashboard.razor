@@ -1,48 +1,80 @@
 ﻿@page "/"
 @inject ISnackbar Snackbar
-@inject ICyclicExecutorService CyclicExecutorService
 @inject IComponentService ComponentService
 @inject IDialogService DialogService
 @using Lionk.Core.Component
-@using Lionk.Utils;
-@using LionkApp.Components.Widgets.Buttons
+@using Lionk.Core.View
+@using Lionk.Plugin
+@using LionkApp.Components.Model
+@using IComponent = Lionk.Core.Component.IComponent
+@using LionkApp.Components.Widgets.Dialogs
+@using LionkApp.Services
+@namespace LionkApp.Components.Pages
 
 <PageTitle>Dashboard</PageTitle>
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
-
-    @if (DashBoardItems != null)
+    @foreach (var item in DashboardRegistry ?? [])
     {
-        @foreach (Widget item in DashBoardItems)
-        {
+        IComponent? component = ComponentService.GetInstanceByID(item.ComponentUniqueID);
+        <DashboardItem DashboardItemModel=item
+                       Component="component"
+                       OnUpdate="UpdateDashboardItem"
+                       OnDelete="RemoveDashboardItem"
+                       Style="min-height:200px" />
+    }
+</MudContainer>
 
-            Dictionary<string, object> parameters = new();
-            string? instanceName = item.Component?.InstanceName;
-            string WidgetInstanceName = item.Component?.InstanceName ?? "No widget name";
-            if (!string.IsNullOrEmpty(instanceName))
+<MudFab @onclick="OpenDialogAsync"
+        Color="Color.Secondary"
+        StartIcon="@Icons.Material.Filled.Add"
+        Size="Size.Large"
+        Style="position: fixed; bottom: 20px; right: 20px;" />
+
+@code {
+    public List<DashboardItemModel>? DashboardRegistry { get; set; } = new();
+    private IDashboardItemPersistenceManager? _persistenceManager;
+
+    protected override void OnInitialized()
+    {
+        _persistenceManager = new DashboardItemPersistenceManagerJson();
+        RestoreDashboard();
+    }
+
+    private async Task OpenDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
+        var parameters = new DialogParameters();
+        var dialog = DialogService.Show<WidgetAdder>("Widget selection", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is not null && !result.Canceled)
+        {
+            var newWidget = result.Data as DashboardItemModel;
+            if (newWidget != null)
             {
-                Type view = item.GetType();
-                object? component = ComponentService.GetInstanceByName(instanceName);
-                if (component != null)
-                {
-                    parameters.Add("ComponentParameter", component);
-                    parameters.Add("InstanceNameParameter", WidgetInstanceName);
-                }
-                <DashboardItem View="view" Parameters="parameters" />
+                _persistenceManager?.SaveDashboardItem(newWidget);
+                RestoreDashboard();
+                StateHasChanged();
             }
         }
     }
 
-</MudContainer>
-
-<FloatingButton />
-
-@code {
-
-    private List<Widget>? DashBoardItems => ComponentService.GetInstancesOfType<Widget>().ToList();
-
-    protected override void OnInitialized()
+    private void RestoreDashboard()
     {
-        base.OnInitialized();
+        DashboardRegistry?.Clear();
+        DashboardRegistry = _persistenceManager?.GetDashboardItems();
+        StateHasChanged();
+    }
+
+    private void UpdateDashboardItem(DashboardItemModel item)
+    {
+        _persistenceManager?.UpdateDashboardItem(item);
+        RestoreDashboard();
+    }
+
+    private void RemoveDashboardItem(DashboardItemModel item)
+    {
+        _persistenceManager?.RemoveDashboardItemModel(item);
+        RestoreDashboard();
     }
 }
-
