@@ -1,0 +1,62 @@
+﻿@inject IDialogService DialogService
+@using Lionk.Notification
+@using LionkApp.Components.Widgets.Dialogs
+
+<MudPaper Elevation="2" Class="pa-4 mb-10">
+    <div style="display: flex; justify-content: space-between;">
+        <MudText Typo="Typo.h6">Channels</MudText>
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" @onclick="OnAddChannelClicked">ADD</MudButton>
+    </div>
+    <MudList T="string" Class="mt-4">
+        @foreach (var channel in Channels)
+        {
+            <MudListItem>
+                <div style="display: flex; justify-content: space-between; width: 100%; height: 30px;">
+                    <MudText>@channel.Name</MudText>
+                    <div style="display: flex;">
+                        <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Primary" @onclick="OnConfigureChannelClicked" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" @onclick="() => OnChannelDeleteClicked(channel.Guid)" />
+                    </div>
+                </div>
+            </MudListItem>
+        }
+    </MudList>
+</MudPaper>
+
+@code {
+    [Parameter]
+    public List<IChannel> Channels { get; set; } = new List<IChannel>();
+
+    private Task OnAddChannelClicked()
+    {
+        // TODO - Get available channels when ready
+        var channelList = new DialogParameters { { "Channels", Channels } };
+
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+
+        return DialogService.ShowAsync<ChannelAdder>("Add channel", channelList, options);
+    }
+
+    private void OnConfigureChannelClicked()
+    {
+        // TODO - Retrieve the configurable view from dll
+    }
+
+    private async Task OnChannelDeleteClicked(Guid channelGuid)
+    {
+        bool? result = await DialogService.ShowMessageBox(
+            "Confirm Delete",
+            "Are you sure you want to delete this channel?",
+            yesText: "Yes", cancelText: "No");
+
+        if (result == true)
+        {
+            var channel = Channels.FirstOrDefault(c => c.Guid == channelGuid);
+            if (channel != null)
+            {
+                Channels.Remove(channel);
+                StateHasChanged();
+            }
+        }
+    }
+}

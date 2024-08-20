@@ -1,0 +1,73 @@
+﻿@inject IDialogService DialogService
+@using Lionk.Notification
+@using LionkApp.Components.Widgets.Dialogs
+
+<MudPaper Elevation="2" Class="pa-4 mb-10">
+    <div style="display: flex; justify-content: space-between;">
+        <MudText Typo="Typo.h6">Notifiers</MudText>
+        <div style="width:25%">
+            <MudTextField @bind-Value="SearchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" />
+        </div>
+    </div>
+    <MudList T="string" Class="mt-4">
+        @foreach (var notifyer in FilteredNotifiers)
+        {
+            <MudListItem>
+                <div style="display: flex; justify-content: space-between; width: 100%; height: 30px;">
+                    <MudText>@notifyer.Name</MudText>
+                    <div style="display: flex;">
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" @onclick="OnEditNotifierClicked" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" @onclick="() => OnNotifierDeleteClicked(notifyer.Id)" />
+                    </div>
+                </div>
+            </MudListItem>
+        }
+    </MudList>
+</MudPaper>
+
+@code {
+    [Parameter]
+    public List<INotifyer> Notifiers { get; set; } = new List<INotifyer>();
+
+    [Parameter]
+    public List<IChannel> Channels { get; set; } = new List<IChannel>();
+
+    private string SearchString = "";
+
+    private IEnumerable<INotifyer> FilteredNotifiers => FilterNotifyers(SearchString);
+
+    private IEnumerable<INotifyer> FilterNotifyers(string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return Notifiers;
+
+        return Notifiers.Where(n => n.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private Task OnEditNotifierClicked()
+    {
+        var channelList = new DialogParameters { { "Channels", Channels } };
+
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+
+        return DialogService.ShowAsync<NotifierEditor>("Edit notifier", channelList, options);
+    }
+
+    private async Task OnNotifierDeleteClicked(Guid notifierId)
+    {
+        bool? result = await DialogService.ShowMessageBox(
+            "Confirm Delete",
+            "Are you sure you want to delete this notifier?",
+            yesText: "Yes", cancelText: "No");
+
+        if (result == true)
+        {
+            var notifier = Notifiers.FirstOrDefault(n => n.Id == notifierId);
+            if (notifier != null)
+            {
+                Notifiers.Remove(notifier);
+                StateHasChanged();
+            }
+        }
+    }
+}
