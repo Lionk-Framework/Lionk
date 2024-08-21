@@ -54,6 +54,7 @@ public abstract class BaseCyclicComponent : BaseExecutableComponent, ICyclicComp
     /// Gets the date and time of the last execution of the component.
     /// This property is automatically updated each time the component completes its execution.
     /// </summary>
+    [JsonIgnore]
     public DateTime LastExecution
     {
         get => _lastExecution;
