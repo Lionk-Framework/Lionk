@@ -4,12 +4,13 @@
 <MudDialog Style="min-width: 300px;">
     <DialogContent>
         <MudList T="string">
-            @foreach (var channel in Channels)
+            @foreach (var channel in NotificationService.Channels)
             {
                 <MudListItem>
                     <div style="display: flex; justify-content: space-between; align-items: center; height: 30px;">
                         <MudText>@channel.Name</MudText>
-                        <MudIconButton Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Primary" />
+                        <MudSwitch T="bool" Value=ChannelStates[channel.Name] ValueChanged="@(() => OnRoleChanged())" Color="Color.Primary" />
+
                     </div>
                 </MudListItem>
             }
@@ -23,22 +24,29 @@
 
 @code {
     [Parameter]
-    public ReadOnlyCollection<IChannel> Channels { get; set; } = new List<IChannel>().AsReadOnly();
+    public Guid Guid { get; set; }
 
     [CascadingParameter]
     private MudDialogInstance? MudDialog { get; set; }
 
-    private Dictionary<string, bool> ChannelStates = new();
+    private Dictionary<String, bool> ChannelStates { get; set; } = new();
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        InitializeRoleStates();
+        InitializeChannelStates();
     }
 
-    private void InitializeRoleStates()
+    private void InitializeChannelStates()
     {
+        foreach (var channel in NotificationService.Channels)
+        {
+            ChannelStates[channel.Name] = NotificationService.NotifyerChannels[Guid].Contains(channel);
+        }
+    }
 
+    private void OnRoleChanged()
+    {
     }
 
     private void Cancel() => MudDialog?.Cancel();
