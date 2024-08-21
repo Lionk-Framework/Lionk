@@ -1,7 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
 using Lionk.Core.Component.Cyclic;
 
-namespace Lionk.Core.Razor.Views.CyclicComponent;
+namespace Lionk.Core.View;
 
 /// <summary>
 /// This class defines the information for the <see cref="CyclicComputationMethod"/> enumeration.
