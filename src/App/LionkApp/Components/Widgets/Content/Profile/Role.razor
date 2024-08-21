@@ -73,12 +73,12 @@ else
         }
     }
 
-    private void OnRoleChanged(Guid userID, string role)
+    private void OnRoleChanged(Guid id, string role)
     {
-        var user = Users?.FirstOrDefault(u => u.Id == userID);
+        var user = Users?.FirstOrDefault(u => u.Id == id);
         if (user is null) return;
 
-        var previousRoleState = RoleStates[userID][role];
+        var previousRoleState = RoleStates[id][role];
 
         // Add role
         if ((previousRoleState == false) && !user.Roles.Contains(role))
@@ -105,7 +105,7 @@ else
             userService.Update(user);
         }
 
-        RoleStates[userID][role] = !previousRoleState;
+        RoleStates[id][role] = !previousRoleState;
         StateHasChanged();
     }
 
