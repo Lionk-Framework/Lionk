@@ -9,7 +9,7 @@
                 <MudListItem>
                     <div style="display: flex; justify-content: space-between; align-items: center; height: 30px;">
                         <MudText>@channel.Name</MudText>
-                        <MudSwitch T="bool" Value=ChannelStates[channel.Name] ValueChanged="@(() => OnRoleChanged())" Color="Color.Primary" />
+                        <MudSwitch T="bool" Value=ChannelStates[channel.Name] ValueChanged="@(() => OnChannelChanged(channel.Name, ChannelStates[channel.Name]))" Color="Color.Primary" />
 
                     </div>
                 </MudListItem>
@@ -45,7 +45,7 @@
         }
     }
 
-    private void OnRoleChanged()
+    private void OnChannelChanged(string channelName, bool previousRoleState)
     {
     }
 
