@@ -5,10 +5,10 @@
 @namespace Lionk.TestComponent.CyclicCounter
 
 @attribute [ViewOf("Counter view", typeof(Counter), typeof(CounterView), ViewContext.Widget)]
-<MudIcon Icon="@Icons.Material.Filled.Numbers">
-    <MudText Typo="Typo.h6">@Component?.InstanceName</MudText>
-</MudIcon>
-<MudText Typo="Typo.h6">Counter: @Component?.CounterValue</MudText>
+
+<MudText Typo="Typo.h6" Class="bi bi-hash"> @Component?.InstanceName</MudText>
+<br>
+<MudText Typo="Typo.h4">@Component?.CounterValue</MudText>
 
 @code {
     [Parameter] public Counter? Component { get; set; }
