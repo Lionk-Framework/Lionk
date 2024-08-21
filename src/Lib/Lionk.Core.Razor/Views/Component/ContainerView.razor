@@ -1,0 +1,45 @@
+﻿@using Lionk.Core.Model.Component
+@using Lionk.Core.View
+@inherits MudItem
+@namespace LionkApp.Components.View
+
+@if (_isLoading)
+{
+    <MudProgressCircular Color="Color.Primary" Size="Size.Small" Indeterminate="true" />
+}
+else if (_isError)
+{
+    <NoComponentView Text="Component not found"/>
+}
+else
+{
+    
+}
+
+
+@code {
+
+    [Parameter] public ComponentContainer? Container { get; set; }
+
+    private bool _isLoading = true;
+    private bool _isError = false;
+
+    protected override void OnInitialized()
+    {
+        if(Container?.Component is not null)
+        {
+            _isLoading = false;
+            _isError = false;
+        }
+        else if (Container?.Component is null && Container?.ComponentId is not null)
+        {
+            _isLoading = true;
+            _isError = false;
+        }
+        else
+        {
+            _isLoading = false;
+            _isError = true;
+        }
+    }
+}

@@ -3,10 +3,8 @@
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @inject NavigationManager NavigationManager
-@namespace Lionk.Core.Component
 @using Lionk.Core.Dialog
-@using Lionk.Core.View
-@using LionkApp.Components.Model
+@namespace Lionk.Core.View
 
 <MudItem Style=" margin-right:15px;
                  margin-bottom:15px;
@@ -80,7 +78,7 @@
 </MudItem>
 
 @code {
-    [Parameter] public DashboardItemModel? DashboardItemModel { get; set; }
+    [Parameter] public ComponentViewModel? DashboardItemModel { get; set; }
     [Parameter] public IComponent? Component { get; set; }
     [Parameter] public EventCallback<DashboardItemModel> OnUpdate { get; set; }
     [Parameter] public EventCallback<DashboardItemModel> OnDelete { get; set; }
@@ -124,7 +122,7 @@
     private void InitializeComponentViews()
     {
         if (Component is null) return;
-        _parameters.Add("Component", Component);
+        _parameters.Add("Container", Component);
 
         Type componentType = Component.GetType();
 
