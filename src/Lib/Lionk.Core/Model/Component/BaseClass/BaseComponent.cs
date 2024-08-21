@@ -19,7 +19,7 @@ public abstract class BaseComponent : ObservableElement, IComponent
     }
 
     /// <inheritdoc/>
-    public Guid Id { get; } = Guid.NewGuid();
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     /// <inheritdoc/>
     public virtual void Dispose()
