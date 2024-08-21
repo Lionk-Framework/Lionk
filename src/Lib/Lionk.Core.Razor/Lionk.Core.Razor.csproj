@@ -19,10 +19,6 @@
     <ProjectReference Include="..\Lionk.Core\Lionk.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Model\" />
-  </ItemGroup>
-
 
 
 </Project>
