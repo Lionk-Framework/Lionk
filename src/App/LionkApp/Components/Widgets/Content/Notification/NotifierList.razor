@@ -17,7 +17,7 @@
                 <div style="display: flex; justify-content: space-between; width: 100%; height: 30px;">
                     <MudText>@notifyer.Name</MudText>
                     <div style="display: flex;">
-                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" @onclick="() => OnEditClicked(notifyer.Id)" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" @onclick="OnEditClicked" />
                         <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" @onclick="() => OnDeleteClicked(notifyer.Id)" />
                     </div>
                 </div>
@@ -39,11 +39,9 @@
         return NotificationService.Notifyers.Where(n => n.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase));
     }
 
-    private Task OnEditClicked(Guid notifierId)
+    private Task OnEditClicked()
     {
-        var channels = NotificationService.NotifyerChannels[notifierId];
-
-        var dialogParameters = new DialogParameters { { "Channels", channels } };
+        var dialogParameters = new DialogParameters { { "Channels", NotificationService.Channels } };
 
         var options = new DialogOptions { CloseOnEscapeKey = true };
 

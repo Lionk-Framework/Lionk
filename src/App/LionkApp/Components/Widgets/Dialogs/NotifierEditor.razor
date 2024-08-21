@@ -23,10 +23,23 @@
 
 @code {
     [Parameter]
-    public List<IChannel> Channels { get; set; } = new List<IChannel>();
+    public ReadOnlyCollection<IChannel> Channels { get; set; } = new List<IChannel>().AsReadOnly();
 
     [CascadingParameter]
     private MudDialogInstance? MudDialog { get; set; }
+
+    private Dictionary<string, bool> ChannelStates = new();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        InitializeRoleStates();
+    }
+
+    private void InitializeRoleStates()
+    {
+
+    }
 
     private void Cancel() => MudDialog?.Cancel();
 
