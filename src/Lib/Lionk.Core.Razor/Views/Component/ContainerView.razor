@@ -1,7 +1,8 @@
-﻿@using Lionk.Core.Model.Component
-@using Lionk.Core.View
+﻿@using Lionk.Core.Component
+@using Lionk.Core.Model.Component
+@inject IComponentService ComponentService
 @inherits MudItem
-@namespace LionkApp.Components.View
+@namespace Lionk.Core.View
 
 @if (_isLoading)
 {
@@ -9,31 +10,68 @@
 }
 else if (_isError)
 {
-    <NoComponentView Text="Component not found"/>
+    <NoComponentView Text=@_errorText/>
 }
 else
 {
-    
+    <ComponentView
+        ComponentViewModel="@ComponentViewModel"
+        Component="@_component"
+        OnUpdate="OnUpdate"
+        OnDelete="OnDelete"
+        />
 }
 
 
 @code {
 
-    [Parameter] public ComponentContainer? Container { get; set; }
+    [Parameter] public ComponentViewModel? ComponentViewModel { get; set; }
 
+    [Parameter] public EventCallback<ComponentViewModel> OnUpdate { get; set; }
+    [Parameter] public EventCallback<ComponentViewModel> OnDelete { get; set; }
+
+    private ComponentContainer? _container;
+    private BaseComponent? _component;
     private bool _isLoading = true;
     private bool _isError = false;
 
+    private string _errorText = "Component not found";
+
     protected override void OnInitialized()
     {
-        if(Container?.Component is not null)
+        if (ComponentViewModel is null)
+        {
+            _isError = true;
+            _errorText = "Component view can be restored or inexistant";
+            return;
+        }
+
+        _container = new(ComponentService, ComponentViewModel.ComponentUniqueID);
+        _component = (BaseComponent?)_container?.Component;
+        if (_component is not null)
         {
             _isLoading = false;
             _isError = false;
         }
-        else if (Container?.Component is null && Container?.ComponentId is not null)
+        else if (_component is null && _container?.ComponentId is not null)
         {
             _isLoading = true;
+            _isError = false;
+            _container.NewComponentAvailable += OnNewComponentAvailable;
+        }
+        else
+        {
+            _isLoading = false;
+            _isError = true;
+        }
+    }
+
+    private void OnNewComponentAvailable(object? sender, EventArgs e)
+    {
+        _component = (BaseComponent?)_container?.Component;
+        if (_container?.Component is not null)
+        {
+            _isLoading = false;
             _isError = false;
         }
         else
@@ -41,5 +79,6 @@ else
             _isLoading = false;
             _isError = true;
         }
+        StateHasChanged();
     }
 }

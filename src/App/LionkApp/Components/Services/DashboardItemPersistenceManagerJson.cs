@@ -1,8 +1,8 @@
 ﻿// Copyright © 2024 Lionk Project
 
+using Lionk.Core.View;
 using Lionk.Log;
 using Lionk.Utils;
-using LionkApp.Components.Model;
 using Newtonsoft.Json;
 
 namespace LionkApp.Services;
@@ -14,7 +14,7 @@ public class DashboardItemPersistenceManagerJson : IDashboardItemPersistenceMana
 {
     private const string FilePath = "dashboard.json";
     private readonly FolderType _folderType = FolderType.Data;
-    private List<DashboardItemModel> _items = [];
+    private List<ComponentViewModel> _items = [];
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DashboardItemPersistenceManagerJson"/> class.
@@ -23,30 +23,30 @@ public class DashboardItemPersistenceManagerJson : IDashboardItemPersistenceMana
         => Load();
 
     /// <inheritdoc/>
-    public List<DashboardItemModel> GetDashboardItems()
+    public List<ComponentViewModel> GetDashboardItems()
     {
         Load();
         return _items;
     }
 
     /// <inheritdoc/>
-    public void RemoveDashboardItemModel(DashboardItemModel dashboardItemModel)
+    public void RemoveDashboardItemModel(ComponentViewModel dashboardItemModel)
     {
         _items.Remove(dashboardItemModel);
         Save();
     }
 
     /// <inheritdoc/>
-    public void SaveDashboardItem(DashboardItemModel dashboardItemModel)
+    public void SaveDashboardItem(ComponentViewModel dashboardItemModel)
     {
         _items.Add(dashboardItemModel);
         Save();
     }
 
     /// <inheritdoc/>
-    public void UpdateDashboardItem(DashboardItemModel dashboardItemModel)
+    public void UpdateDashboardItem(ComponentViewModel dashboardItemModel)
     {
-        DashboardItemModel? itemToRemove = _items.Find(n => n.Id == dashboardItemModel.Id);
+        ComponentViewModel? itemToRemove = _items.Find(n => n.Id == dashboardItemModel.Id);
 
         if (itemToRemove is not null)
             _items.Remove(itemToRemove);
@@ -65,7 +65,7 @@ public class DashboardItemPersistenceManagerJson : IDashboardItemPersistenceMana
     private void Load()
     {
         string json = ConfigurationUtils.ReadFile(FilePath, _folderType);
-        List<DashboardItemModel>? items = JsonConvert.DeserializeObject<List<DashboardItemModel>>(json);
+        List<ComponentViewModel>? items = JsonConvert.DeserializeObject<List<ComponentViewModel>>(json);
 
         if (items is null)
         {

@@ -3,6 +3,7 @@
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @inject NavigationManager NavigationManager
+@using Lionk.Core.Component
 @using Lionk.Core.Dialog
 @namespace Lionk.Core.View
 
@@ -78,10 +79,10 @@
 </MudItem>
 
 @code {
-    [Parameter] public ComponentViewModel? DashboardItemModel { get; set; }
-    [Parameter] public IComponent? Component { get; set; }
-    [Parameter] public EventCallback<DashboardItemModel> OnUpdate { get; set; }
-    [Parameter] public EventCallback<DashboardItemModel> OnDelete { get; set; }
+    [Parameter] public ComponentViewModel? ComponentViewModel { get; set; }
+    [Parameter] public BaseComponent? Component { get; set; }
+    [Parameter] public EventCallback<ComponentViewModel> OnUpdate { get; set; }
+    [Parameter] public EventCallback<ComponentViewModel> OnDelete { get; set; }
 
     private Type? _view;
     private Dictionary<string, object> _parameters = new();
@@ -103,15 +104,15 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        if (DashboardItemModel is null) return;
+        if (ComponentViewModel is null) return;
         if (Component is not null)
         {
-            _view = DashboardItemModel.ViewType;
+            _view = ComponentViewModel.ViewType;
             InitializeComponentViews();
         }
         else
         {
-            string text = $"Component from type {DashboardItemModel.ViewType.Name} not found.";
+            string text = $"Component from type {ComponentViewModel.ViewType.Name} not found.";
             _parameters.Add("Text", text);
             _view = typeof(NoComponentView);
             _IsNotInstancied = true;
@@ -122,7 +123,7 @@
     private void InitializeComponentViews()
     {
         if (Component is null) return;
-        _parameters.Add("Container", Component);
+        _parameters.Add("Component", Component);
 
         Type componentType = Component.GetType();
 
@@ -148,7 +149,7 @@
         _isConfigurable = _configutionViews is not null && _configutionViews.Count() > 0;
         _isDetailable = _detailViews is not null && _detailViews.Count() > 0;
         _isPageable = _pageViews is not null && _pageViews.Count() > 0;
-        _isExecutable = Component is IExecutableComponent;
+        _isExecutable = Component is BaseExecutableComponent;
         StateHasChanged();
     }
 
@@ -169,7 +170,7 @@
 
     private void ExecutableStartClickedAsync()
     {
-        IExecutableComponent? executableComponent = Component as IExecutableComponent;
+        BaseExecutableComponent? executableComponent = Component as BaseExecutableComponent;
         if (executableComponent is not null)
         {
             executableComponent.Execute();
@@ -178,7 +179,7 @@
 
     private void ExecutableStopClickedAsync()
     {
-        IExecutableComponent? executableComponent = Component as IExecutableComponent;
+        BaseExecutableComponent? executableComponent = Component as BaseExecutableComponent;
         if (executableComponent is not null)
         {
             //executableComponent.Suspend();
@@ -193,7 +194,7 @@
             return;
         }
 
-        int viewIndex = DashboardItemModel?.Indexes[(int)viewContext] ?? 0;
+        int viewIndex = ComponentViewModel?.Indexes[(int)viewContext] ?? 0;
 
         var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
         var parameters = new DialogParameters();
@@ -206,10 +207,10 @@
         if (result is not null && !result.Canceled)
         {
             int newIndex = result.Data as int? ?? 0;
-            if (DashboardItemModel is not null && newIndex != viewIndex)
+            if (ComponentViewModel is not null && newIndex != viewIndex)
             {
-                DashboardItemModel.SaveCurrentIndex(viewContext, newIndex);
-                await OnUpdate.InvokeAsync(DashboardItemModel);
+                ComponentViewModel.SaveCurrentIndex(viewContext, newIndex);
+                await OnUpdate.InvokeAsync(ComponentViewModel);
             }
         }
     }
@@ -231,7 +232,7 @@
     private async Task DeleteClickedAsync()
     {
         bool delete = await DeleteDialogAsync();
-        if (delete) await OnDelete.InvokeAsync(DashboardItemModel);
+        if (delete) await OnDelete.InvokeAsync(ComponentViewModel);
     }
     private void GoToComponentsPage() => NavigationManager.NavigateTo("/components");
 }
