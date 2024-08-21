@@ -1,5 +1,4 @@
 ﻿// Copyright © 2024 Lionk Project
-
 using Lionk.Core.Component.Cyclic;
 
 namespace Lionk.Core.Razor.Views.CyclicComponent;
@@ -9,24 +8,7 @@ namespace Lionk.Core.Razor.Views.CyclicComponent;
 /// </summary>
 public static class CyclicComputationMethodExtensionInformation
 {
-    /// <summary>
-    /// This method returns the friendly string representation of the <see cref="CyclicComputationMethod"/> enumeration.
-    /// </summary>
-    /// <param name="method"> The cyclic computation method. </param>
-    /// <returns> The friendly string representation. </returns>
-    /// <exception cref="ArgumentOutOfRangeException"> Thrown when the method is not recognized. </exception>
-    public static string ToFriendlyString(this CyclicComputationMethod method)
-    {
-        switch (method)
-        {
-            case CyclicComputationMethod.RelativeToLastExecution:
-                return "Relative to last execution";
-            case CyclicComputationMethod.RelativeToStartTime:
-                return "Relative to start time";
-            default:
-                return "Unknown";
-        }
-    }
+    #region Public Methods
 
     /// <summary>
     /// This method returns the description of the <see cref="CyclicComputationMethod"/> enumeration.
@@ -47,4 +29,25 @@ public static class CyclicComputationMethodExtensionInformation
                 return "Unknown";
         }
     }
+
+    /// <summary>
+    /// This method returns the friendly string representation of the <see cref="CyclicComputationMethod"/> enumeration.
+    /// </summary>
+    /// <param name="method"> The cyclic computation method. </param>
+    /// <returns> The friendly string representation. </returns>
+    /// <exception cref="ArgumentOutOfRangeException"> Thrown when the method is not recognized. </exception>
+    public static string ToFriendlyString(this CyclicComputationMethod method)
+    {
+        switch (method)
+        {
+            case CyclicComputationMethod.RelativeToLastExecution:
+                return "Relative to last execution";
+            case CyclicComputationMethod.RelativeToStartTime:
+                return "Relative to start time";
+            default:
+                return "Unknown";
+        }
+    }
+
+    #endregion Public Methods
 }

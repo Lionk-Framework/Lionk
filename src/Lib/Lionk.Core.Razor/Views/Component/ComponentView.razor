@@ -97,6 +97,7 @@
     private bool _isDetailable;
     private bool _isPageable;
     private bool _isExecutable;
+    private bool _isCyclic;
     private bool _IsNotInstancied;
 
     private DynamicComponent? _dynamicComponent;
@@ -149,7 +150,8 @@
         _isConfigurable = _configutionViews is not null && _configutionViews.Count() > 0;
         _isDetailable = _detailViews is not null && _detailViews.Count() > 0;
         _isPageable = _pageViews is not null && _pageViews.Count() > 0;
-        _isExecutable = Component is BaseExecutableComponent;
+        _isExecutable = Component is IExecutableComponent;
+        _isCyclic = Component is ICyclicComponent;
         StateHasChanged();
     }
 
@@ -199,7 +201,7 @@
         var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
         var parameters = new DialogParameters();
         parameters.Add("Component", Component);
-        parameters.Add("ViewDescription", Views);
+        parameters.Add("ViewDescriptions", Views);
         parameters.Add("CurrentIndex", viewIndex);
 
         var dialog = DialogService.Show<ComponentDialog>("Configuration", parameters, options);

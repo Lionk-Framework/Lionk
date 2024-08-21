@@ -2,9 +2,12 @@
 @using Lionk.Core.View
 @using MudBlazor
 @using System.ComponentModel
+@namespace Lionk.TestComponent.CyclicCounter
 
-@attribute [ViewOf("Counter view", typeof(Counter), typeof(CounterWidgetView), ViewContext.Widget)]
-
+@attribute [ViewOf("Counter view", typeof(Counter), typeof(CounterView), ViewContext.Widget)]
+<MudIcon Icon="@Icons.Material.Filled.Numbers">
+    <MudText Typo="Typo.h6">@Component?.InstanceName</MudText>
+</MudIcon>
 <MudText Typo="Typo.h6">Counter: @Component?.CounterValue</MudText>
 
 @code {

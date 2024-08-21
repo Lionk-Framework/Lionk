@@ -1,0 +1,23 @@
+﻿@using Lionk.Core.View
+@using MudBlazor
+
+@namespace Lionk.TestComponent.CyclicCounter
+@attribute [ViewOf("Counter Configuration", typeof(Counter), typeof(CounterConfig), ViewContext.Configuration)]
+
+<MudButton OnClick="OnResetClick">Reset</MudButton>
+
+@code {
+
+    [Parameter] public Counter? Component { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    private void OnResetClick()
+    {
+        if (Component is null) return;
+        Component.CounterValue = 0;
+    }
+}
