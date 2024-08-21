@@ -53,7 +53,7 @@
                                        OnClick="PageableClickedAsync" />
                     }
 
-                    @if (_isExecutable)
+                    @if (_isExecutable && !_isCyclic)
                     {
                         <MudIconButton Icon="@Icons.Material.Filled.PlayArrow"
                                        Size="Size.Small"
