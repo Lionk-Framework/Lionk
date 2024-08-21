@@ -28,7 +28,7 @@
                         {
                             <div style="display: inline-flex; align-items: center; margin-right: 16px;">
                                 <MudText style="margin-right: 8px;">@role</MudText>
-                                <MudSwitch T="bool" Value=RoleStates[context.Id][role] ValueChanged="@(() => OnRoleChanged(context.Id, role, RoleStates[context.Id][role]))" Color="Color.Primary" />
+                                <MudSwitch T="bool" Value=RoleStates[context.Id][role] ValueChanged="@(() => OnRoleChanged(context.Id, role))" Color="Color.Primary" />
                             </div>
                         }
                     </div>
@@ -73,10 +73,12 @@ else
         }
     }
 
-    private void OnRoleChanged(Guid userID, string role, bool previousRoleState)
+    private void OnRoleChanged(Guid userID, string role)
     {
         var user = Users?.FirstOrDefault(u => u.Id == userID);
         if (user is null) return;
+
+        var previousRoleState = RoleStates[userID][role];
 
         // Add role
         if ((previousRoleState == false) && !user.Roles.Contains(role))
