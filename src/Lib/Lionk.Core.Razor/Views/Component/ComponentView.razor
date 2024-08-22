@@ -57,10 +57,12 @@
                     {
                         <MudIconButton Icon="@Icons.Material.Filled.PlayArrow"
                                        Size="Size.Small"
-                                       OnClick="ExecutableStartClickedAsync" />
+                                       OnClick="ExecutableStartClickedAsync"
+                                       Disabled="!((IExecutableComponent?)Component)?.CanExecute ?? true" />
                         <MudIconButton Icon="@Icons.Material.Filled.Stop"
                                        Size="Size.Small"
-                                       OnClick="ExecutableStopClickedAsync" />
+                                       OnClick="ExecutableStopClickedAsync"
+                                       Disabled="!((IExecutableComponent?)Component)?.CanExecute ?? true" />
                     }
                 }
                 <MudMenu Icon="@Icons.Material.Filled.MoreVert"
@@ -71,7 +73,13 @@
                 </MudMenu>
             </div>
             <div style="margin-right:50px">
-                <DynamicComponent @ref=_dynamicComponent Type="@_view" Parameters="@_parameters" />
+                <MudText Typo="Typo.h6">
+                    @Component?.InstanceName
+                </MudText>
+
+                <div style="margin-right:50px">
+                    <DynamicComponent @ref=_dynamicComponent Type="@_view" Parameters="@_parameters" />
+                </div>
             </div>
 
         </MudPaper>
