@@ -131,7 +131,7 @@ public class CyclicExecutorServiceTests
 
         _service.Start();
 
-        await Task.Delay(10000); // Give some time for the execution to happen
+        await Task.Delay(1000); // Give some time for the execution to happen
 
         Assert.That(component.IsInError, Is.True);
     }
