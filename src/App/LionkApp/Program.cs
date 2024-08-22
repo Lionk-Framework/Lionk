@@ -21,7 +21,7 @@ using ILoggerFactory = Lionk.Log.ILoggerFactory;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 #if !DEBUG
-var httpsPort = builder.Configuration.GetValue<int>("Kestrel:Endpoints:Https:Url")?.Split(':').Last() ?? 443;
+var httpsPort = builder.Configuration.GetValue<int>("Kestrel:Endpoints:Https:Url")?.Split(':').Last() ?? 6001;
 builder.WebHost.UseKestrel(options =>
 {
     options.ListenAnyIP(int.Parse(httpsPort), listenOptions =>
