@@ -1,5 +1,6 @@
 ﻿@inject IViewRegistry _viewRegistry
 @namespace Lionk.Core.View
+@implements IDisposable
 
 <DynamicComponent Type="@Type" Parameters="@Parameters" @ref="_dynamicComponentRef" />
 
