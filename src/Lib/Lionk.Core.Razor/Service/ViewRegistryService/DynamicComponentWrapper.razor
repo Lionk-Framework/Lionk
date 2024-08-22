@@ -1,0 +1,41 @@
+﻿@inject IViewRegistry _viewRegistry
+@namespace Lionk.Core.View
+
+<DynamicComponent Type="@Type" Parameters="@Parameters" @ref="_dynamicComponentRef" />
+
+@code {
+    /// <summary>
+    /// Parameter for the type of the view to be displayed.
+    /// </summary>
+    [Parameter] public Type? Type { get; set; }
+
+    /// <summary>
+    /// Parameter for the parameters of the view to be displayed.
+    /// </summary>
+    [Parameter] public IDictionary<string, object>? Parameters { get; set; }
+
+    private DynamicComponent? _dynamicComponentRef;
+    private object? _previousInstance;
+
+    /// <inheritdoc cref="OnAfterRender"/>
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (_dynamicComponentRef?.Instance == _previousInstance) return;
+
+        if (_previousInstance != null)
+            _viewRegistry.Unregister(_previousInstance);
+
+
+        if (_dynamicComponentRef?.Instance == null) return;
+
+        _viewRegistry.Register(_dynamicComponentRef.Instance);
+        _previousInstance = _dynamicComponentRef.Instance;
+    }
+
+    /// <inheritdoc cref="IDisposable"/>
+    public void Dispose()
+    {
+        if (_previousInstance != null)
+            _viewRegistry.Unregister(_previousInstance);
+    }
+}

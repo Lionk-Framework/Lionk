@@ -1,6 +1,4 @@
 ﻿@using Lionk.Core.View
-@using MudBlazor
-@using System.Reflection
 @namespace Lionk.Core.Dialog
 
 <MudDialog Style="height:50%">
@@ -16,16 +14,15 @@
 
             @if (ViewDescriptions is not null && ViewDescriptions.Count > 0)
             {
-                foreach (var viewDescription in ViewDescriptions)
+                foreach (var viewDescription in ViewDescriptions.OfType<ComponentViewDescription>())
                 {
-                    if (viewDescription is null) continue;
                     <MudCarouselItem Style="padding-left:50px; padding-right:50px; overflow-y: scroll;">
                         <MudGrid Style="width:inherit%">
                             <MudItem>
                                 <MudText Typo="Typo.h6">@viewDescription.Name</MudText>
                             </MudItem>
                             <MudItem Style="width:inherit">
-                                <DynamicComponent Type="@viewDescription.ViewType" Parameters="_parameter" />
+                                <DynamicComponentWrapper Type="@viewDescription.ViewType" Parameters="_parameter" />
                             </MudItem>
                         </MudGrid>
                     </MudCarouselItem>

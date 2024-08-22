@@ -78,7 +78,7 @@
                 </MudText>
 
                 <div style="margin-right:50px">
-                    <DynamicComponent @ref=_dynamicComponent Type="@_view" Parameters="@_parameters" />
+                    <DynamicComponentWrapper Type="@_view" Parameters="@_parameters" />
                 </div>
             </div>
 
@@ -107,8 +107,6 @@
     private bool _isExecutable;
     private bool _isCyclic;
     private bool _IsNotInstancied;
-
-    private DynamicComponent? _dynamicComponent;
 
     protected override void OnInitialized()
     {
