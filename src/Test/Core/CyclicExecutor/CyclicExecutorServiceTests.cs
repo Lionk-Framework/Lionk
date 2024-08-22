@@ -144,19 +144,20 @@ public class CyclicExecutorServiceTests
     public async Task ExecuteComponent_WhenExecutionTimesOut_AbortsComponent()
     {
         _service = new CyclicExecutorService(_componentServiceMock.Object);
+
+        _service.WatchDogTimeout = TimeSpan.FromMilliseconds(500); // Set a short timeout
         _cyclicComponentMock.Setup(c => c.CanExecute).Returns(true);
         _cyclicComponentMock.Setup(c => c.IsInError).Returns(false);
         _cyclicComponentMock.Setup(c => c.NextExecution).Returns(DateTime.UtcNow.AddSeconds(-1));
-        _cyclicComponentMock.Setup(c => c.Execute()); // Simulate long running task
+        _cyclicComponentMock.Setup(c => c.Execute()).Callback(() => Thread.Sleep(2000)); // Simulate long running task
         _componentServiceMock.Setup(s => s.GetInstancesOfType<ICyclicComponent>())
             .Returns(new List<ICyclicComponent> { _cyclicComponentMock.Object });
 
-        _service.WatchDogTimeout = TimeSpan.FromMilliseconds(1); // Set a short timeout
         _service.Start();
 
-        await Task.Delay(1000); // Wait for more than the watchdog timeout
+        await Task.Delay(3000); // Wait for more than the watchdog timeout
 
-        _cyclicComponentMock.Verify(c => c.Abort(), Times.Once);
+        _cyclicComponentMock.Verify(c => c.Abort(), Times.AtLeastOnce);
     }
 
     /// <summary>

@@ -1,14 +1,13 @@
 ﻿// Copyright © 2024 Lionk Project
 
-using Lionk.Core.View;
 using Newtonsoft.Json;
 
-namespace LionkApp.Components.Model;
+namespace Lionk.Core.View;
 
 /// <summary>
 /// Dashboard item model.
 /// </summary>
-public class DashboardItemModel
+public class ComponentViewModel
 {
     /// <summary>
     /// Gets the unique identifier of the dashboard history.
@@ -16,11 +15,11 @@ public class DashboardItemModel
     public Guid Id { get; private set; } = Guid.NewGuid();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DashboardItemModel"/> class.
+    /// Initializes a new instance of the <see cref="ComponentViewModel"/> class.
     /// </summary>
     /// <param name="componentId"> The component unique id.</param>
     /// <param name="viewType"> The view type.</param>
-    public DashboardItemModel(Guid componentId, Type viewType)
+    public ComponentViewModel(Guid componentId, Type viewType)
     {
         ComponentUniqueID = componentId;
         ViewType = viewType;
@@ -28,14 +27,14 @@ public class DashboardItemModel
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DashboardItemModel"/> class.
+    /// Initializes a new instance of the <see cref="ComponentViewModel"/> class.
     /// </summary>
     /// <param name="id"> The unique identifier of the dashboard item model.</param>
     /// <param name="componentId"> The component instance name.</param>
     /// <param name="viewType"> The view type.</param>
     /// <param name="indexes"> The indexes of selected views.</param>
     [JsonConstructor]
-    public DashboardItemModel(Guid id, Guid componentId, Type viewType, int[] indexes)
+    public ComponentViewModel(Guid id, Guid componentId, Type viewType, int[] indexes)
     {
         Id = id;
         ComponentUniqueID = componentId;

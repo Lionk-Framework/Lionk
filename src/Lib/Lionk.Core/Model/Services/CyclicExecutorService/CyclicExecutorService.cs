@@ -203,6 +203,9 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     {
         try
         {
+            if (combinedToken.IsCancellationRequested)
+                throw new TaskCanceledException("Watchdog timeout exceeded");
+
             var task = Task.Run(component.Execute, combinedToken);
 
             while (!task.IsCompleted)

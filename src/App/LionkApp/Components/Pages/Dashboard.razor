@@ -15,13 +15,12 @@
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
     @foreach (var item in DashboardRegistry ?? [])
     {
-        IComponent? component = ComponentService.GetInstanceByID(item.ComponentUniqueID);
-        <DashboardItem DashboardItemModel=item
-                       Component="component"
+        <ContainerView ComponentViewModel="@item"
                        OnUpdate="UpdateDashboardItem"
                        OnDelete="RemoveDashboardItem"
                        Style="min-height:200px" />
     }
+
 </MudContainer>
 
 <MudFab @onclick="OpenDialogAsync"
@@ -31,7 +30,7 @@
         Style="position: fixed; bottom: 20px; right: 20px;" />
 
 @code {
-    public List<DashboardItemModel>? DashboardRegistry { get; set; } = new();
+    public List<ComponentViewModel>? DashboardRegistry { get; set; } = new();
     private IDashboardItemPersistenceManager? _persistenceManager;
 
     protected override void OnInitialized()
@@ -49,7 +48,7 @@
 
         if (result is not null && !result.Canceled)
         {
-            var newWidget = result.Data as DashboardItemModel;
+            var newWidget = result.Data as ComponentViewModel;
             if (newWidget != null)
             {
                 _persistenceManager?.SaveDashboardItem(newWidget);
@@ -66,13 +65,13 @@
         StateHasChanged();
     }
 
-    private void UpdateDashboardItem(DashboardItemModel item)
+    private void UpdateDashboardItem(ComponentViewModel item)
     {
         _persistenceManager?.UpdateDashboardItem(item);
         RestoreDashboard();
     }
 
-    private void RemoveDashboardItem(DashboardItemModel item)
+    private void RemoveDashboardItem(ComponentViewModel item)
     {
         _persistenceManager?.RemoveDashboardItemModel(item);
         RestoreDashboard();

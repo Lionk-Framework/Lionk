@@ -63,7 +63,7 @@
             return;
         }
 
-        var dashboardItem = new DashboardItemModel(_selectedComponent.Id, _selectedViewType);
+        var dashboardItem = new ComponentViewModel(_selectedComponent.Id, _selectedViewType);
         MudDialog?.Close(DialogResult.Ok(dashboardItem));
     }
 

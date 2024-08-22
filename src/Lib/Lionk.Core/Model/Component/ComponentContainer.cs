@@ -13,13 +13,19 @@ public class ComponentContainer : ObservableElement
     private readonly IComponentService _componentService;
 
     /// <summary>
+    /// Occurs when a new component is available.
+    /// </summary>
+    public event EventHandler? NewComponentAvailable;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="ComponentContainer"/> class.
     /// </summary>
     /// <param name="componentService">component service.</param>
-    public ComponentContainer(IComponentService componentService)
+    /// <param name="componentId">component instance unique ID.</param>
+    public ComponentContainer(IComponentService componentService, Guid componentId)
     {
         _componentService = componentService;
-
+        _componentId = componentId;
         IComponent? component = _componentService.GetInstanceByID(ComponentId);
 
         if (component is not null)
@@ -32,17 +38,17 @@ public class ComponentContainer : ObservableElement
         }
     }
 
-    private Guid _componentID;
+    private Guid _componentId;
 
     /// <summary>
     /// Gets or sets the component instance unique ID.
     /// </summary>
     public Guid ComponentId
     {
-        get => _componentID;
+        get => _componentId;
         set
         {
-            _componentID = value;
+            _componentId = value;
             OnNewComponentAvailable();
         }
     }
@@ -66,6 +72,7 @@ public class ComponentContainer : ObservableElement
         {
             Component = component;
             _componentService.NewComponentAvailable -= (s, e) => OnNewComponentAvailable();
+            NewComponentAvailable?.Invoke(this, EventArgs.Empty);
         }
     }
 }
