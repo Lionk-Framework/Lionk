@@ -21,8 +21,14 @@ using ILoggerFactory = Lionk.Log.ILoggerFactory;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 #if !DEBUG
- // Configure Kestrel to listen on all IP addresses and port 5000
- builder.WebHost.UseKestrel(options => options.Listen(System.Net.IPAddress.Any, 5000));
+var httpsPort = builder.Configuration.GetValue<int>("Kestrel:Endpoints:Https:Url")?.Split(':').Last() ?? 6001;
+builder.WebHost.UseKestrel(options =>
+{
+    options.ListenAnyIP(int.Parse(httpsPort), listenOptions =>
+    {
+        listenOptions.UseHttps();
+    });
+});
 #endif
 
 // Add services to the container.
