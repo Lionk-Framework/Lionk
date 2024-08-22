@@ -5,7 +5,7 @@ namespace Lionk.Core.View;
 /// <summary>
 /// Interface which define the service to register the active views.
 /// </summary>
-public interface IViewRegistry
+public interface IViewRegistryService
 {
     /// <summary>
     /// Method used to register a view.
@@ -22,7 +22,6 @@ public interface IViewRegistry
     /// <summary>
     /// Method used to check if an instance of the view is active.
     /// </summary>
-    /// <typeparam name="T">The type of the view.</typeparam>
     /// <returns>True if an instance of this type exist.</returns>
-    bool HasActiveViews<T>();
+    bool HasActiveViews(Type t);
 }

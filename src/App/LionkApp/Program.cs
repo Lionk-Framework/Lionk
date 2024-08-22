@@ -76,7 +76,7 @@ builder.Services.AddSingleton<IViewLocatorService>(serviceProvider =>
     return new ViewLocatorService(typesProvider);
 });
 
-builder.Services.AddSingleton<IViewRegistry>(serviceProvider => new ViewRegistryService());
+builder.Services.AddSingleton<IViewRegistryService>(serviceProvider => new ViewRegistryService());
 
 // Register CyclicExecutorService with a factory to resolve IComponentService
 builder.Services.AddSingleton<ICyclicExecutorService>(serviceProvider =>

@@ -1,4 +1,4 @@
-﻿@inject IViewRegistry _viewRegistry
+﻿@inject IViewRegistryService _viewRegistry
 @namespace Lionk.Core.View
 @implements IDisposable
 
@@ -25,7 +25,6 @@
 
         if (_previousInstance != null)
             _viewRegistry.Unregister(_previousInstance);
-
 
         if (_dynamicComponentRef?.Instance == null) return;
 
