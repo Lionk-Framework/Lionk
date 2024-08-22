@@ -32,7 +32,7 @@ else
                 </MudTooltip>
             }
 
-            <MudText Typo="Typo.body1">@Plugin.Description</MudText>
+            <MudText Typo="Typo.body1" Class="description-container">@Plugin.Description</MudText>
             <MudText Typo="Typo.body2">Author: @Plugin.Author</MudText>
 
             <MudCollapse Expanded="@ShowDependencies">
@@ -79,12 +79,21 @@ else
             await OnDependencySelect.InvokeAsync(dependency);
     }
 
+    /// <summary>
+    /// The plugin that is displayed in the card.
+    /// </summary>
     [Parameter]
     public Plugin? Plugin { get; set; }
 
+    /// <summary>
+    /// Parameter that is triggered when a dependency is selected.
+    /// </summary>
     [Parameter]
     public EventCallback<Dependency> OnDependencySelect { get; set; }
 
+    /// <summary>
+    /// Event that is triggered when the delete button is clicked.
+    /// </summary>
     [Parameter]
     public EventCallback<Plugin> OnDelete { get; set; }
 }
