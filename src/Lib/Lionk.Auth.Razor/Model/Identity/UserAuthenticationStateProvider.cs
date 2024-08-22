@@ -52,13 +52,13 @@ public class UserAuthenticationStateProvider : AuthenticationStateProvider, IDis
     }
 
     /// <summary>
-    /// Method to logout the user.
+    /// Method to log out the user.
     /// </summary>
     /// <returns> The task.</returns>
     public async Task LogoutAsync()
     {
         await _userService.ClearBrowserUserDataAsync();
-        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(new())));
+        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(new ClaimsPrincipal())));
     }
 
     /// <summary>
@@ -71,31 +71,39 @@ public class UserAuthenticationStateProvider : AuthenticationStateProvider, IDis
             var principal = new ClaimsPrincipal();
             User? user = await _userService.FetchUserFromBrowserAsync();
 
-            if (user is not null)
+            if (user is null)
             {
-                User? userInDatabase = _userServiceImpl.GetRegisteredUser(user.Username, user.PasswordHash);
-
-                if (userInDatabase is not null)
-                {
-                    principal = userInDatabase.ToClaimsPrincipal();
-                    CurrentUser = userInDatabase;
-                }
+                return new AuthenticationState(principal);
             }
 
-            return new(principal);
+            User? userInDatabase = _userServiceImpl.GetRegisteredUser(user.Username, user.PasswordHash);
+
+            if (userInDatabase is null)
+            {
+                return new AuthenticationState(principal);
+            }
+
+            principal = userInDatabase.ToClaimsPrincipal();
+            CurrentUser = userInDatabase;
+
+            return new AuthenticationState(principal);
         }
     }
 
     /// <summary>
     /// Method to dispose the user authentication state provider.
     /// </summary>
-    public void Dispose() => AuthenticationStateChanged -= OnAuthenticationStateChangedAsync;
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        AuthenticationStateChanged -= OnAuthenticationStateChangedAsync;
+    }
 
     private async void OnAuthenticationStateChangedAsync(Task<AuthenticationState> task)
     {
-        AuthenticationState? authenticationState = await task;
+        AuthenticationState authenticationState = await task;
 
-        if (authenticationState is not null && authenticationState.User.Identities.Count() > 0)
+        if (authenticationState.User.Identities.Any())
         {
             CurrentUser = User.FromClaimsPrincipal(authenticationState.User);
         }

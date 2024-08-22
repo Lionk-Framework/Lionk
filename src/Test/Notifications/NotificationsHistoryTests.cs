@@ -50,11 +50,8 @@ internal class NotificationsHistoryTests
     [Test]
     public void TestDeserializationHistory()
     {
-        // Arrange
-        NotificationHistory notificationHistory;
-
-        // Act
-        notificationHistory = NotificationService.GetNotifications().Last();
+        var notificationHistory =
+            NotificationService.GetNotifications().Last();
 
         // Assert
         Assert.That(notificationHistory.Notification.Id, Is.EqualTo(_notification.Id), "The notification ID is not the same.");
@@ -76,10 +73,6 @@ internal class NotificationsHistoryTests
     [Test]
     public void TestEditedNotificationDeserialization()
     {
-        // Arrange
-        Guid id;
-
-        // Act
         List<NotificationHistory> notifications = NotificationService.GetNotifications();
         NotificationHistory notificationHistory = notifications.Last();
         if (notificationHistory is null)
@@ -88,7 +81,7 @@ internal class NotificationsHistoryTests
             return;
         }
 
-        id = notificationHistory.Id;
+        Guid id = notificationHistory.Id;
         notificationHistory.Read();
         NotificationService.EditNotificationHistory(notificationHistory);
         NotificationHistory? editedNotificationHistory = NotificationService.GetNotificationByGuid(id);
@@ -98,7 +91,6 @@ internal class NotificationsHistoryTests
             return;
         }
 
-        // Assert
         Assert.That(editedNotificationHistory.IsRead, Is.True, "The notification is not read.");
     }
 }

@@ -11,7 +11,7 @@ namespace LionkTest.Notifications.Mock;
 public class MockChannel : IChannel
 {
     /// <inheritdoc/>
-    public Guid Guid { get; private set; } = Guid.NewGuid();
+    public Guid Guid { get; } = Guid.NewGuid();
 
     /// <summary>
     /// Gets or sets the name of the channel.
@@ -27,7 +27,7 @@ public class MockChannel : IChannel
     /// <summary>
     /// Gets a value indicating whether the channel is initialized.
     /// </summary>
-    public bool IsInitialized { get; private set; }
+    public bool IsInitialized { get; }
 
     /// <summary>
     /// Initializes the channel.

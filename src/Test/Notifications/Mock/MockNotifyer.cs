@@ -11,12 +11,12 @@ namespace LionkTest.Notifications.Mock;
 public class MockNotifyer : INotifyer
 {
     /// <inheritdoc/>
-    public Guid Id { get; private set; } = Guid.NewGuid();
+    public Guid Id { get; } = Guid.NewGuid();
 
     /// <summary>
     /// Gets the name of the notifyer.
     /// </summary>
-    public string Name { get; private set; } = "NotifyerTest";
+    public string Name { get; } = "NotifyerTest";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MockNotifyer"/> class.

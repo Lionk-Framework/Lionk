@@ -153,9 +153,9 @@
 
     private void DefineButtons()
     {
-        _isConfigurable = _configutionViews is not null && _configutionViews.Count() > 0;
-        _isDetailable = _detailViews is not null && _detailViews.Count() > 0;
-        _isPageable = _pageViews is not null && _pageViews.Count() > 0;
+        _isConfigurable = _configutionViews is not null && _configutionViews.Any();
+        _isDetailable = _detailViews is not null && _detailViews.Any();
+        _isPageable = _pageViews is not null && _pageViews.Any();
         _isExecutable = Component is IExecutableComponent;
         _isCyclic = Component is ICyclicComponent;
         StateHasChanged();
@@ -196,7 +196,7 @@
 
     private async Task DialogFromContextAsync(ViewContext viewContext, List<ComponentViewDescription>? Views)
     {
-        if (Views is null || Views.Count() == 0)
+        if (Views is null || !Views.Any())
         {
             Snackbar.Add($"No {viewContext.ToString()} view found", Severity.Error);
             return;
@@ -210,7 +210,7 @@
         parameters.Add("ViewDescriptions", Views);
         parameters.Add("CurrentIndex", viewIndex);
 
-        var dialog = DialogService.Show<ComponentDialog>("Configuration", parameters, options);
+        var dialog = await DialogService.ShowAsync<ComponentDialog>("Configuration", parameters, options);
         var result = await dialog.Result;
         if (result is not null && !result.Canceled)
         {
@@ -232,7 +232,7 @@
     { x => x.Color, Color.Error }
     };
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
-        var dialog = DialogService.Show<SimpleQuestionDialog>("Delete", parameters, options);
+        var dialog = await DialogService.ShowAsync<SimpleQuestionDialog>("Delete", parameters, options);
         var result = await dialog.Result;
         return result?.Data as bool? ?? false;
     }

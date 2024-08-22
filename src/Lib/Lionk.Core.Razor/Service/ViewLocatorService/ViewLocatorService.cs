@@ -24,8 +24,9 @@ public class ViewLocatorService : IViewLocatorService
     /// <inheritdoc/>
     public IEnumerable<ComponentViewDescription> GetViewOf(Type type, ViewContext context)
     {
-        List<ComponentViewDescription> assignableView;
-        assignableView = _views.Where(view => type.IsAssignableTo(view.ComponentType)).ToList();
+        List<ComponentViewDescription> assignableView
+            = _views.Where(view => type.IsAssignableTo(view.ComponentType)).ToList();
+
         assignableView = assignableView.Where(view => view.ViewContext == context).ToList();
         return assignableView.ToList();
     }

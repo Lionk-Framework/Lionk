@@ -10,10 +10,10 @@ namespace Lionk.Notification.Email;
 public class EmailRecipients : IRecipient
 {
     /// <inheritdoc/>
-    public Guid Guid { get; private set; } = Guid.NewGuid();
+    public Guid Guid { get; } = Guid.NewGuid();
 
     /// <inheritdoc/>
-    public string Name { get; private set; } = string.Empty;
+    public string Name { get; } = string.Empty;
 
     /// <summary>
     /// Gets the email of the recipient.

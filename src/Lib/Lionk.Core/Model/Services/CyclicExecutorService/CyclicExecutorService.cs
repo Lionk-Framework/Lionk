@@ -213,7 +213,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
                 if (combinedToken.IsCancellationRequested)
                     throw new TaskCanceledException("Watchdog timeout exceeded");
 
-                await Task.Delay(1);
+                await Task.Delay(1, combinedToken);
             }
 
             if (task.IsCanceled && !combinedToken.IsCancellationRequested)

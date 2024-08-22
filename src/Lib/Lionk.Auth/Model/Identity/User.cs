@@ -10,12 +10,12 @@ namespace Lionk.Auth.Identity;
 /// </summary>
 public class User
 {
-    private readonly HashSet<string> _roles = [];
+    private readonly HashSet<string> _roles;
 
     /// <summary>
     /// Gets the unique identifier of the user.
     /// </summary>
-    public Guid Id { get; private set; }
+    public Guid Id { get; }
 
     /// <summary>
     /// Gets the username of the user.
@@ -35,7 +35,7 @@ public class User
     /// <summary>
     /// Gets the salt used to hash the password.
     /// </summary>
-    public string Salt { get; private set; }
+    public string Salt { get; }
 
     /// <summary>
     /// Gets the roles of the user.

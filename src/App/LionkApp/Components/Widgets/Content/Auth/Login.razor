@@ -47,7 +47,7 @@
         bool isAuthenticated = authState?.User?.Identity?.IsAuthenticated ?? false;
         if (!isAuthenticated)
         {
-            base.OnInitialized();
+            await base.OnInitializedAsync();
         }
         else
         {

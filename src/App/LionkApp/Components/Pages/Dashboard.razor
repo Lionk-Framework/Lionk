@@ -43,7 +43,7 @@
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
         var parameters = new DialogParameters();
-        var dialog = DialogService.Show<WidgetAdder>("Widget selection", parameters, options);
+        var dialog = await DialogService.ShowAsync<WidgetAdder>("Widget selection", parameters, options);
         var result = await dialog.Result;
 
         if (result is not null && !result.Canceled)

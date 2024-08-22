@@ -18,13 +18,13 @@ public class EmailChannel : IChannel
     private SmtpClient? _smtpClient;
 
     /// <inheritdoc/>
-    public Guid Guid { get; private set; } = Guid.NewGuid();
+    public Guid Guid { get; } = Guid.NewGuid();
 
     /// <inheritdoc/>
-    public string Name { get; private set; } = string.Empty;
+    public string Name { get; } = string.Empty;
 
     /// <inheritdoc/>
-    public List<IRecipient> Recipients { get; private set; } = [];
+    public List<IRecipient> Recipients { get; } = [];
 
     /// <inheritdoc/>
     [JsonIgnore]

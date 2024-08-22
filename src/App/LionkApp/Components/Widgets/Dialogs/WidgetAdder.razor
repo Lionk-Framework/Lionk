@@ -41,7 +41,7 @@
         DialogParameters parameters = new();
         parameters.Add("ComponentType", _selectedComponent.GetType());
 
-        var dialogReference = DialogService.Show<WidgetSelector>("Widget Selection", parameters);
+        var dialogReference = await DialogService.ShowAsync<WidgetSelector>("Widget Selection", parameters);
 
         var dialogResult = await dialogReference.Result;
 

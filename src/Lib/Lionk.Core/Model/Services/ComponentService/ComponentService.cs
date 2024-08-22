@@ -70,13 +70,13 @@ public class ComponentService : IComponentService
     /// <inheritdoc/>
     public IComponent? GetInstanceByName(string name)
     {
-        IComponent? component = _componentInstances.Values.Where(x => x.InstanceName == name).FirstOrDefault();
+        IComponent? component = _componentInstances.Values.FirstOrDefault(x => x.InstanceName == name);
         return component;
     }
 
     /// <inheritdoc/>
     public IComponent? GetInstanceByID(Guid id)
-        => _componentInstances.TryGetValue(id, out IComponent? component) ? component : null;
+        => _componentInstances.GetValueOrDefault(id);
 
     /// <inheritdoc/>
     public void Dispose()

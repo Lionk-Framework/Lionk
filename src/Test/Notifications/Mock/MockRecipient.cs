@@ -11,12 +11,12 @@ namespace LionkTest.Notifications.Mock;
 public class MockRecipient : IRecipient
 {
     /// <inheritdoc/>
-    public Guid Guid { get; private set; } = Guid.NewGuid();
+    public Guid Guid { get; } = Guid.NewGuid();
 
     /// <summary>
     /// Gets the name of the recipient.
     /// </summary>
-    public string Name { get; private set; }
+    public string Name { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MockRecipient"/> class.

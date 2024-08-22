@@ -37,11 +37,25 @@
 
 @code {
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
-    [Parameter] public object? Component { get; set; }
-    [Parameter] public List<ComponentViewDescription>? ViewDescriptions { get; set; }
-    [Parameter] public int CurrentIndex { get; set; }
-    private Dictionary<string, object> _parameter = new Dictionary<string, object>();
 
+    /// <summary>
+    /// The component to display.
+    /// </summary>
+    [Parameter] public object? Component { get; set; }
+
+    /// <summary>
+    /// The list of view descriptions.
+    /// </summary>
+    [Parameter] public List<ComponentViewDescription>? ViewDescriptions { get; set; }
+
+    /// <summary>
+    /// The index of the currently selected view.
+    /// </summary>
+    [Parameter] public int CurrentIndex { get; set; }
+
+    private readonly Dictionary<string, object> _parameter = new Dictionary<string, object>();
+
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         if (Component is null) return;
@@ -50,10 +64,7 @@
     }
 
     private void Submit()
-    {
-        if (MudDialog is null) return;
-        MudDialog.Close(DialogResult.Ok(CurrentIndex));
-    }
+        => MudDialog?.Close(DialogResult.Ok(CurrentIndex));
 
     private void ViewChanged(int index) => CurrentIndex = index;
 }

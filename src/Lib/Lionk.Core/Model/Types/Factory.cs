@@ -13,7 +13,7 @@ public abstract class Factory
     /// Initializes a new instance of the <see cref="Factory"/> class.
     /// </summary>
     /// <param name="type">The type created by the factory.</param>
-    public Factory(Type type)
+    protected Factory(Type type)
         => Type = type;
 
     /// <summary>
