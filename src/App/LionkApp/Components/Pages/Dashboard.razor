@@ -9,7 +9,7 @@
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
     @foreach (ComponentViewModel item in DashboardRegistry ?? [])
     {
-        <ContainerView ComponentViewModel="@item"
+        <ContainerView @key="item.Id" ComponentViewModel="@item"
                        OnUpdate="UpdateDashboardItem"
                        OnDelete="RemoveDashboardItem"
                        Style="min-height:200px"/>
