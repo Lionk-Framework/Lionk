@@ -66,6 +66,14 @@
                                        OnClick="ExecutableStopClickedAsync"
                                        Disabled="!((IExecutableComponent?)Component)?.CanExecute ?? true" />
                     }
+
+                    @if (_isExecutable)
+                    {
+                        <MudIconButton Icon="@Icons.Material.Filled.Refresh"
+                                       Size="Size.Small"
+                                       OnClick="ExecutableResetAsync"
+                                       Disabled="!((IExecutableComponent?)Component)?.IsInError ?? true" />
+                    }
                 }
                 <MudMenu Icon="@Icons.Material.Filled.MoreVert"
                          Color="Color.Primary">
@@ -73,6 +81,16 @@
                         <MudText Color="Color.Error">Delete Item</MudText>
                     </MudMenuItem>
                 </MudMenu>
+
+                @if (((IExecutableComponent?)Component)?.IsInError ?? false)
+                {
+                    <MudTooltip Text="Component is in error you must reset it to restart the component.">
+                        <MudIconButton Icon="@Icons.Material.Filled.Error"
+                                       Size="Size.Small"
+                                       Color="Color.Error" />
+                    </MudTooltip>
+                }
+
             </div>
             <div style="margin-right:50px">
                 <MudText Typo="Typo.h6">
@@ -213,6 +231,14 @@
         }
     }
 
+    private void ExecutableResetAsync()
+        {
+        if (Component is IExecutableComponent executableComponent)
+        {
+            executableComponent.Reset();
+        }
+    }
+
     private async Task DialogFromContextAsync(ViewContext viewContext, List<ComponentViewDescription>? views)
     {
         if (views is null || !views.Any())
@@ -226,11 +252,11 @@
         var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
         var parameters =
             new DialogParameters
-                {
+                                    {
                 { "Component", Component },
                 { "ViewDescriptions", views },
                 { "CurrentIndex", viewIndex },
-                };
+                                    };
 
         IDialogReference dialog = await DialogService.ShowAsync<ComponentDialog>("Configuration", parameters, options);
         DialogResult? result = await dialog.Result;
