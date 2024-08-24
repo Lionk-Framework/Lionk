@@ -1,0 +1,47 @@
+﻿@inject IComponentService ComponentService
+@inject IDialogService DialogService
+@using Lionk.Core.Component
+@using Lionk.Core.Dialog
+@using Lionk.Core.Model.Component
+@using IComponent = Lionk.Core.Component.IComponent
+@inherits MudItem
+@namespace Lionk.Core.View
+<MudMenu ActivationEvent="@MouseEvent.RightClick">
+    <ActivatorContent>
+    <MudProgressCircular Color="Color.Primary" Size="Size.Small" Indeterminate="true" />
+    </ActivatorContent>
+    <ChildContent>
+        <MudMenuItem OnClick="DeleteClickedAsync">Delete item</MudMenuItem>
+    </ChildContent>
+</MudMenu>
+<MudPaper>
+</MudPaper>
+
+@code {
+    /// <summary>
+    /// The component view model.
+    /// </summary>
+    [Parameter]
+    public ComponentViewModel? ComponentViewModel { get; set; }
+
+    /// <summary>
+    /// Event that is called when the Delete button is clicked.
+    /// </summary>
+    [Parameter]
+    public EventCallback<ComponentViewModel> OnDelete { get; set; }
+
+    private async Task DeleteClickedAsync()
+    {
+        bool delete = await DeleteDialogAsync();
+        if (delete) await OnDelete.InvokeAsync(ComponentViewModel);
+    }
+
+    private async Task<bool> DeleteDialogAsync()
+    {
+        var parameters = new DialogParameters<SimpleQuestionDialog> { { x => x.ContentText, "Do you really want to delete these widget? This process cannot be undone." }, { x => x.ButtonText, "Delete" }, { x => x.Color, Color.Error } };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        IDialogReference dialog = await DialogService.ShowAsync<SimpleQuestionDialog>("Delete", parameters, options);
+        DialogResult? result = await dialog.Result;
+        return result?.Data as bool? ?? false;
+    }
+}

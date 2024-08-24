@@ -7,19 +7,19 @@
 
 @if (_isLoading)
 {
-    <MudProgressCircular Color="Color.Primary" Size="Size.Small" Indeterminate="true"/>
+    <LoadingComponent ComponentViewModel="@ComponentViewModel"
+       OnDelete="OnDelete"/>
 }
 else if (_isError)
 {
-    <NoComponentView Text=@_errorText/>
+    <NoComponentView Text=@_errorText />
 }
 else
 {
-    <ComponentView
-        ComponentViewModel="@ComponentViewModel"
-        Component="@_component"
-        OnUpdate="OnUpdate"
-        OnDelete="OnDelete"/>
+    <ComponentView ComponentViewModel="@ComponentViewModel"
+                   Component="@_component"
+                   OnUpdate="OnUpdate"
+                   OnDelete="OnDelete" />
 }
 
 
