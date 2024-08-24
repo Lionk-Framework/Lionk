@@ -22,9 +22,9 @@ public static class NotificationFileHandler
 
     private static readonly string _notificationPath = Path.Combine(_folderPath, "notifications.json");
 
-    private static readonly string _notifyerChannelsPath = Path.Combine(_folderPath, "notifyerChannels.json");
+    private static readonly string _notifierChannelsPath = Path.Combine(_folderPath, "notifyerChannels.json");
 
-    private static readonly string _notifyersPath = Path.Combine(_folderPath, "notifyers.json");
+    private static readonly string _notifierPath = Path.Combine(_folderPath, "notifyers.json");
 
     #endregion
 
@@ -35,11 +35,11 @@ public static class NotificationFileHandler
     /// </summary>
     static NotificationFileHandler()
     {
-        string datafolder = Path.Combine(ConfigurationUtils.GetFolderPath(_folderType), _folderPath);
-        FileHelper.CreateDirectoryIfNotExists(datafolder);
+        string dataFolder = Path.Combine(ConfigurationUtils.GetFolderPath(_folderType), _folderPath);
+        FileHelper.CreateDirectoryIfNotExists(dataFolder);
         _jsonSerializerSettings = new JsonSerializerSettings();
         _jsonSerializerSettings.Converters.Add(new NotificationPropertiesConverter());
-        _jsonSerializerSettings.Converters.Add(new NotifyerChannelDictionaryConverter());
+        _jsonSerializerSettings.Converters.Add(new NotifierChannelDictionaryConverter());
     }
 
     #endregion
@@ -53,7 +53,7 @@ public static class NotificationFileHandler
     public static void EditNotificationHistory(NotificationHistory notificationHistory)
     {
         List<NotificationHistory> notificationHistories = GetNotifications();
-        int index = notificationHistories.FindIndex((NotificationHistory n) => n.Id == notificationHistory.Id);
+        int index = notificationHistories.FindIndex(n => n.Id == notificationHistory.Id);
         notificationHistories[index] = notificationHistory;
         WriteNotifications(notificationHistories);
     }
@@ -87,7 +87,7 @@ public static class NotificationFileHandler
     public static NotificationHistory? GetNotificationByGuid(Guid guid)
     {
         List<NotificationHistory> notifications = GetNotifications();
-        return notifications.FirstOrDefault((NotificationHistory n) => n.Id == guid);
+        return notifications.FirstOrDefault(n => n.Id == guid);
     }
 
     /// <summary>
@@ -109,46 +109,36 @@ public static class NotificationFileHandler
     }
 
     /// <summary>
-    ///     Method to get notifyer channels dictionary from a file.
+    ///     Method to get notifier channels dictionary from a file.
     /// </summary>
-    /// <returns> The dictionary of notifyers and channels.</returns>
-    public static Dictionary<Guid, List<IChannel>> GetNotifyerChannelsFromJson()
+    /// <returns> The dictionary of notifiers and channels.</returns>
+    public static Dictionary<Guid, List<IChannel>> GetNotifierChannelsFromJSon()
     {
-        string json = ConfigurationUtils.ReadFile(_notifyerChannelsPath, _folderType);
+        string json = ConfigurationUtils.ReadFile(_notifierChannelsPath, _folderType);
         if (string.IsNullOrEmpty(json))
         {
             return [];
         }
 
-        Dictionary<Guid, List<IChannel>>? notifyerChannels =
+        Dictionary<Guid, List<IChannel>>? notifierChannels =
             JsonConvert.DeserializeObject<Dictionary<Guid, List<IChannel>>>(json, _jsonSerializerSettings);
-        if (notifyerChannels is null)
-        {
-            return [];
-        }
-
-        return notifyerChannels;
+        return notifierChannels ?? [];
     }
 
     /// <summary>
-    ///     Method to get notifyers from a file.
+    ///     Method to get notifiers from a file.
     /// </summary>
-    /// <returns> The list of notifyers.</returns>
-    public static List<INotifyer> GetNotifyersFromJson()
+    /// <returns> The list of notifiers.</returns>
+    public static List<INotifier> GetNotifiersFromJson()
     {
-        string json = ConfigurationUtils.ReadFile(_notifyersPath, _folderType);
+        string json = ConfigurationUtils.ReadFile(_notifierPath, _folderType);
         if (string.IsNullOrEmpty(json))
         {
             return [];
         }
 
-        INotifyer[]? notifyers = JsonConvert.DeserializeObject<INotifyer[]>(json, _jsonSerializerSettings);
-        if (notifyers is null)
-        {
-            return [];
-        }
-
-        return notifyers.ToList();
+        INotifier[]? notifiers = JsonConvert.DeserializeObject<INotifier[]>(json, _jsonSerializerSettings);
+        return notifiers is null ? [] : notifiers.ToList();
     }
 
     /// <summary>
@@ -173,23 +163,23 @@ public static class NotificationFileHandler
     }
 
     /// <summary>
-    ///     Method to save notifyer channels dictionary to a file.
+    ///     Method to save notifier channels dictionary to a file.
     /// </summary>
-    /// <param name="notifyerChannels"> The dictionary of notifyers and channels to save.</param>
-    public static void SaveNotifyerChannelsToJson(Dictionary<Guid, List<IChannel>> notifyerChannels)
+    /// <param name="notifierChannels"> The dictionary of notifiers and channels to save.</param>
+    public static void SaveNotifierChannelsToJson(Dictionary<Guid, List<IChannel>> notifierChannels)
     {
-        string json = JsonConvert.SerializeObject(notifyerChannels, Formatting.Indented, _jsonSerializerSettings);
-        ConfigurationUtils.SaveFile(_notifyerChannelsPath, json, _folderType);
+        string json = JsonConvert.SerializeObject(notifierChannels, Formatting.Indented, _jsonSerializerSettings);
+        ConfigurationUtils.SaveFile(_notifierChannelsPath, json, _folderType);
     }
 
     /// <summary>
-    ///     Method to save notifyers to a file.
+    ///     Method to save notifiers to a file.
     /// </summary>
-    /// <param name="notifyers"> The list of notifyers to save.</param>
-    public static void SaveNotifyerToJson(List<INotifyer> notifyers)
+    /// <param name="notifiers"> The list of notifiers to save.</param>
+    public static void SaveNotifierToJson(List<INotifier> notifiers)
     {
-        string json = JsonConvert.SerializeObject(notifyers, Formatting.Indented, _jsonSerializerSettings);
-        ConfigurationUtils.SaveFile(_notifyersPath, json, _folderType);
+        string json = JsonConvert.SerializeObject(notifiers, Formatting.Indented, _jsonSerializerSettings);
+        ConfigurationUtils.SaveFile(_notifierPath, json, _folderType);
     }
 
     #endregion

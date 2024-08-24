@@ -46,7 +46,7 @@ public class EmailChannel : IChannel
     public EmailChannel(string name, LinkedList<IRecipient> recipients)
     {
         Name = name;
-        Recipients = new List<IRecipient>(recipients);
+        Recipients = [..recipients];
         SmtpConfig = new SmtpConfig();
     }
 
@@ -78,17 +78,17 @@ public class EmailChannel : IChannel
     #region properties
 
     /// <inheritdoc />
-    public Guid Guid { get; } = Guid.NewGuid();
+    public Guid Guid { get; private set; } = Guid.NewGuid();
 
     /// <inheritdoc />
     [JsonIgnore]
     public bool IsInitialized { get; private set; }
 
     /// <inheritdoc />
-    public string Name { get; } = string.Empty;
+    public string Name { get; private set; }
 
     /// <inheritdoc />
-    public List<IRecipient> Recipients { get; } = [];
+    public List<IRecipient> Recipients { get; private set; }
 
     /// <summary>
     ///     Gets the SMTP configuration.
@@ -116,7 +116,7 @@ public class EmailChannel : IChannel
         Recipients.AddRange(recipientsToAdd);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="IEquatable{T}" />
     public bool Equals(IChannel? obj)
     {
         if (obj is EmailChannel channel)
@@ -148,10 +148,10 @@ public class EmailChannel : IChannel
     }
 
     /// <inheritdoc />
-    public void Send(INotifyer notifyer, Content content)
+    public void Send(INotifier notifier, Content content)
     {
         ArgumentNullException.ThrowIfNull(content);
-        ArgumentNullException.ThrowIfNull(notifyer);
+        ArgumentNullException.ThrowIfNull(notifier);
         if (!IsInitialized)
         {
             throw new InvalidOperationException("EmailChannel is not initialized.");

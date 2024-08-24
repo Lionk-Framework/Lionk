@@ -11,7 +11,7 @@ using SmtpServer.Storage;
 namespace LionkTest.Notifications;
 
 /// <summary>
-///     This class is used to start a SMTP server to test the email notification.
+///     This class is used to start an SMTP server to test the email notification.
 /// </summary>
 public class SmtpServerTest
 {

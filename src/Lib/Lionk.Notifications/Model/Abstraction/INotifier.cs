@@ -3,19 +3,19 @@
 namespace Lionk.Notification;
 
 /// <summary>
-///     This interface represents a notifyer that can send notifications.
+///     This interface represents a notifier that can send notifications.
 /// </summary>
-public interface INotifyer : IEquatable<INotifyer>
+public interface INotifier : IEquatable<INotifier>
 {
     #region properties
 
     /// <summary>
-    ///     Gets the Guid of the notifyer.
+    ///     Gets the Guid of the notifier.
     /// </summary>
     Guid Id { get; }
 
     /// <summary>
-    ///     Gets the name of the notifyer.
+    ///     Gets the name of the notifier.
     /// </summary>
     public string Name { get; }
 
@@ -28,7 +28,7 @@ public interface INotifyer : IEquatable<INotifyer>
     /// </summary>
     /// <param name="obj"> The object to compare.</param>
     /// <returns> A value indicating whether the objects are equal.</returns>
-    new bool Equals(INotifyer? obj);
+    new bool Equals(INotifier? obj);
 
     #endregion
 }

@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 namespace Lionk.Notification.Email;
 
 /// <summary>
-///     This class define a email recipients to send notifications.
+///     This class define an email recipients to send notifications.
 /// </summary>
 public class EmailRecipients : IRecipient
 {
@@ -53,10 +53,10 @@ public class EmailRecipients : IRecipient
     public string Email { get; private set; } = string.Empty;
 
     /// <inheritdoc />
-    public Guid Guid { get; } = Guid.NewGuid();
+    public Guid Guid { get; private set; } = Guid.NewGuid();
 
     /// <inheritdoc />
-    public string Name { get; } = string.Empty;
+    public string Name { get; private set; } = string.Empty;
 
     #endregion
 }

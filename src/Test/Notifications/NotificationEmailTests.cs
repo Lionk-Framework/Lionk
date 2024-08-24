@@ -20,7 +20,7 @@ public class NotificationEmailTests
 
     private Notification _notification;
 
-    private MockNotifyer _notifyer;
+    private MockNotifier _notifier;
 
     #endregion
 
@@ -33,7 +33,7 @@ public class NotificationEmailTests
     public void Cleanup() => SmtpServerTest.Stop();
 
     /// <summary>
-    ///     One time setup the test.
+    ///     One time set up the test.
     /// </summary>
     [OneTimeSetUp]
     public void Initialize() => SmtpServerTest.Start();
@@ -48,7 +48,7 @@ public class NotificationEmailTests
         string smtpServer = "localhost";
         int port = 2526;
         bool enableSsl = false;
-        string username = "notifyer@email.test";
+        string username = "notifier@email.test";
         string password = "passwordTest";
 
         // Act
@@ -60,15 +60,15 @@ public class NotificationEmailTests
             password);
         _emailChannel.Initialize();
         _emailChannel.AddRecipients(new EmailRecipients("Recipient", "recipient@email.test"));
-        NotificationService.MapNotifyerToChannel(_notifyer, _emailChannel);
-        Notification notification = new(_content, _notifyer);
+        NotificationService.MapNotifierToChannel(_notifier, _emailChannel);
+        Notification notification = new(_content, _notifier);
         NotificationService.Send(notification);
 
         // Assert
         Assert.That(SmtpServerTest.Mailbox.Count, Is.EqualTo(1));
         Assert.That(SmtpServerTest.Mailbox.First(), Does.Contain("Title"));
         Assert.That(SmtpServerTest.Mailbox.First(), Does.Contain("Message"));
-        Assert.That(SmtpServerTest.Mailbox.First(), Does.Contain("notifyer@email.test"));
+        Assert.That(SmtpServerTest.Mailbox.First(), Does.Contain("notifier@email.test"));
         Assert.That(SmtpServerTest.Mailbox.First(), Does.Contain("recipient@email.test"));
     }
 
@@ -89,9 +89,9 @@ public class NotificationEmailTests
         ConfigurationUtils.TryDeleteFile(notifyerChannelFilePath, FolderType.Data);
         ConfigurationUtils.TryDeleteFile(notificationFilePath, FolderType.Data);
         ConfigurationUtils.TryDeleteFile(smtpConfigurationFilePath, FolderType.Config);
-        _notifyer = new MockNotifyer("EmailTestNotifyer");
+        _notifier = new MockNotifier("EmailTestNotifyer");
         _content = new Content(Severity.Information, "Title", "Message");
-        _notification = new Notification(_content, _notifyer);
+        _notification = new Notification(_content, _notifier);
         _emailChannel = new EmailChannel("Email Channel");
     }
 

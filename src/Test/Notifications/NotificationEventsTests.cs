@@ -1,7 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using Lionk.Notification;
-using Lionk.Notification.Event;
 using LionkTest.Notifications.Mock;
 
 namespace LionkTest.Notifications;
@@ -17,7 +16,7 @@ public class NotificationEventsTests
 
     private MockChannel _mockChannel;
 
-    private MockNotifyer _mockNotifyer;
+    private MockNotifier _mockNotifier;
 
     private Notification _notification;
 
@@ -35,7 +34,7 @@ public class NotificationEventsTests
         bool eventRaised = false;
 
         // Act
-        NotificationService.NotificationSent += (object? sender, NotificationEventArgs e) => eventRaised = true;
+        NotificationService.NotificationSent += (sender, e) => eventRaised = true;
         NotificationService.Send(_notification);
 
         // Assert
@@ -49,12 +48,12 @@ public class NotificationEventsTests
     public void Initialize()
     {
         // Arrange
-        _mockNotifyer = new MockNotifyer("NotifyerEventTests");
+        _mockNotifier = new MockNotifier("NotifyerEventTests");
         _mockChannel = new MockChannel("ChannelEventTest");
         _content = new Content(Severity.Information, "Title", "Message");
-        _notification = new Notification(_content, _mockNotifyer);
+        _notification = new Notification(_content, _mockNotifier);
 
-        NotificationService.MapNotifyerToChannel(_mockNotifyer, _mockChannel);
+        NotificationService.MapNotifierToChannel(_mockNotifier, _mockChannel);
     }
 
     #endregion

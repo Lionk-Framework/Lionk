@@ -54,9 +54,9 @@ public interface IChannel : IEquatable<IChannel>
     /// <summary>
     ///     Send a notification to the specified recipients.
     /// </summary>
-    /// <param name="notifyer"> The notifyer that send the notification.</param>
+    /// <param name="notifier"> The notifier that send the notification.</param>
     /// <param name="content"> The content of the notification.</param>
-    void Send(INotifyer notifyer, Content content);
+    void Send(INotifier notifier, Content content);
 
     #endregion
 }

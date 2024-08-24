@@ -17,7 +17,7 @@ internal class NotificationsHistoryTests
 
     private MockChannel _mockChannel2;
 
-    private MockNotifyer _mockNotifyer;
+    private MockNotifier _mockNotifier;
 
     private Notification _notification;
 
@@ -42,7 +42,7 @@ internal class NotificationsHistoryTests
         ConfigurationUtils.TryDeleteFile(notificationFilePath, FolderType.Data);
 
         // Arrange
-        _mockNotifyer = new MockNotifyer("NotifyerHistoryTests");
+        _mockNotifier = new MockNotifier("NotifyerHistoryTests");
         _mockChannel1 = new MockChannel("ChannelHistory1");
         _mockChannel2 = new MockChannel("ChannelHistory2");
 
@@ -51,8 +51,8 @@ internal class NotificationsHistoryTests
 
         _content = new Content(Severity.Information, "Title", "Message");
         _channels = [_mockChannel1, _mockChannel2];
-        _notification = new Notification(_content, _mockNotifyer);
-        NotificationService.MapNotifyerToChannel(_mockNotifyer, _channels.ToArray());
+        _notification = new Notification(_content, _mockNotifier);
+        NotificationService.MapNotifierToChannel(_mockNotifier, _channels.ToArray());
 
         // Act
         NotificationService.SaveNotificationHistory(_notification);

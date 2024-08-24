@@ -33,12 +33,12 @@ public class MockRecipient : IRecipient
     #region properties
 
     /// <inheritdoc />
-    public Guid Guid { get; } = Guid.NewGuid();
+    public Guid Guid { get; private set; } = Guid.NewGuid();
 
     /// <summary>
     ///     Gets the name of the recipient.
     /// </summary>
-    public string Name { get; }
+    public string Name { get; private set; }
 
     #endregion
 }

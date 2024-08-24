@@ -43,12 +43,12 @@ public class MockChannel : IChannel
     #region properties
 
     /// <inheritdoc />
-    public Guid Guid { get; } = Guid.NewGuid();
+    public Guid Guid { get; private set; } = Guid.NewGuid();
 
     /// <summary>
     ///     Gets a value indicating whether the channel is initialized.
     /// </summary>
-    public bool IsInitialized { get; }
+    public bool IsInitialized { get; private set; }
 
     /// <summary>
     ///     Gets or sets the name of the channel.
@@ -104,9 +104,9 @@ public class MockChannel : IChannel
     /// <summary>
     ///     Sends a notification.
     /// </summary>
-    /// <param name="notifyer"> The notifyer that sends the notification.</param>
+    /// <param name="notifier"> The notifier that sends the notification.</param>
     /// <param name="content"> The content of the notification.</param>
-    public void Send(INotifyer notifyer, Content content)
+    public void Send(INotifier notifier, Content content)
     {
         // do nothing
     }

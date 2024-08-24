@@ -15,7 +15,7 @@ public class Notification
     /// </summary>
     /// <param name="content"> The content of the notification.</param>
     /// <param name="notifier"> The notifier that sent the notification.</param>
-    public Notification(Content content, INotifyer notifier)
+    public Notification(Content content, INotifier notifier)
         : this(
             Guid.NewGuid(),
             content,
@@ -32,7 +32,7 @@ public class Notification
     /// <param name="notifier"> The notifier that sent the notification.</param>
     /// <param name="timestamp">The timestamp when the notification was created.</param>
     [JsonConstructor]
-    public Notification(Guid id, Content content, INotifyer notifier, DateTime timestamp)
+    public Notification(Guid id, Content content, INotifier notifier, DateTime timestamp)
     {
         Id = id;
         Timestamp = timestamp;
@@ -57,7 +57,7 @@ public class Notification
     /// <summary>
     ///     Gets the notifier that sent the notification.
     /// </summary>
-    public INotifyer Notifier { get; private set; }
+    public INotifier Notifier { get; private set; }
 
     /// <summary>
     ///     Gets the timestamp when the notification was created.

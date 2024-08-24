@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 namespace Lionk.Notification.Converter;
 
 /// <summary>
-///     This class is used to convert a notifyer.
+///     This class is used to convert a notifier.
 /// </summary>
 public class NotificationPropertiesConverter : JsonConverter
 {
@@ -19,7 +19,7 @@ public class NotificationPropertiesConverter : JsonConverter
         {
             Type t when typeof(IChannel).IsAssignableFrom(t) => true,
             Type t when typeof(IRecipient).IsAssignableFrom(t) => true,
-            Type t when typeof(INotifyer).IsAssignableFrom(t) => true,
+            Type t when typeof(INotifier).IsAssignableFrom(t) => true,
             _ => false,
         };
 
@@ -46,16 +46,16 @@ public class NotificationPropertiesConverter : JsonConverter
 
         // Get the constructor with the JsonConstructorAttribute
         ConstructorInfo? jsonConstructor = type.GetConstructors()
-            .FirstOrDefault((ConstructorInfo c) => c.GetCustomAttribute<JsonConstructorAttribute>() != null);
+            .FirstOrDefault(c => c.GetCustomAttribute<JsonConstructorAttribute>() != null);
 
         object? obj;
         if (jsonConstructor != null)
         {
-            object?[]? args = jsonConstructor.GetParameters().Select(
-                (ParameterInfo p) =>
+            object?[] args = jsonConstructor.GetParameters().Select(
+                p =>
                 {
                     string? jsonKey = jsonObject.Properties()
-                        .FirstOrDefault((JProperty prop) => string.Equals(prop.Name, p.Name, StringComparison.OrdinalIgnoreCase))?.Name;
+                        .FirstOrDefault(prop => string.Equals(prop.Name, p.Name, StringComparison.OrdinalIgnoreCase))?.Name;
 
                     return jsonKey != null ? jsonObject[jsonKey]?.ToObject(p.ParameterType, serializer) : null;
                 }).ToArray();
@@ -125,7 +125,7 @@ public class NotificationPropertiesConverter : JsonConverter
     protected Type? GetFullType(string typeName)
     {
         Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-        Type? type = assemblies.Select((Assembly assembly) => assembly.GetType(typeName, false, true)).FirstOrDefault((type) => type != null);
+        Type? type = assemblies.Select(assembly => assembly.GetType(typeName, false, true)).FirstOrDefault((type) => type != null);
         return type;
     }
 

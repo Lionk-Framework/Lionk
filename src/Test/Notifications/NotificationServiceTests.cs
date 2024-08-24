@@ -23,21 +23,21 @@ public class NotificationServiceTests
         MockChannel channel1 = new("ChannelNotifiationServiceTest1");
         MockChannel channel2 = new("ChannelNotifiationServiceTest2");
 
-        MockNotifyer notifyer1 = new("NotifyerNotifiationServiceTest1");
-        MockNotifyer notifyer2 = new("NotifyerNotifiationServiceTest2");
-        MockNotifyer notifyer3 = new("NotifyerNotifiationServiceTest3");
+        MockNotifier notifyer1 = new("NotifyerNotifiationServiceTest1");
+        MockNotifier notifyer2 = new("NotifyerNotifiationServiceTest2");
+        MockNotifier notifyer3 = new("NotifyerNotifiationServiceTest3");
 
         // Act
         NotificationService.AddChannels(channel1);
-        NotificationService.AddNotifyers(notifyer1);
-        NotificationService.AddNotifyers(notifyer2);
-        NotificationService.AddNotifyers(notifyer3);
-        NotificationService.MapNotifyerToChannel(notifyer1, channel1);
-        NotificationService.MapNotifyerToChannel(notifyer2, channel1);
-        NotificationService.MapNotifyerToChannel(notifyer3, channel2);
+        NotificationService.AddNotifiers(notifyer1);
+        NotificationService.AddNotifiers(notifyer2);
+        NotificationService.AddNotifiers(notifyer3);
+        NotificationService.MapNotifierToChannel(notifyer1, channel1);
+        NotificationService.MapNotifierToChannel(notifyer2, channel1);
+        NotificationService.MapNotifierToChannel(notifyer3, channel2);
 
-        List<INotifyer> notifyers = NotificationService.WhoUseThisChannel(channel1);
-        List<INotifyer> notifyers2 = NotificationService.WhoUseThisChannel(channel2);
+        List<INotifier> notifyers = NotificationService.WhoUseThisChannel(channel1);
+        List<INotifier> notifyers2 = NotificationService.WhoUseThisChannel(channel2);
 
         // Assert
         Assert.That(notifyers.Count, Is.EqualTo(2), "The number of notifyers is not the same.");
@@ -86,21 +86,21 @@ public class NotificationServiceTests
     }
 
     /// <summary>
-    ///     This method tests if an inexistant notifyer called to be removed is ignored.
+    ///     This method tests if an inexistant notifier called to be removed is ignored.
     /// </summary>
     [Test]
     public void IgnoreRemoveInexistantNotifyer()
     {
         // Arrange
-        MockNotifyer notifyer1 = new("NotifyerNotifiationServiceTest1");
-        MockNotifyer notifyer2 = new("NotifyerNotifiationServiceTest2");
+        MockNotifier notifyer1 = new("NotifyerNotifiationServiceTest1");
+        MockNotifier notifyer2 = new("NotifyerNotifiationServiceTest2");
 
         // Act
-        NotificationService.AddNotifyers(notifyer1);
-        NotificationService.RemoveNotifyer(notifyer2);
+        NotificationService.AddNotifiers(notifyer1);
+        NotificationService.RemoveNotifier(notifyer2);
 
         // Assert
-        Assert.That(NotificationService.Notifyers.Count, Is.EqualTo(1), "The number of notifyers is not the same.");
+        Assert.That(NotificationService.Notifiers.Count, Is.EqualTo(1), "The number of notifyers is not the same.");
     }
 
     /// <summary>
@@ -118,54 +118,54 @@ public class NotificationServiceTests
     }
 
     /// <summary>
-    ///     This method tests if the notification service map the notifyer to a channel and add them to the list of Notifyers and Channels if they
+    ///     This method tests if the notification service map the notifier to a channel and add them to the list of Notifiers and Channels if they
     ///     are not already in the list.
     /// </summary>
     [Test]
     public void InsertMultipleValueWihSameKey()
     {
         // Arrange
-        MockNotifyer notifyer = new("NotifyerNotifiationServiceTest");
+        MockNotifier notifier = new("NotifyerNotifiationServiceTest");
         MockChannel channel1 = new("ChannelNotifiationServiceTest1");
         MockChannel channel2 = new("ChannelNotifiationServiceTest2");
         MockChannel channel3 = new("ChannelNotifiationServiceTest3");
 
         // Act
-        NotificationService.MapNotifyerToChannel(notifyer, channel1, channel2);
-        NotificationService.MapNotifyerToChannel(notifyer, channel3);
+        NotificationService.MapNotifierToChannel(notifier, channel1, channel2);
+        NotificationService.MapNotifierToChannel(notifier, channel3);
 
         // Assert
-        Assert.That(NotificationService.NotifyerChannels.Count, Is.EqualTo(1), "The number of notifyer channels is not the same.");
+        Assert.That(NotificationService.NotifierChannels.Count, Is.EqualTo(1), "The number of notifier channels is not the same.");
         Assert.That(
-            NotificationService.NotifyerChannels[notifyer.Id].Count,
+            NotificationService.NotifierChannels[notifier.Id].Count,
             Is.EqualTo(3),
             "The number of channels inside dictionary is not the same.");
-        Assert.That(NotificationService.Notifyers.Count, Is.EqualTo(1), "The number of notifyers is not the same.");
+        Assert.That(NotificationService.Notifiers.Count, Is.EqualTo(1), "The number of notifyers is not the same.");
         Assert.That(NotificationService.Channels.Count, Is.EqualTo(3), "The number of channels is not the same.");
     }
 
     /// <summary>
-    ///     This method tests if the notification service map the notifyer to a channel and add them to the list of Notifyers and Channels if they
+    ///     This method tests if the notification service map the notifier to a channel and add them to the list of Notifiers and Channels if they
     ///     are not already in the list.
     /// </summary>
     [Test]
     public void InsertNewDictionaryValue()
     {
         // Arrange
-        MockNotifyer notifyer = new("NotifyerNotifiationServiceTest");
+        MockNotifier notifier = new("NotifyerNotifiationServiceTest");
         MockChannel channel1 = new("ChannelNotifiationServiceTest1");
         MockChannel channel2 = new("ChannelNotifiationServiceTest2");
 
         // Act
-        NotificationService.MapNotifyerToChannel(notifyer, channel1, channel2);
+        NotificationService.MapNotifierToChannel(notifier, channel1, channel2);
 
         // Assert
-        Assert.That(NotificationService.NotifyerChannels.Count, Is.EqualTo(1), "The number of notifyer channels is not the same.");
+        Assert.That(NotificationService.NotifierChannels.Count, Is.EqualTo(1), "The number of notifier channels is not the same.");
         Assert.That(
-            NotificationService.NotifyerChannels[notifyer.Id].Count,
+            NotificationService.NotifierChannels[notifier.Id].Count,
             Is.EqualTo(2),
             "The number of channels inside dictionary is not the same.");
-        Assert.That(NotificationService.Notifyers.Count, Is.EqualTo(1), "The number of notifyers is not the same.");
+        Assert.That(NotificationService.Notifiers.Count, Is.EqualTo(1), "The number of notifyers is not the same.");
         Assert.That(NotificationService.Channels.Count, Is.EqualTo(2), "The number of channels is not the same.");
     }
 
@@ -193,14 +193,14 @@ public class NotificationServiceTests
     public void MultipleDifferentNotifyerSuccess()
     {
         // Arrange
-        MockNotifyer notifyer1 = new("NotifyerNotifiationServiceTest1");
-        MockNotifyer notifyer2 = new("NotifyerNotifiationServiceTest2");
+        MockNotifier notifyer1 = new("NotifyerNotifiationServiceTest1");
+        MockNotifier notifyer2 = new("NotifyerNotifiationServiceTest2");
 
         // Act
-        NotificationService.AddNotifyers(notifyer1, notifyer2);
+        NotificationService.AddNotifiers(notifyer1, notifyer2);
 
         // Assert
-        Assert.That(NotificationService.Notifyers.Count, Is.EqualTo(2), "The number of notifyers is not the same.");
+        Assert.That(NotificationService.Notifiers.Count, Is.EqualTo(2), "The number of notifyers is not the same.");
     }
 
     /// <summary>
@@ -221,20 +221,20 @@ public class NotificationServiceTests
     }
 
     /// <summary>
-    ///     This method tests if the notification service can add a notifyer and avoid adding the same notifyer multiple times.
+    ///     This method tests if the notification service can add a notifier and avoid adding the same notifier multiple times.
     /// </summary>
     [Test]
     public void MultipleIdenticalNotifyerFail()
     {
         // Arrange
-        MockNotifyer notifyer = new("NotifyerNotifiationServiceTest");
-        MockNotifyer copiedNotifyer = notifyer;
+        MockNotifier notifier = new("NotifyerNotifiationServiceTest");
+        MockNotifier copiedNotifier = notifier;
 
         // Act
-        NotificationService.AddNotifyers(notifyer, copiedNotifyer);
+        NotificationService.AddNotifiers(notifier, copiedNotifier);
 
         // Assert
-        Assert.That(NotificationService.Notifyers.Count, Is.EqualTo(1), "The number of notifyers is not the same.");
+        Assert.That(NotificationService.Notifiers.Count, Is.EqualTo(1), "The number of notifyers is not the same.");
     }
 
     /// <summary>
@@ -246,21 +246,21 @@ public class NotificationServiceTests
         // Arrange
         MockChannel channel1 = new("ChannelNotifiationServiceTest1");
         MockChannel channel2 = new("ChannelNotifiationServiceTest2");
-        MockNotifyer notifyer = new("NotifyerNotifiationServiceTest");
+        MockNotifier notifier = new("NotifyerNotifiationServiceTest");
 
         // Act
         NotificationService.AddChannels(channel1, channel2);
-        NotificationService.AddNotifyers(notifyer);
-        NotificationService.MapNotifyerToChannel(notifyer, channel1, channel2);
+        NotificationService.AddNotifiers(notifier);
+        NotificationService.MapNotifierToChannel(notifier, channel1, channel2);
         int currentChannelCount = NotificationService.Channels.Count;
-        int currentNotifyerChannelCount = NotificationService.NotifyerChannels[notifyer.Id].Count;
+        int currentNotifyerChannelCount = NotificationService.NotifierChannels[notifier.Id].Count;
 
         NotificationService.RemoveChannel(channel1);
 
         // Assert
         Assert.That(NotificationService.Channels.Count, Is.EqualTo(currentChannelCount - 1), "The number of channels is not the same.");
         Assert.That(
-            NotificationService.NotifyerChannels[notifyer.Id].Count,
+            NotificationService.NotifierChannels[notifier.Id].Count,
             Is.EqualTo(currentNotifyerChannelCount - 1),
             "The number of channels inside dictionary is not the same.");
     }
@@ -274,59 +274,59 @@ public class NotificationServiceTests
         // Arrange
         MockChannel channel1 = new("ChannelNotifiationServiceTest1");
         MockChannel channel2 = new("ChannelNotifiationServiceTest2");
-        MockNotifyer notifyer1 = new("NotifyerNotifiationServiceTest");
-        MockNotifyer notifyer2 = new("NotifyerNotifiationServiceTest2");
+        MockNotifier notifyer1 = new("NotifyerNotifiationServiceTest");
+        MockNotifier notifyer2 = new("NotifyerNotifiationServiceTest2");
 
         // Act
         NotificationService.AddChannels(channel1, channel2);
-        NotificationService.AddNotifyers(notifyer1);
-        NotificationService.AddNotifyers(notifyer2);
-        NotificationService.MapNotifyerToChannel(notifyer1, channel1, channel2);
-        NotificationService.MapNotifyerToChannel(notifyer2, channel1, channel2);
-        int notifyerChannelCount1 = NotificationService.NotifyerChannels[notifyer1.Id].Count;
-        int notifyerChannelCount2 = NotificationService.NotifyerChannels[notifyer2.Id].Count;
+        NotificationService.AddNotifiers(notifyer1);
+        NotificationService.AddNotifiers(notifyer2);
+        NotificationService.MapNotifierToChannel(notifyer1, channel1, channel2);
+        NotificationService.MapNotifierToChannel(notifyer2, channel1, channel2);
+        int notifyerChannelCount1 = NotificationService.NotifierChannels[notifyer1.Id].Count;
+        int notifyerChannelCount2 = NotificationService.NotifierChannels[notifyer2.Id].Count;
 
         NotificationService.RemoveChannel(channel1);
 
         // Assert
         Assert.That(
-            NotificationService.NotifyerChannels[notifyer1.Id].Count,
+            NotificationService.NotifierChannels[notifyer1.Id].Count,
             Is.EqualTo(notifyerChannelCount1 - 1),
             "The number of channels inside dictionary is not the same.");
         Assert.That(
-            NotificationService.NotifyerChannels[notifyer2.Id].Count,
+            NotificationService.NotifierChannels[notifyer2.Id].Count,
             Is.EqualTo(notifyerChannelCount2 - 1),
             "The number of channels inside dictionary is not the same.");
     }
 
     /// <summary>
-    ///     This method tests if a notifyer can be removed from the list of notifyers and from the dictionary.
+    ///     This method tests if a notifier can be removed from the list of notifyers and from the dictionary.
     /// </summary>
     [Test]
     public void RemoveNotifyerFromListAndFromDictionary()
     {
         // Arrange
         MockChannel channel1 = new("ChannelNotifiationServiceTest1");
-        MockNotifyer notifyer1 = new("NotifyerNotifiationServiceTest");
-        MockNotifyer notifyer2 = new("NotifyerNotifiationServiceTest2");
+        MockNotifier notifyer1 = new("NotifyerNotifiationServiceTest");
+        MockNotifier notifyer2 = new("NotifyerNotifiationServiceTest2");
 
         // Act
         NotificationService.AddChannels(channel1);
-        NotificationService.AddNotifyers(notifyer1);
-        NotificationService.AddNotifyers(notifyer2);
-        NotificationService.MapNotifyerToChannel(notifyer1, channel1);
-        NotificationService.MapNotifyerToChannel(notifyer2, channel1);
-        int currentNotifyerCount = NotificationService.Notifyers.Count;
-        int currentNotifyerChannelCount = NotificationService.NotifyerChannels.Count;
+        NotificationService.AddNotifiers(notifyer1);
+        NotificationService.AddNotifiers(notifyer2);
+        NotificationService.MapNotifierToChannel(notifyer1, channel1);
+        NotificationService.MapNotifierToChannel(notifyer2, channel1);
+        int currentNotifyerCount = NotificationService.Notifiers.Count;
+        int currentNotifyerChannelCount = NotificationService.NotifierChannels.Count;
 
-        NotificationService.RemoveNotifyer(notifyer1);
+        NotificationService.RemoveNotifier(notifyer1);
 
         // Assert
-        Assert.That(NotificationService.Notifyers.Count, Is.EqualTo(currentNotifyerCount - 1), "The number of notifyers is not the same.");
+        Assert.That(NotificationService.Notifiers.Count, Is.EqualTo(currentNotifyerCount - 1), "The number of notifyers is not the same.");
         Assert.That(
-            NotificationService.NotifyerChannels.Count,
+            NotificationService.NotifierChannels.Count,
             Is.EqualTo(currentNotifyerChannelCount - 1),
-            "The number of notifyer channels is not the same.");
+            "The number of notifier channels is not the same.");
     }
 
     /// <summary>
@@ -336,13 +336,13 @@ public class NotificationServiceTests
     public void SendWithNullChannelMustBeIgnored()
     {
         // Arrange
-        MockNotifyer notifyer = new("NotifyerNotifiationServiceTest1");
+        MockNotifier notifier = new("NotifyerNotifiationServiceTest1");
 
         Content content = new(Severity.Information, "Test", "Test");
-        Notification notification = new(content, notifyer);
+        Notification notification = new(content, notifier);
 
         // Act
-        NotificationService.AddNotifyers(notifyer);
+        NotificationService.AddNotifiers(notifier);
 
         NotificationService.Send(notification);
 
