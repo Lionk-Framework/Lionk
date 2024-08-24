@@ -4,6 +4,7 @@ using Lionk.Core.View;
 using Lionk.Log;
 using Lionk.Utils;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace LionkApp.Services;
 
@@ -69,15 +70,44 @@ public class DashboardItemPersistenceManagerJson : IDashboardItemPersistenceMana
     private void Load()
     {
         string json = ConfigurationUtils.ReadFile(FilePath, _folderType);
-        List<ComponentViewModel>? items = JsonConvert.DeserializeObject<List<ComponentViewModel>>(json);
 
-        if (items is null)
+        var validItems = new List<ComponentViewModel>();
+        List<JObject>? items = JsonConvert.DeserializeObject<List<JObject>>(json);
+
+        if (items is null) return;
+
+        foreach (JObject item in items)
         {
-            items = [];
+            try
+            {
+                ComponentViewModel? component = item.ToObject<ComponentViewModel>();
+
+                if (component != null)
+                {
+                    validItems.Add(component);
+                }
+            }
+            catch (JsonSerializationException ex)
+            {
+                if (ex.InnerException is TypeLoadException)
+                {
+                    continue;
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
+        if (validItems is null)
+        {
+            validItems = [];
             LogService.LogApp(LogSeverity.Warning, "Can't load dashboard");
         }
 
-        _items = items;
+        _items = validItems;
+        Save();
     }
 
     private void Save()
