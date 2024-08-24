@@ -11,39 +11,39 @@ public static class ConfigurationUtils
 
     private static readonly Dictionary<FolderType, string>
         _keyValuePairs = new()
-                                                                            {
-                                                                                {
-                                                                                    // Combine to get the complete path from the folder where the app is running.
-                                                                                    FolderType.Config,
-                                                                                    Path.Combine(
-                                                                                        AppDomain.CurrentDomain.BaseDirectory,
-                                                                                        "config")
-                                                                                },
-                                                                                {
-                                                                                    FolderType.Logs,
-                                                                                    Path.Combine(
-                                                                                        AppDomain.CurrentDomain.BaseDirectory,
-                                                                                        "logs")
-                                                                                },
-                                                                                {
-                                                                                    FolderType.Data,
-                                                                                    Path.Combine(
-                                                                                        AppDomain.CurrentDomain.BaseDirectory,
-                                                                                        "data")
-                                                                                },
-                                                                                {
-                                                                                    FolderType.Temp,
-                                                                                    Path.Combine(
-                                                                                        AppDomain.CurrentDomain.BaseDirectory,
-                                                                                        "temp")
-                                                                                },
-                                                                                {
-                                                                                    FolderType.Plugin,
-                                                                                    Path.Combine(
-                                                                                        AppDomain.CurrentDomain.BaseDirectory,
-                                                                                        "plugins")
-                                                                                },
-                                                                            };
+            {
+                {
+                    // Combine to get the complete path from the folder where the app is running.
+                    FolderType.Config,
+                    Path.Combine(
+                        AppDomain.CurrentDomain.BaseDirectory,
+                        "config")
+                },
+                {
+                    FolderType.Logs,
+                    Path.Combine(
+                        AppDomain.CurrentDomain.BaseDirectory,
+                        "logs")
+                },
+                {
+                    FolderType.Data,
+                    Path.Combine(
+                        AppDomain.CurrentDomain.BaseDirectory,
+                        "data")
+                },
+                {
+                    FolderType.Temp,
+                    Path.Combine(
+                        AppDomain.CurrentDomain.BaseDirectory,
+                        "temp")
+                },
+                {
+                    FolderType.Plugin,
+                    Path.Combine(
+                        AppDomain.CurrentDomain.BaseDirectory,
+                        "plugins")
+                },
+            };
 
     #endregion
 
@@ -147,6 +147,20 @@ public static class ConfigurationUtils
     {
         string filePath = Path.Combine(_keyValuePairs[folderType], filename);
         File.WriteAllText(filePath, content);
+    }
+
+    /// <summary>
+    ///     Saves a file with the specified content.
+    ///     If the file already exists, it will be overwritten.
+    /// </summary>
+    /// <param name="filename">The filename.</param>
+    /// <param name="content">The content to save.</param>
+    /// <param name="folderType">The folder type.</param>
+    /// <returns>A task.</returns>
+    public static async Task SaveFileAsync(string filename, string content, FolderType folderType)
+    {
+        string filePath = Path.Combine(_keyValuePairs[folderType], filename);
+        await File.WriteAllTextAsync(filePath, content);
     }
 
     /// <summary>
