@@ -89,14 +89,8 @@ public class DashboardItemPersistenceManagerJson : IDashboardItemPersistenceMana
             }
             catch (JsonSerializationException ex)
             {
-                if (ex.InnerException is TypeLoadException)
-                {
-                    continue;
-                }
-                else
-                {
-                    throw;
-                }
+                LogService.LogApp(LogSeverity.Warning, ex.Message);
+                continue;
             }
         }
 
