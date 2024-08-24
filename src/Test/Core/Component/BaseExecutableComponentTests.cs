@@ -5,66 +5,21 @@ using Lionk.Core.Component;
 namespace LionkTest.Core;
 
 /// <summary>
-/// Test class for the <see cref="BaseExecutableComponent"/> class.
+///     Test class for the <see cref="BaseExecutableComponent" /> class.
 /// </summary>
 [TestFixture]
 public class BaseExecutableComponentTests
 {
+    #region fields
+
     private TestableExecutableComponent _testableComponent;
 
-    /// <summary>
-    /// Tears down the test environment.
-    /// </summary>
-    [TearDown]
-    public void TearDown()
-        => _testableComponent.Dispose();
+    #endregion
+
+    #region public and override methods
 
     /// <summary>
-    /// Setups the test environment.
-    /// </summary>
-    [SetUp]
-    public void Setup()
-        => _testableComponent = new TestableExecutableComponent();
-
-    /// <summary>
-    /// Tests the <see cref="BaseExecutableComponent.Execute"/> method when <see cref="BaseExecutableComponent.CanExecute"/> is false.
-    /// </summary>
-    [Test]
-    public void Execute_WhenCanExecuteIsFalse_ThrowsInvalidOperationException()
-    {
-        _testableComponent.CanExecuteSetter = false;
-
-        Assert.Throws<InvalidOperationException>(() => _testableComponent.Execute());
-    }
-
-    /// <summary>
-    /// Tests the <see cref="BaseExecutableComponent.Execute"/> method when the component is in an error state.
-    /// </summary>
-    [Test]
-    public void Execute_WhenInErrorState_ThrowsInvalidOperationException()
-    {
-        _testableComponent.CanExecuteSetter = true;
-        _testableComponent.Abort(); // Set the component to error state
-
-        Assert.Throws<InvalidOperationException>(() => _testableComponent.Execute());
-    }
-
-    /// <summary>
-    /// Tests the <see cref="BaseExecutableComponent.Execute"/> method when it can be executed successfully.
-    /// </summary>
-    [Test]
-    public void Execute_WhenValid_ExecutesSuccessfully()
-    {
-        _testableComponent.CanExecuteSetter = true;
-
-        _testableComponent.Execute();
-
-        Assert.IsTrue(_testableComponent.OnExecuteCalled);
-        Assert.IsTrue(_testableComponent.OnTerminateCalled);
-    }
-
-    /// <summary>
-    /// Tests the <see cref="BaseExecutableComponent.Abort"/> method.
+    ///     Tests the <see cref="BaseExecutableComponent.Abort" /> method.
     /// </summary>
     [Test]
     public void Abort_WhenCalled_SetsIsInErrorAndCancelsToken()
@@ -78,7 +33,44 @@ public class BaseExecutableComponentTests
     }
 
     /// <summary>
-    /// Tests that the component can be reset after being in an error state.
+    ///     Tests the <see cref="BaseExecutableComponent.Execute" /> method when <see cref="BaseExecutableComponent.CanExecute" /> is false.
+    /// </summary>
+    [Test]
+    public void Execute_WhenCanExecuteIsFalse_ThrowsInvalidOperationException()
+    {
+        _testableComponent.CanExecuteSetter = false;
+
+        Assert.Throws<InvalidOperationException>(() => _testableComponent.Execute());
+    }
+
+    /// <summary>
+    ///     Tests the <see cref="BaseExecutableComponent.Execute" /> method when the component is in an error state.
+    /// </summary>
+    [Test]
+    public void Execute_WhenInErrorState_ThrowsInvalidOperationException()
+    {
+        _testableComponent.CanExecuteSetter = true;
+        _testableComponent.Abort(); // Set the component to error state
+
+        Assert.Throws<InvalidOperationException>(() => _testableComponent.Execute());
+    }
+
+    /// <summary>
+    ///     Tests the <see cref="BaseExecutableComponent.Execute" /> method when it can be executed successfully.
+    /// </summary>
+    [Test]
+    public void Execute_WhenValid_ExecutesSuccessfully()
+    {
+        _testableComponent.CanExecuteSetter = true;
+
+        _testableComponent.Execute();
+
+        Assert.IsTrue(_testableComponent.OnExecuteCalled);
+        Assert.IsTrue(_testableComponent.OnTerminateCalled);
+    }
+
+    /// <summary>
+    ///     Tests that the component can be reset after being in an error state.
     /// </summary>
     [Test]
     public void Reset_AfterAbort_AllowsExecutionAgain()
@@ -95,19 +87,49 @@ public class BaseExecutableComponentTests
     }
 
     /// <summary>
-    /// A testable version of <see cref="BaseExecutableComponent"/> for exposing protected methods.
+    ///     Setups the test environment.
+    /// </summary>
+    [SetUp]
+    public void Setup() => _testableComponent = new TestableExecutableComponent();
+
+    /// <summary>
+    ///     Tears down the test environment.
+    /// </summary>
+    [TearDown]
+    public void TearDown() => _testableComponent.Dispose();
+
+    #endregion
+
+    /// <summary>
+    ///     A testable version of <see cref="BaseExecutableComponent" /> for exposing protected methods.
     /// </summary>
     private class TestableExecutableComponent : BaseExecutableComponent
     {
+        #region properties
+
+        public override bool CanExecute => CanExecuteSetter;
+
+        public bool CanExecuteSetter { get; set; }
+
         public bool OnExecuteCalled { get; private set; }
 
         public bool OnTerminateCalled { get; private set; }
 
         public bool TokenCancelled { get; private set; }
 
-        public override bool CanExecute => CanExecuteSetter;
+        #endregion
 
-        public bool CanExecuteSetter { get; set; }
+        #region public and override methods
+
+        public override void Abort()
+        {
+            TokenCancelled = true;
+            base.Abort();
+        }
+
+        #endregion
+
+        #region others methods
 
         protected override void OnExecute(CancellationToken cancellationToken)
         {
@@ -123,10 +145,6 @@ public class BaseExecutableComponentTests
             base.OnTerminate();
         }
 
-        public override void Abort()
-        {
-            TokenCancelled = true;
-            base.Abort();
-        }
+        #endregion
     }
 }

@@ -5,39 +5,43 @@ using Lionk.Core.TypeRegister;
 namespace Lionk.Plugin;
 
 /// <summary>
-/// Interface wich define a plugin manager.
+///     Interface wich define a plugin manager.
 /// </summary>
 public interface IPluginManager : ITypesProvider
 {
+    #region public and override methods
+
     /// <summary>
-    /// Adds a plugin to the manager.
+    ///     Adds a plugin to the manager.
     /// </summary>
     /// <param name="path">The path to the plugin.</param>
     public void AddPlugin(string path);
 
     /// <summary>
-    /// Removes the specified plugin from the manager.
-    /// As an assembly can't be removed during execution,
-    /// the plugin will be disabled only after a re-run.
+    ///     Gets a boolean indicating if a restart is needed.
     /// </summary>
-    /// <param name="plugin">The plugin to remove.</param>
-    public void RemovePlugin(Plugin plugin);
+    /// <returns>True if the application must be restarded false otherwise.</returns>
+    public bool DoNeedARestart();
 
     /// <summary>
-    /// Gets all loaded plugins.
+    ///     Gets all loaded plugins.
     /// </summary>
     /// <returns>A collection of loaded plugins.</returns>
     public IEnumerable<Plugin> GetAllPlugins();
 
     /// <summary>
-    /// Gets the number of loaded plugins.
+    ///     Gets the number of loaded plugins.
     /// </summary>
     /// <returns>The count of plugins.</returns>
     public int GetPluginCount();
 
     /// <summary>
-    /// Gets a boolean indicating if a restart is needed.
+    ///     Removes the specified plugin from the manager.
+    ///     As an assembly can't be removed during execution,
+    ///     the plugin will be disabled only after a re-run.
     /// </summary>
-    /// <returns>True if the application must be restarded false otherwise.</returns>
-    public bool DoNeedARestart();
+    /// <param name="plugin">The plugin to remove.</param>
+    public void RemovePlugin(Plugin plugin);
+
+    #endregion
 }

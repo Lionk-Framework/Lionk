@@ -5,23 +5,34 @@ using Lionk.Core.Observable;
 namespace Lionk.Core.Component;
 
 /// <summary>
-/// Base class implementation for <see cref="IComponent"/>.
+///     Base class implementation for <see cref="IComponent" />.
 /// </summary>
 public abstract class BaseComponent : ObservableElement, IComponent
 {
+    #region fields
+
     private string _instanceName = string.Empty;
 
-    /// <inheritdoc/>
+    #endregion
+
+    #region properties
+
+    /// <inheritdoc />
+    public Guid Id { get; set; } = Guid.NewGuid();
+
+    /// <inheritdoc />
     public string InstanceName
     {
         get => _instanceName;
         set => SetField(ref _instanceName, value);
     }
 
-    /// <inheritdoc/>
-    public Guid Id { get; set; } = Guid.NewGuid();
+    #endregion
 
-    /// <inheritdoc/>
-    public virtual void Dispose()
-        => GC.SuppressFinalize(this);
+    #region public and override methods
+
+    /// <inheritdoc />
+    public virtual void Dispose() => GC.SuppressFinalize(this);
+
+    #endregion
 }

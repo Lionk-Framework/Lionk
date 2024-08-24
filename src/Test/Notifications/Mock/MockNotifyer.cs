@@ -6,20 +6,14 @@ using Newtonsoft.Json;
 namespace LionkTest.Notifications.Mock;
 
 /// <summary>
-/// This class is a mock for INotifyer.
+///     This class is a mock for INotifyer.
 /// </summary>
 public class MockNotifyer : INotifyer
 {
-    /// <inheritdoc/>
-    public Guid Id { get; } = Guid.NewGuid();
+    #region constructors
 
     /// <summary>
-    /// Gets the name of the notifyer.
-    /// </summary>
-    public string Name { get; } = "NotifyerTest";
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MockNotifyer"/> class.
+    ///     Initializes a new instance of the <see cref="MockNotifyer" /> class.
     /// </summary>
     /// <param name="guid"> The Guid of the notifyer.</param>
     /// <param name="name"> The name of the notifyer.</param>
@@ -31,15 +25,33 @@ public class MockNotifyer : INotifyer
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="MockNotifyer"/> class.
+    ///     Initializes a new instance of the <see cref="MockNotifyer" /> class.
     /// </summary>
     /// <param name="name"> The name of the notifyer.</param>
     public MockNotifyer(string name) => Name = name;
 
+    #endregion
+
+    #region properties
+
+    /// <inheritdoc />
+    public Guid Id { get; } = Guid.NewGuid();
+
     /// <summary>
-    /// Method to compare two objects.
+    ///     Gets the name of the notifyer.
+    /// </summary>
+    public string Name { get; } = "NotifyerTest";
+
+    #endregion
+
+    #region public and override methods
+
+    /// <summary>
+    ///     Method to compare two objects.
     /// </summary>
     /// <param name="obj"> The object to compare.</param>
     /// <returns> A value indicating whether the objects are equal.</returns>
     public bool Equals(INotifyer? obj) => obj is MockNotifyer notifyer && notifyer.Id == Id;
+
+    #endregion
 }

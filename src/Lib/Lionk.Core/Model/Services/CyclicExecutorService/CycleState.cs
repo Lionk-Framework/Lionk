@@ -3,32 +3,32 @@
 namespace Lionk.Core.Component.Cyclic;
 
 /// <summary>
-/// This enum represents the state of a cycle.
+///     This enum represents the state of a cycle.
 /// </summary>
 public enum CycleState
 {
     /// <summary>
-    /// The cycle is stopped.
+    ///     The cycle is stopped.
     /// </summary>
     Stopped,
 
     /// <summary>
-    /// The cycle is paused.
+    ///     The cycle is paused.
     /// </summary>
     Paused,
 
     /// <summary>
-    /// The cycle is running.
+    ///     The cycle is running.
     /// </summary>
     Running,
 
     /// <summary>
-    /// The cycle is stopping.
+    ///     The cycle is stopping.
     /// </summary>
     Stopping,
 
     /// <summary>
-    /// The cycle is aborted.
+    ///     The cycle is aborted.
     /// </summary>
     Aborted,
 }

@@ -1,12 +1,12 @@
-﻿@using Lionk.Core.Component
+﻿@inject IComponentService ComponentService
+@using Lionk.Core.Component
 @using Lionk.Core.Model.Component
-@inject IComponentService ComponentService
 @inherits MudItem
 @namespace Lionk.Core.View
 
 @if (_isLoading)
 {
-    <MudProgressCircular Color="Color.Primary" Size="Size.Small" Indeterminate="true" />
+    <MudProgressCircular Color="Color.Primary" Size="Size.Small" Indeterminate="true"/>
 }
 else if (_isError)
 {
@@ -18,21 +18,26 @@ else
         ComponentViewModel="@ComponentViewModel"
         Component="@_component"
         OnUpdate="OnUpdate"
-        OnDelete="OnDelete"
-        />
+        OnDelete="OnDelete"/>
 }
 
 
 @code {
+    [Parameter]
+    public ComponentViewModel? ComponentViewModel { get; set; }
 
-    [Parameter] public ComponentViewModel? ComponentViewModel { get; set; }
+    [Parameter]
+    public EventCallback<ComponentViewModel> OnUpdate { get; set; }
 
-    [Parameter] public EventCallback<ComponentViewModel> OnUpdate { get; set; }
-    [Parameter] public EventCallback<ComponentViewModel> OnDelete { get; set; }
+    [Parameter]
+    public EventCallback<ComponentViewModel> OnDelete { get; set; }
 
     private ComponentContainer? _container;
+
     private BaseComponent? _component;
+
     private bool _isLoading = true;
+
     private bool _isError = false;
 
     private string _errorText = "Component not found";
@@ -46,7 +51,7 @@ else
             return;
         }
 
-        _container = new(ComponentService, ComponentViewModel.ComponentUniqueID);
+        _container = new ComponentContainer(ComponentService, ComponentViewModel.ComponentUniqueID);
         _component = (BaseComponent?)_container?.Component;
         if (_component is not null)
         {
@@ -80,6 +85,8 @@ else
             _isLoading = false;
             _isError = true;
         }
+
         StateHasChanged();
     }
+
 }

@@ -1,31 +1,31 @@
 ﻿@namespace Lionk.Core.Razor
-@using Lionk.Core.Component
-@using MudBlazor
-@using System.Collections.ObjectModel
 @inject IComponentService ComponentService
-
+@using Lionk.Core.Component
+@using Lionk.Core.TypeRegister
 @using IComponent = Lionk.Core.Component.IComponent
 
 <ListSearcher Items="@_components"
               Properties="@_properties"
               PropertiesFriendlyNames="@_propertiesFriendlyNames"
               ItemsChanged="ItemsChanged"
-              T="IComponent" />
+              T="IComponent"/>
 
 <MudTable @ref="_table"
           T="IComponent"
           Items="@_components"
           OnRowClick="@RowClicked">
     <RowTemplate>
-        <MudTr class="@(context == _selectedComponent && !_isEditing ? "selected-row" : "")">
-            <MudTd><MudIcon Icon="@Icons.Material.Filled.AutoAwesomeMosaic" /></MudTd>
+        <MudTr class="@(context == _selectedComponent && !_isEditing ? "selected-row" : string.Empty)">
+            <MudTd>
+                <MudIcon Icon="@Icons.Material.Filled.AutoAwesomeMosaic"/>
+            </MudTd>
             <MudTd>
                 <MudTextField @bind-Value="context.InstanceName"
                               Label="Name"
                               Variant="Variant.Outlined"
                               Immediate="true"
                               OnKeyDown="StartEditing"
-                              OnBlur="StopEditing" />
+                              OnBlur="StopEditing"/>
             </MudTd>
             <MudTd DataLabel="Component type">@GetComponentName(context)</MudTd>
         </MudTr>
@@ -33,21 +33,25 @@
 </MudTable>
 
 @code {
+
     /// <summary>
-    /// The components to display.
+    ///     The components to display.
     /// </summary>
     [Parameter]
     public IEnumerable<IComponent> Components { get; set; } = new List<IComponent>();
 
     /// <summary>
-    /// The method to call when a component is selected.
+    ///     The method to call when a component is selected.
     /// </summary>
     [Parameter]
     public EventCallback<IComponent> OnComponentSelected { get; set; }
 
     private MudTable<IComponent> _table = new();
+
     private List<IComponent> _components = [];
+
     private List<string> _properties = [nameof(IComponent.InstanceName)];
+
     private List<string> _propertiesFriendlyNames = ["Instance Name"];
 
     private IComponent? _selectedComponent;
@@ -81,7 +85,7 @@
     private void RowClicked(TableRowClickEventArgs<IComponent> item)
     {
         if (_isEditing) return;
-        var component = item.Item;
+        IComponent? component = item.Item;
         if (component is null) return;
         _selectedComponent = component;
 
@@ -91,13 +95,11 @@
 
     private string GetComponentName(IComponent component)
     {
-        string name = ComponentService
-        .GetRegisteredTypeDictionnary()?
-        .Where(x => x.Key.Type == component.GetType())
-        .First().Key.Name ?? "Unknown";
+        string name = ComponentService.GetRegisteredTypeDictionnary()?.Where((KeyValuePair<ComponentTypeDescription, Factory> x) => x.Key.Type == component.GetType()).First().Key.Name ?? "Unknown";
 
         return name;
     }
+
 }
 
 <style>

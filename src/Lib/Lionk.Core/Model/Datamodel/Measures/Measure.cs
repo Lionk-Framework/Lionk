@@ -3,7 +3,7 @@
 namespace Lionk.Core.DataModel;
 
 /// <summary>
-/// Represents a measure.
+///     Represents a measure.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 /// <param name="MeasureName">ayd.</param>

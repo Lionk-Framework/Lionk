@@ -5,63 +5,73 @@ using Lionk.Core.TypeRegister;
 namespace Lionk.Core.Component;
 
 /// <summary>
-/// Interface for component service.
+///     Interface for component service.
 /// </summary>
 public interface IComponentService : IDisposable
 {
-    /// <summary>
-    /// Register a component.
-    /// </summary>
-    /// <param name="component"> the component to register.</param>
-    public void RegisterComponentInstance(IComponent component);
+    #region delegate and events
 
     /// <summary>
-    /// Unregister a component.
+    ///     Event raised when a new type is available.
     /// </summary>
-    /// <param name="component">Unregister the instance.</param>
-    public void UnregisterComponentInstance(IComponent component);
+    public event EventHandler<EventArgs> NewComponentAvailable;
 
     /// <summary>
-    /// Get all instances of components of type <typeparamref name="T"/>.
+    ///     Event raised when a new instance is registered.
     /// </summary>
-    /// <typeparam name="T">The type of the components.</typeparam>
-    /// <returns>An <see cref="IEnumerable{T}"/> containing all registered instance of T.</returns>
-    public IEnumerable<T> GetInstancesOfType<T>();
+    public event EventHandler<EventArgs> NewInstanceRegistered;
+
+    #endregion
+
+    #region public and override methods
 
     /// <summary>
-    /// Get all instances registered.
-    /// </summary>
-    /// <returns>An <see cref="IEnumerable{T}"/> containing all registered instace.</returns>
-    public IEnumerable<IComponent> GetInstances();
-
-    /// <summary>
-    /// Get all registered types from <see cref="ITypesProvider"/>.
-    /// </summary>
-    /// <returns>A <see cref="IDictionary{TKey, TValue}"/>
-    /// which contains information about registered components."/>.</returns>
-    public IReadOnlyDictionary<ComponentTypeDescription, Factory> GetRegisteredTypeDictionnary();
-
-    /// <summary>
-    /// Get an instance by <see cref="IComponent.InstanceName"/>.
-    /// </summary>
-    /// <param name="name">The instance name.</param>
-    /// <returns>The <see cref="IComponent"/> define by its name, null if not registered.</returns>
-    public IComponent? GetInstanceByName(string name);
-
-    /// <summary>
-    /// Get an instance by its unique identifier.
+    ///     Get an instance by its unique identifier.
     /// </summary>
     /// <param name="id">The id.</param>
     /// <returns>A component with id, or null if no component exist.</returns>
     public IComponent? GetInstanceByID(Guid id);
 
     /// <summary>
-    /// Event raised when a new type is available.
+    ///     Get an instance by <see cref="IComponent.InstanceName" />.
     /// </summary>
-    public event EventHandler<EventArgs> NewComponentAvailable;
+    /// <param name="name">The instance name.</param>
+    /// <returns>The <see cref="IComponent" /> define by its name, null if not registered.</returns>
+    public IComponent? GetInstanceByName(string name);
 
     /// <summary>
-    /// Event raised when a new instance is registered.
+    ///     Get all instances registered.
     /// </summary>
-    public event EventHandler<EventArgs> NewInstanceRegistered;
+    /// <returns>An <see cref="IEnumerable{T}" /> containing all registered instace.</returns>
+    public IEnumerable<IComponent> GetInstances();
+
+    /// <summary>
+    ///     Get all instances of components of type <typeparamref name="T" />.
+    /// </summary>
+    /// <typeparam name="T">The type of the components.</typeparam>
+    /// <returns>An <see cref="IEnumerable{T}" /> containing all registered instance of T.</returns>
+    public IEnumerable<T> GetInstancesOfType<T>();
+
+    /// <summary>
+    ///     Get all registered types from <see cref="ITypesProvider" />.
+    /// </summary>
+    /// <returns>
+    ///     A <see cref="IDictionary{TKey, TValue}" />
+    ///     which contains information about registered components."/>.
+    /// </returns>
+    public IReadOnlyDictionary<ComponentTypeDescription, Factory> GetRegisteredTypeDictionnary();
+
+    /// <summary>
+    ///     Register a component.
+    /// </summary>
+    /// <param name="component"> the component to register.</param>
+    public void RegisterComponentInstance(IComponent component);
+
+    /// <summary>
+    ///     Unregister a component.
+    /// </summary>
+    /// <param name="component">Unregister the instance.</param>
+    public void UnregisterComponentInstance(IComponent component);
+
+    #endregion
 }

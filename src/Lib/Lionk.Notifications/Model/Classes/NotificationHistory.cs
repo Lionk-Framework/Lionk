@@ -5,32 +5,14 @@ using Newtonsoft.Json;
 namespace Lionk.Notification;
 
 /// <summary>
-/// This class represents the history of notifications.
+///     This class represents the history of notifications.
 /// </summary>
 public class NotificationHistory
 {
-    /// <summary>
-    /// Gets the unique identifier of the notification history.
-    /// </summary>
-    public Guid Id { get; private set; } = Guid.NewGuid();
+    #region constructors
 
     /// <summary>
-    /// Gets a value indicating whether the notification is active.
-    /// </summary>
-    public bool IsRead { get; private set; }
-
-    /// <summary>
-    /// Gets or sets the notification.
-    /// </summary>
-    public Notification Notification { get; set; }
-
-    /// <summary>
-    /// Gets the list of channels.
-    /// </summary>
-    public List<IChannel> Channels { get; private set; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="NotificationHistory"/> class.
+    ///     Initializes a new instance of the <see cref="NotificationHistory" /> class.
     /// </summary>
     /// <param name="id"> The GUID of the notification history.</param>
     /// <param name="notification"> The notification.</param>
@@ -46,7 +28,7 @@ public class NotificationHistory
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="NotificationHistory"/> class.
+    ///     Initializes a new instance of the <see cref="NotificationHistory" /> class.
     /// </summary>
     /// <param name="notification"> The notification.</param>
     /// <param name="channels"> The list of channels.</param>
@@ -56,8 +38,36 @@ public class NotificationHistory
         Channels = channels;
     }
 
+    #endregion
+
+    #region properties
+
     /// <summary>
-    /// This method marks the notification as read.
+    ///     Gets the list of channels.
+    /// </summary>
+    public List<IChannel> Channels { get; private set; }
+
+    /// <summary>
+    ///     Gets the unique identifier of the notification history.
+    /// </summary>
+    public Guid Id { get; private set; } = Guid.NewGuid();
+
+    /// <summary>
+    ///     Gets a value indicating whether the notification is active.
+    /// </summary>
+    public bool IsRead { get; private set; }
+
+    /// <summary>
+    ///     Gets or sets the notification.
+    /// </summary>
+    public Notification Notification { get; set; }
+
+    #endregion
+
+    #region public and override methods
+
+    /// <summary>
+    ///     This method marks the notification as read.
     /// </summary>
     public void Read()
     {
@@ -66,11 +76,13 @@ public class NotificationHistory
     }
 
     /// <summary>
-    /// This method marks the notification as unread.
+    ///     This method marks the notification as unread.
     /// </summary>
     public void Unread()
     {
         IsRead = false;
         NotificationService.EditNotificationHistory(this);
     }
+
+    #endregion
 }

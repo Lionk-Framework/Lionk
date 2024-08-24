@@ -6,12 +6,22 @@ using Lionk.Core.TypeRegister;
 namespace Lionk.Core.View;
 
 /// <summary>
-/// This class is used to locate the view of a component.
+///     This class is used to locate the view of a component.
 /// </summary>
 public class ViewLocatorService : IViewLocatorService
 {
+    #region fields
+
+    private readonly ITypesProvider _provider;
+
+    private readonly List<ComponentViewDescription> _views = [];
+
+    #endregion
+
+    #region constructors
+
     /// <summary>
-    /// Initializes a new instance of the <see cref="ViewLocatorService"/> class.
+    ///     Initializes a new instance of the <see cref="ViewLocatorService" /> class.
     /// </summary>
     /// <param name="provider">The views provider.</param>
     public ViewLocatorService(ITypesProvider provider)
@@ -21,25 +31,29 @@ public class ViewLocatorService : IViewLocatorService
         CreateViewFromTypes(provider.GetTypes());
     }
 
-    /// <inheritdoc/>
-    public IEnumerable<ComponentViewDescription> GetViewOf(Type type, ViewContext context)
-    {
-        List<ComponentViewDescription> assignableView
-            = _views.Where(view => type.IsAssignableTo(view.ComponentType)).ToList();
+    #endregion
 
-        assignableView = assignableView.Where(view => view.ViewContext == context).ToList();
-        return assignableView.ToList();
-    }
+    #region public and override methods
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public void Dispose()
     {
         _provider.NewTypesAvailable -= OnNewTypesAvailable;
         GC.SuppressFinalize(this);
     }
 
-    private void OnNewTypesAvailable(object? sender, TypesEventArgs e)
-    => CreateViewFromTypes(e.Types);
+    /// <inheritdoc />
+    public IEnumerable<ComponentViewDescription> GetViewOf(Type type, ViewContext context)
+    {
+        var assignableView = _views.Where((ComponentViewDescription view) => type.IsAssignableTo(view.ComponentType)).ToList();
+
+        assignableView = assignableView.Where((ComponentViewDescription view) => view.ViewContext == context).ToList();
+        return assignableView.ToList();
+    }
+
+    #endregion
+
+    #region others methods
 
     private void CreateViewFromTypes(IEnumerable<Type> types)
     {
@@ -53,7 +67,7 @@ public class ViewLocatorService : IViewLocatorService
         }
     }
 
-    private readonly List<ComponentViewDescription> _views = [];
+    private void OnNewTypesAvailable(object? sender, TypesEventArgs e) => CreateViewFromTypes(e.Types);
 
-    private readonly ITypesProvider _provider;
+    #endregion
 }

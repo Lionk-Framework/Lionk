@@ -8,35 +8,26 @@ using Newtonsoft.Json;
 namespace Lionk.Notification.Email;
 
 /// <summary>
-/// This class define an email channel.
+///     This class define an email channel.
 /// </summary>
 public class EmailChannel : IChannel
 {
-    private static readonly FolderType _folderType = FolderType.Config;
+    #region fields
+
     private static readonly string _folder = "Notifications";
+
     private static readonly string _configFilePath = Path.Combine(_folder, "smtpconfig.json");
+
+    private static readonly FolderType _folderType = FolderType.Config;
+
     private SmtpClient? _smtpClient;
 
-    /// <inheritdoc/>
-    public Guid Guid { get; } = Guid.NewGuid();
+    #endregion
 
-    /// <inheritdoc/>
-    public string Name { get; } = string.Empty;
-
-    /// <inheritdoc/>
-    public List<IRecipient> Recipients { get; } = [];
-
-    /// <inheritdoc/>
-    [JsonIgnore]
-    public bool IsInitialized { get; private set; } = false;
+    #region constructors
 
     /// <summary>
-    /// Gets the SMTP configuration.
-    /// </summary>
-    public SmtpConfig SmtpConfig { get; private set; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="EmailChannel"/> class.
+    ///     Initializes a new instance of the <see cref="EmailChannel" /> class.
     /// </summary>
     /// <param name="name">The name of the channel.</param>
     public EmailChannel(string name)
@@ -48,7 +39,7 @@ public class EmailChannel : IChannel
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="EmailChannel"/> class.
+    ///     Initializes a new instance of the <see cref="EmailChannel" /> class.
     /// </summary>
     /// <param name="name"> The name of the channel.</param>
     /// <param name="recipients"> The list of recipients.</param>
@@ -60,7 +51,7 @@ public class EmailChannel : IChannel
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="EmailChannel"/> class.
+    ///     Initializes a new instance of the <see cref="EmailChannel" /> class.
     /// </summary>
     /// <param name="guid"> The Guid of the channel.</param>
     /// <param name="name"> The name of the channel.</param>
@@ -76,10 +67,67 @@ public class EmailChannel : IChannel
         IsInitialized = isInitialized;
         SmtpConfig = smtpConfig;
         IsInitialized = isInitialized;
-        if (IsInitialized) Initialize();
+        if (IsInitialized)
+        {
+            Initialize();
+        }
     }
 
-    /// <inheritdoc/>
+    #endregion
+
+    #region properties
+
+    /// <inheritdoc />
+    public Guid Guid { get; } = Guid.NewGuid();
+
+    /// <inheritdoc />
+    [JsonIgnore]
+    public bool IsInitialized { get; private set; }
+
+    /// <inheritdoc />
+    public string Name { get; } = string.Empty;
+
+    /// <inheritdoc />
+    public List<IRecipient> Recipients { get; } = [];
+
+    /// <summary>
+    ///     Gets the SMTP configuration.
+    /// </summary>
+    public SmtpConfig SmtpConfig { get; private set; }
+
+    #endregion
+
+    #region public and override methods
+
+    /// <inheritdoc />
+    public void AddRecipients(params IRecipient[] recipients)
+    {
+        List<IRecipient> recipientsToAdd = [];
+        foreach (IRecipient recipient in recipients)
+        {
+            if (Recipients.Contains(recipient) || recipient is not EmailRecipients)
+            {
+                continue;
+            }
+
+            recipientsToAdd.Add(recipient);
+        }
+
+        Recipients.AddRange(recipientsToAdd);
+    }
+
+    /// <inheritdoc />
+    public bool Equals(IChannel? obj)
+    {
+        if (obj is EmailChannel channel)
+        {
+            return Guid == channel.Guid;
+        }
+
+        return false;
+    }
+
+    /// <inheritdoc />
     public void Initialize()
     {
         string configJson = ConfigurationUtils.ReadFile(_configFilePath, _folderType);
@@ -88,60 +136,50 @@ public class EmailChannel : IChannel
             throw new InvalidOperationException("The SMTP configuration file is empty or it does not exist.");
         }
 
-        SmtpConfig = JsonConvert.DeserializeObject<SmtpConfig>(configJson) ?? throw new NullReferenceException("The SMTP configuration is null.");
+        SmtpConfig = JsonConvert.DeserializeObject<SmtpConfig>(configJson)
+                     ?? throw new NullReferenceException("The SMTP configuration is null.");
 
         _smtpClient = new SmtpClient(SmtpConfig.SmtpServer, SmtpConfig.Port)
-        {
-            EnableSsl = SmtpConfig.EnableSsl,
-            Credentials = new NetworkCredential(SmtpConfig.Username, SmtpConfig.Password),
-        };
+                      {
+                          EnableSsl = SmtpConfig.EnableSsl, Credentials = new NetworkCredential(SmtpConfig.Username, SmtpConfig.Password),
+                      };
 
         IsInitialized = true;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public void Send(INotifyer notifyer, Content content)
     {
         ArgumentNullException.ThrowIfNull(content);
         ArgumentNullException.ThrowIfNull(notifyer);
-        if (!IsInitialized) throw new InvalidOperationException("EmailChannel is not initialized.");
-        if (SmtpConfig is null) throw new InvalidOperationException("SMTP configuration is not initialized.");
-        if (_smtpClient is null) throw new InvalidOperationException("SMTP client is not initialized.");
+        if (!IsInitialized)
+        {
+            throw new InvalidOperationException("EmailChannel is not initialized.");
+        }
+
+        if (SmtpConfig is null)
+        {
+            throw new InvalidOperationException("SMTP configuration is not initialized.");
+        }
+
+        if (_smtpClient is null)
+        {
+            throw new InvalidOperationException("SMTP client is not initialized.");
+        }
 
         foreach (IRecipient recipient in Recipients)
         {
             var emailRecipient = (EmailRecipients)recipient;
             var mailMessage = new MailMessage(SmtpConfig.Username, emailRecipient.Email)
-            {
-                Subject = content.Title,
-                Body = content.Message,
-            };
+                              {
+                                  Subject = content.Title, Body = content.Message,
+                              };
             _smtpClient.Send(mailMessage);
         }
     }
 
-    /// <inheritdoc/>
-    public void AddRecipients(params IRecipient[] recipients)
-    {
-        List<IRecipient> recipientsToAdd = [];
-        foreach (IRecipient recipient in recipients)
-        {
-            if (Recipients.Contains(recipient) || recipient is not EmailRecipients) continue;
-            else recipientsToAdd.Add(recipient);
-        }
-
-        Recipients.AddRange(recipientsToAdd);
-    }
-
-    /// <inheritdoc/>
-    public bool Equals(IChannel? obj)
-    {
-        if (obj is EmailChannel channel) return Guid == channel.Guid;
-        return false;
-    }
-
     /// <summary>
-    /// Method used to create the SMTP configuration file.
+    ///     Method used to create the SMTP configuration file.
     /// </summary>
     /// <param name="smtpServer"> The SMTP server.</param>
     /// <param name="port"> The port of the SMTP server.</param>
@@ -154,15 +192,17 @@ public class EmailChannel : IChannel
         FileHelper.CreateDirectoryIfNotExists(folderPath);
 
         var smtpConfig = new SmtpConfig
-        {
-            SmtpServer = smtpServer,
-            Port = port,
-            EnableSsl = enableSsl,
-            Username = username,
-            Password = password,
-        };
+                         {
+                             SmtpServer = smtpServer,
+                             Port = port,
+                             EnableSsl = enableSsl,
+                             Username = username,
+                             Password = password,
+                         };
 
         string json = JsonConvert.SerializeObject(smtpConfig, Formatting.Indented);
         ConfigurationUtils.SaveFile(_configFilePath, json, _folderType);
     }
+
+    #endregion
 }

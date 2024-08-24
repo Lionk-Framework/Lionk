@@ -1,22 +1,49 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using Lionk.Notification;
+using Lionk.Notification.Event;
 using LionkTest.Notifications.Mock;
 
 namespace LionkTest.Notifications;
 
 /// <summary>
-/// This class is used to test the notification events.
+///     This class is used to test the notification events.
 /// </summary>
 public class NotificationEventsTests
 {
-    private MockChannel _mockChannel;
-    private MockNotifyer _mockNotifyer;
+    #region fields
+
     private Content _content;
+
+    private MockChannel _mockChannel;
+
+    private MockNotifyer _mockNotifyer;
+
     private Notification _notification;
 
+    #endregion
+
+    #region public and override methods
+
     /// <summary>
-    /// Initializes datas for the test.
+    ///     Test if the event is raised when a notification is sent.
+    /// </summary>
+    [Test]
+    public void EventIsRaisedWhenNotificationIsSent()
+    {
+        // Arrange
+        bool eventRaised = false;
+
+        // Act
+        NotificationService.NotificationSent += (object? sender, NotificationEventArgs e) => eventRaised = true;
+        NotificationService.Send(_notification);
+
+        // Assert
+        Assert.IsTrue(eventRaised, "The event was not raised.");
+    }
+
+    /// <summary>
+    ///     Initializes datas for the test.
     /// </summary>
     [OneTimeSetUp]
     public void Initialize()
@@ -30,20 +57,5 @@ public class NotificationEventsTests
         NotificationService.MapNotifyerToChannel(_mockNotifyer, _mockChannel);
     }
 
-    /// <summary>
-    /// Test if the event is raised when a notification is sent.
-    /// </summary>
-    [Test]
-    public void EventIsRaisedWhenNotificationIsSent()
-    {
-        // Arrange
-        bool eventRaised = false;
-
-        // Act
-        NotificationService.NotificationSent += (sender, e) => eventRaised = true;
-        NotificationService.Send(_notification);
-
-        // Assert
-        Assert.IsTrue(eventRaised, "The event was not raised.");
-    }
+    #endregion
 }

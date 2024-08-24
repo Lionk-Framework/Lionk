@@ -1,16 +1,15 @@
 ﻿@page "/overview"
 @using Lionk.Auth.Identity
-@using Microsoft.AspNetCore.Components.Authorization
 @inject UserAuthenticationStateProvider AuthStateProvider
 
 <MudGrid>
     <MudItem>
         <MudCard Style="width: 600px">
             <MudCardContent>
-                <MudTextField T="string" Label="Username" Text=@UserName ReadOnly="true"/>
+                <MudTextField T="string" Label="Username" Text="@UserName" ReadOnly="true"/>
             </MudCardContent>
             <MudCardContent>
-                <MudTextField T="string" Label="Email" Text=@Email ReadOnly="true" Class="mt-3" />
+                <MudTextField T="string" Label="Email" Text="@Email" ReadOnly="true" Class="mt-3"/>
             </MudCardContent>
         </MudCard>
     </MudItem>
@@ -18,8 +17,9 @@
 
 
 @code {
-    public string UserName = "";
-    public string Email = "";
+    public string UserName = string.Empty;
+
+    public string Email = string.Empty;
 
     protected override void OnInitialized()
     {
@@ -27,4 +27,5 @@
         UserName = AuthStateProvider.CurrentUser?.Username ?? "Not Logged In";
         Email = AuthStateProvider.CurrentUser?.Email ?? "Not Logged In";
     }
+
 }

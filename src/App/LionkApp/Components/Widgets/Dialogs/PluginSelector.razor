@@ -3,7 +3,7 @@
         <MudForm>
             <MudSelect @bind-Value="SelectedPlugin" Label="Select plugin" Variant="Variant.Outlined" Class="my-4">
             </MudSelect>
-            <MudTextField @bind-Value="PluginName" Label="Plugin name" Variant="Variant.Outlined" Placeholder="My Clock" Class="my-4" />
+            <MudTextField @bind-Value="PluginName" Label="Plugin name" Variant="Variant.Outlined" Placeholder="My Clock" Class="my-4"/>
         </MudForm>
     </DialogContent>
     <DialogActions>
@@ -14,12 +14,20 @@
 
 @code {
     private string SelectedPlugin { get; set; } = "Clock.dll";
+
     private string PluginName { get; set; } = "My Clock";
 
     [CascadingParameter]
     private MudDialogInstance? MudDialog { get; set; }
 
-    private void Submit() => MudDialog?.Close(DialogResult.Ok(true));
+    private void Submit()
+    {
+        MudDialog?.Close(DialogResult.Ok(true));
+    }
 
-    private void Cancel() => MudDialog?.Cancel();
+    private void Cancel()
+    {
+        MudDialog?.Cancel();
+    }
+
 }

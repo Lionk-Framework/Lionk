@@ -5,18 +5,24 @@ using Microsoft.AspNetCore.Components.Forms;
 namespace Lionk.Plugin.Blazor;
 
 /// <summary>
-/// Service to upload files.
+///     Service to upload files.
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="FileUploadService"/> class.
+///     Initializes a new instance of the <see cref="FileUploadService" /> class.
 /// </remarks>
 /// <param name="targetFilePath">The target path where file will be saved.</param>
 public class FileUploadService(string targetFilePath)
 {
+    #region fields
+
     private readonly string _targetFilePath = targetFilePath;
 
+    #endregion
+
+    #region public and override methods
+
     /// <summary>
-    /// Uploads files.
+    ///     Uploads files.
     /// </summary>
     /// <param name="files">The files to upload.</param>
     /// <returns>A new task containing a list of string which represent the new path of the files uploaded.</returns>
@@ -28,7 +34,10 @@ public class FileUploadService(string targetFilePath)
         {
             string filePath = Path.Combine(_targetFilePath, file.Name);
 
-            if (File.Exists(filePath)) return null;
+            if (File.Exists(filePath))
+            {
+                return null;
+            }
 
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
@@ -40,4 +49,6 @@ public class FileUploadService(string targetFilePath)
 
         return filePaths;
     }
+
+    #endregion
 }

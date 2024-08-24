@@ -9,24 +9,43 @@ using Newtonsoft.Json;
 namespace Lionk.Plugin;
 
 /// <summary>
-/// Class which allows to manage plugins.
+///     Class which allows to manage plugins.
 /// </summary>
 public class PluginManager : IPluginManager
 {
+    #region fields
+
     private const string PluginPathsFile = "plugin_paths.json";
+
+    private readonly HashSet<string> _loadedAssemblies = [];
+
     private readonly List<Plugin> _plugins = [];
+
+    private bool _doNeedARestart;
+
     private List<string> _pluginPaths = [];
 
-    /// <inheritdoc/>
-    public event EventHandler<TypesEventArgs>? NewTypesAvailable;
+    #endregion
+
+    #region constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="PluginManager"/> class.
+    ///     Initializes a new instance of the <see cref="PluginManager" /> class.
     /// </summary>
-    public PluginManager()
-        => LoadPlugins();
+    public PluginManager() => LoadPlugins();
 
-    /// <inheritdoc/>
+    #endregion
+
+    #region delegate and events
+
+    /// <inheritdoc />
+    public event EventHandler<TypesEventArgs>? NewTypesAvailable;
+
+    #endregion
+
+    #region public and override methods
+
+    /// <inheritdoc />
     public void AddPlugin(string path)
     {
         if (!File.Exists(path) || Path.GetExtension(path) != ".dll")
@@ -37,7 +56,7 @@ public class PluginManager : IPluginManager
 
         var assemblyName = AssemblyName.GetAssemblyName(path);
 
-        if (_plugins.Any(x => x.Name == assemblyName.Name))
+        if (_plugins.Any((Plugin x) => x.Name == assemblyName.Name))
         {
             LogService.LogApp(LogSeverity.Warning, $"Plugin already loaded: {path}");
             return;
@@ -50,11 +69,36 @@ public class PluginManager : IPluginManager
         SavePluginPaths();
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
+    public bool DoNeedARestart() => _doNeedARestart;
+
+    /// <inheritdoc />
+    public IEnumerable<Plugin> GetAllPlugins() => _plugins.AsReadOnly();
+
+    /// <inheritdoc />
+    public int GetPluginCount() => _plugins.Count;
+
+    /// <inheritdoc />
+    public IEnumerable<Type> GetTypes()
+    {
+        var types = new List<Type>();
+
+        foreach (Plugin plugin in _plugins)
+        {
+            if (!plugin.IsLoaded)
+            {
+                continue;
+            }
+
+            types.AddRange(plugin.Assembly.GetTypes());
+        }
+
+        return types;
+    }
+
+    /// <inheritdoc />
     public void RemovePlugin(Plugin plugin)
     {
-        if (plugin is null) return;
-
         _plugins.Remove(plugin);
         _doNeedARestart = true;
         string tempPath = plugin.Assembly.Location;
@@ -64,33 +108,72 @@ public class PluginManager : IPluginManager
         SavePluginPaths();
     }
 
-    /// <inheritdoc/>
-    public IEnumerable<Type> GetTypes()
+    #endregion
+
+    #region others methods
+
+    private static void CleanTempRepo()
     {
-        var types = new List<Type>();
-
-        foreach (Plugin plugin in _plugins)
+        foreach (string path in Directory.GetFiles(ConfigurationUtils.GetFolderPath(FolderType.Temp)))
         {
-            if (!plugin.IsLoaded) continue;
-            types.AddRange(plugin.Assembly.GetTypes());
+            if (path.EndsWith(".dll"))
+            {
+                File.Delete(path);
+            }
         }
-
-        return types;
     }
 
-    /// <inheritdoc/>
-    public IEnumerable<Plugin> GetAllPlugins()
-        => _plugins.AsReadOnly();
+    private static string CopyPluginToPluginFolder(string pluginPaths)
+    {
+        ConfigurationUtils.CopyFileToFolder(pluginPaths, FolderType.Plugin);
+        return Path.Combine(ConfigurationUtils.GetFolderPath(FolderType.Plugin), Path.GetFileName(pluginPaths));
+    }
 
-    /// <inheritdoc/>
-    public bool DoNeedARestart()
-        => _doNeedARestart;
+    private static string CopyPluginToTempStorage(string pluginPaths)
+    {
+        ConfigurationUtils.CopyFileToFolder(pluginPaths, FolderType.Temp);
+        return Path.Combine(ConfigurationUtils.GetFolderPath(FolderType.Temp), Path.GetFileName(pluginPaths));
+    }
 
-    /// <inheritdoc/>
-    public int GetPluginCount()
-        => _plugins.Count;
+    private static void TryToReadPaths(string json, out List<string>? readText)
+    {
+        try
+        {
+            readText = JsonConvert.DeserializeObject<List<string>>(json);
+        }
+        catch (JsonReaderException)
+        {
+            throw new FormatException("The plugin configuration file is not formated.");
+        }
+    }
 
-    private readonly HashSet<string> _loadedAssemblies = [];
+    private void DeleteUnloadedPluginFromPluginFolder()
+    {
+        foreach (string path in Directory.GetFiles(ConfigurationUtils.GetFolderPath(FolderType.Plugin)))
+        {
+            if (_pluginPaths.Contains(path))
+            {
+                continue;
+            }
+
+            File.Delete(path);
+        }
+    }
+
+    private void InternalLoadDependencies(AssemblyName[] assemblies)
+    {
+        foreach (AssemblyName assemblyName in assemblies)
+        {
+            if (_loadedAssemblies.Contains(assemblyName.FullName))
+            {
+                continue;
+            }
+
+            var assembly = Assembly.Load(assemblyName);
+            _loadedAssemblies.Add(assemblyName.FullName);
+            InternalLoadDependencies(assembly.GetReferencedAssemblies());
+        }
+    }
 
     private void LoadPlugin(string path)
     {
@@ -118,7 +201,51 @@ public class PluginManager : IPluginManager
             LogService.LogApp(LogSeverity.Error, $"Failed to load plugin from path: {path}. Error: {ex.Message}");
 
             if (plugin is not null)
+            {
                 plugin.IsLoaded = false;
+            }
+        }
+    }
+
+    private void LoadPluginPaths()
+    {
+        if (ConfigurationUtils.FileExists(PluginPathsFile, FolderType.Config))
+        {
+            string json = ConfigurationUtils.ReadFile(PluginPathsFile, FolderType.Config);
+
+            TryToReadPaths(json, out List<string>? data);
+
+            _pluginPaths = data ?? throw new InvalidOperationException("Invalid plugin paths file.");
+        }
+        else
+        {
+            LogService.LogApp(LogSeverity.Information, "Plugin paths file not found.");
+            _pluginPaths = [];
+        }
+    }
+
+    private void LoadPlugins()
+    {
+        CleanTempRepo();
+        LoadPluginPaths();
+        foreach (string path in _pluginPaths)
+        {
+            LoadPlugin(path);
+        }
+
+        DeleteUnloadedPluginFromPluginFolder();
+    }
+
+    private void SavePluginPaths()
+    {
+        try
+        {
+            string json = JsonConvert.SerializeObject(_pluginPaths, Formatting.Indented);
+            ConfigurationUtils.SaveFile(PluginPathsFile, json, FolderType.Config);
+        }
+        catch (Exception ex)
+        {
+            LogService.LogApp(LogSeverity.Error, $"Failed to save plugin paths. Error: {ex.Message}");
         }
     }
 
@@ -143,105 +270,5 @@ public class PluginManager : IPluginManager
         return true;
     }
 
-    private void InternalLoadDependencies(AssemblyName[] assemblies)
-    {
-        foreach (AssemblyName assemblyName in assemblies)
-        {
-            if (!_loadedAssemblies.Contains(assemblyName.FullName))
-            {
-                var assembly = Assembly.Load(assemblyName);
-                _loadedAssemblies.Add(assemblyName.FullName);
-                InternalLoadDependencies(assembly.GetReferencedAssemblies());
-            }
-        }
-    }
-
-    private void SavePluginPaths()
-    {
-        try
-        {
-            string json = JsonConvert.SerializeObject(_pluginPaths, Formatting.Indented);
-            ConfigurationUtils.SaveFile(PluginPathsFile, json, FolderType.Config);
-        }
-        catch (Exception ex)
-        {
-            LogService.LogApp(LogSeverity.Error, $"Failed to save plugin paths. Error: {ex.Message}");
-        }
-    }
-
-    private void LoadPluginPaths()
-    {
-        if (ConfigurationUtils.FileExists(PluginPathsFile, FolderType.Config))
-        {
-            string json = ConfigurationUtils.ReadFile(PluginPathsFile, FolderType.Config);
-
-            TryToReadPaths(json, out List<string>? data);
-
-            if (data is null)
-                throw new InvalidOperationException("Invalid plugin paths file.");
-
-            _pluginPaths = data;
-        }
-        else
-        {
-            LogService.LogApp(LogSeverity.Information, "Plugin paths file not found.");
-            _pluginPaths = [];
-        }
-    }
-
-    private void TryToReadPaths(string json, out List<string>? readedText)
-    {
-        try
-        {
-            readedText =
-                JsonConvert.DeserializeObject<List<string>>(json);
-        }
-        catch (JsonReaderException)
-        {
-            throw new FormatException("The plugin configuration file is not formated.");
-        }
-    }
-
-    private void LoadPlugins()
-    {
-        CleanTempRepo();
-        LoadPluginPaths();
-        foreach (string path in _pluginPaths)
-            LoadPlugin(path);
-
-        DeleteUnloadedPluginFromPluginFolder();
-    }
-
-    private void CleanTempRepo()
-    {
-        foreach (string path in Directory.GetFiles(ConfigurationUtils.GetFolderPath(FolderType.Temp)))
-        {
-            if (path.EndsWith(".dll"))
-                File.Delete(path);
-        }
-    }
-
-    private void DeleteUnloadedPluginFromPluginFolder()
-    {
-        foreach (string path in Directory.GetFiles(ConfigurationUtils.GetFolderPath(FolderType.Plugin)))
-        {
-            if (_pluginPaths.Contains(path)) continue;
-
-            File.Delete(path);
-        }
-    }
-
-    private string CopyPluginToTempStorage(string pluginPaths)
-    {
-        ConfigurationUtils.CopyFileToFolder(pluginPaths, FolderType.Temp);
-        return Path.Combine(ConfigurationUtils.GetFolderPath(FolderType.Temp), Path.GetFileName(pluginPaths));
-    }
-
-    private string CopyPluginToPluginFolder(string pluginPaths)
-    {
-        ConfigurationUtils.CopyFileToFolder(pluginPaths, FolderType.Plugin);
-        return Path.Combine(ConfigurationUtils.GetFolderPath(FolderType.Plugin), Path.GetFileName(pluginPaths));
-    }
-
-    private bool _doNeedARestart = false;
+    #endregion
 }

@@ -3,27 +3,14 @@
 namespace Lionk.Core.Component;
 
 /// <summary>
-/// Define a component type description.
+///     Define a component type description.
 /// </summary>
 public class ComponentTypeDescription
 {
-    /// <summary>
-    /// Gets the name of the component.
-    /// </summary>
-    public string Name { get; }
+    #region constructors
 
     /// <summary>
-    /// Gets the description of the component.
-    /// </summary>
-    public string Description { get; }
-
-    /// <summary>
-    /// Gets the type of the component.
-    /// </summary>
-    public Type Type { get; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ComponentTypeDescription"/> class.
+    ///     Initializes a new instance of the <see cref="ComponentTypeDescription" /> class.
     /// </summary>
     /// <param name="type">The type of the component.</param>
     public ComponentTypeDescription(Type type)
@@ -33,4 +20,25 @@ public class ComponentTypeDescription
         Name = attribute?.Name ?? "Unamed";
         Description = attribute?.Description ?? "No description available";
     }
+
+    #endregion
+
+    #region properties
+
+    /// <summary>
+    ///     Gets the description of the component.
+    /// </summary>
+    public string Description { get; }
+
+    /// <summary>
+    ///     Gets the name of the component.
+    /// </summary>
+    public string Name { get; }
+
+    /// <summary>
+    ///     Gets the type of the component.
+    /// </summary>
+    public Type Type { get; }
+
+    #endregion
 }

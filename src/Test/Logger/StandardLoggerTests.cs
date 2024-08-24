@@ -6,12 +6,14 @@ using Moq;
 namespace LionkTest.Logger;
 
 /// <summary>
-/// Test class for <see cref="IStandardLogger"/>.
+///     Test class for <see cref="IStandardLogger" />.
 /// </summary>
 public class StandardLoggerTests
 {
+    #region public and override methods
+
     /// <summary>
-    /// Test for <see cref="IStandardLogger.Log(LogSeverity, string)"/>.
+    ///     Test for <see cref="IStandardLogger.Log(LogSeverity, string)" />.
     /// </summary>
     [Test]
     public void Log_ShouldCallLogMethodWithCorrectParameters()
@@ -22,6 +24,8 @@ public class StandardLoggerTests
 
         mockStandardLogger.Object.Log(severity, message);
 
-        mockStandardLogger.Verify(logger => logger.Log(severity, message), Times.Once);
+        mockStandardLogger.Verify((IStandardLogger logger) => logger.Log(severity, message), Times.Once);
     }
+
+    #endregion
 }

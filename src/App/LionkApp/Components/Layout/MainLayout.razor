@@ -5,18 +5,18 @@
 @inject UserAuthenticationStateProvider AuthStateProvider
 @inject LionkPalette theme
 <AuthorizeView>
-    <MudThemeProvider Theme="@Theme" IsDarkMode="IsDarkMode" />
-    <MudPopoverProvider />
-    <MudDialogProvider />
-    <MudSnackbarProvider />
+    <MudThemeProvider Theme="@Theme" IsDarkMode="IsDarkMode"/>
+    <MudPopoverProvider/>
+    <MudDialogProvider/>
+    <MudSnackbarProvider/>
     <MudLayout>
 
         <MudAppBar Elevation="1">
-            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((MouseEventArgs e) => DrawerToggle())"/>
             <MudText Typo="Typo.h5" Class="ml-3">Lionk</MudText>
-            <MudSpacer />
-            <MudIconButton Icon="@Icons.Material.Filled.CircleNotifications" Color="Color.Primary" OnClick="OnNotificationPressed" />
-            <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
+            <MudSpacer/>
+            <MudIconButton Icon="@Icons.Material.Filled.CircleNotifications" Color="Color.Primary" OnClick="OnNotificationPressed"/>
+            <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle"/>
         </MudAppBar>
         <MudDrawer @bind-Open="IsDrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
 
@@ -41,12 +41,12 @@
             <MudContainer Class="mt-auto pa-2">
                 <MudGrid Justify="Justify.SpaceBetween">
                     <MudItem>
-                        <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Primary" OnClick="OnProfilePressed" />
+                        <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Primary" OnClick="OnProfilePressed"/>
                         <MudText Typo="Typo.body2">Profile</MudText>
                         <MudText Typo="Typo.body2">@_userName</MudText>
                     </MudItem>
                     <MudItem>
-                        <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Primary" OnClick="OnLogoutPressed" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Primary" OnClick="OnLogoutPressed"/>
                     </MudItem>
                 </MudGrid>
             </MudContainer>
@@ -66,27 +66,26 @@
 
 @code {
     private bool IsDrawerOpen = true;
-    private bool IsNotifcationExpanded = false;
-    private MudTheme? Theme = null;
+
+    private bool IsNotifcationExpanded;
+
+    private MudTheme? Theme;
+
     private bool IsDarkMode = true;
-    public string _userName = "";
+
+    public string _userName = string.Empty;
 
     private object Unauthorized()
     {
         NavManager.NavigateTo("/unauthorized");
-        return new();
+        return new object();
     }
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
         _userName = AuthStateProvider.CurrentUser?.Username ?? "Not Logged In";
-        Theme = new()
-            {
-                PaletteLight = theme.LightPalette,
-                PaletteDark = theme.DarkPalette,
-                LayoutProperties = new LayoutProperties()
-            };
+        Theme = new MudTheme { PaletteLight = theme.LightPalette, PaletteDark = theme.DarkPalette, LayoutProperties = new LayoutProperties() };
     }
 
     private void DarkModeToggle()
@@ -116,9 +115,11 @@
         NavManager.NavigateTo("/auth");
     }
 
-    public string DarkLightModeButtonIcon => IsDarkMode switch
-    {
-        true => Icons.Material.Rounded.LightMode,
-        false => Icons.Material.Outlined.DarkMode,
-    };
+    public string DarkLightModeButtonIcon =>
+        IsDarkMode switch
+        {
+            true => Icons.Material.Rounded.LightMode,
+            false => Icons.Material.Outlined.DarkMode,
+        };
+
 }

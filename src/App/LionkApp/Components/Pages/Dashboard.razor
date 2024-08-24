@@ -1,24 +1,18 @@
 ﻿@page "/"
-@inject ISnackbar Snackbar
-@inject IComponentService ComponentService
-@inject IDialogService DialogService
-@using Lionk.Core.Component
 @using Lionk.Core.View
-@using Lionk.Plugin
-@using LionkApp.Components.Model
-@using IComponent = Lionk.Core.Component.IComponent
 @using LionkApp.Components.Widgets.Dialogs
 @using LionkApp.Services
+@inject IDialogService DialogService
 @namespace LionkApp.Components.Pages
 
 <PageTitle>Dashboard</PageTitle>
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
-    @foreach (var item in DashboardRegistry ?? [])
+    @foreach (ComponentViewModel item in DashboardRegistry ?? [])
     {
         <ContainerView ComponentViewModel="@item"
                        OnUpdate="UpdateDashboardItem"
                        OnDelete="RemoveDashboardItem"
-                       Style="min-height:200px" />
+                       Style="min-height:200px"/>
     }
 
 </MudContainer>
@@ -27,10 +21,11 @@
         Color="Color.Secondary"
         StartIcon="@Icons.Material.Filled.Add"
         Size="Size.Large"
-        Style="position: fixed; bottom: 20px; right: 20px;" />
+        Style="position: fixed; bottom: 20px; right: 20px;"/>
 
 @code {
     public List<ComponentViewModel>? DashboardRegistry { get; set; } = new();
+
     private IDashboardItemPersistenceManager? _persistenceManager;
 
     protected override void OnInitialized()
@@ -43,8 +38,8 @@
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
         var parameters = new DialogParameters();
-        var dialog = await DialogService.ShowAsync<WidgetAdder>("Widget selection", parameters, options);
-        var result = await dialog.Result;
+        IDialogReference dialog = await DialogService.ShowAsync<WidgetAdder>("Widget selection", parameters, options);
+        DialogResult? result = await dialog.Result;
 
         if (result is not null && !result.Canceled)
         {
@@ -76,4 +71,5 @@
         _persistenceManager?.RemoveDashboardItemModel(item);
         RestoreDashboard();
     }
+
 }

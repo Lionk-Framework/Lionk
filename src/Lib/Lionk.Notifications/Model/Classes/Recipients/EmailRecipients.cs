@@ -5,23 +5,14 @@ using Newtonsoft.Json;
 namespace Lionk.Notification.Email;
 
 /// <summary>
-/// This class define a email recipients to send notifications.
+///     This class define a email recipients to send notifications.
 /// </summary>
 public class EmailRecipients : IRecipient
 {
-    /// <inheritdoc/>
-    public Guid Guid { get; } = Guid.NewGuid();
-
-    /// <inheritdoc/>
-    public string Name { get; } = string.Empty;
+    #region constructors
 
     /// <summary>
-    /// Gets the email of the recipient.
-    /// </summary>
-    public string Email { get; private set; } = string.Empty;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="EmailRecipients"/> class with the specified name, email, subject, and body.
+    ///     Initializes a new instance of the <see cref="EmailRecipients" /> class with the specified name, email, subject, and body.
     /// </summary>
     /// <param name="name"> The name of the recipient.</param>
     /// <param name="email"> The email of the recipient.</param>
@@ -32,7 +23,7 @@ public class EmailRecipients : IRecipient
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="EmailRecipients"/> class with the specified Guid, name, and email.
+    ///     Initializes a new instance of the <see cref="EmailRecipients" /> class with the specified Guid, name, and email.
     /// </summary>
     /// <param name="guid"> The Guid of the recipient.</param>
     /// <param name="name"> The name of the recipient.</param>
@@ -46,9 +37,26 @@ public class EmailRecipients : IRecipient
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="EmailRecipients"/> class.
+    ///     Initializes a new instance of the <see cref="EmailRecipients" /> class.
     /// </summary>
     public EmailRecipients()
     {
     }
+
+    #endregion
+
+    #region properties
+
+    /// <summary>
+    ///     Gets the email of the recipient.
+    /// </summary>
+    public string Email { get; private set; } = string.Empty;
+
+    /// <inheritdoc />
+    public Guid Guid { get; } = Guid.NewGuid();
+
+    /// <inheritdoc />
+    public string Name { get; } = string.Empty;
+
+    #endregion
 }

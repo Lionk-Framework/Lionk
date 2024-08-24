@@ -1,24 +1,23 @@
 ﻿@page "/profile"
-@using Lionk.Auth.Identity
 @using LionkApp.Components.Widgets.Content.Profile
 @using Microsoft.AspNetCore.Components.Authorization
 
 <MudContainer>
     <MudText Typo="Typo.h4" GutterBottom="true">Manage your account</MudText>
     <MudText Typo="Typo.subtitle1" GutterBottom="true">Change your account settings</MudText>
-    <MudTabs Outlined="true" Position=Position.Left Rounded="true" Border="true" ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-6">
+    <MudTabs Outlined="true" Position="Position.Left" Rounded="true" Border="true" ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-6">
         <MudTabPanel Text="Overview">
-            <Overview />
+            <Overview/>
         </MudTabPanel>
         <MudTabPanel Text="Email">
-            <Email />
+            <Email/>
         </MudTabPanel>
         <MudTabPanel Text="Password">
-            <Password />
+            <Password/>
         </MudTabPanel>
-         <AuthorizeView Context="pluginContext" Roles="Admin">
+        <AuthorizeView Context="AuthenticationState pluginContext" Roles="Admin">
             <MudTabPanel Text="Role">
-                <Role />
+                <Role/>
             </MudTabPanel>
         </AuthorizeView>
     </MudTabs>

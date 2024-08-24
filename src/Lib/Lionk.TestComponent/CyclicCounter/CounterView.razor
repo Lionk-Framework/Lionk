@@ -1,14 +1,14 @@
-﻿@using Lionk.Core
+﻿@using System.ComponentModel
 @using Lionk.Core.View
 @using MudBlazor
-@using System.ComponentModel
 @namespace Lionk.TestComponent.CyclicCounter
 
 @attribute [ViewOf("Counter view", typeof(Counter), typeof(CounterView), ViewContext.Widget)]
 <MudText Typo="Typo.h4">@Component?.CounterValue</MudText>
 
 @code {
-    [Parameter] public Counter? Component { get; set; }
+    [Parameter]
+    public Counter? Component { get; set; }
 
     protected override void OnInitialized()
     {
@@ -20,4 +20,5 @@
     {
         InvokeAsync(StateHasChanged);
     }
+
 }

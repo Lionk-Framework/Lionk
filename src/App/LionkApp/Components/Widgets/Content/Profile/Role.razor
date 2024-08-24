@@ -1,6 +1,5 @@
 ﻿@page "/role"
 @using Lionk.Auth.Identity
-@using Microsoft.AspNetCore.Components.Authorization
 @inject ISnackbar Snackbar
 @inject UserAuthenticationStateProvider AuthStateProvider
 @inject UserService userService
@@ -24,11 +23,11 @@
                 </MudTd>
                 <MudTd>
                     <div>
-                        @foreach (var role in AvailableRoles)
+                        @foreach (string role in AvailableRoles)
                         {
                             <div style="display: inline-flex; align-items: center; margin-right: 16px;">
                                 <MudText style="margin-right: 8px;">@role</MudText>
-                                <MudSwitch T="bool" Value=RoleStates[context.Id][role] ValueChanged="@(() => OnRoleChanged(context.Id, role, RoleStates[context.Id][role]))" Color="Color.Primary" />
+                                <MudSwitch T="bool" Value=RoleStates[context.Id][role] ValueChanged="@(() => OnRoleChanged(context.Id, role, RoleStates[context.Id][role]))" Color="Color.Primary"/>
                             </div>
                         }
                     </div>
@@ -49,7 +48,9 @@ else
 
 @code {
     public HashSet<User>? Users;
-    private List<string> AvailableRoles = new List<string> { "Admin", "User"}; // TODO - Link to enum or global strings
+
+    private List<string> AvailableRoles = new() { "Admin", "User" }; // TODO - Link to enum or global strings
+
     private Dictionary<Guid, Dictionary<string, bool>> RoleStates = new();
 
     protected override void OnInitialized()
@@ -63,10 +64,10 @@ else
         Users = userService.GetUsers();
         if (Users is null) return;
 
-        foreach (var user in Users)
+        foreach (User user in Users)
         {
             RoleStates[user.Id] = new Dictionary<string, bool>();
-            foreach (var role in AvailableRoles)
+            foreach (string role in AvailableRoles)
             {
                 RoleStates[user.Id][role] = user.Roles.Contains(role);
             }
@@ -75,19 +76,20 @@ else
 
     private void OnRoleChanged(Guid userID, string role, bool previousRoleState)
     {
-        var user = Users?.FirstOrDefault(u => u.Id == userID);
+        User? user = Users?.FirstOrDefault((User u) => u.Id == userID);
         if (user is null) return;
 
         // Add role
-        if ((previousRoleState == false) && !user.Roles.Contains(role))
+        if (previousRoleState == false && !user.Roles.Contains(role))
         {
             user.AddRole(role);
             userService.Update(user);
         }
+
         // Remove role
-        else if ((previousRoleState == true) && user.Roles.Contains(role))
+        else if (previousRoleState && user.Roles.Contains(role))
         {
-            if ((user.Id == AuthStateProvider.CurrentUser?.Id) && (role == "Admin"))
+            if (user.Id == AuthStateProvider.CurrentUser?.Id && role == "Admin")
             {
                 Snackbar.Add("You cannot remove your admin role", Severity.Warning);
                 return;
@@ -109,7 +111,7 @@ else
 
     private void OnDeletePressed(Guid userID)
     {
-        var user = Users?.FirstOrDefault(u => u.Id == userID);
+        User? user = Users?.FirstOrDefault((User u) => u.Id == userID);
         if (user is null) return;
 
         Users?.Remove(user);
@@ -117,4 +119,5 @@ else
         Snackbar.Add($"User {user.Username} has been deleted.", Severity.Success);
         StateHasChanged();
     }
+
 }
