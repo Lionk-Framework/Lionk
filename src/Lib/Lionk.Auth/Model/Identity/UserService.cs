@@ -45,7 +45,7 @@ public class UserService : IUserService
     public User? GetRegisteredUser(string username, string passwordHash)
     {
         HashSet<User> users = GetUsers();
-        User? user = users.FirstOrDefault((User user) => string.Equals(user.Username, username) && string.Equals(user.PasswordHash, passwordHash));
+        User? user = users.FirstOrDefault(user => string.Equals(user.Username, username) && string.Equals(user.PasswordHash, passwordHash));
         return user;
     }
 
@@ -53,7 +53,7 @@ public class UserService : IUserService
     public User? GetUserByEmail(string email)
     {
         HashSet<User> users = GetUsers();
-        User? user = users.FirstOrDefault((User user) => string.Equals(user.Email, email));
+        User? user = users.FirstOrDefault(user => string.Equals(user.Email, email));
         return user;
     }
 
@@ -61,7 +61,7 @@ public class UserService : IUserService
     public User? GetUserById(Guid id)
     {
         HashSet<User> users = GetUsers();
-        User? user = users.FirstOrDefault((User user) => user.Id.Equals(id));
+        User? user = users.FirstOrDefault(user => user.Id.Equals(id));
         return user;
     }
 
@@ -69,7 +69,7 @@ public class UserService : IUserService
     public User? GetUserByUsername(string username)
     {
         HashSet<User> users = GetUsers();
-        User? user = users.FirstOrDefault((User user) => string.Equals(user.Username, username));
+        User? user = users.FirstOrDefault(user => string.Equals(user.Username, username));
         return user;
     }
 
@@ -80,7 +80,7 @@ public class UserService : IUserService
     public string GetUserSalt(string username)
     {
         HashSet<User> users = GetUsers();
-        User? user = users.FirstOrDefault((User user) => string.Equals(user.Username, username));
+        User? user = users.FirstOrDefault(user => string.Equals(user.Username, username));
         return user?.Salt ?? string.Empty;
     }
 

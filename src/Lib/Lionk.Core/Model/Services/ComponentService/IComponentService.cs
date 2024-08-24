@@ -30,7 +30,7 @@ public interface IComponentService : IDisposable
     /// </summary>
     /// <param name="id">The id.</param>
     /// <returns>A component with id, or null if no component exist.</returns>
-    public IComponent? GetInstanceByID(Guid id);
+    public IComponent? GetInstanceById(Guid id);
 
     /// <summary>
     ///     Get an instance by <see cref="IComponent.InstanceName" />.
@@ -42,7 +42,7 @@ public interface IComponentService : IDisposable
     /// <summary>
     ///     Get all instances registered.
     /// </summary>
-    /// <returns>An <see cref="IEnumerable{T}" /> containing all registered instace.</returns>
+    /// <returns>An <see cref="IEnumerable{T}" /> containing all registered instance.</returns>
     public IEnumerable<IComponent> GetInstances();
 
     /// <summary>
@@ -59,7 +59,7 @@ public interface IComponentService : IDisposable
     ///     A <see cref="IDictionary{TKey, TValue}" />
     ///     which contains information about registered components."/>.
     /// </returns>
-    public IReadOnlyDictionary<ComponentTypeDescription, Factory> GetRegisteredTypeDictionnary();
+    public IReadOnlyDictionary<ComponentTypeDescription, Factory> GetRegisteredTypeDictionary();
 
     /// <summary>
     ///     Register a component.

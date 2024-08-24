@@ -115,12 +115,12 @@ public class UserServiceTests
         // nothing to arrange
 
         // Act
-        User? instert1 = _userService.Insert(_user1);
-        User? instert2 = _userService.Insert(_user2);
+        User? insert1 = _userService.Insert(_user1);
+        User? insert2 = _userService.Insert(_user2);
 
         // Assert
-        Assert.That(instert1, Is.Not.Null);
-        Assert.That(instert2, Is.Not.Null);
+        Assert.That(insert1, Is.Not.Null);
+        Assert.That(insert2, Is.Not.Null);
         HashSet<User> users = _userService.GetUsers();
         Assert.That(users.Count, Is.EqualTo(2));
     }
@@ -199,9 +199,9 @@ public class UserServiceTests
     public void UpdateUserVerification()
     {
         // Arrange
-        string newName = "userUpdated";
-        string newMail = "userUpdated@email.com";
-        string newPass = "passwordUpdated";
+        const string newName = "userUpdated";
+        const string newMail = "userUpdated@email.com";
+        const string newPass = "passwordUpdated";
 
         User? insert = _userService.Insert(_user1);
 

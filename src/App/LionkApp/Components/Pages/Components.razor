@@ -3,6 +3,7 @@
 @using Lionk.Core.Component
 @using Lionk.Core.TypeRegister
 @using IComponent = Lionk.Core.Component.IComponent
+@implements IDisposable
 
 <MudGrid>
     <MudItem xs="6">
@@ -49,7 +50,7 @@
 </MudGrid>
 
 @code {
-    private IReadOnlyDictionary<ComponentTypeDescription, Factory>? TypesRegister => ComponentService.GetRegisteredTypeDictionnary();
+    private IReadOnlyDictionary<ComponentTypeDescription, Factory> TypesRegister => ComponentService.GetRegisteredTypeDictionary();
 
     private KeyValuePair<ComponentTypeDescription, Factory>? _selectedComponent;
 
@@ -61,7 +62,7 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadComponentTypes();
-        ComponentService.NewComponentAvailable += (object? s, EventArgs e) => OnNewTypesAvailable();
+        ComponentService.NewComponentAvailable += (s, e) => OnNewTypesAvailable();
     }
 
     private async Task LoadComponentTypes()
@@ -109,7 +110,7 @@
     /// <inheritdoc />
     public void Dispose()
     {
-        ComponentService.NewComponentAvailable -= (object? s, EventArgs e) => OnNewTypesAvailable();
+        ComponentService.NewComponentAvailable -= (s, e) => OnNewTypesAvailable();
     }
 
 }

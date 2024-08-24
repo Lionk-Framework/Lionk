@@ -1,5 +1,6 @@
 ﻿@using Lionk.Core.Component
 @using Lionk.Core.Dialog
+@using IComponent = Lionk.Core.Component.IComponent
 @inherits MudItem
 @inject IViewLocatorService ViewLocatorService
 @inject IDialogService DialogService
@@ -29,7 +30,7 @@
                 {
                     <MudIconButton Icon="@Icons.Material.Filled.DeviceHub"
                                    Size="Size.Small"
-                                   OnClick="GoToComponentsPage"/>
+                                   OnClick="GoToComponentsPage" />
                 }
                 else
                 {
@@ -37,21 +38,21 @@
                     {
                         <MudIconButton Icon="@Icons.Material.Filled.Settings"
                                        Size="Size.Small"
-                                       OnClick="ConfigurableClickedAsync"/>
+                                       OnClick="ConfigurableClickedAsync" />
                     }
 
                     @if (_isDetailable)
                     {
                         <MudIconButton Icon="@Icons.Material.Filled.ListAlt"
                                        Size="Size.Small"
-                                       OnClick="DetailableClickedAsync"/>
+                                       OnClick="DetailClickedAsync" />
                     }
 
                     @if (_isPageable)
                     {
                         <MudIconButton Icon="@Icons.Material.Filled.Fullscreen"
                                        Size="Size.Small"
-                                       OnClick="PageableClickedAsync"/>
+                                       OnClick="PageableClickedAsync" />
                     }
 
                     @if (_isExecutable && !_isCyclic)
@@ -59,11 +60,11 @@
                         <MudIconButton Icon="@Icons.Material.Filled.PlayArrow"
                                        Size="Size.Small"
                                        OnClick="ExecutableStartClickedAsync"
-                                       Disabled="!((IExecutableComponent?)Component)?.CanExecute ?? true"/>
+                                       Disabled="!((IExecutableComponent?)Component)?.CanExecute ?? true" />
                         <MudIconButton Icon="@Icons.Material.Filled.Stop"
                                        Size="Size.Small"
                                        OnClick="ExecutableStopClickedAsync"
-                                       Disabled="!((IExecutableComponent?)Component)?.CanExecute ?? true"/>
+                                       Disabled="!((IExecutableComponent?)Component)?.CanExecute ?? true" />
                     }
                 }
                 <MudMenu Icon="@Icons.Material.Filled.MoreVert"
@@ -79,7 +80,7 @@
                 </MudText>
 
                 <div style="margin-right:50px">
-                    <DynamicComponentWrapper Type="@_view" Parameters="@_parameters"/>
+                    <DynamicComponentWrapper Type="@_view" Parameters="@_parameters" />
                 </div>
             </div>
 
@@ -98,7 +99,7 @@
     /// The component to show.
     /// </summary>
     [Parameter]
-    public BaseComponent? Component { get; set; }
+    public IComponent? Component { get; set; }
 
     /// <summary>
     /// Event that is called when the componentViewModel is updated.
@@ -186,7 +187,7 @@
         await DialogFromContextAsync(ViewContext.Configuration, _configutionViews);
     }
 
-    private async void DetailableClickedAsync()
+    private async void DetailClickedAsync()
     {
         await DialogFromContextAsync(ViewContext.Detail, _detailViews);
     }
@@ -198,8 +199,7 @@
 
     private void ExecutableStartClickedAsync()
     {
-        var executableComponent = Component as BaseExecutableComponent;
-        if (executableComponent is not null)
+        if (Component is IExecutableComponent executableComponent)
         {
             executableComponent.Execute();
         }
@@ -207,16 +207,15 @@
 
     private void ExecutableStopClickedAsync()
     {
-        var executableComponent = Component as BaseExecutableComponent;
-        if (executableComponent is not null)
+        if (Component is IExecutableComponent executableComponent)
         {
             // executableComponent.Suspend();
         }
     }
 
-    private async Task DialogFromContextAsync(ViewContext viewContext, List<ComponentViewDescription>? Views)
+    private async Task DialogFromContextAsync(ViewContext viewContext, List<ComponentViewDescription>? views)
     {
-        if (Views is null || !Views.Any())
+        if (views is null || !views.Any())
         {
             Snackbar.Add($"No {viewContext.ToString()} view found", Severity.Error);
             return;
@@ -225,10 +224,13 @@
         int viewIndex = ComponentViewModel?.Indexes[(int)viewContext] ?? 0;
 
         var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
-        var parameters = new DialogParameters();
-        parameters.Add("Component", Component);
-        parameters.Add("ViewDescriptions", Views);
-        parameters.Add("CurrentIndex", viewIndex);
+        var parameters =
+            new DialogParameters
+                {
+                { "Component", Component },
+                { "ViewDescriptions", views },
+                { "CurrentIndex", viewIndex },
+                };
 
         IDialogReference dialog = await DialogService.ShowAsync<ComponentDialog>("Configuration", parameters, options);
         DialogResult? result = await dialog.Result;
@@ -245,7 +247,7 @@
 
     private async Task<bool> DeleteDialogAsync()
     {
-        var parameters = new DialogParameters<SimpleQuestionDialog> { { (SimpleQuestionDialog x) => x.ContentText, "Do you really want to delete these widget? This process cannot be undone." }, { (SimpleQuestionDialog x) => x.ButtonText, "Delete" }, { (SimpleQuestionDialog x) => x.Color, Color.Error } };
+        var parameters = new DialogParameters<SimpleQuestionDialog> { { x => x.ContentText, "Do you really want to delete these widget? This process cannot be undone." }, { x => x.ButtonText, "Delete" }, { x => x.Color, Color.Error } };
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
         IDialogReference dialog = await DialogService.ShowAsync<SimpleQuestionDialog>("Delete", parameters, options);
         DialogResult? result = await dialog.Result;

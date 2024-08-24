@@ -1,7 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using System.Collections.Concurrent;
-using System.ComponentModel;
 using System.Reflection;
 using Lionk.Core.Observable;
 using Lionk.Core.TypeRegister;
@@ -37,7 +36,7 @@ public class ComponentService : IComponentService
     public ComponentService(ITypesProvider provider)
     {
         _componentRegister = new ComponentRegister(provider, this);
-        _componentRegister.NewComponentAvailable += (object? s, EventArgs e) => OnNewTypesAvailable();
+        _componentRegister.NewComponentAvailable += (s, e) => OnNewTypesAvailable();
         LoadConfiguration();
     }
 
@@ -64,21 +63,21 @@ public class ComponentService : IComponentService
         {
             if (component is ObservableElement observable)
             {
-                observable.PropertyChanged -= (object? s, PropertyChangedEventArgs e) => SaveConfiguration();
+                observable.PropertyChanged -= (s, e) => SaveConfiguration();
             }
         }
 
-        _componentRegister.NewComponentAvailable -= (object? s, EventArgs e) => OnNewTypesAvailable();
+        _componentRegister.NewComponentAvailable -= (s, e) => OnNewTypesAvailable();
         GC.SuppressFinalize(this);
     }
 
     /// <inheritdoc />
-    public IComponent? GetInstanceByID(Guid id) => _componentInstances.GetValueOrDefault(id);
+    public IComponent? GetInstanceById(Guid id) => _componentInstances.GetValueOrDefault(id);
 
     /// <inheritdoc />
     public IComponent? GetInstanceByName(string name)
     {
-        IComponent? component = _componentInstances.Values.FirstOrDefault((IComponent x) => x.InstanceName == name);
+        IComponent? component = _componentInstances.Values.FirstOrDefault(x => x.InstanceName == name);
         return component;
     }
 
@@ -89,8 +88,8 @@ public class ComponentService : IComponentService
     public IEnumerable<T> GetInstancesOfType<T>() => _componentInstances.Values.OfType<T>();
 
     /// <inheritdoc />
-    public IReadOnlyDictionary<ComponentTypeDescription, Factory> GetRegisteredTypeDictionnary() =>
-        _componentRegister.TypesRegistery.AsReadOnly();
+    public IReadOnlyDictionary<ComponentTypeDescription, Factory> GetRegisteredTypeDictionary() =>
+        _componentRegister.TypesRegister.AsReadOnly();
 
     /// <inheritdoc />
     public void RegisterComponentInstance(IComponent component)
@@ -111,7 +110,7 @@ public class ComponentService : IComponentService
 
         if (component is ObservableElement observable)
         {
-            observable.PropertyChanged += (object? s, PropertyChangedEventArgs e) => SaveConfiguration();
+            observable.PropertyChanged += (s, e) => SaveConfiguration();
         }
 
         NewInstanceRegistered?.Invoke(this, EventArgs.Empty);
@@ -122,7 +121,7 @@ public class ComponentService : IComponentService
     {
         if (component is ObservableElement observable)
         {
-            observable.PropertyChanged -= (object? s, PropertyChangedEventArgs e) => SaveConfiguration();
+            observable.PropertyChanged -= (s, e) => SaveConfiguration();
         }
 
         if (_componentInstances.TryRemove(component.Id, out _))
@@ -145,7 +144,7 @@ public class ComponentService : IComponentService
         string uniqueName = baseName;
         int suffix = 0;
 
-        while (_componentInstances.Values.Any((IComponent x) => x.InstanceName == uniqueName))
+        while (_componentInstances.Values.Any(x => x.InstanceName == uniqueName))
         {
             suffix++;
             uniqueName = $"{baseName}_{suffix}";

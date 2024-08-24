@@ -9,16 +9,16 @@ else
     <MudTable Items="forecasts" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
         <HeaderContent>
             <MudTh>
-                <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<WeatherForecast, object>((WeatherForecast x) => x.Date)">Date</MudTableSortLabel>
+                <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<WeatherForecast, object>(x => x.Date)">Date</MudTableSortLabel>
             </MudTh>
             <MudTh>
-                <MudTableSortLabel SortBy="new Func<WeatherForecast, object>((WeatherForecast x) => x.TemperatureC)">Temp. (C)</MudTableSortLabel>
+                <MudTableSortLabel SortBy="new Func<WeatherForecast, object>(x => x.TemperatureC)">Temp. (C)</MudTableSortLabel>
             </MudTh>
             <MudTh>
-                <MudTableSortLabel SortBy="new Func<WeatherForecast, object>((WeatherForecast x) => x.TemperatureF)">Temp. (F)</MudTableSortLabel>
+                <MudTableSortLabel SortBy="new Func<WeatherForecast, object>(x => x.TemperatureF)">Temp. (F)</MudTableSortLabel>
             </MudTh>
             <MudTh>
-                <MudTableSortLabel SortBy="new Func<WeatherForecast, object>((WeatherForecast x) => x.Summary!)">Summary</MudTableSortLabel>
+                <MudTableSortLabel SortBy="new Func<WeatherForecast, object>(x => x.Summary!)">Summary</MudTableSortLabel>
             </MudTh>
         </HeaderContent>
         <RowTemplate>
@@ -43,8 +43,8 @@ else
         await Task.Delay(500);
 
         var startDate = DateOnly.FromDateTime(DateTime.Now);
-        string[] summaries = { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
-        forecasts = Enumerable.Range(1, 5).Select((int index) => new WeatherForecast { Date = startDate.AddDays(index), TemperatureC = Random.Shared.Next(-20, 55), Summary = summaries[Random.Shared.Next(summaries.Length)] }).ToArray();
+        string[] summaries = ["Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"];
+        forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast { Date = startDate.AddDays(index), TemperatureC = Random.Shared.Next(-20, 55), Summary = summaries[Random.Shared.Next(summaries.Length)] }).ToArray();
     }
 
     private class WeatherForecast

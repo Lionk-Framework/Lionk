@@ -35,7 +35,7 @@ public abstract class Factory
     /// </summary>
     /// <returns>
     ///     A new instance of the type used by the factory.
-    ///     If the creation is unsucessfull, return null.
+    ///     If the creation is unsuccessful, return null.
     /// </returns>
     public object? CreateInstance()
     {
@@ -65,7 +65,7 @@ public abstract class Factory
     /// <summary>
     ///     Called when a new instance is created.
     /// </summary>
-    /// <param name="instance">the create instance.</param>
+    /// <param name="instance">the created instance.</param>
     protected abstract void OnCreateInstance(object instance);
 
     #endregion

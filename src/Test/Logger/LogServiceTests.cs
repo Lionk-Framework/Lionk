@@ -28,9 +28,9 @@ public class LogServiceTests
     [Test]
     public void Configure_ShouldInitializeLoggers()
     {
-        _mockLoggerFactory.Setup((ILoggerFactory factory) => factory.CreateLogger("app")).Returns(_mockAppLogger.Object);
+        _mockLoggerFactory.Setup(factory => factory.CreateLogger("app")).Returns(_mockAppLogger.Object);
 
-        _mockLoggerFactory.Setup((ILoggerFactory factory) => factory.CreateLogger("debug")).Returns(_mockDebugLogger.Object);
+        _mockLoggerFactory.Setup(factory => factory.CreateLogger("debug")).Returns(_mockDebugLogger.Object);
 
         LogService.Configure(_mockLoggerFactory.Object);
 
@@ -55,7 +55,7 @@ public class LogServiceTests
     [Test]
     public void LogApp_ShouldCallAppLogger()
     {
-        _mockLoggerFactory.Setup((ILoggerFactory factory) => factory.CreateLogger("app")).Returns(_mockAppLogger.Object);
+        _mockLoggerFactory.Setup(factory => factory.CreateLogger("app")).Returns(_mockAppLogger.Object);
 
         LogService.Configure(_mockLoggerFactory.Object);
 
@@ -64,7 +64,7 @@ public class LogServiceTests
 
         LogService.LogApp(severity, message);
 
-        _mockAppLogger.Verify((IStandardLogger logger) => logger.Log(severity, message), Times.Once);
+        _mockAppLogger.Verify(logger => logger.Log(severity, message), Times.Once);
     }
 
     /// <summary>
@@ -73,7 +73,7 @@ public class LogServiceTests
     [Test]
     public void LogDebug_ShouldCallDebugLogger()
     {
-        _mockLoggerFactory.Setup((ILoggerFactory factory) => factory.CreateLogger("debug")).Returns(_mockDebugLogger.Object);
+        _mockLoggerFactory.Setup(factory => factory.CreateLogger("debug")).Returns(_mockDebugLogger.Object);
 
         LogService.Configure(_mockLoggerFactory.Object);
 
@@ -81,7 +81,7 @@ public class LogServiceTests
 
         LogService.LogDebug(message);
 
-        _mockDebugLogger.Verify((IStandardLogger logger) => logger.Log(LogSeverity.Debug, message), Times.Once);
+        _mockDebugLogger.Verify(logger => logger.Log(LogSeverity.Debug, message), Times.Once);
     }
 
     #endregion

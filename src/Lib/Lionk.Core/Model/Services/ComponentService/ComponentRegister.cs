@@ -17,8 +17,6 @@ public class ComponentRegister(IComponentService service) : IDisposable
 {
     #region fields
 
-    private readonly IComponentService _componentService = service;
-
     private readonly List<ITypesProvider> _providers = [];
 
     private readonly HashSet<Type> _registeredTypes = [];
@@ -38,7 +36,7 @@ public class ComponentRegister(IComponentService service) : IDisposable
         : this(service)
     {
         _providers = providers.ToList();
-        _providers.ForEach((ITypesProvider p) => p.NewTypesAvailable += OnNewTypesAvailable);
+        _providers.ForEach(p => p.NewTypesAvailable += OnNewTypesAvailable);
     }
 
     /// <summary>
@@ -48,7 +46,7 @@ public class ComponentRegister(IComponentService service) : IDisposable
     /// <param name="service">The component service.</param>
     public ComponentRegister(ITypesProvider provider, IComponentService service)
         : this(new List<ITypesProvider> { provider }, service) =>
-        AddTypesToRegistery(provider.GetTypes());
+        AddTypesToRegister(provider.GetTypes());
 
     #endregion
 
@@ -64,9 +62,9 @@ public class ComponentRegister(IComponentService service) : IDisposable
     #region properties
 
     /// <summary>
-    ///     Gets a dictionnary containing all registered Type and theirs factory.
+    ///     Gets a dictionary containing all registered Type and theirs factory.
     /// </summary>
-    public ReadOnlyDictionary<ComponentTypeDescription, Factory> TypesRegistery => _typesRegister.AsReadOnly();
+    public ReadOnlyDictionary<ComponentTypeDescription, Factory> TypesRegister => _typesRegister.AsReadOnly();
 
     #endregion
 
@@ -95,7 +93,7 @@ public class ComponentRegister(IComponentService service) : IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
-        _providers.ForEach((ITypesProvider p) => p.NewTypesAvailable -= OnNewTypesAvailable);
+        _providers.ForEach(p => p.NewTypesAvailable -= OnNewTypesAvailable);
         GC.SuppressFinalize(this);
     }
 
@@ -103,30 +101,32 @@ public class ComponentRegister(IComponentService service) : IDisposable
 
     #region others methods
 
-    private void AddTypesToRegistery(IEnumerable<Type> types)
+    private void AddTypesToRegister(IEnumerable<Type> types)
     {
-        bool newTypeAvailabe = false;
+        bool newTypeAvailable = false;
 
         foreach (Type type in types)
         {
-            if (type.GetInterfaces().Contains(typeof(IComponent)) && type.IsClass && !type.IsAbstract && !_registeredTypes.Contains(type))
+            if (type.GetInterfaces().Contains(typeof(IComponent))
+                && type is { IsClass: true, IsAbstract: false }
+                && !_registeredTypes.Contains(type))
             {
-                var factory = new ComponentFactory(type, _componentService);
+                var factory = new ComponentFactory(type, service);
                 var description = new ComponentTypeDescription(type);
 
                 _typesRegister.Add(description, factory);
                 _registeredTypes.Add(type);
-                newTypeAvailabe = true;
+                newTypeAvailable = true;
             }
         }
 
-        if (newTypeAvailabe)
+        if (newTypeAvailable)
         {
             NewComponentAvailable?.Invoke(this, EventArgs.Empty);
         }
     }
 
-    private void OnNewTypesAvailable(object? sender, TypesEventArgs e) => AddTypesToRegistery(e.Types);
+    private void OnNewTypesAvailable(object? sender, TypesEventArgs e) => AddTypesToRegister(e.Types);
 
     #endregion
 }

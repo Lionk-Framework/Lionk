@@ -27,7 +27,7 @@ public class BaseComponentTests
     {
         _baseComponentMock.Object.Dispose();
 
-        _baseComponentMock.Verify((BaseComponent m) => m.Dispose(), Times.Once);
+        _baseComponentMock.Verify(m => m.Dispose(), Times.Once);
     }
 
     /// <summary>

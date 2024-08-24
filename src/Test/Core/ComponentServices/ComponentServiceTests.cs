@@ -29,7 +29,7 @@ public class ComponentServiceTests
     public void GetInstanceByName_ShouldReturnCorrectComponent_WhenComponentExists()
     {
         var component = new Mock<IComponent>();
-        component.SetupProperty((IComponent c) => c.InstanceName, "TestComponent");
+        component.SetupProperty(c => c.InstanceName, "TestComponent");
 
         _componentService.RegisterComponentInstance(component.Object);
 
@@ -111,10 +111,10 @@ public class ComponentServiceTests
     public void RegisterComponentInstance_ShouldAssignUniqueName_WhenNameConflictOccurs()
     {
         var component1 = new Mock<IComponent>();
-        component1.SetupProperty((IComponent c) => c.InstanceName, "TestComponent");
+        component1.SetupProperty(c => c.InstanceName, "TestComponent");
 
         var component2 = new Mock<IComponent>();
-        component2.SetupProperty((IComponent c) => c.InstanceName, "TestComponent");
+        component2.SetupProperty(c => c.InstanceName, "TestComponent");
 
         _componentService.RegisterComponentInstance(component1.Object);
         _componentService.RegisterComponentInstance(component2.Object);
@@ -146,7 +146,7 @@ public class ComponentServiceTests
     public void UnregisterComponentInstance_ShouldRemoveComponent_WhenComponentIsRegistered()
     {
         var component = new Mock<IComponent>();
-        component.SetupProperty((IComponent c) => c.InstanceName, "TestComponent");
+        component.SetupProperty(c => c.InstanceName, "TestComponent");
 
         _componentService.RegisterComponentInstance(component.Object);
 

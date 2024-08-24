@@ -3,7 +3,7 @@
 namespace Lionk.Core.TypeRegister;
 
 /// <summary>
-///     Interface wich define a types provider.
+///     Interface which define a types provider.
 /// </summary>
 public interface ITypesProvider
 {

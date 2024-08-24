@@ -15,7 +15,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
 
     private readonly IComponentService _componentService;
 
-    private readonly INotifyer _notifyer = new ServiceNotifyer();
+    private readonly INotifier _notifier = new ServiceNotifier();
 
     private readonly object _stateLock = new();
 
@@ -126,13 +126,13 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     {
         lock (_stateLock)
         {
-            if (State == CycleState.Stopped || State == CycleState.Stopping)
+            if (State is CycleState.Stopped or CycleState.Stopping)
             {
                 return;
             }
 
             State = CycleState.Stopping;
-            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource.Cancel();
 
             while (State != CycleState.Stopped && !_componentsTask.IsCompleted)
             {
@@ -178,7 +178,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
 
                     Content content = new(Severity.Warning, "Watchdog timeout", "something caused a watchdog timeout.");
 
-                    var notification = new Notification.Notification(content, _notifyer);
+                    var notification = new Notification.Notification(content, _notifier);
 
                     // TODO CJS -> Uncomment when notification work
                     // NotificationService.Send(notification);
@@ -235,7 +235,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
                 "Device crash during cycle execution",
                 $"The device : {component.InstanceName} has been aborted during the cycle execution, error message : {ex.Message}");
 
-            var notification = new Notification.Notification(content, _notifyer);
+            var notification = new Notification.Notification(content, _notifier);
             NotificationService.Send(notification);
 
             LogService.LogApp(LogSeverity.Error, $"{component.InstanceName} failed during execution: {ex.Message}");
@@ -255,7 +255,8 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
                 break;
             }
 
-            if (component.NextExecution <= DateTime.Now && component.CanExecute && !component.IsInError)
+            if (component.NextExecution <= DateTime.Now
+                && component is { CanExecute: true, IsInError: false })
             {
                 await ExecuteComponent(component, combinedToken);
             }
@@ -264,7 +265,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
 
     #endregion
 
-    private class ServiceNotifyer : INotifyer
+    private class ServiceNotifier : INotifier
     {
         #region properties
 
@@ -276,7 +277,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
 
         #region public and override methods
 
-        public bool Equals(INotifyer? obj) => obj is ServiceNotifyer && obj.Id == Id;
+        public bool Equals(INotifier? obj) => obj is ServiceNotifier && obj.Id == Id;
 
         #endregion
     }

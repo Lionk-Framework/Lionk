@@ -11,7 +11,7 @@ namespace LionkTest.Core;
 ///     Test class for <see cref="ComponentRegister" />.
 /// </summary>
 [TestFixture]
-public class ComponentRegisteryTests
+public class ComponentRegisterTests
 {
     #region fields
 
@@ -33,7 +33,7 @@ public class ComponentRegisteryTests
     {
         var newProvider = new Mock<ITypesProvider>();
         _componentRegistery.AddProvider(newProvider.Object);
-        newProvider.VerifyAdd((ITypesProvider p) => p.NewTypesAvailable += It.IsAny<EventHandler<TypesEventArgs>>(), Times.Once);
+        newProvider.VerifyAdd(p => p.NewTypesAvailable += It.IsAny<EventHandler<TypesEventArgs>>(), Times.Once);
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ public class ComponentRegisteryTests
 
         _componentRegistery.DeleteProvider(newProvider.Object);
 
-        newProvider.VerifyRemove((ITypesProvider p) => p.NewTypesAvailable -= It.IsAny<EventHandler<TypesEventArgs>>(), Times.Once);
+        newProvider.VerifyRemove(p => p.NewTypesAvailable -= It.IsAny<EventHandler<TypesEventArgs>>(), Times.Once);
     }
 
     /// <summary>
@@ -61,7 +61,7 @@ public class ComponentRegisteryTests
 
         _componentRegistery.Dispose();
 
-        newProvider.VerifyRemove((ITypesProvider p) => p.NewTypesAvailable -= It.IsAny<EventHandler<TypesEventArgs>>(), Times.Once);
+        newProvider.VerifyRemove(p => p.NewTypesAvailable -= It.IsAny<EventHandler<TypesEventArgs>>(), Times.Once);
     }
 
     /// <summary>
@@ -71,15 +71,15 @@ public class ComponentRegisteryTests
     public void OnNewTypesAvailable_ShouldRegisterNewTypes_WhenNewTypesAreAvailable()
     {
         var types = new List<Type> { typeof(MockComponent) };
-        _mockTypesProvider.Setup((ITypesProvider tp) => tp.GetTypes()).Returns(types);
+        _mockTypesProvider.Setup(tp => tp.GetTypes()).Returns(types);
 
         var eventArgs = new TypesEventArgs(types);
-        _mockTypesProvider.Raise((ITypesProvider tp) => tp.NewTypesAvailable += null, eventArgs);
+        _mockTypesProvider.Raise(tp => tp.NewTypesAvailable += null, eventArgs);
 
-        ReadOnlyDictionary<ComponentTypeDescription, Factory> registeredTypes = _componentRegistery.TypesRegistery;
+        ReadOnlyDictionary<ComponentTypeDescription, Factory> registeredTypes = _componentRegistery.TypesRegister;
 
         Assert.That(registeredTypes, Has.Count.EqualTo(1));
-        Assert.That(registeredTypes.Keys.Any((ComponentTypeDescription td) => td.Type == typeof(MockComponent)), Is.True);
+        Assert.That(registeredTypes.Keys.Any(td => td.Type == typeof(MockComponent)), Is.True);
     }
 
     /// <summary>

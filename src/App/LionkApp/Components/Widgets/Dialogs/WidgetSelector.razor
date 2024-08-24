@@ -1,6 +1,5 @@
 ﻿@using Lionk.Core.View
 @inject IViewLocatorService ViewLocatorService
-@inject ISnackbar Snackbar
 
 <MudDialog>
     <DialogContent>
@@ -25,6 +24,8 @@
 </MudDialog>
 
 @code {
+    private MudTable<ComponentViewDescription> _table = new();
+
     private List<ComponentViewDescription>? _availableWidgets;
 
     [CascadingParameter]

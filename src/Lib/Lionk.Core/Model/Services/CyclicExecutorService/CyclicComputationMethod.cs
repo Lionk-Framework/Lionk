@@ -13,7 +13,7 @@ public enum CyclicComputationMethod
     RelativeToLastExecution,
 
     /// <summary>
-    ///     The computation is relative to the start time + the number of cycles * periode.
+    ///     The computation is relative to the start time + the number of cycles * period.
     /// </summary>
     RelativeToStartTime,
 }

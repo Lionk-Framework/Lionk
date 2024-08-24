@@ -17,7 +17,7 @@ public class ComponentTypeDescription
     {
         Type = type;
         var attribute = (NamedElement?)Attribute.GetCustomAttribute(type, typeof(NamedElement));
-        Name = attribute?.Name ?? "Unamed";
+        Name = attribute?.Name ?? "Unnamed";
         Description = attribute?.Description ?? "No description available";
     }
 

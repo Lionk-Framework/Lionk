@@ -25,14 +25,9 @@ public class UserServiceRazor
     /// </summary>
     /// <param name="protectedLocalStorage"> The protected local storage.</param>
     public UserServiceRazor(ProtectedLocalStorage protectedLocalStorage)
-    {
-        if (protectedLocalStorage is null)
-        {
-            throw new ArgumentNullException(nameof(protectedLocalStorage));
-        }
-
-        _protectedLocalStorage = protectedLocalStorage;
-    }
+     =>
+        _protectedLocalStorage =
+            protectedLocalStorage ?? throw new ArgumentNullException(nameof(protectedLocalStorage));
 
     #endregion
 

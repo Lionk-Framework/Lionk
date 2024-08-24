@@ -18,7 +18,7 @@ public class ComponentViewModel
     /// <param name="viewType"> The view type.</param>
     public ComponentViewModel(Guid componentId, Type viewType)
     {
-        ComponentUniqueID = componentId;
+        ComponentUniqueId = componentId;
         ViewType = viewType;
         Indexes = new int[Enum.GetValues<ViewContext>().Length];
     }
@@ -34,7 +34,7 @@ public class ComponentViewModel
     public ComponentViewModel(Guid id, Guid componentId, Type viewType, int[] indexes)
     {
         Id = id;
-        ComponentUniqueID = componentId;
+        ComponentUniqueId = componentId;
         ViewType = viewType;
         Indexes = indexes;
     }
@@ -46,7 +46,7 @@ public class ComponentViewModel
     /// <summary>
     ///     Gets or sets the component instance name.
     /// </summary>
-    public Guid ComponentUniqueID { get; set; }
+    public Guid ComponentUniqueId { get; set; }
 
     /// <summary>
     ///     Gets the unique identifier of the dashboard history.

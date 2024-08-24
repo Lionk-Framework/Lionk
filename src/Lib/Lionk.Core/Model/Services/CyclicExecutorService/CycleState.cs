@@ -26,9 +26,4 @@ public enum CycleState
     ///     The cycle is stopping.
     /// </summary>
     Stopping,
-
-    /// <summary>
-    ///     The cycle is aborted.
-    /// </summary>
-    Aborted,
 }

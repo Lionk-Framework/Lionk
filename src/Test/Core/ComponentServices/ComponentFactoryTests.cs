@@ -31,7 +31,7 @@ public class ComponentFactoryTests
 
         object? instance = invalidFactory.CreateInstance();
 
-        _mockComponentService.Verify((IComponentService cs) => cs.RegisterComponentInstance(It.IsAny<IComponent>()), Times.Never);
+        _mockComponentService.Verify(cs => cs.RegisterComponentInstance(It.IsAny<IComponent>()), Times.Never);
     }
 
     /// <summary>
@@ -42,7 +42,7 @@ public class ComponentFactoryTests
     {
         object? instance = _componentFactory.CreateInstance();
 
-        _mockComponentService.Verify((IComponentService cs) => cs.RegisterComponentInstance(It.IsAny<IComponent>()), Times.Once);
+        _mockComponentService.Verify(cs => cs.RegisterComponentInstance(It.IsAny<IComponent>()), Times.Once);
     }
 
     /// <summary>

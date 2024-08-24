@@ -56,7 +56,7 @@ public class PluginManager : IPluginManager
 
         var assemblyName = AssemblyName.GetAssemblyName(path);
 
-        if (_plugins.Any((Plugin x) => x.Name == assemblyName.Name))
+        if (_plugins.Any(x => x.Name == assemblyName.Name))
         {
             LogService.LogApp(LogSeverity.Warning, $"Plugin already loaded: {path}");
             return;
@@ -74,9 +74,6 @@ public class PluginManager : IPluginManager
 
     /// <inheritdoc />
     public IEnumerable<Plugin> GetAllPlugins() => _plugins.AsReadOnly();
-
-    /// <inheritdoc />
-    public int GetPluginCount() => _plugins.Count;
 
     /// <inheritdoc />
     public IEnumerable<Type> GetTypes()
@@ -255,7 +252,7 @@ public class PluginManager : IPluginManager
         {
             try
             {
-                InternalLoadDependencies(new[] { referencedAssembly.AssemblyName });
+                InternalLoadDependencies([referencedAssembly.AssemblyName]);
                 referencedAssembly.IsLoaded = true;
             }
             catch (Exception depEx)

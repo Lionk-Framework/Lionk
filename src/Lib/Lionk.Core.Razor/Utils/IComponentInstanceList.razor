@@ -1,7 +1,6 @@
 ﻿@namespace Lionk.Core.Razor
 @inject IComponentService ComponentService
 @using Lionk.Core.Component
-@using Lionk.Core.TypeRegister
 @using IComponent = Lionk.Core.Component.IComponent
 
 <ListSearcher Items="@_components"
@@ -95,7 +94,10 @@
 
     private string GetComponentName(IComponent component)
     {
-        string name = ComponentService.GetRegisteredTypeDictionnary()?.Where((KeyValuePair<ComponentTypeDescription, Factory> x) => x.Key.Type == component.GetType()).First().Key.Name ?? "Unknown";
+        string name =
+            ComponentService.GetRegisteredTypeDictionary()
+                .First(x => x.Key.Type == component.GetType())
+                .Key.Name ?? "Unknown";
 
         return name;
     }

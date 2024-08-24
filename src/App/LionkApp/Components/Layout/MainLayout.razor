@@ -3,7 +3,7 @@
 @inherits LayoutComponentBase
 @inject NavigationManager NavManager
 @inject UserAuthenticationStateProvider AuthStateProvider
-@inject LionkPalette theme
+@inject LionkPalette Theme
 <AuthorizeView>
     <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode"/>
     <MudPopoverProvider/>
@@ -83,7 +83,7 @@
     {
         base.OnInitialized();
         UserName = AuthStateProvider.CurrentUser?.Username ?? "Not Logged In";
-        _theme = new MudTheme { PaletteLight = theme.LightPalette, PaletteDark = theme.DarkPalette, LayoutProperties = new LayoutProperties() };
+        _theme = new MudTheme { PaletteLight = Theme.LightPalette, PaletteDark = Theme.DarkPalette, LayoutProperties = new LayoutProperties() };
     }
 
     private void DarkModeToggle()

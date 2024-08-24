@@ -93,7 +93,7 @@
             return;
         }
 
-        if (uploadedFilePaths != null && uploadedFilePaths.Any())
+        if (uploadedFilePaths.Any())
         {
             Snackbar.Add("Files uploaded successfully!", Severity.Success);
 
@@ -118,6 +118,6 @@
         _dragClass = DefaultDragClass;
     }
 
-    private List<string> _fileNames = new();
+    private List<string> _fileNames = [];
 
 }

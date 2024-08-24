@@ -16,7 +16,7 @@ public class ViewRegistryService : IViewRegistryService
     #region public and override methods
 
     /// <inheritdoc cref="IViewRegistryService" />
-    public bool HasActiveViews(Type t) => _activeViews.Any((object view) => view.GetType() == t);
+    public bool HasActiveViews(Type t) => _activeViews.Any(view => view.GetType() == t);
 
     /// <inheritdoc cref="IViewRegistryService" />
     public void Register(object viewInstance) => _activeViews.Add(viewInstance);

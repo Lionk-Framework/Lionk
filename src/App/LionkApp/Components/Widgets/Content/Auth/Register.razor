@@ -1,9 +1,10 @@
 ﻿@page "/register"
 @using System.ComponentModel.DataAnnotations
+@using Lionk.Auth.Abstraction
 @using Lionk.Auth.Identity
 @using Lionk.Auth.Utils
 @inject UserAuthenticationStateProvider AuthStateProvider
-@inject UserService userService
+@inject IUserService UserService
 @inject ISnackbar Snackbar
 
 <EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
@@ -68,13 +69,13 @@
 
     private async Task OnValidSubmit()
     {
-        if (userService.IsUsernameExist(_model.Username!))
+        if (UserService.IsUsernameExist(_model.Username!))
         {
             Snackbar.Add("Username already exists.", Severity.Warning);
             return;
         }
 
-        if (userService.IsEmailExist(_model.Email!))
+        if (UserService.IsEmailExist(_model.Email!))
         {
             Snackbar.Add("Email already exists.", Severity.Warning);
             return;
@@ -82,7 +83,7 @@
 
         string salt = PasswordUtils.GenerateSalt(16);
         string passwordHash = PasswordUtils.HashPassword(_model.Password!, salt);
-        User? registeredUser = userService.Insert(new User(_model.Username!, _model.Email!, passwordHash, salt, new List<string> { "User" }));
+        User? registeredUser = UserService.Insert(new User(_model.Username!, _model.Email!, passwordHash, salt, ["User"]));
         if (registeredUser != null)
         {
             await AuthStateProvider.LoginAsync(_model.Username!, passwordHash);

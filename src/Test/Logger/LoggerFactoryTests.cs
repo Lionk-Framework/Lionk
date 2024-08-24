@@ -22,7 +22,7 @@ public class LoggerFactoryTests
         var mockStandardLogger = new Mock<IStandardLogger>();
         string loggerName = "TestLogger";
 
-        mockLoggerFactory.Setup((ILoggerFactory factory) => factory.CreateLogger(loggerName)).Returns(mockStandardLogger.Object);
+        mockLoggerFactory.Setup(factory => factory.CreateLogger(loggerName)).Returns(mockStandardLogger.Object);
 
         IStandardLogger logger = mockLoggerFactory.Object.CreateLogger(loggerName);
 

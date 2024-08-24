@@ -43,14 +43,14 @@ builder.Services.AddScoped<LionkPalette>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<UserServiceRazor>();
 builder.Services.AddSingleton<IUserRepository, UserFileHandler>();
-builder.Services.AddSingleton<IUserService>((IServiceProvider sp) => new UserService(sp.GetRequiredService<IUserRepository>()));
+builder.Services.AddSingleton<IUserService>(sp => new UserService(sp.GetRequiredService<IUserRepository>()));
 
 builder.Services.AddScoped(
-    (IServiceProvider sp) => new UserAuthenticationStateProvider(
+    sp => new UserAuthenticationStateProvider(
         sp.GetRequiredService<UserServiceRazor>(),
         sp.GetRequiredService<IUserService>()));
 
-builder.Services.AddScoped<AuthenticationStateProvider>((IServiceProvider sp) => sp.GetRequiredService<UserAuthenticationStateProvider>());
+builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<UserAuthenticationStateProvider>());
 
 // Configure custom logger
 builder.Services.AddSingleton<ILoggerFactory, SerilogFactory>();
@@ -62,24 +62,24 @@ builder.Services.AddSingleton(new FileUploadService(ConfigurationUtils.GetFolder
 
 // Register ComponentService with a factory to resolve ITypesProvider
 builder.Services.AddSingleton<IComponentService>(
-    (IServiceProvider serviceProvider) =>
+    serviceProvider =>
     {
         ITypesProvider typesProvider = serviceProvider.GetRequiredService<IPluginManager>();
         return new ComponentService(typesProvider);
     });
 
 builder.Services.AddSingleton<IViewLocatorService>(
-    (IServiceProvider serviceProvider) =>
+    serviceProvider =>
     {
         ITypesProvider typesProvider = serviceProvider.GetRequiredService<IPluginManager>();
         return new ViewLocatorService(typesProvider);
     });
 
-builder.Services.AddSingleton<IViewRegistryService>((IServiceProvider serviceProvider) => new ViewRegistryService());
+builder.Services.AddSingleton<IViewRegistryService>(serviceProvider => new ViewRegistryService());
 
 // Register CyclicExecutorService with a factory to resolve IComponentService
 builder.Services.AddSingleton<ICyclicExecutorService>(
-    (IServiceProvider serviceProvider) =>
+    serviceProvider =>
     {
         IComponentService componentService = serviceProvider.GetRequiredService<IComponentService>();
         return new CyclicExecutorService(componentService);
@@ -165,7 +165,7 @@ static void SetupDebugUser(WebApplication app)
         throw new Exception("Failed to create admin user");
     }
 
-    if (admin is null)
+    if (user is null)
     {
         throw new Exception("Failed to create simple user");
     }

@@ -108,7 +108,7 @@ public class User
         string passwordHash = principal.FindFirst(ClaimTypes.Hash)?.Value
                               ?? throw new ArgumentException("The ClaimsPrincipal does not contain a password hash.");
         string salt = principal.FindFirst("string")?.Value ?? throw new ArgumentException("The ClaimsPrincipal does not contain a salt.");
-        var roles = principal.FindAll(ClaimTypes.Role).Select((Claim c) => c.Value).ToList();
+        var roles = principal.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
 
         User user = new(
             userName,

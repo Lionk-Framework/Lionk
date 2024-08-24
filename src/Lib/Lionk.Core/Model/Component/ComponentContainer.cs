@@ -31,7 +31,7 @@ public class ComponentContainer : ObservableElement
     {
         _componentService = componentService;
         _componentId = componentId;
-        IComponent? component = _componentService.GetInstanceByID(ComponentId);
+        IComponent? component = _componentService.GetInstanceById(ComponentId);
 
         if (component is not null)
         {
@@ -39,7 +39,7 @@ public class ComponentContainer : ObservableElement
         }
         else
         {
-            componentService.NewComponentAvailable += (object? s, EventArgs e) => OnNewComponentAvailable();
+            componentService.NewComponentAvailable += (s, e) => OnNewComponentAvailable();
         }
     }
 
@@ -84,12 +84,12 @@ public class ComponentContainer : ObservableElement
 
     private void OnNewComponentAvailable()
     {
-        IComponent? component = _componentService.GetInstanceByID(ComponentId);
+        IComponent? component = _componentService.GetInstanceById(ComponentId);
 
         if (component != null)
         {
             Component = component;
-            _componentService.NewComponentAvailable -= (object? s, EventArgs e) => OnNewComponentAvailable();
+            _componentService.NewComponentAvailable -= (s, e) => OnNewComponentAvailable();
             NewComponentAvailable?.Invoke(this, EventArgs.Empty);
         }
     }

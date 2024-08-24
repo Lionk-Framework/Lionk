@@ -1,7 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using System.Reflection;
-using Lionk.Core.TypeRegister;
 using Lionk.Plugin;
 using Lionk.Utils;
 using Newtonsoft.Json;
@@ -31,7 +30,7 @@ public class PluginManagerTests
         string path = Assembly.GetExecutingAssembly().Location;
         List<Type>? eventTypes = null;
 
-        _pluginManager.NewTypesAvailable += (object? sender, TypesEventArgs args) => eventTypes = args.Types.ToList();
+        _pluginManager.NewTypesAvailable += (sender, args) => eventTypes = args.Types.ToList();
 
         _pluginManager.AddPlugin(path);
 
@@ -48,7 +47,7 @@ public class PluginManagerTests
         string path = Assembly.GetExecutingAssembly().Location;
         bool eventTriggered = false;
 
-        _pluginManager.NewTypesAvailable += (object? sender, TypesEventArgs args) => eventTriggered = true;
+        _pluginManager.NewTypesAvailable += (sender, args) => eventTriggered = true;
 
         _pluginManager.AddPlugin(path);
 

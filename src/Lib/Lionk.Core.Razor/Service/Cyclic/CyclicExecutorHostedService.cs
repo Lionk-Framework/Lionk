@@ -14,25 +14,19 @@ namespace Lionk.Core.Razor.Service;
 /// <param name="cyclicExecutorService">The cyclicExecutorService.</param>
 public class CyclicExecutorHostedService(ICyclicExecutorService cyclicExecutorService) : IHostedService
 {
-    #region fields
-
-    private readonly ICyclicExecutorService _cyclicExecutorService = cyclicExecutorService;
-
-    #endregion
-
     #region public and override methods
 
     /// <inheritdoc />
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _cyclicExecutorService.Start();
+        cyclicExecutorService.Start();
         return Task.CompletedTask;
     }
 
     /// <inheritdoc />
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        _cyclicExecutorService.Stop();
+        cyclicExecutorService.Stop();
         return Task.CompletedTask;
     }
 

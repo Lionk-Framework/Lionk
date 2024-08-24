@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace Lionk.Auth.Identity;
 
 /// <summary>
-///     This class is used to handle the users witj json files.
+///     This class is used to handle the users json files.
 /// </summary>
 public class UserFileHandler : IUserRepository
 {
@@ -31,8 +31,8 @@ public class UserFileHandler : IUserRepository
     /// </summary>
     static UserFileHandler()
     {
-        string datafolder = Path.Combine(ConfigurationUtils.GetFolderPath(_folderType), _folderPath);
-        FileHelper.CreateDirectoryIfNotExists(datafolder);
+        string dataFolder = Path.Combine(ConfigurationUtils.GetFolderPath(_folderType), _folderPath);
+        FileHelper.CreateDirectoryIfNotExists(dataFolder);
     }
 
     /// <summary>
@@ -48,14 +48,14 @@ public class UserFileHandler : IUserRepository
     }
 
     /// <summary>
-    ///     Method to update an user.
+    ///     Method to update a user.
     /// </summary>
     /// <param name="user"> The user to update.</param>
     public void UpdateUser(User user)
     {
         ArgumentNullException.ThrowIfNull(user);
         HashSet<User> users = GetUsers();
-        users.RemoveWhere((User u) => u.Id == user.Id);
+        users.RemoveWhere(u => u.Id == user.Id);
         users.Add(user);
         WriteUsers(users);
     }
@@ -93,13 +93,8 @@ public class UserFileHandler : IUserRepository
     /// <param name="user"> The user to delete.</param>
     public void DeleteUser(User user)
     {
-        if (user is null)
-        {
-            return;
-        }
-
         HashSet<User> users = GetUsers();
-        users.RemoveWhere((User u) => u.Id == user.Id);
+        users.RemoveWhere(u => u.Id == user.Id);
         WriteUsers(users);
     }
 }

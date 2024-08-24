@@ -21,7 +21,7 @@ public class ComponentFactory(Type type) : Factory(type)
     /// <summary>
     ///     Initializes a new instance of the <see cref="ComponentFactory" /> class.
     /// </summary>
-    /// <param name="type"> The type to instanciate.</param>
+    /// <param name="type"> The type to instantiate.</param>
     /// <param name="service">The service used to register instance.</param>
     public ComponentFactory(Type type, IComponentService service)
         : this(type) =>

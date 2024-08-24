@@ -33,7 +33,7 @@ public class ComponentTypeDescriptionTests
     {
         var description = new ComponentTypeDescription(typeof(MockComponentWithoutAttributes));
 
-        Assert.That(description.Name, Is.EqualTo("Unamed"));
+        Assert.That(description.Name, Is.EqualTo("Unnamed"));
         Assert.That(description.Description, Is.EqualTo("No description available"));
     }
 

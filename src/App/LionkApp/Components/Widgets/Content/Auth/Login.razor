@@ -53,7 +53,7 @@
     protected override async Task OnInitializedAsync()
     {
         AuthenticationState? authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        bool isAuthenticated = authState?.User?.Identity?.IsAuthenticated ?? false;
+        bool isAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
         if (!isAuthenticated)
         {
             await base.OnInitializedAsync();
@@ -76,7 +76,7 @@
         string passwordHash = PasswordUtils.HashPassword(password, salt);
         await AuthStateProvider.LoginAsync(userName, passwordHash);
         AuthenticationState? authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        bool isAuthenticated = authState?.User?.Identity?.IsAuthenticated ?? false;
+        bool isAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
         if (isAuthenticated)
         {
             NavManager.NavigateTo(_mainPageRoute);

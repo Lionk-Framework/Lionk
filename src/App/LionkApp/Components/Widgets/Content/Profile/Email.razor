@@ -1,11 +1,12 @@
 ﻿@page "/email"
 @using System.ComponentModel.DataAnnotations
+@using Lionk.Auth.Abstraction
 @using Lionk.Auth.Identity
 @inject UserAuthenticationStateProvider AuthStateProvider
-@inject UserService userService
+@inject IUserService UserService
 @inject ISnackbar Snackbar
 
-<EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
+<EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator/>
     <MudGrid>
         <MudItem>
@@ -14,7 +15,7 @@
                     <MudTextField T="string" Label="Email" Text="@CurrentEmail" ReadOnly="true"/>
                 </MudCardContent>
                 <MudCardContent>
-                    <MudTextField T="string" Label="New Email" Class="mt-3" @bind-Value="Model.NewEmail" For="@(() => Model.NewEmail ?? string.Empty)"/>
+                    <MudTextField T="string" Label="New Email" Class="mt-3" @bind-Value="_model.NewEmail" For="@(() => _model.NewEmail ?? string.Empty)"/>
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save</MudButton>
@@ -30,7 +31,7 @@
 </EditForm>
 
 @code {
-    RegisterAccountForm Model = new();
+    private RegisterAccountForm _model = new();
 
     /// <summary>
     /// The current email.
@@ -67,16 +68,16 @@
             return;
         }
 
-        if (string.IsNullOrEmpty(Model.NewEmail))
+        if (string.IsNullOrEmpty(_model.NewEmail))
         {
             Snackbar.Add("Please enter a valid email address.", Severity.Warning);
             return;
         }
 
-        user.UpdateEmail(Model.NewEmail);
-        userService.Update(user);
-        CurrentEmail = Model.NewEmail;
-        Model = new RegisterAccountForm();
+        user.UpdateEmail(_model.NewEmail);
+        UserService.Update(user);
+        CurrentEmail = _model.NewEmail;
+        _model = new RegisterAccountForm();
         Snackbar.Add("Email updated successfully", Severity.Success);
 
         StateHasChanged();

@@ -13,12 +13,6 @@ namespace Lionk.Plugin.Blazor;
 /// <param name="targetFilePath">The target path where file will be saved.</param>
 public class FileUploadService(string targetFilePath)
 {
-    #region fields
-
-    private readonly string _targetFilePath = targetFilePath;
-
-    #endregion
-
     #region public and override methods
 
     /// <summary>
@@ -32,14 +26,14 @@ public class FileUploadService(string targetFilePath)
 
         foreach (IBrowserFile file in files)
         {
-            string filePath = Path.Combine(_targetFilePath, file.Name);
+            string filePath = Path.Combine(targetFilePath, file.Name);
 
             if (File.Exists(filePath))
             {
                 return null;
             }
 
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            await using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await file.OpenReadStream().CopyToAsync(stream);
             }

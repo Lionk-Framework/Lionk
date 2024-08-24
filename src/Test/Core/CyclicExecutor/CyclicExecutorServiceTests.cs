@@ -19,7 +19,7 @@ public class CyclicExecutorServiceTests
 
     private Mock<ICyclicComponent> _cyclicComponentMock;
 
-    private Mock<INotifyer> _notifyerMock;
+    private Mock<INotifier> _notifierMock;
 
     private CyclicExecutorService _service;
 
@@ -35,7 +35,7 @@ public class CyclicExecutorServiceTests
     public async Task ExecuteComponent_WhenComponentFails_AbortsAndSendsNotification()
     {
         var component = new ComponentWhichThrow();
-        _componentServiceMock.Setup((IComponentService s) => s.GetInstancesOfType<ICyclicComponent>()).Returns(new List<ICyclicComponent> { component });
+        _componentServiceMock.Setup(s => s.GetInstancesOfType<ICyclicComponent>()).Returns(new List<ICyclicComponent> { component });
 
         _service.Start();
 
@@ -51,21 +51,23 @@ public class CyclicExecutorServiceTests
     [Test]
     public async Task ExecuteComponent_WhenExecutionTimesOut_AbortsComponent()
     {
-        _service = new CyclicExecutorService(_componentServiceMock.Object);
+        _service = new CyclicExecutorService(_componentServiceMock.Object)
+                   {
+                       WatchDogTimeout = TimeSpan.FromMilliseconds(500), // Set a short timeout
+                   };
 
-        _service.WatchDogTimeout = TimeSpan.FromMilliseconds(500); // Set a short timeout
-        _cyclicComponentMock.Setup((ICyclicComponent c) => c.CanExecute).Returns(true);
-        _cyclicComponentMock.Setup((ICyclicComponent c) => c.IsInError).Returns(false);
-        _cyclicComponentMock.Setup((ICyclicComponent c) => c.NextExecution).Returns(DateTime.UtcNow.AddSeconds(-1));
-        _cyclicComponentMock.Setup((ICyclicComponent c) => c.Execute()).Callback(() => Thread.Sleep(2000)); // Simulate long running task
-        _componentServiceMock.Setup((IComponentService s) => s.GetInstancesOfType<ICyclicComponent>())
+        _cyclicComponentMock.Setup(c => c.CanExecute).Returns(true);
+        _cyclicComponentMock.Setup(c => c.IsInError).Returns(false);
+        _cyclicComponentMock.Setup(c => c.NextExecution).Returns(DateTime.UtcNow.AddSeconds(-1));
+        _cyclicComponentMock.Setup(c => c.Execute()).Callback(() => Thread.Sleep(2000)); // Simulate long running task
+        _componentServiceMock.Setup(s => s.GetInstancesOfType<ICyclicComponent>())
             .Returns(new List<ICyclicComponent> { _cyclicComponentMock.Object });
 
         _service.Start();
 
         await Task.Delay(3000); // Wait for more than the watchdog timeout
 
-        _cyclicComponentMock.Verify((ICyclicComponent c) => c.Abort(), Times.AtLeastOnce);
+        _cyclicComponentMock.Verify(c => c.Abort(), Times.AtLeastOnce);
     }
 
     /// <summary>
@@ -75,16 +77,16 @@ public class CyclicExecutorServiceTests
     [Test]
     public async Task ExecuteComponents_WhenComponentInErrorState_DoesNotExecute()
     {
-        _cyclicComponentMock.Setup((ICyclicComponent c) => c.CanExecute).Returns(true);
-        _cyclicComponentMock.Setup((ICyclicComponent c) => c.IsInError).Returns(true);
-        _componentServiceMock.Setup((IComponentService s) => s.GetInstancesOfType<ICyclicComponent>())
+        _cyclicComponentMock.Setup(c => c.CanExecute).Returns(true);
+        _cyclicComponentMock.Setup(c => c.IsInError).Returns(true);
+        _componentServiceMock.Setup(s => s.GetInstancesOfType<ICyclicComponent>())
             .Returns(new List<ICyclicComponent> { _cyclicComponentMock.Object });
 
         _service.Start();
 
         await Task.Delay(50); // Give some time for the execution to happen
 
-        _cyclicComponentMock.Verify((ICyclicComponent c) => c.Execute(), Times.Never);
+        _cyclicComponentMock.Verify(c => c.Execute(), Times.Never);
     }
 
     /// <summary>
@@ -94,17 +96,17 @@ public class CyclicExecutorServiceTests
     [Test]
     public async Task ExecuteComponents_WhenComponentsAreReady_ExecutesThem()
     {
-        _cyclicComponentMock.Setup((ICyclicComponent c) => c.CanExecute).Returns(true);
-        _cyclicComponentMock.Setup((ICyclicComponent c) => c.IsInError).Returns(false);
-        _cyclicComponentMock.Setup((ICyclicComponent c) => c.NextExecution).Returns(DateTime.UtcNow.AddSeconds(-1));
-        _componentServiceMock.Setup((IComponentService s) => s.GetInstancesOfType<ICyclicComponent>())
+        _cyclicComponentMock.Setup(c => c.CanExecute).Returns(true);
+        _cyclicComponentMock.Setup(c => c.IsInError).Returns(false);
+        _cyclicComponentMock.Setup(c => c.NextExecution).Returns(DateTime.UtcNow.AddSeconds(-1));
+        _componentServiceMock.Setup(s => s.GetInstancesOfType<ICyclicComponent>())
             .Returns(new List<ICyclicComponent> { _cyclicComponentMock.Object });
 
         _service.Start();
 
         await Task.Delay(1000); // Give some time for the execution to happen
 
-        _cyclicComponentMock.Verify((ICyclicComponent c) => c.Execute(), Times.AtLeastOnce);
+        _cyclicComponentMock.Verify(c => c.Execute(), Times.AtLeastOnce);
     }
 
     /// <summary>
@@ -139,7 +141,7 @@ public class CyclicExecutorServiceTests
     public void Setup()
     {
         _cyclicComponentMock = new Mock<ICyclicComponent>();
-        _notifyerMock = new Mock<INotifyer>();
+        _notifierMock = new Mock<INotifier>();
 
         _componentServiceMock = new Mock<IComponentService>();
         _service = new CyclicExecutorService(_componentServiceMock.Object);
@@ -162,11 +164,11 @@ public class CyclicExecutorServiceTests
     [Test]
     public void Stop_CancelsOngoingExecutionAndTransitionsToStopped()
     {
-        _cyclicComponentMock.Setup((ICyclicComponent c) => c.CanExecute).Returns(true);
-        _cyclicComponentMock.Setup((ICyclicComponent c) => c.IsInError).Returns(false);
-        _cyclicComponentMock.Setup((ICyclicComponent c) => c.NextExecution).Returns(DateTime.UtcNow.AddSeconds(-1));
-        _cyclicComponentMock.Setup((ICyclicComponent c) => c.Execute()).Callback(() => Thread.Sleep(1000)); // Simulate long running task
-        _componentServiceMock.Setup((IComponentService s) => s.GetInstancesOfType<ICyclicComponent>())
+        _cyclicComponentMock.Setup(c => c.CanExecute).Returns(true);
+        _cyclicComponentMock.Setup(c => c.IsInError).Returns(false);
+        _cyclicComponentMock.Setup(c => c.NextExecution).Returns(DateTime.UtcNow.AddSeconds(-1));
+        _cyclicComponentMock.Setup(c => c.Execute()).Callback(() => Thread.Sleep(1000)); // Simulate long running task
+        _componentServiceMock.Setup(s => s.GetInstancesOfType<ICyclicComponent>())
             .Returns(new List<ICyclicComponent> { _cyclicComponentMock.Object });
 
         _service.Start();

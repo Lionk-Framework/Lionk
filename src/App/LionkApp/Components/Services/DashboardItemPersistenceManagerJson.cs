@@ -57,7 +57,7 @@ public class DashboardItemPersistenceManagerJson : IDashboardItemPersistenceMana
     /// <inheritdoc />
     public void UpdateDashboardItem(ComponentViewModel dashboardItemModel)
     {
-        ComponentViewModel? itemToRemove = _items.Find((ComponentViewModel n) => n.Id == dashboardItemModel.Id);
+        ComponentViewModel? itemToRemove = _items.Find(n => n.Id == dashboardItemModel.Id);
 
         if (itemToRemove is not null)
         {

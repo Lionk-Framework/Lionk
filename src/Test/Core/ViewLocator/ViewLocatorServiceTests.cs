@@ -30,8 +30,8 @@ public class ViewLocatorServiceTests
     [Test]
     public void OnNewTypesAvailable_ShouldAddNewViews_WhenNewTypesAreProvided()
     {
-        var typesEventArgs = new TypesEventArgs(new[] { typeof(TestView) });
-        _mockTypesProvider.Raise((ITypesProvider provider) => provider.NewTypesAvailable += null, typesEventArgs);
+        var typesEventArgs = new TypesEventArgs([typeof(TestView)]);
+        _mockTypesProvider.Raise(provider => provider.NewTypesAvailable += null, typesEventArgs);
 
         IEnumerable<ComponentViewDescription> result = _viewLocatorService.GetViewOf(typeof(TestComponent), ViewContext.Widget);
 
@@ -49,8 +49,8 @@ public class ViewLocatorServiceTests
     [Test]
     public void OnNewTypesAvailable_ShouldNotAddViews_WhenNoViewOfAttributeIsPresent()
     {
-        var typesEventArgs = new TypesEventArgs(new[] { typeof(NoViewAttributeComponent) });
-        _mockTypesProvider.Raise((ITypesProvider provider) => provider.NewTypesAvailable += null, typesEventArgs);
+        var typesEventArgs = new TypesEventArgs([typeof(NoViewAttributeComponent)]);
+        _mockTypesProvider.Raise(provider => provider.NewTypesAvailable += null, typesEventArgs);
 
         IEnumerable<ComponentViewDescription> result = _viewLocatorService.GetViewOf(typeof(TestComponent), ViewContext.Widget);
 
@@ -80,23 +80,22 @@ public class ViewLocatorServiceTests
     private ViewLocatorService SetupViewLocatorServiceWithViews(params ComponentViewDescription[] views)
     {
         var typesWithViewAttributes = views.Select(
-            (ComponentViewDescription view) =>
+            view =>
             {
                 var mockViewType = new Mock<Type>();
-                mockViewType.Setup((Type t) => t.GetTypeInfo().GetCustomAttributes(typeof(ViewOfAttribute), false)).Returns(
-                    new object[]
-                    {
-                        new ViewOfAttribute(
+                mockViewType.Setup(t => t.GetTypeInfo().GetCustomAttributes(typeof(ViewOfAttribute), false)).Returns(
+                [
+                    new ViewOfAttribute(
                             "test",
                             view.ComponentType,
                             view.ViewType,
                             view.ViewContext),
-                    });
+                ]);
 
                 return mockViewType.Object;
             }).ToList();
 
-        _mockTypesProvider.Setup((ITypesProvider p) => p.GetTypes()).Returns(typesWithViewAttributes);
+        _mockTypesProvider.Setup(p => p.GetTypes()).Returns(typesWithViewAttributes);
         var service = new ViewLocatorService(_mockTypesProvider.Object);
 
         return service;

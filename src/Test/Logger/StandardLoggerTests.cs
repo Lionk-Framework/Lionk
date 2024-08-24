@@ -24,7 +24,7 @@ public class StandardLoggerTests
 
         mockStandardLogger.Object.Log(severity, message);
 
-        mockStandardLogger.Verify((IStandardLogger logger) => logger.Log(severity, message), Times.Once);
+        mockStandardLogger.Verify(logger => logger.Log(severity, message), Times.Once);
     }
 
     #endregion

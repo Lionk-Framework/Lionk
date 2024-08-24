@@ -110,7 +110,7 @@ public static class ConfigurationUtils
     /// </summary>
     /// <param name="filename">The filename.</param>
     /// <param name="folderType">The folderType.</param>
-    /// <returns>True if it exist, false otherwise.</returns>
+    /// <returns>True if it exists, false otherwise.</returns>
     public static bool FileExists(string filename, FolderType folderType)
     {
         string filePath = Path.Combine(_keyValuePairs[folderType], filename);

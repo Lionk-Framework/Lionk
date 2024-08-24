@@ -34,19 +34,19 @@ else
     ///     Gets or sets the items to be searched.
     /// </summary>
     [Parameter]
-    public List<T> Items { get; set; } = new();
+    public List<T> Items { get; set; } = [];
 
     /// <summary>
     ///     Gets or sets the properties to be searched inside the items.
     /// </summary>
     [Parameter]
-    public List<string> Properties { get; set; } = new();
+    public List<string> Properties { get; set; } = [];
 
     /// <summary>
     ///     Gets or sets the friendly names of the properties to be displayed on the checkboxes.
     /// </summary>
     [Parameter]
-    public List<string> PropertiesFriendlyNames { get; set; } = new();
+    public List<string> PropertiesFriendlyNames { get; set; } = [];
 
     /// <summary>
     ///     The event that is triggered when the items are changed.
@@ -56,9 +56,9 @@ else
 
     private Dictionary<string, bool> _selectedProperties = new();
 
-    private List<string> _displayProperties = new();
+    private List<string> _displayProperties = [];
 
-    private List<T> _items = new();
+    private List<T> _items = [];
 
     private string _searchText = string.Empty;
 
@@ -96,11 +96,11 @@ else
         }
         else
         {
-            var selectedProps = _selectedProperties.Where((KeyValuePair<string, bool> sp) => sp.Value).Select((KeyValuePair<string, bool> sp) => sp.Key).ToList();
+            var selectedProps = _selectedProperties.Where(sp => sp.Value).Select(sp => sp.Key).ToList();
             if (selectedProps.Count == 0) selectedProps = Properties;
 
             Items = _items.Where(
-                (T item) =>
+                item =>
                 {
                     foreach (string prop in selectedProps)
                     {

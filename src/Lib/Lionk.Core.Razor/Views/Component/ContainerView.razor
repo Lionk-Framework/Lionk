@@ -1,6 +1,7 @@
 ﻿@inject IComponentService ComponentService
 @using Lionk.Core.Component
 @using Lionk.Core.Model.Component
+@using IComponent = Lionk.Core.Component.IComponent
 @inherits MudItem
 @namespace Lionk.Core.View
 
@@ -43,7 +44,7 @@ else
 
     private ComponentContainer? _container;
 
-    private BaseComponent? _component;
+    private IComponent? _component;
 
     private bool _isLoading = true;
 
@@ -61,7 +62,7 @@ else
             return;
         }
 
-        _container = new ComponentContainer(ComponentService, ComponentViewModel.ComponentUniqueID);
+        _container = new ComponentContainer(ComponentService, ComponentViewModel.ComponentUniqueId);
         _component = (BaseComponent?)_container?.Component;
         if (_component is not null)
         {

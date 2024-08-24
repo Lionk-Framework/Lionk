@@ -3,8 +3,8 @@
 @namespace Lionk.Core.Razor
 
 <ListSearcher Items="@_componentTypeDescriptions"
-              Properties="@Properties"
-              PropertiesFriendlyNames="@PropertiesFriendlyNames"
+              Properties="@_properties"
+              PropertiesFriendlyNames="@_propertiesFriendlyNames"
               ItemsChanged="ItemsChanged"
               T="ComponentTypeDescription"/>
 
@@ -50,11 +50,11 @@
 
     private MudTable<ComponentTypeDescription> _table = new();
 
-    private List<ComponentTypeDescription> _componentTypeDescriptions = new();
+    private List<ComponentTypeDescription> _componentTypeDescriptions = [];
 
-    private List<string> Properties = new() { nameof(NamedElement.Name), nameof(NamedElement.Description) };
+    private List<string> _properties = [nameof(NamedElement.Name), nameof(NamedElement.Description)];
 
-    private List<string> PropertiesFriendlyNames = new() { "Type Name", "Description" };
+    private List<string> _propertiesFriendlyNames = ["Type Name", "Description"];
 
     private ComponentTypeDescription? _selectedComponent;
 

@@ -26,11 +26,6 @@ internal class SerilogLogger : IStandardLogger
 
     #region public and override methods
 
-    /// <summary>
-    ///     Close the logger.
-    /// </summary>
-    public void CloseLogger() => _logger.Dispose();
-
     /// <inheritdoc />
     public void Dispose()
     {
@@ -40,14 +35,7 @@ internal class SerilogLogger : IStandardLogger
 
     /// <inheritdoc />
     public void Log(LogSeverity severity, string message)
-    {
-        if (_logger == null)
-        {
-            return;
-        }
-
-        _logger.Write(GetLogEventLevel(severity), message);
-    }
+        => _logger.Write(GetLogEventLevel(severity), message);
 
     #endregion
 

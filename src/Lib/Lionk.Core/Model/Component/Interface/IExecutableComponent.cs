@@ -15,7 +15,7 @@ public interface IExecutableComponent : IComponent
     bool CanExecute { get; }
 
     /// <summary>
-    ///     Gets a value indicating whether gets a value indicating wether the component is in error.
+    ///     Gets a value indicating whether the component is in error.
     /// </summary>
     bool IsInError { get; }
 

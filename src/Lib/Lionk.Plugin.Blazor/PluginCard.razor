@@ -89,18 +89,18 @@ else
 
     private bool IsPluginUsed()
     {
-        IEnumerable<Type>? UsedTypes = Plugin?.Assembly.GetTypes().Where((Type x) => x.GetInterfaces().Contains(typeof(IComponent)));
+        IEnumerable<Type>? usedTypes = Plugin?.Assembly.GetTypes().Where(x => x.GetInterfaces().Contains(typeof(IComponent)));
 
-        IEnumerable<Type>? UsedViews = Plugin?.Assembly.GetTypes().Where((Type x) => x.GetCustomAttribute<ViewOfAttribute>() != null);
+        IEnumerable<Type>? usedViews = Plugin?.Assembly.GetTypes().Where(x => x.GetCustomAttribute<ViewOfAttribute>() != null);
 
-        if (UsedTypes is not null)
+        if (usedTypes is not null)
         {
-            if (UsedTypes.Any((Type usedType) => ComponentService.GetInstances().Any((IComponent x) => x.GetType() == usedType)))
+            if (usedTypes.Any(usedType => ComponentService.GetInstances().Any(x => x.GetType() == usedType)))
                 return true;
         }
 
-        if (UsedViews is not null)
-            return UsedViews.Any((Type view) => ViewRegistryService.HasActiveViews(view));
+        if (usedViews is not null)
+            return usedViews.Any(view => ViewRegistryService.HasActiveViews(view));
 
         return false;
     }

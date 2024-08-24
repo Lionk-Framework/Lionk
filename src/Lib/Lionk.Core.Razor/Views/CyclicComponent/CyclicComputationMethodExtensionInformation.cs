@@ -23,7 +23,7 @@ public static class CyclicComputationMethodExtensionInformation
                 return
                     "The computation is relative to the last execution, if the component is executed late, the next execution will be impacted.";
             case CyclicComputationMethod.RelativeToStartTime:
-                return "The computation is relative to the start time adding the number of cycles multiplied by the periode, "
+                return "The computation is relative to the start time adding the number of cycles multiplied by the period, "
                        + "if the component is executed late, the next execution will not be impacted. "
                        + "Be careful, if the execution is too late, the component will be executed multiple times with high frequency.";
             default:

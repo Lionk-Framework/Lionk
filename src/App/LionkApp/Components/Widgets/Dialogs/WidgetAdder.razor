@@ -41,20 +41,18 @@
             return;
         }
 
-        DialogParameters parameters = new();
-        parameters.Add("ComponentType", _selectedComponent.GetType());
+        DialogParameters parameters = new()
+                                      {
+                                          { "ComponentType", _selectedComponent.GetType() },
+                                      };
 
         IDialogReference dialogReference = await DialogService.ShowAsync<WidgetSelector>("Widget Selection", parameters);
 
         DialogResult? dialogResult = await dialogReference.Result;
 
-        if (dialogResult is not null && !dialogResult.Canceled)
+        if (dialogResult is { Canceled: false, Data: ComponentViewDescription selectedWidget })
         {
-            var selectedWidget = dialogResult.Data as ComponentViewDescription;
-            if (selectedWidget != null)
-            {
-                _selectedViewType = selectedWidget.ViewType;
-            }
+            _selectedViewType = selectedWidget.ViewType;
         }
     }
 

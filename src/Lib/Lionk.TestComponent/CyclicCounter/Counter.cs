@@ -36,8 +36,8 @@ public class Counter : BaseCyclicComponent
     #region public and override methods
 
     /// <inheritdoc />
-    /// comportement qui a lieu lors d'un abort, met fin à l'execution via le cancellationToken
-    /// et met le composant en erreur
+    /// abort behavior, terminates execution via cancellationToken
+    /// and sets the component to error
     public override void Abort() => base.Abort();
 
     #endregion
@@ -47,8 +47,8 @@ public class Counter : BaseCyclicComponent
     /// <inheritdoc />
     protected override void OnExecute(CancellationToken ct)
     {
-        // comportement qui a lieu à chaque execution, le cancellation token est cancel lors d'un abort
-        // a toi de le gérer comme tu veux si tu en as besoin
+        // behavior that occurs at each execution, the cancellation token is cancelled on abort
+        // it's up to you to manage it the way you want if you need it
         base.OnExecute(ct);
         CounterValue++;
     }
@@ -56,15 +56,15 @@ public class Counter : BaseCyclicComponent
     /// <inheritdoc />
     protected override void OnInitialize()
     {
-        // comportement qui a lieu qu'une fois au premier start
+        // behavior that occurs only once at the first start
         Period = TimeSpan.FromSeconds(1);
         base.OnInitialize();
     }
 
     /// <inheritdoc />
-    /// comportement qui a lieu à la fin de l'execution
-    /// c'est donc executer à chaque cycle après la fin de OnExecute
-    /// a toi de voir si tu as du comportement à mettre, autrement même pas besoin d'override
+    /// behavior at the end of execution
+    /// this means executing every cycle after the end of OnExecute
+    /// it's up to you to decide whether you want to use behavior, otherwise you won't even need an override
     protected override void OnTerminate() => base.OnTerminate();
 
     #endregion
