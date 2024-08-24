@@ -2,7 +2,7 @@
 @inject NavigationManager NavManager
 @inject LionkPalette Palette
 
-<MudThemeProvider Theme="@Theme" IsDarkMode="IsDarkMode"/>
+<MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode"/>
 <MudPopoverProvider/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>
@@ -26,25 +26,32 @@
 </div>
 
 @code {
-    private MudTheme? Theme;
+    private MudTheme? _theme;
 
-    private bool IsDarkMode = true;
+    private bool _isDarkMode = true;
 
-    public string _userName = string.Empty;
+    /// <summary>
+    /// The current username.
+    /// </summary>
+    public string Username = string.Empty;
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        Theme = new MudTheme { PaletteLight = Palette.LightPalette, PaletteDark = Palette.DarkPalette, LayoutProperties = new LayoutProperties() };
+        _theme = new MudTheme { PaletteLight = Palette.LightPalette, PaletteDark = Palette.DarkPalette, LayoutProperties = new LayoutProperties() };
     }
 
     private void DarkModeToggle()
     {
-        IsDarkMode = !IsDarkMode;
+        _isDarkMode = !_isDarkMode;
     }
 
+    /// <summary>
+    /// Toggle the dark mode.
+    /// </summary>
     public string DarkLightModeButtonIcon =>
-        IsDarkMode switch
+        _isDarkMode switch
         {
             true => Icons.Material.Rounded.LightMode,
             false => Icons.Material.Outlined.DarkMode,

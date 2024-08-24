@@ -2,15 +2,18 @@
 @namespace Lionk.Core.View
 @attribute [ViewOf("Component base configuration", typeof(IComponent), typeof(ComponentViewConfig), ViewContext.Configuration)]
 
-<MudText Typo="Typo.subtitle2">Component Id: @id.ToString() </MudText>
+<MudText Typo="Typo.subtitle2">Component Id: @_id.ToString() </MudText>
 <br>
 <MudTextField @bind-Value="_instanceName" Label="Component name" T="string"/>
 
 @code {
+    /// <summary>
+    /// The component to configure.
+    /// </summary>
     [Parameter]
     public IComponent? Component { get; set; }
 
-    private Guid id => Component?.Id ?? Guid.Empty;
+    private Guid _id => Component?.Id ?? Guid.Empty;
 
     private string _instanceName
     {

@@ -14,7 +14,7 @@
                     <MudTextField T="string" Label="Email" Text="@CurrentEmail" ReadOnly="true"/>
                 </MudCardContent>
                 <MudCardContent>
-                    <MudTextField T="string" Label="New Email" Class="mt-3" @bind-Value="Model.NewEmail" For="@(() => Model.NewEmail)"/>
+                    <MudTextField T="string" Label="New Email" Class="mt-3" @bind-Value="Model.NewEmail" For="@(() => Model.NewEmail ?? string.Empty)"/>
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save</MudButton>
@@ -32,15 +32,25 @@
 @code {
     RegisterAccountForm Model = new();
 
-    public string CurrentEmail = string.Empty;
+    /// <summary>
+    /// The current email.
+    /// </summary>
+    public string CurrentEmail { get; set; }= string.Empty;
 
+    /// <summary>
+    /// The register account form.
+    /// </summary>
     public class RegisterAccountForm
     {
+        /// <summary>
+        /// The new email.
+        /// </summary>
         [Required]
         [EmailAddress]
         public string? NewEmail { get; set; }
     }
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         base.OnInitialized();

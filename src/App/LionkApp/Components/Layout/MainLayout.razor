@@ -5,7 +5,7 @@
 @inject UserAuthenticationStateProvider AuthStateProvider
 @inject LionkPalette theme
 <AuthorizeView>
-    <MudThemeProvider Theme="@Theme" IsDarkMode="IsDarkMode"/>
+    <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode"/>
     <MudPopoverProvider/>
     <MudDialogProvider/>
     <MudSnackbarProvider/>
@@ -18,12 +18,12 @@
             <MudIconButton Icon="@Icons.Material.Filled.CircleNotifications" Color="Color.Primary" OnClick="OnNotificationPressed"/>
             <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle"/>
         </MudAppBar>
-        <MudDrawer @bind-Open="IsDrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <MudDrawer @bind-Open="_isDrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
 
             <MudNavMenu>
 
                 <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Dashboard</MudNavLink>
-                <MudNavGroup Title="Notifications" Icon="@Icons.Material.Filled.Notifications" @bind-Expanded="IsNotifcationExpanded">
+                <MudNavGroup Title="Notifications" Icon="@Icons.Material.Filled.Notifications" @bind-Expanded="_isNotifcationExpanded">
                     <MudNavLink Href="/active" Match="NavLinkMatch.Prefix">Active</MudNavLink>
                     <MudNavLink Href="/history" Match="NavLinkMatch.Prefix">History</MudNavLink>
                     <MudNavLink Href="/configuration" Match="NavLinkMatch.Prefix">Configuration</MudNavLink>
@@ -43,7 +43,7 @@
                     <MudItem>
                         <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Primary" OnClick="OnProfilePressed"/>
                         <MudText Typo="Typo.body2">Profile</MudText>
-                        <MudText Typo="Typo.body2">@_userName</MudText>
+                        <MudText Typo="Typo.body2">@UserName</MudText>
                     </MudItem>
                     <MudItem>
                         <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Primary" OnClick="OnLogoutPressed"/>
@@ -65,43 +65,41 @@
 </div>
 
 @code {
-    private bool IsDrawerOpen = true;
+    private bool _isDrawerOpen = true;
 
-    private bool IsNotifcationExpanded;
+    private bool _isNotifcationExpanded;
 
-    private MudTheme? Theme;
+    private MudTheme? _theme;
 
-    private bool IsDarkMode = true;
+    private bool _isDarkMode = true;
 
-    public string _userName = string.Empty;
+    /// <summary>
+    /// The current username.
+    /// </summary>
+    public string UserName = string.Empty;
 
-    private object Unauthorized()
-    {
-        NavManager.NavigateTo("/unauthorized");
-        return new object();
-    }
-
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        _userName = AuthStateProvider.CurrentUser?.Username ?? "Not Logged In";
-        Theme = new MudTheme { PaletteLight = theme.LightPalette, PaletteDark = theme.DarkPalette, LayoutProperties = new LayoutProperties() };
+        UserName = AuthStateProvider.CurrentUser?.Username ?? "Not Logged In";
+        _theme = new MudTheme { PaletteLight = theme.LightPalette, PaletteDark = theme.DarkPalette, LayoutProperties = new LayoutProperties() };
     }
 
     private void DarkModeToggle()
     {
-        IsDarkMode = !IsDarkMode;
+        _isDarkMode = !_isDarkMode;
     }
 
     private void DrawerToggle()
     {
-        IsDrawerOpen = !IsDrawerOpen;
+        _isDrawerOpen = !_isDrawerOpen;
     }
 
     private void OnNotificationPressed()
     {
         NavManager.NavigateTo("/active");
-        IsNotifcationExpanded = true;
+        _isNotifcationExpanded = true;
     }
 
     private void OnProfilePressed()
@@ -115,8 +113,11 @@
         NavManager.NavigateTo("/auth");
     }
 
+    /// <summary>
+    /// Switches the dark mode.
+    /// </summary>
     public string DarkLightModeButtonIcon =>
-        IsDarkMode switch
+        _isDarkMode switch
         {
             true => Icons.Material.Rounded.LightMode,
             false => Icons.Material.Outlined.DarkMode,

@@ -47,12 +47,16 @@ else
 }
 
 @code {
-    public HashSet<User>? Users;
+    /// <summary>
+    /// A HASH set of users.
+    /// </summary>
+    public HashSet<User>? Users { get; private set; }
 
-    private List<string> AvailableRoles = new() { "Admin", "User" }; // TODO - Link to enum or global strings
+    private List<string> AvailableRoles = ["Admin", "User"]; // TODO - Link to enum or global strings
 
     private Dictionary<Guid, Dictionary<string, bool>> RoleStates = new();
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         base.OnInitialized();

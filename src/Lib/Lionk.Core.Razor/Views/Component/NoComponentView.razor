@@ -3,10 +3,13 @@
 <MudText Style="font-size:50px">:(</MudText>
 <MudText>Your component has encountered a problem and needs to be created again</MudText>
 <br/>
-<MudText>Informations:</MudText>
+<MudText>Infos:</MudText>
 <MudText Typo="Typo.caption">@Text</MudText>
 
 @code {
+    /// <summary>
+    /// The text to show when no component is available.
+    /// </summary>
     [Parameter]
     public string Text { get; set; } = string.Empty;
 

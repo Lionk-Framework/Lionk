@@ -17,10 +17,17 @@
 
 
 @code {
-    public string UserName = string.Empty;
+    /// <summary>
+    /// The current username.
+    /// </summary>
+    public string UserName { get; set; } = string.Empty;
 
+    /// <summary>
+    /// The current email.
+    /// </summary>
     public string Email = string.Empty;
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         base.OnInitialized();

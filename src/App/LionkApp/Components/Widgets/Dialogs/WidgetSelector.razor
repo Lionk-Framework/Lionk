@@ -25,16 +25,18 @@
 </MudDialog>
 
 @code {
-    private MudTable<ComponentViewDescription> _table = new();
-
     private List<ComponentViewDescription>? _availableWidgets;
 
     [CascadingParameter]
     MudDialogInstance? MudDialog { get; set; }
 
+    /// <summary>
+    /// The component type to select.
+    /// </summary>
     [Parameter]
     public Type? ComponentType { get; set; }
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         if (ComponentType is not null)
@@ -45,15 +47,8 @@
 
     private void ComponentSelected(ComponentViewDescription viewType)
     {
-        if (viewType is not null)
-        {
-            if (MudDialog is null) return;
-            MudDialog.Close(DialogResult.Ok(viewType));
-        }
-        else
-        {
-            Snackbar.Add("Widget is null", Severity.Error);
-        }
+        if (MudDialog is null) return;
+        MudDialog.Close(DialogResult.Ok(viewType));
     }
 
     private void Cancel()

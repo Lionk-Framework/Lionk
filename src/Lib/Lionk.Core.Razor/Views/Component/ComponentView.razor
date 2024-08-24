@@ -88,15 +88,27 @@
 </MudItem>
 
 @code {
+    /// <summary>
+    /// The component view model.
+    /// </summary>
     [Parameter]
     public ComponentViewModel? ComponentViewModel { get; set; }
 
+    /// <summary>
+    /// The component to show.
+    /// </summary>
     [Parameter]
     public BaseComponent? Component { get; set; }
 
+    /// <summary>
+    /// Event that is called when the componentViewModel is updated.
+    /// </summary>
     [Parameter]
     public EventCallback<ComponentViewModel> OnUpdate { get; set; }
 
+    /// <summary>
+    /// Event that is called when the componentViewModel is deleted.
+    /// </summary>
     [Parameter]
     public EventCallback<ComponentViewModel> OnDelete { get; set; }
 
@@ -124,6 +136,7 @@
 
     private bool _IsNotInstancied;
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         base.OnInitialized();

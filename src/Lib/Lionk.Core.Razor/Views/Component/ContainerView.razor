@@ -23,12 +23,21 @@ else
 
 
 @code {
+    /// <summary>
+    /// The component view model.
+    /// </summary>
     [Parameter]
     public ComponentViewModel? ComponentViewModel { get; set; }
 
+    /// <summary>
+    /// Event that is called when the componentViewModel is updated.
+    /// </summary>
     [Parameter]
     public EventCallback<ComponentViewModel> OnUpdate { get; set; }
 
+    /// <summary>
+    /// Event that is called when the componentViewModel is deleted.
+    /// </summary>
     [Parameter]
     public EventCallback<ComponentViewModel> OnDelete { get; set; }
 
@@ -42,12 +51,13 @@ else
 
     private string _errorText = "Component not found";
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         if (ComponentViewModel is null)
         {
             _isError = true;
-            _errorText = "Component view can be restored or inexistant";
+            _errorText = "Component view can be restored or does not exist";
             return;
         }
 

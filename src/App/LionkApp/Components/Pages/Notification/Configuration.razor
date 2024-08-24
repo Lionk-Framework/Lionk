@@ -2,9 +2,9 @@
 @using LionkApp.Components.Model
 @using LionkApp.Components.Widgets.Content
 
-<SwitchList SwitchListTitle="Notifier list" Switchs="NotifierList"/>
+<SwitchList SwitchListTitle="Notifier list" Switches="NotifierList"/>
 
-<SwitchList SwitchListTitle="Channel list" Switchs="ChannelList"/>
+<SwitchList SwitchListTitle="Channel list" Switches="ChannelList"/>
 
 @code {
     private readonly List<Switch> NotifierList = new() { new Switch { Label = "Chimpey", IsEnabled = true }, new Switch { Label = "Nastaran", IsEnabled = true }, new Switch { Label = "Ronflex", IsEnabled = true } };

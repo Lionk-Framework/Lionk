@@ -24,10 +24,14 @@
         Style="position: fixed; bottom: 20px; right: 20px;"/>
 
 @code {
-    public List<ComponentViewModel>? DashboardRegistry { get; set; } = new();
+    /// <summary>
+    /// The dashboard registry.
+    /// </summary>
+    public List<ComponentViewModel>? DashboardRegistry { get; set; } = [];
 
     private IDashboardItemPersistenceManager? _persistenceManager;
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         _persistenceManager = new DashboardItemPersistenceManagerJson();
@@ -41,15 +45,11 @@
         IDialogReference dialog = await DialogService.ShowAsync<WidgetAdder>("Widget selection", parameters, options);
         DialogResult? result = await dialog.Result;
 
-        if (result is not null && !result.Canceled)
+        if (result is { Canceled: false, Data: ComponentViewModel newWidget })
         {
-            var newWidget = result.Data as ComponentViewModel;
-            if (newWidget != null)
-            {
-                _persistenceManager?.SaveDashboardItem(newWidget);
-                RestoreDashboard();
-                StateHasChanged();
-            }
+            _persistenceManager?.SaveDashboardItem(newWidget);
+            RestoreDashboard();
+            StateHasChanged();
         }
     }
 
