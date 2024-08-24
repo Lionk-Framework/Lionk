@@ -43,7 +43,7 @@ public class DashboardItemPersistenceManagerJson : IDashboardItemPersistenceMana
     /// <inheritdoc />
     public void RemoveDashboardItemModel(ComponentViewModel dashboardItemModel)
     {
-        _items.Remove(dashboardItemModel);
+        _items.RemoveAll(item => item.Id == dashboardItemModel.Id);
         Save();
     }
 
@@ -57,15 +57,8 @@ public class DashboardItemPersistenceManagerJson : IDashboardItemPersistenceMana
     /// <inheritdoc />
     public void UpdateDashboardItem(ComponentViewModel dashboardItemModel)
     {
-        ComponentViewModel? itemToRemove = _items.Find(n => n.Id == dashboardItemModel.Id);
-
-        if (itemToRemove is not null)
-        {
-            _items.Remove(itemToRemove);
-        }
-
+        _items.RemoveAll(item => item.Id == dashboardItemModel.Id);
         _items.Add(dashboardItemModel);
-
         Save();
     }
 
