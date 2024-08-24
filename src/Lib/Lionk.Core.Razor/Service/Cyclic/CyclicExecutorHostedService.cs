@@ -6,27 +6,29 @@ using Microsoft.Extensions.Hosting;
 namespace Lionk.Core.Razor.Service;
 
 /// <summary>
-/// This class is used to nest a CyclicExecutorService into a hosted service.
+///     This class is used to nest a CyclicExecutorService into a hosted service.
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="CyclicExecutorHostedService"/> class.
+///     Initializes a new instance of the <see cref="CyclicExecutorHostedService" /> class.
 /// </remarks>
 /// <param name="cyclicExecutorService">The cyclicExecutorService.</param>
 public class CyclicExecutorHostedService(ICyclicExecutorService cyclicExecutorService) : IHostedService
 {
-    private readonly ICyclicExecutorService _cyclicExecutorService = cyclicExecutorService;
+    #region public and override methods
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _cyclicExecutorService.Start();
+        cyclicExecutorService.Start();
         return Task.CompletedTask;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        _cyclicExecutorService.Stop();
+        cyclicExecutorService.Stop();
         return Task.CompletedTask;
     }
+
+    #endregion
 }

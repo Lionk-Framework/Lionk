@@ -1,31 +1,30 @@
 ﻿@namespace Lionk.Core.Razor
-@using Lionk.Core.Component
-@using MudBlazor
-@using System.Collections.ObjectModel
 @inject IComponentService ComponentService
-
+@using Lionk.Core.Component
 @using IComponent = Lionk.Core.Component.IComponent
 
 <ListSearcher Items="@_components"
-              Properties="@Properties"
-              PropertiesFriendlyNames="@PropertiesFriendlyNames"
+              Properties="@_properties"
+              PropertiesFriendlyNames="@_propertiesFriendlyNames"
               ItemsChanged="ItemsChanged"
-              T="IComponent" />
+              T="IComponent"/>
 
 <MudTable @ref="_table"
           T="IComponent"
           Items="@_components"
           OnRowClick="@RowClicked">
     <RowTemplate>
-        <MudTr class="@(context == _selectedComponent && !_isEditing ? "selected-row" : "")">
-            <MudTd><MudIcon Icon="@Icons.Material.Filled.AutoAwesomeMosaic" /></MudTd>
+        <MudTr class="@(context == _selectedComponent && !_isEditing ? "selected-row" : string.Empty)">
+            <MudTd>
+                <MudIcon Icon="@Icons.Material.Filled.AutoAwesomeMosaic"/>
+            </MudTd>
             <MudTd>
                 <MudTextField @bind-Value="context.InstanceName"
                               Label="Name"
                               Variant="Variant.Outlined"
                               Immediate="true"
                               OnKeyDown="StartEditing"
-                              OnBlur="StopEditing" />
+                              OnBlur="StopEditing"/>
             </MudTd>
             <MudTd DataLabel="Component type">@GetComponentName(context)</MudTd>
         </MudTr>
@@ -33,26 +32,34 @@
 </MudTable>
 
 @code {
+
+    /// <summary>
+    ///     The components to display.
+    /// </summary>
     [Parameter]
     public IEnumerable<IComponent> Components { get; set; } = new List<IComponent>();
 
+    /// <summary>
+    ///     The method to call when a component is selected.
+    /// </summary>
     [Parameter]
     public EventCallback<IComponent> OnComponentSelected { get; set; }
 
     private MudTable<IComponent> _table = new();
-    private List<IComponent> _components = new List<IComponent>();
-    private List<string> Properties = new List<string> { nameof(IComponent.InstanceName) };
-    private List<string> PropertiesFriendlyNames = new List<string> { "Instance Name" };
+
+    private List<IComponent> _components = [];
+
+    private List<string> _properties = [nameof(IComponent.InstanceName)];
+
+    private List<string> _propertiesFriendlyNames = ["Instance Name"];
 
     private IComponent? _selectedComponent;
 
+    /// <inheritdoc />
     protected override void OnParametersSet()
     {
-        if (Components != null)
-        {
-            _components = Components.ToList();
-            StateHasChanged();
-        }
+        _components = Components.ToList();
+        StateHasChanged();
     }
 
     private bool _isEditing = false;
@@ -64,7 +71,7 @@
 
     private void StopEditing()
     {
-         _isEditing = false;
+        _isEditing = false;
         StateHasChanged();
     }
 
@@ -76,26 +83,25 @@
 
     private void RowClicked(TableRowClickEventArgs<IComponent> item)
     {
-        if (!_isEditing)
-        {
-            var component = item.Item;
-            if (component is null) return;
-            _selectedComponent = component;
+        if (_isEditing) return;
+        IComponent? component = item.Item;
+        if (component is null) return;
+        _selectedComponent = component;
 
-            OnComponentSelected.InvokeAsync(component);
-            StateHasChanged();
-        }
+        OnComponentSelected.InvokeAsync(component);
+        StateHasChanged();
     }
 
     private string GetComponentName(IComponent component)
     {
-        string name = ComponentService
-        .GetRegisteredTypeDictionnary()?
-        .Where(x => x.Key.Type == component.GetType())
-        .First().Key.Name ?? "Unknown";
+        string name =
+            ComponentService.GetRegisteredTypeDictionary()
+                .First(x => x.Key.Type == component.GetType())
+                .Key.Name ?? "Unknown";
 
         return name;
     }
+
 }
 
 <style>

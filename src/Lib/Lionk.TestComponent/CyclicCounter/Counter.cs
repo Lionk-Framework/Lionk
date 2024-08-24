@@ -6,15 +6,24 @@ using Lionk.Core.Component;
 namespace Lionk.TestComponent;
 
 /// <summary>
-/// Counter test component.
+///     Counter test component.
 /// </summary>
 [NamedElement("Counter test", "test cyclic element")]
 public class Counter : BaseCyclicComponent
 {
+    #region fields
+
     private int _counter;
 
+    #endregion
+
+    #region properties
+
+    /// <inheritdoc />
+    public override bool CanExecute => true;
+
     /// <summary>
-    /// Gets or sets counter value.
+    ///     Gets or sets counter value.
     /// </summary>
     public int CounterValue
     {
@@ -22,36 +31,41 @@ public class Counter : BaseCyclicComponent
         set => SetField(ref _counter, value);
     }
 
-    /// <inheritdoc/>
-    public override bool CanExecute => true;
+    #endregion
 
-    /// <inheritdoc/>
+    #region public and override methods
+
+    /// <inheritdoc />
+    /// abort behavior, terminates execution via cancellationToken
+    /// and sets the component to error
+    public override void Abort() => base.Abort();
+
+    #endregion
+
+    #region others methods
+
+    /// <inheritdoc />
     protected override void OnExecute(CancellationToken ct)
     {
-        // comportement qui a lieu à chaque execution, le cancellation token est cancel lors d'un abort
-        // a toi de le gérer comme tu veux si tu en as besoin
+        // behavior that occurs at each execution, the cancellation token is cancelled on abort
+        // it's up to you to manage it the way you want if you need it
         base.OnExecute(ct);
         CounterValue++;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     protected override void OnInitialize()
     {
-        // comportement qui a lieu qu'une fois au premier start
+        // behavior that occurs only once at the first start
         Period = TimeSpan.FromSeconds(1);
         base.OnInitialize();
     }
 
-    /// <inheritdoc/>
-    /// comportement qui a lieu à la fin de l'execution
-    /// c'est donc executer à chaque cycle après la fin de OnExecute
-    /// a toi de voir si tu as du comportement à mettre, autrement même pas besoin d'override
-    protected override void OnTerminate()
-        => base.OnTerminate();
+    /// <inheritdoc />
+    /// behavior at the end of execution
+    /// this means executing every cycle after the end of OnExecute
+    /// it's up to you to decide whether you want to use behavior, otherwise you won't even need an override
+    protected override void OnTerminate() => base.OnTerminate();
 
-    /// <inheritdoc/>
-    /// comportement qui a lieu lors d'un abort, met fin à l'execution via le cancellationToken
-    /// et met le composant en erreur
-    public override void Abort() =>
-        base.Abort();
+    #endregion
 }

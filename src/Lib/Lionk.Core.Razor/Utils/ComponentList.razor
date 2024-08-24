@@ -1,13 +1,12 @@
-﻿@namespace Lionk.Core.Razor
-@using Lionk.Core.Component
+﻿@using Lionk.Core.Component
 @using Lionk.Core.TypeRegister
-@using System.Collections.ObjectModel
+@namespace Lionk.Core.Razor
 
 <ListSearcher Items="@_componentTypeDescriptions"
-              Properties="@Properties"
-              PropertiesFriendlyNames="@PropertiesFriendlyNames"
+              Properties="@_properties"
+              PropertiesFriendlyNames="@_propertiesFriendlyNames"
               ItemsChanged="ItemsChanged"
-              T="ComponentTypeDescription" />
+              T="ComponentTypeDescription"/>
 
 <MudTable @ref="_table"
           T="ComponentTypeDescription"
@@ -19,41 +18,51 @@
 
     <RowTemplate>
         <MudTooltip Text="@context.Description" Placement="Placement.Right">
-            <MudTr Class="@(context == _selectedComponent ? "selected-row" : "")">
-                <MudTd><MudIcon Icon="@Icons.Material.Filled.AutoAwesomeMosaic" /></MudTd>
+            <MudTr Class="@(context == _selectedComponent ? "selected-row" : string.Empty)">
+                <MudTd>
+                    <MudIcon Icon="@Icons.Material.Filled.AutoAwesomeMosaic"/>
+                </MudTd>
                 <MudTd DataLabel="Type Name">@context.Name</MudTd>
             </MudTr>
         </MudTooltip>
     </RowTemplate>
 
     <PagerContent>
-        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
+        <MudTablePager PageSizeOptions="new[] { 10, 25, 50, 100 }"/>
     </PagerContent>
     <FooterContent>
     </FooterContent>
 </MudTable>
 
 @code {
-    [Parameter]
-    public IReadOnlyDictionary<ComponentTypeDescription, Factory> TypesRegistery { get; set; } = new Dictionary<ComponentTypeDescription, Factory>();
 
+    /// <summary>
+    ///     The types registry used to display the components.
+    /// </summary>
+    [Parameter]
+    public IReadOnlyDictionary<ComponentTypeDescription, Factory> TypesRegistry { get; set; } = new Dictionary<ComponentTypeDescription, Factory>();
+
+    /// <summary>
+    ///     Method to call when a component is selected.
+    /// </summary>
     [Parameter]
     public EventCallback<KeyValuePair<ComponentTypeDescription, Factory>> OnComponentSelected { get; set; }
 
     private MudTable<ComponentTypeDescription> _table = new();
-    private List<ComponentTypeDescription> _componentTypeDescriptions = new List<ComponentTypeDescription>();
-    private List<string> Properties = new List<string> {nameof(NamedElement.Name), nameof(NamedElement.Description)};
-    private List<string> PropertiesFriendlyNames = new List<string> { "Type Name", "Description" };
+
+    private List<ComponentTypeDescription> _componentTypeDescriptions = [];
+
+    private List<string> _properties = [nameof(NamedElement.Name), nameof(NamedElement.Description)];
+
+    private List<string> _propertiesFriendlyNames = ["Type Name", "Description"];
 
     private ComponentTypeDescription? _selectedComponent;
 
+    /// <inheritdoc />
     protected override void OnParametersSet()
     {
-        if (TypesRegistery != null)
-        {
-            _componentTypeDescriptions = TypesRegistery.Keys.ToList();
-            StateHasChanged();
-        }
+        _componentTypeDescriptions = TypesRegistry.Keys.ToList();
+        StateHasChanged();
     }
 
     private void ItemsChanged(List<ComponentTypeDescription> items)
@@ -64,15 +73,16 @@
 
     private void RowClicked(TableRowClickEventArgs<ComponentTypeDescription> item)
     {
-        var componentTypeDescription = item.Item;
+        ComponentTypeDescription? componentTypeDescription = item.Item;
         if (componentTypeDescription is null) return;
 
         _selectedComponent = componentTypeDescription;
 
-        var factory = TypesRegistery[componentTypeDescription];
+        Factory factory = TypesRegistry[componentTypeDescription];
         OnComponentSelected.InvokeAsync(new KeyValuePair<ComponentTypeDescription, Factory>(componentTypeDescription, factory));
         StateHasChanged();
     }
+
 }
 
 <style>

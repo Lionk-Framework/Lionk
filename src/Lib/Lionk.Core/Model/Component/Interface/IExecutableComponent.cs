@@ -3,37 +3,45 @@
 namespace Lionk.Core.Component;
 
 /// <summary>
-/// This interface defines a cyclic component.
+///     This interface defines a cyclic component.
 /// </summary>
 public interface IExecutableComponent : IComponent
 {
-    /// <summary>
-    /// Executes the component.
-    /// </summary>
-    void Execute();
+    #region properties
 
     /// <summary>
-    /// Abort the current execution.
-    /// </summary>
-    void Abort();
-
-    /// <summary>
-    /// Used to reset the component.
-    /// </summary>
-    void Reset();
-
-    /// <summary>
-    /// Gets  a value indicating whether the component can be executed.
+    ///     Gets  a value indicating whether the component can be executed.
     /// </summary>
     bool CanExecute { get; }
 
     /// <summary>
-    /// Gets a value indicating whether the component is running.
+    ///     Gets a value indicating whether the component is in error.
+    /// </summary>
+    bool IsInError { get; }
+
+    /// <summary>
+    ///     Gets a value indicating whether the component is running.
     /// </summary>
     bool IsRunning { get; }
 
+    #endregion
+
+    #region public and override methods
+
     /// <summary>
-    /// Gets a value indicating whether gets a value indicating wether the component is in error.
+    ///     Abort the current execution.
     /// </summary>
-    bool IsInError { get; }
+    void Abort();
+
+    /// <summary>
+    ///     Executes the component.
+    /// </summary>
+    void Execute();
+
+    /// <summary>
+    ///     Used to reset the component.
+    /// </summary>
+    void Reset();
+
+    #endregion
 }

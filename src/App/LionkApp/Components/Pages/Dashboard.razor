@@ -1,24 +1,18 @@
 ﻿@page "/"
-@inject ISnackbar Snackbar
-@inject IComponentService ComponentService
-@inject IDialogService DialogService
-@using Lionk.Core.Component
 @using Lionk.Core.View
-@using Lionk.Plugin
-@using LionkApp.Components.Model
-@using IComponent = Lionk.Core.Component.IComponent
 @using LionkApp.Components.Widgets.Dialogs
 @using LionkApp.Services
+@inject IDialogService DialogService
 @namespace LionkApp.Components.Pages
 
 <PageTitle>Dashboard</PageTitle>
 <MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
-    @foreach (var item in DashboardRegistry ?? [])
+    @foreach (ComponentViewModel item in DashboardRegistry ?? [])
     {
         <ContainerView ComponentViewModel="@item"
                        OnUpdate="UpdateDashboardItem"
                        OnDelete="RemoveDashboardItem"
-                       Style="min-height:200px" />
+                       Style="min-height:200px"/>
     }
 
 </MudContainer>
@@ -27,12 +21,17 @@
         Color="Color.Secondary"
         StartIcon="@Icons.Material.Filled.Add"
         Size="Size.Large"
-        Style="position: fixed; bottom: 20px; right: 20px;" />
+        Style="position: fixed; bottom: 20px; right: 20px;"/>
 
 @code {
-    public List<ComponentViewModel>? DashboardRegistry { get; set; } = new();
+    /// <summary>
+    /// The dashboard registry.
+    /// </summary>
+    public List<ComponentViewModel>? DashboardRegistry { get; set; } = [];
+
     private IDashboardItemPersistenceManager? _persistenceManager;
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         _persistenceManager = new DashboardItemPersistenceManagerJson();
@@ -43,18 +42,14 @@
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
         var parameters = new DialogParameters();
-        var dialog = DialogService.Show<WidgetAdder>("Widget selection", parameters, options);
-        var result = await dialog.Result;
+        IDialogReference dialog = await DialogService.ShowAsync<WidgetAdder>("Widget selection", parameters, options);
+        DialogResult? result = await dialog.Result;
 
-        if (result is not null && !result.Canceled)
+        if (result is { Canceled: false, Data: ComponentViewModel newWidget })
         {
-            var newWidget = result.Data as ComponentViewModel;
-            if (newWidget != null)
-            {
-                _persistenceManager?.SaveDashboardItem(newWidget);
-                RestoreDashboard();
-                StateHasChanged();
-            }
+            _persistenceManager?.SaveDashboardItem(newWidget);
+            RestoreDashboard();
+            StateHasChanged();
         }
     }
 
@@ -76,4 +71,5 @@
         _persistenceManager?.RemoveDashboardItemModel(item);
         RestoreDashboard();
     }
+
 }

@@ -4,14 +4,14 @@ using Lionk.Core.Component.Cyclic;
 namespace Lionk.Core.View;
 
 /// <summary>
-/// This class defines the information for the <see cref="CyclicComputationMethod"/> enumeration.
+///     This class defines the information for the <see cref="CyclicComputationMethod" /> enumeration.
 /// </summary>
 public static class CyclicComputationMethodExtensionInformation
 {
-    #region Public Methods
+    #region public and override methods
 
     /// <summary>
-    /// This method returns the description of the <see cref="CyclicComputationMethod"/> enumeration.
+    ///     This method returns the description of the <see cref="CyclicComputationMethod" /> enumeration.
     /// </summary>
     /// <param name="method"> The cyclic computation method. </param>
     /// <returns> The description. </returns>
@@ -20,18 +20,19 @@ public static class CyclicComputationMethodExtensionInformation
         switch (method)
         {
             case CyclicComputationMethod.RelativeToLastExecution:
-                return "The computation is relative to the last execution, if the component is executed late, the next execution will be impacted.";
+                return
+                    "The computation is relative to the last execution, if the component is executed late, the next execution will be impacted.";
             case CyclicComputationMethod.RelativeToStartTime:
-                return "The computation is relative to the start time adding the number of cycles multiplied by the periode, " +
-                    "if the component is executed late, the next execution will not be impacted. " +
-                    "Be careful, if the execution is too late, the component will be executed multiple times with high frequency.";
+                return "The computation is relative to the start time adding the number of cycles multiplied by the period, "
+                       + "if the component is executed late, the next execution will not be impacted. "
+                       + "Be careful, if the execution is too late, the component will be executed multiple times with high frequency.";
             default:
                 return "Unknown";
         }
     }
 
     /// <summary>
-    /// This method returns the friendly string representation of the <see cref="CyclicComputationMethod"/> enumeration.
+    ///     This method returns the friendly string representation of the <see cref="CyclicComputationMethod" /> enumeration.
     /// </summary>
     /// <param name="method"> The cyclic computation method. </param>
     /// <returns> The friendly string representation. </returns>
@@ -49,5 +50,5 @@ public static class CyclicComputationMethodExtensionInformation
         }
     }
 
-    #endregion Public Methods
+    #endregion
 }

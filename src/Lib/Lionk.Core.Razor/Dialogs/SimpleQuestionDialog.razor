@@ -9,15 +9,37 @@
         <MudButton Color="@Color" Variant="Variant.Filled" OnClick="Submit">@ButtonText</MudButton>
     </DialogActions>
 </MudDialog>
+
 @code {
-    [CascadingParameter] private MudDialogInstance? MudDialog { get; set; }
-    [Parameter] public string? ContentText { get; set; }
-    [Parameter] public string? ButtonText { get; set; }
-    [Parameter] public Color Color { get; set; }
+    [CascadingParameter]
+    private MudDialogInstance? MudDialog { get; set; }
+
+    /// <summary>
+    ///     The content text.
+    /// </summary>
+    [Parameter]
+    public string? ContentText { get; set; }
+
+    /// <summary>
+    ///     The button text.
+    /// </summary>
+    [Parameter]
+    public string? ButtonText { get; set; }
+
+    /// <summary>
+    ///     The color used for the button.
+    /// </summary>
+    [Parameter]
+    public Color Color { get; set; }
 
     private void Submit()
     {
         MudDialog?.Close(DialogResult.Ok(true));
     }
-    private void Cancel() => MudDialog?.Cancel();
+
+    private void Cancel()
+    {
+        MudDialog?.Cancel();
+    }
+
 }

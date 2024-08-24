@@ -2,23 +2,27 @@
 @namespace Lionk.Core.View
 @implements IDisposable
 
-<DynamicComponent Type="@Type" Parameters="@Parameters" @ref="_dynamicComponentRef" />
+<DynamicComponent Type="@Type" Parameters="@Parameters" @ref="_dynamicComponentRef"/>
 
 @code {
-    /// <summary>
-    /// Parameter for the type of the view to be displayed.
-    /// </summary>
-    [Parameter] public Type? Type { get; set; }
 
     /// <summary>
-    /// Parameter for the parameters of the view to be displayed.
+    ///     Parameter for the type of the view to be displayed.
     /// </summary>
-    [Parameter] public IDictionary<string, object>? Parameters { get; set; }
+    [Parameter]
+    public Type? Type { get; set; }
+
+    /// <summary>
+    ///     Parameter for the parameters of the view to be displayed.
+    /// </summary>
+    [Parameter]
+    public IDictionary<string, object>? Parameters { get; set; }
 
     private DynamicComponent? _dynamicComponentRef;
+
     private object? _previousInstance;
 
-    /// <inheritdoc cref="OnAfterRender"/>
+    /// <inheritdoc cref="OnAfterRender" />
     protected override void OnAfterRender(bool firstRender)
     {
         if (_dynamicComponentRef?.Instance == _previousInstance) return;
@@ -32,10 +36,11 @@
         _previousInstance = _dynamicComponentRef.Instance;
     }
 
-    /// <inheritdoc cref="IDisposable"/>
+    /// <inheritdoc cref="IDisposable" />
     public void Dispose()
     {
         if (_previousInstance != null)
             _viewRegistry.Unregister(_previousInstance);
     }
+
 }

@@ -6,13 +6,15 @@ using Lionk.Core.Component;
 namespace LionkTest.Core;
 
 /// <summary>
-/// Test class for <see cref="ComponentTypeDescription"/>.
+///     Test class for <see cref="ComponentTypeDescription" />.
 /// </summary>
 [TestFixture]
 public class ComponentTypeDescriptionTests
 {
+    #region public and override methods
+
     /// <summary>
-    /// Test for <see cref="ComponentTypeDescription"/> constructor.
+    ///     Test for <see cref="ComponentTypeDescription" /> constructor.
     /// </summary>
     [Test]
     public void Constructor_ShouldInitializeProperties_WhenAttributesArePresent()
@@ -24,40 +26,58 @@ public class ComponentTypeDescriptionTests
     }
 
     /// <summary>
-    /// Test for <see cref="ComponentTypeDescription"/> constructor.
+    ///     Test for <see cref="ComponentTypeDescription" /> constructor.
     /// </summary>
     [Test]
     public void Constructor_ShouldUseDefaultValues_WhenAttributesAreNotPresent()
     {
         var description = new ComponentTypeDescription(typeof(MockComponentWithoutAttributes));
 
-        Assert.That(description.Name, Is.EqualTo("Unamed"));
+        Assert.That(description.Name, Is.EqualTo("Unnamed"));
         Assert.That(description.Description, Is.EqualTo("No description available"));
     }
 
+    #endregion
+
     /// <summary>
-    /// Mock component with attributes.
+    ///     Mock component with attributes.
     /// </summary>
     [NamedElement("TestComponent", "Test description.")]
     private class MockComponentWithAttributes : IComponent
     {
-        public string InstanceName { get; set; } = string.Empty;
+        #region properties
 
         public Guid Id { get; } = Guid.NewGuid();
+
+        public string InstanceName { get; set; } = string.Empty;
+
+        #endregion
+
+        #region public and override methods
 
         public void Dispose()
         {
         }
+
+        #endregion
     }
 
     private class MockComponentWithoutAttributes : IComponent
     {
-        public string InstanceName { get; set; } = string.Empty;
+        #region properties
 
         public Guid Id { get; } = Guid.NewGuid();
+
+        public string InstanceName { get; set; } = string.Empty;
+
+        #endregion
+
+        #region public and override methods
 
         public void Dispose()
         {
         }
+
+        #endregion
     }
 }

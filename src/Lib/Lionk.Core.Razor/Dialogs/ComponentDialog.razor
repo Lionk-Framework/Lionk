@@ -14,7 +14,7 @@
 
             @if (ViewDescriptions is not null && ViewDescriptions.Count > 0)
             {
-                foreach (var viewDescription in ViewDescriptions.OfType<ComponentViewDescription>())
+                foreach (ComponentViewDescription viewDescription in ViewDescriptions.OfType<ComponentViewDescription>())
                 {
                     <MudCarouselItem Style="padding-left:50px; padding-right:50px; overflow-y: scroll;">
                         <MudGrid Style="width:inherit%">
@@ -22,7 +22,7 @@
                                 <MudText Typo="Typo.h6">@viewDescription.Name</MudText>
                             </MudItem>
                             <MudItem Style="width:inherit">
-                                <DynamicComponentWrapper Type="@viewDescription.ViewType" Parameters="_parameter" />
+                                <DynamicComponentWrapper Type="@viewDescription.ViewType" Parameters="_parameter"/>
                             </MudItem>
                         </MudGrid>
                     </MudCarouselItem>
@@ -36,12 +36,30 @@
 </MudDialog>
 
 @code {
-    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
-    [Parameter] public object? Component { get; set; }
-    [Parameter] public List<ComponentViewDescription>? ViewDescriptions { get; set; }
-    [Parameter] public int CurrentIndex { get; set; }
-    private Dictionary<string, object> _parameter = new Dictionary<string, object>();
+    [CascadingParameter]
+    MudDialogInstance? MudDialog { get; set; }
 
+    /// <summary>
+    ///     The component to display.
+    /// </summary>
+    [Parameter]
+    public object? Component { get; set; }
+
+    /// <summary>
+    ///     The list of view descriptions.
+    /// </summary>
+    [Parameter]
+    public List<ComponentViewDescription>? ViewDescriptions { get; set; }
+
+    /// <summary>
+    ///     The index of the currently selected view.
+    /// </summary>
+    [Parameter]
+    public int CurrentIndex { get; set; }
+
+    private readonly Dictionary<string, object> _parameter = new();
+
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         if (Component is null) return;
@@ -51,9 +69,12 @@
 
     private void Submit()
     {
-        if (MudDialog is null) return;
-        MudDialog.Close(DialogResult.Ok(CurrentIndex));
+        MudDialog?.Close(DialogResult.Ok(CurrentIndex));
     }
 
-    private void ViewChanged(int index) => CurrentIndex = index;
+    private void ViewChanged(int index)
+    {
+        CurrentIndex = index;
+    }
+
 }

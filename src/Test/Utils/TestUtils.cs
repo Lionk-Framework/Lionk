@@ -3,12 +3,14 @@
 namespace LionkTest;
 
 /// <summary>
-/// Utility class.
+///     Utility class.
 /// </summary>
 public static class TestUtils
 {
+    #region public and override methods
+
     /// <summary>
-    /// Method to delete all config files.
+    ///     Method to delete all config files.
     /// </summary>
     public static void DeleteAllConfigFile()
     {
@@ -18,4 +20,6 @@ public static class TestUtils
             File.Delete(file);
         }
     }
+
+    #endregion
 }

@@ -1,21 +1,24 @@
-﻿@using MudBlazor
-@using Lionk.Core.Component
-@using Lionk.Core.Component.Cyclic;
+﻿@using Lionk.Core.Component
+@using Lionk.Core.Component.Cyclic
 @namespace Lionk.Core.View
-@attribute [ViewOfAttribute("Cyclic component configuration", typeof(ICyclicComponent), typeof(CyclicComponentConfig), ViewContext.Configuration)]
+@attribute [ViewOf("Cyclic component configuration", typeof(ICyclicComponent), typeof(CyclicComponentConfig), ViewContext.Configuration)]
 
-<MudTextField @bind-Value="_seconds" Label="Update frequency in s" T="int" />
+<MudTextField @bind-Value="_seconds" Label="Update frequency in s" T="int"/>
 <MudRadioGroup T="CyclicComputationMethod" @bind-Value="_cycleComputationMethode">
     @foreach (CyclicComputationMethod method in Enum.GetValues(typeof(CyclicComputationMethod)))
     {
-    <MudTooltip Text="@method.GetDescription()"> 
-        <MudRadio Value="@method">@method.ToFriendlyString()</MudRadio>
-    </MudTooltip>
+        <MudTooltip Text="@method.GetDescription()">
+            <MudRadio Value="@method">@method.ToFriendlyString()</MudRadio>
+        </MudTooltip>
     }
 </MudRadioGroup>
 
 @code {
-    [Parameter] public ICyclicComponent? Component { get; set; }
+    /// <summary>
+    /// The cyclic component to configure.
+    /// </summary>
+    [Parameter]
+    public ICyclicComponent? Component { get; set; }
 
     private int _seconds
     {
@@ -24,6 +27,7 @@
             if (Component is null) return 0;
             return Component.Period.Seconds;
         }
+
         set
         {
             if (Component is null) return;
@@ -38,10 +42,12 @@
             if (Component is null) return CyclicComputationMethod.RelativeToLastExecution;
             return Component.CyclicComputationMethod;
         }
+
         set
         {
             if (Component is null) return;
             Component.CyclicComputationMethod = value;
         }
     }
+
 }

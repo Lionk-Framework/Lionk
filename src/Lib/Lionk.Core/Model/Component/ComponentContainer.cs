@@ -6,19 +6,24 @@ using Lionk.Core.Observable;
 namespace Lionk.Core.Model.Component;
 
 /// <summary>
-/// Container for component instance.
+///     Container for component instance.
 /// </summary>
 public class ComponentContainer : ObservableElement
 {
+    #region fields
+
     private readonly IComponentService _componentService;
 
-    /// <summary>
-    /// Occurs when a new component is available.
-    /// </summary>
-    public event EventHandler? NewComponentAvailable;
+    private IComponent? _component;
+
+    private Guid _componentId;
+
+    #endregion
+
+    #region constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ComponentContainer"/> class.
+    ///     Initializes a new instance of the <see cref="ComponentContainer" /> class.
     /// </summary>
     /// <param name="componentService">component service.</param>
     /// <param name="componentId">component instance unique ID.</param>
@@ -26,7 +31,7 @@ public class ComponentContainer : ObservableElement
     {
         _componentService = componentService;
         _componentId = componentId;
-        IComponent? component = _componentService.GetInstanceByID(ComponentId);
+        IComponent? component = _componentService.GetInstanceById(ComponentId);
 
         if (component is not null)
         {
@@ -38,10 +43,30 @@ public class ComponentContainer : ObservableElement
         }
     }
 
-    private Guid _componentId;
+    #endregion
+
+    #region delegate and events
 
     /// <summary>
-    /// Gets or sets the component instance unique ID.
+    ///     Occurs when a new component is available.
+    /// </summary>
+    public event EventHandler? NewComponentAvailable;
+
+    #endregion
+
+    #region properties
+
+    /// <summary>
+    ///     Gets the component instance.
+    /// </summary>
+    public IComponent? Component
+    {
+        get => _component;
+        private set => SetField(ref _component, value);
+    }
+
+    /// <summary>
+    ///     Gets or sets the component instance unique ID.
     /// </summary>
     public Guid ComponentId
     {
@@ -53,20 +78,13 @@ public class ComponentContainer : ObservableElement
         }
     }
 
-    private IComponent? _component;
+    #endregion
 
-    /// <summary>
-    /// Gets the component instance.
-    /// </summary>
-    public IComponent? Component
-    {
-        get => _component;
-        private set => SetField(ref _component, value);
-    }
+    #region others methods
 
     private void OnNewComponentAvailable()
     {
-        IComponent? component = _componentService.GetInstanceByID(ComponentId);
+        IComponent? component = _componentService.GetInstanceById(ComponentId);
 
         if (component != null)
         {
@@ -75,4 +93,6 @@ public class ComponentContainer : ObservableElement
             NewComponentAvailable?.Invoke(this, EventArgs.Empty);
         }
     }
+
+    #endregion
 }

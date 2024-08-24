@@ -1,6 +1,5 @@
 ﻿@using Lionk.Core.Component
 @using Lionk.Core.View
-@using LionkApp.Components.Model
 @using IComponent = Lionk.Core.Component.IComponent
 @inject IComponentService ComponentService
 @inject ISnackbar Snackbar
@@ -8,21 +7,25 @@
 
 <MudDialog>
     <DialogContent>
-        <IComponentInstanceList Components="_components" OnComponentSelected="ComponentSelected" />
+        <IComponentInstanceList Components="_components" OnComponentSelected="ComponentSelected"/>
     </DialogContent>
     <DialogActions>
-        <MudSpacer />
+        <MudSpacer/>
         <MudButton OnClick="ChooseWidgetToLinkAsync">Choose widget</MudButton>
-        <MudSpacer />
+        <MudSpacer/>
         <MudButton OnClick="Submit">Ok</MudButton>
         <MudButton OnClick="Cancel">Cancel</MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
-    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    [CascadingParameter]
+    MudDialogInstance? MudDialog { get; set; }
+
     private List<IComponent> _components => ComponentService.GetInstancesOfType<IComponent>().ToList();
+
     private IComponent? _selectedComponent;
+
     private Type? _selectedViewType;
 
     private void ComponentSelected(IComponent? component)
@@ -38,20 +41,18 @@
             return;
         }
 
-        DialogParameters parameters = new();
-        parameters.Add("ComponentType", _selectedComponent.GetType());
+        DialogParameters parameters = new()
+                                      {
+                                          { "ComponentType", _selectedComponent.GetType() },
+                                      };
 
-        var dialogReference = DialogService.Show<WidgetSelector>("Widget Selection", parameters);
+        IDialogReference dialogReference = await DialogService.ShowAsync<WidgetSelector>("Widget Selection", parameters);
 
-        var dialogResult = await dialogReference.Result;
+        DialogResult? dialogResult = await dialogReference.Result;
 
-        if (dialogResult is not null && !dialogResult.Canceled)
+        if (dialogResult is { Canceled: false, Data: ComponentViewDescription selectedWidget })
         {
-            var selectedWidget = dialogResult.Data as ComponentViewDescription;
-            if (selectedWidget != null)
-            {
-                _selectedViewType = selectedWidget.ViewType;
-            }
+            _selectedViewType = selectedWidget.ViewType;
         }
     }
 
@@ -71,4 +72,5 @@
     {
         MudDialog?.Cancel();
     }
+
 }

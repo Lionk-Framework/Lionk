@@ -1,11 +1,10 @@
 ﻿@using System.Reflection
 @using Lionk.Core.Component
 @using Lionk.Core.View
-@using Lionk.Plugin
 @using IComponent = Lionk.Core.Component.IComponent
 @inject IComponentService ComponentService
 @inject IViewRegistryService ViewRegistryService
-<link href="_content/Lionk.Plugin.Blazor/css/PluginCard.css" rel="stylesheet" />
+<link href="_content/Lionk.Plugin.Blazor/css/PluginCard.css" rel="stylesheet"/>
 
 @if (Plugin is null)
 {
@@ -43,7 +42,7 @@ else
             <MudCollapse Expanded="@ShowDependencies">
                 <MudText Typo="Typo.caption">Dependencies:</MudText>
                 <MudList T="string" Class="small-font non-selectable">
-                    @foreach (var dependency in Plugin.Dependencies)
+                    @foreach (Dependency dependency in Plugin.Dependencies)
                     {
                         <MudListItem OnClick="() => OnDependencySelectAsync(dependency)">
                             @if (dependency.IsLoaded)
@@ -90,50 +89,38 @@ else
 
     private bool IsPluginUsed()
     {
-        var UsedTypes
-            = Plugin?
-                .Assembly
-                .GetTypes()
-                .Where(x => x.GetInterfaces().Contains(typeof(IComponent)));
+        IEnumerable<Type>? usedTypes = Plugin?.Assembly.GetTypes().Where(x => x.GetInterfaces().Contains(typeof(IComponent)));
 
-        var UsedViews
-            = Plugin?
-                .Assembly
-                .GetTypes()
-                .Where(x => x.GetCustomAttribute<ViewOfAttribute>() != null);
+        IEnumerable<Type>? usedViews = Plugin?.Assembly.GetTypes().Where(x => x.GetCustomAttribute<ViewOfAttribute>() != null);
 
-        if (UsedTypes is not null)
+        if (usedTypes is not null)
         {
-            if (UsedTypes.Any(usedType => ComponentService.GetInstances()
-                    .Any(x => x.GetType() == usedType)))
+            if (usedTypes.Any(usedType => ComponentService.GetInstances().Any(x => x.GetType() == usedType)))
                 return true;
         }
 
-        if (UsedViews is not null)
-            return UsedViews.Any(view => ViewRegistryService.HasActiveViews(view));
+        if (usedViews is not null)
+            return usedViews.Any(view => ViewRegistryService.HasActiveViews(view));
 
         return false;
     }
 
     /// <summary>
-    /// The plugin that is displayed in the card.
+    ///     The plugin that is displayed in the card.
     /// </summary>
     [Parameter]
     public Plugin? Plugin { get; set; }
 
     /// <summary>
-    /// Parameter that is triggered when a dependency is selected.
+    ///     Parameter that is triggered when a dependency is selected.
     /// </summary>
     [Parameter]
-    public EventCallback<Dependency>
-        OnDependencySelect
-    { get; set; }
+    public EventCallback<Dependency> OnDependencySelect { get; set; }
 
     /// <summary>
-    /// Event that is triggered when the delete button is clicked.
+    ///     Event that is triggered when the delete button is clicked.
     /// </summary>
     [Parameter]
-    public EventCallback<Plugin>
-        OnDelete
-    { get; set; }
+    public EventCallback<Plugin> OnDelete { get; set; }
+
 }

@@ -1,12 +1,13 @@
-﻿@using Lionk.Core.Component
+﻿@inject IComponentService ComponentService
+@using Lionk.Core.Component
 @using Lionk.Core.Model.Component
-@inject IComponentService ComponentService
+@using IComponent = Lionk.Core.Component.IComponent
 @inherits MudItem
 @namespace Lionk.Core.View
 
 @if (_isLoading)
 {
-    <MudProgressCircular Color="Color.Primary" Size="Size.Small" Indeterminate="true" />
+    <MudProgressCircular Color="Color.Primary" Size="Size.Small" Indeterminate="true"/>
 }
 else if (_isError)
 {
@@ -18,35 +19,50 @@ else
         ComponentViewModel="@ComponentViewModel"
         Component="@_component"
         OnUpdate="OnUpdate"
-        OnDelete="OnDelete"
-        />
+        OnDelete="OnDelete"/>
 }
 
 
 @code {
+    /// <summary>
+    /// The component view model.
+    /// </summary>
+    [Parameter]
+    public ComponentViewModel? ComponentViewModel { get; set; }
 
-    [Parameter] public ComponentViewModel? ComponentViewModel { get; set; }
+    /// <summary>
+    /// Event that is called when the componentViewModel is updated.
+    /// </summary>
+    [Parameter]
+    public EventCallback<ComponentViewModel> OnUpdate { get; set; }
 
-    [Parameter] public EventCallback<ComponentViewModel> OnUpdate { get; set; }
-    [Parameter] public EventCallback<ComponentViewModel> OnDelete { get; set; }
+    /// <summary>
+    /// Event that is called when the componentViewModel is deleted.
+    /// </summary>
+    [Parameter]
+    public EventCallback<ComponentViewModel> OnDelete { get; set; }
 
     private ComponentContainer? _container;
-    private BaseComponent? _component;
+
+    private IComponent? _component;
+
     private bool _isLoading = true;
+
     private bool _isError = false;
 
     private string _errorText = "Component not found";
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         if (ComponentViewModel is null)
         {
             _isError = true;
-            _errorText = "Component view can be restored or inexistant";
+            _errorText = "Component view can be restored or does not exist";
             return;
         }
 
-        _container = new(ComponentService, ComponentViewModel.ComponentUniqueID);
+        _container = new ComponentContainer(ComponentService, ComponentViewModel.ComponentUniqueId);
         _component = (BaseComponent?)_container?.Component;
         if (_component is not null)
         {
@@ -80,6 +96,8 @@ else
             _isLoading = false;
             _isError = true;
         }
+
         StateHasChanged();
     }
+
 }
