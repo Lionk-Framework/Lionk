@@ -31,6 +31,8 @@ public class ComponentService : IComponentService
 
     private bool _saveRequested = false;
 
+    private Task? _saveTask;
+
     #endregion
 
     #region constructors
@@ -45,7 +47,7 @@ public class ComponentService : IComponentService
         _componentRegister.NewComponentAvailable += (s, e) => OnNewTypesAvailable();
         LoadConfiguration();
 
-        StartBackgroundSaveTask(_cancellationTokenSource.Token);
+        Task.Run(() => StartBackgroundSaveTask(_cancellationTokenSource.Token));
     }
 
     #endregion
@@ -66,7 +68,6 @@ public class ComponentService : IComponentService
     public void Dispose()
     {
         _cancellationTokenSource.Cancel();
-        SaveConfiguration().Wait();
 
         foreach (IComponent component in _componentInstances.Values)
         {
@@ -77,6 +78,12 @@ public class ComponentService : IComponentService
         }
 
         _componentRegister.NewComponentAvailable -= (s, e) => OnNewTypesAvailable();
+
+        if (_saveTask?.IsCompleted ?? true)
+            _saveTask = SaveConfigurationAsync();
+
+        _saveTask.Wait();
+
         GC.SuppressFinalize(this);
     }
 
@@ -200,7 +207,7 @@ public class ComponentService : IComponentService
 
     private void OnNewTypesAvailable() => NewComponentAvailable?.Invoke(this, EventArgs.Empty);
 
-    private async Task SaveConfiguration()
+    private async Task SaveConfigurationAsync()
     {
         try
         {
@@ -224,12 +231,20 @@ public class ComponentService : IComponentService
     {
         while (!token.IsCancellationRequested)
         {
-            if (_saveRequested)
+            try
             {
-                await SaveConfiguration();
-            }
+                if (_saveRequested)
+                {
+                    _saveTask = SaveConfigurationAsync();
+                    await _saveTask;
+                }
 
-            await Task.Delay(_saveInterval, token);
+                await Task.Delay(_saveInterval, token);
+            }
+            catch (TaskCanceledException)
+            {
+                break;
+            }
         }
     }
 
