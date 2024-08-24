@@ -1,8 +1,10 @@
 // Copyright © 2024 Lionk Project
 
+#if DEBUG
+using Lionk.Auth.Utils;
+#endif
 using Lionk.Auth.Abstraction;
 using Lionk.Auth.Identity;
-using Lionk.Auth.Utils;
 using Lionk.Core.Component;
 using Lionk.Core.Component.Cyclic;
 using Lionk.Core.Razor.Service;
@@ -22,14 +24,17 @@ using ILoggerFactory = Lionk.Log.ILoggerFactory;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 #if !DEBUG
-var httpsPort = builder.Configuration.GetValue<int>("Kestrel:Endpoints:Https:Url")?.Split(':').Last() ?? 6001;
-builder.WebHost.UseKestrel(options =>
-{
-    options.ListenAnyIP(int.Parse(httpsPort), listenOptions =>
-    {
-        listenOptions.UseHttps();
-    });
-});
+
+string? configPort = builder.Configuration.GetValue<string>("Kestrel:Endpoints:Https:Url")?.Split(':').Last();
+
+int httpsPort = int.TryParse(configPort, out int port) ? port : 6001;
+
+builder.WebHost.UseKestrel(
+    options =>
+        options.ListenAnyIP(
+            httpsPort,
+            listenOptions => listenOptions.UseHttps()));
+
 #endif
 
 // Add services to the container.
@@ -117,6 +122,7 @@ app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
 app.Run();
 
+#if DEBUG
 static void SetupDebugUser(WebApplication app)
 {
     IUserService userService = app.Services.GetRequiredService<IUserService>();
@@ -170,3 +176,4 @@ static void SetupDebugUser(WebApplication app)
         throw new Exception("Failed to create simple user");
     }
 }
+#endif
