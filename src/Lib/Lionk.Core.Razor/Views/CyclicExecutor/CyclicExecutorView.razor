@@ -19,14 +19,16 @@
         </MudItem>
     </MudGrid>
 
-    <MudGrid Class="components-grid">
-        @foreach (ICyclicComponent component in CyclicExecutorService.Components)
-        {
-            <MudItem xs="12" sm="6" md="4">
-                <CyclicComponentCard Component="component" />
-            </MudItem>
-        }
-    </MudGrid>
+    <div style="max-width: 100%; margin: auto;">
+        <MudGrid Spacing="3">
+            @foreach (ICyclicComponent component in CyclicExecutorService.Components)
+            {
+                <MudItem xs="12" sm="6" md="4" lg="3">
+                    <CyclicComponentCard Component="component" />
+                </MudItem>
+            }
+        </MudGrid>
+    </div>
 </MudPaper>
 
 @code {
