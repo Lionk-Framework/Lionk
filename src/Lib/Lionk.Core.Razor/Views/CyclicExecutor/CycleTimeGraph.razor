@@ -11,9 +11,7 @@
                             Width="100%"
                             Height="@graphHeight"
                             ChartOptions="@_options"
-                            CanHideSeries
-                            XAxisFormat="ms"
-                            />
+                            CanHideSeries/>
     }
 </div>
 
@@ -26,7 +24,6 @@
             YAxisRequireZeroPoint = true,
             XAxisLines = true,
             LineStrokeWidth = 2,
-            YAxisUnit = "ms" // Ajouter une unité sur l'axe des Y
         };
 
     private TimeSeriesChartSeries _cycleTimeSeries = new();
@@ -96,7 +93,6 @@
                     YAxisRequireZeroPoint = true,
                     XAxisLines = true,
                     LineStrokeWidth = 2,
-                     = "ms" // Ajouter l'unité ms sur l'axe Y
                 };
 
             graphHeight = selectedTimeSpan == TimeSpan.FromHours(1) ? "700px" : "350px";
