@@ -1,0 +1,31 @@
+﻿@using Lionk.Core.Component
+<link href="_content/Lionk.Core.Razor/css/CyclicExecutor.css" rel="stylesheet" />
+
+@if (Component is not null)
+{
+    <div class="component-card" style="background-color:@BackgroundColor">
+        <h3>@Component.InstanceName</h3>
+        <p>Last Execution: @Component.LastExecution</p>
+        <p>Next Execution: @Component.NextExecution</p>
+        <p>Period: @Component.Period</p>
+        <p>Cycle Count: @Component.NbCycle</p>
+        @if (Component.IsInError)
+        {
+            <button @onclick="ResetComponent" class="btn btn-danger">Reset</button>
+        }
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// Gets or sets the component used to display the information.
+    /// </summary>
+    [Parameter]
+    public ICyclicComponent? Component { get; set; }
+
+    private string BackgroundColor => Component?.IsInError == true ? "red" : "white";
+
+    private void ResetComponent()
+        => Component?.Reset();
+
+}

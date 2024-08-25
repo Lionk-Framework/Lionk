@@ -1,0 +1,24 @@
+﻿@using Lionk.Core.Component
+@using Lionk.Core.Component.Cyclic
+@using Lionk.Core.Razor.Views.CyclicComponent
+@inject ICyclicExecutorService CyclicExecutorService
+<link href="_content/Lionk.Core.Razor/css/CyclicExecutor.css" rel="stylesheet" />
+
+
+
+<div class="cyclic-executor-view">
+    <div class="header">
+        <button @onclick="CyclicExecutorService.Pause" class="btn btn-warning">Pause</button>
+        <button @onclick="CyclicExecutorService.Resume" class="btn btn-success">Resume</button>
+        <span class="state">State: @CyclicExecutorService.State</span>
+        <span class="mean-cycle-time">Mean Cycle Time: @CyclicExecutorService.MeanCycleTime.TotalMilliseconds ms</span>
+        <span class="max-cycle-time">Max Cycle Time: @CyclicExecutorService.MaxCycleTime.TotalMilliseconds ms</span>
+    </div>
+
+    <div class="components-grid">
+        @foreach (ICyclicComponent component in CyclicExecutorService.Components)
+        {
+            <CyclicComponentCard Component="component" />
+        }
+    </div>
+</div>
