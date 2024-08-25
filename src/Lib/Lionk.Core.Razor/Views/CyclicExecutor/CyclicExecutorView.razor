@@ -3,19 +3,60 @@
 @using Lionk.Core.Component.Cyclic
 @using Lionk.Core.Observable
 @using Lionk.Core.Razor.Views.CyclicComponent
-@implements IDisposable
 @inject ICyclicExecutorService CyclicExecutorService
-
 <link href="_content/Lionk.Core.Razor/css/CyclicExecutor.css" rel="stylesheet" />
 
-<MudPaper Class="cyclic-executor-view" Elevation="4" Style="padding: 20px;">
-    <MudGrid Justify="Justify.SpaceBetween">
-        <MudItem xs="12" class="text-end">
+<MudPaper Elevation="4" Style="padding: 20px;">
+    <MudGrid Justify="Justify.FlexStart">
+        <MudItem xs="12" sm="4" class="mb-2">
             <ToggleCyclicExecutor />
         </MudItem>
+    </MudGrid>
 
+    <MudGrid Justify="Justify.SpaceAround">
         <MudItem xs="12" md="6" lg="4">
-            <CyclicExecutorStatusCard />
+            <MudCard Elevation="2" Class="hover-card" Style="max-width: 100%; padding: 10px;">
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">State:</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Right">@CyclicExecutorService.State</MudText>
+                        </MudItem>
+                    </MudGrid>
+                    <MudGrid>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Mean Cycle Time:</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Right">@CyclicExecutorService.MeanCycleTime.TotalMilliseconds ms</MudText>
+                        </MudItem>
+                    </MudGrid>
+                    <MudGrid>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Max Cycle Time:</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Right">@CyclicExecutorService.MaxCycleTime.TotalMilliseconds ms</MudText>
+                        </MudItem>
+                    </MudGrid>
+                    <MudGrid>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Watchdog Time:</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudTextField @bind-Value="_watchdogTimeInput" Label="ms" Immediate="true" Variant="Variant.Outlined"
+                                          Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Timer"
+                                          Error="@watchdogTimeError" ErrorText="Watchdog time must be >= 100 ms" />
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" md="6" lg="8">
+            <CycleTimeGraph />
         </MudItem>
     </MudGrid>
 
@@ -32,6 +73,25 @@
 </MudPaper>
 
 @code {
+    private int _watchdogTimeInput
+    {
+        get => (int)CyclicExecutorService.WatchDogTimeout.TotalMilliseconds;
+        set
+        {
+            if (value >= 100)
+            {
+                CyclicExecutorService.WatchDogTimeout = TimeSpan.FromMilliseconds(value);
+                watchdogTimeError = false;
+            }
+            else
+            {
+                watchdogTimeError = true;
+            }
+        }
+    }
+
+    private bool watchdogTimeError = false;
+
     /// <inheritdoc/>
     protected override void OnInitialized()
     {

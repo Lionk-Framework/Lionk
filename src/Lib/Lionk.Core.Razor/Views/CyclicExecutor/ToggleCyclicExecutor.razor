@@ -2,7 +2,10 @@
 @inject ICyclicExecutorService CyclicExecutorService
 <link href="_content/Lionk.Core.Razor/css/CyclicExecutor.css" rel="stylesheet" />
 
-<MudIconButton Icon="@GetButtonIcon()" Color="Color.Info" OnClick="TogglePauseResume" />
+<MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="TogglePauseResume">
+    <MudIcon Icon="@GetButtonIcon()" />
+    <MudText Class="ml-2">@GetButtonText()</MudText>
+</MudButton>
 
 @code {
     private void TogglePauseResume()
@@ -20,5 +23,10 @@
     private string GetButtonIcon()
     {
         return CyclicExecutorService.State == CycleState.Running ? Icons.Material.Filled.Pause : Icons.Material.Filled.PlayArrow;
+    }
+
+    private string GetButtonText()
+    {
+        return CyclicExecutorService.State == CycleState.Running ? "Pause" : "Play";
     }
 }

@@ -34,6 +34,8 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
 
     private TimeSpan _maxCycleTime;
 
+    private TimeSpan _lastExecutionTime;
+
     private long _nCycle;
 
     #endregion
@@ -85,6 +87,13 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     {
         get => _maxCycleTime;
         set => SetField(ref _maxCycleTime, value);
+    }
+
+    /// <inheritdoc />
+    public TimeSpan LastExecutionTime
+    {
+        get => _lastExecutionTime;
+        set => SetField(ref _lastExecutionTime, value);
     }
 
     #endregion
@@ -226,18 +235,18 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
 
     private void ManageTimeMeasurement()
     {
-        TimeSpan measuredTime = _cycleStopwatch.Elapsed;
+        LastExecutionTime = _cycleStopwatch.Elapsed;
 
-        if (measuredTime > MaxCycleTime)
-            MaxCycleTime = measuredTime;
+        if (LastExecutionTime > MaxCycleTime)
+            MaxCycleTime = LastExecutionTime;
 
         if (MeanCycleTime == TimeSpan.Zero)
         {
-            MeanCycleTime = measuredTime;
+            MeanCycleTime = LastExecutionTime;
         }
         else
         {
-            MeanCycleTime = (measuredTime + (MeanCycleTime * (_nCycle - 1))) / _nCycle;
+            MeanCycleTime = (LastExecutionTime + (MeanCycleTime * (_nCycle - 1))) / _nCycle;
         }
     }
 

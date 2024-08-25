@@ -34,6 +34,11 @@ public interface ICyclicExecutorService
     /// </summary>
     TimeSpan MaxCycleTime { get; set; }
 
+    /// <summary>
+    /// Gets or sets the last execution time of the service.
+    /// </summary>
+    TimeSpan LastExecutionTime { get; set; }
+
     #endregion
 
     #region public and override methods
