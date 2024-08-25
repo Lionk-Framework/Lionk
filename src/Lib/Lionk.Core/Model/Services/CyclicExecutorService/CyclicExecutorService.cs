@@ -47,7 +47,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     public CyclicExecutorService(IComponentService componentService)
     {
         _componentService = componentService;
-        WatchDogTimeout = TimeSpan.FromSeconds(100);
+        WatchDogTimeout = TimeSpan.FromSeconds(1);
 
         State = CycleState.Stopped;
     }
