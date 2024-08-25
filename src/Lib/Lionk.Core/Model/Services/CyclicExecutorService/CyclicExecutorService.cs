@@ -47,7 +47,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     public CyclicExecutorService(IComponentService componentService)
     {
         _componentService = componentService;
-        WatchDogTimeout = TimeSpan.FromSeconds(10);
+        WatchDogTimeout = TimeSpan.FromSeconds(100);
 
         State = CycleState.Stopped;
     }
@@ -178,16 +178,16 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     {
         while (!_cancellationTokenSource.Token.IsCancellationRequested)
         {
+            var watchdogCancellationSource = new CancellationTokenSource(WatchDogTimeout);
+            var combinedCancellation = CancellationTokenSource.CreateLinkedTokenSource(
+                _cancellationTokenSource.Token,
+                watchdogCancellationSource.Token);
+
             if (State == CycleState.Paused)
             {
                 await Task.Delay(100, _cancellationTokenSource.Token); // Sleep briefly while paused
                 continue;
             }
-
-            var watchdogCancellationSource = new CancellationTokenSource(WatchDogTimeout);
-            var combinedCancellation = CancellationTokenSource.CreateLinkedTokenSource(
-                _cancellationTokenSource.Token,
-                watchdogCancellationSource.Token);
 
             try
             {
@@ -197,8 +197,10 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
                 _cycleStopwatch.Stop();
                 ManageTimeMeasurement();
             }
-            catch (TaskCanceledException)
+            catch (Exception e)
             {
+                Console.WriteLine(e.Message);
+
                 if (watchdogCancellationSource.Token.IsCancellationRequested && !_cancellationTokenSource.Token.IsCancellationRequested)
                 {
                     Abort();
@@ -211,6 +213,11 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
                     // NotificationService.Send(notification);
                     LogService.LogApp(LogSeverity.Warning, "Watchdog timeout exceeded");
                 }
+            }
+            finally
+            {
+                combinedCancellation.Dispose();
+                watchdogCancellationSource.Dispose();
             }
 
             await Task.Delay(10, _cancellationTokenSource.Token); // Delay between cycles
@@ -230,7 +237,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
         }
         else
         {
-            MeanCycleTime += (measuredTime - MeanCycleTime) / _nCycle;
+            MeanCycleTime = (measuredTime + (MeanCycleTime * (_nCycle - 1))) / _nCycle;
         }
     }
 
