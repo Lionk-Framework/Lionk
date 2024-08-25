@@ -11,12 +11,34 @@ using Newtonsoft.Json;
 namespace Lionk.Core.Component;
 
 /// <summary>
-/// Service that manages components.
+///     Service that manages components.
 /// </summary>
 public class ComponentService : IComponentService
 {
+    #region fields
+
+    private const string ConfigurationFileName = "ComponentServiceConfiguration.json";
+
+    private const string DefaultComponentName = "Component";
+
+    private readonly CancellationTokenSource _cancellationTokenSource = new();
+
+    private readonly TimeSpan _saveInterval = TimeSpan.FromSeconds(2);
+
+    private readonly ComponentRegister _componentRegister;
+
+    private ConcurrentDictionary<Guid, IComponent> _componentInstances = new();
+
+    private bool _saveRequested = false;
+
+    private Task? _saveTask;
+
+    #endregion
+
+    #region constructors
+
     /// <summary>
-    /// Initializes a new instance of the <see cref="ComponentService"/> class.
+    ///     Initializes a new instance of the <see cref="ComponentService" /> class.
     /// </summary>
     /// <param name="provider">The type provider.</param>
     public ComponentService(ITypesProvider provider)
@@ -24,81 +46,112 @@ public class ComponentService : IComponentService
         _componentRegister = new ComponentRegister(provider, this);
         _componentRegister.NewComponentAvailable += (s, e) => OnNewTypesAvailable();
         LoadConfiguration();
+
+        Task.Run(() => StartBackgroundSaveTask(_cancellationTokenSource.Token));
     }
 
-    /// <inheritdoc/>
+    #endregion
+
+    #region delegate and events
+
+    /// <inheritdoc />
+    public event EventHandler<EventArgs>? NewComponentAvailable;
+
+    /// <inheritdoc />
+    public event EventHandler<EventArgs>? NewInstanceRegistered;
+
+    #endregion
+
+    #region public and override methods
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        _cancellationTokenSource.Cancel();
+
+        foreach (IComponent component in _componentInstances.Values)
+        {
+            if (component is ObservableElement observable)
+            {
+                observable.PropertyChanged -= (s, e) => RequestSaveConfiguration();
+            }
+        }
+
+        _componentRegister.NewComponentAvailable -= (s, e) => OnNewTypesAvailable();
+
+        if (_saveTask?.IsCompleted ?? true)
+            _saveTask = SaveConfigurationAsync();
+
+        _saveTask.Wait();
+
+        GC.SuppressFinalize(this);
+    }
+
+    /// <inheritdoc />
+    public IComponent? GetInstanceById(Guid id) => _componentInstances.GetValueOrDefault(id);
+
+    /// <inheritdoc />
+    public IComponent? GetInstanceByName(string name)
+    {
+        IComponent? component = _componentInstances.Values.FirstOrDefault(x => x.InstanceName == name);
+        return component;
+    }
+
+    /// <inheritdoc />
+    public IEnumerable<IComponent> GetInstances() => _componentInstances.Values;
+
+    /// <inheritdoc />
+    public IEnumerable<T> GetInstancesOfType<T>() => _componentInstances.Values.OfType<T>();
+
+    /// <inheritdoc />
+    public IReadOnlyDictionary<ComponentTypeDescription, Factory> GetRegisteredTypeDictionary() =>
+        _componentRegister.TypesRegister.AsReadOnly();
+
+    /// <inheritdoc />
     public void RegisterComponentInstance(IComponent component)
     {
         if (component.GetType().GetCustomAttribute<NamedElement>() is NamedElement attribute)
+        {
             component.InstanceName = attribute.Name;
+        }
 
         string baseName = component.InstanceName == string.Empty ? DefaultComponentName : component.InstanceName;
         string uniqueName = GenerateUniqueName(baseName);
         component.InstanceName = uniqueName;
 
         if (_componentInstances.TryAdd(component.Id, component))
-            SaveConfiguration();
+        {
+            RequestSaveConfiguration();
+        }
 
         if (component is ObservableElement observable)
-            observable.PropertyChanged += (s, e) => SaveConfiguration();
+        {
+            observable.PropertyChanged += (s, e) => RequestSaveConfiguration();
+        }
+
+        NewInstanceRegistered?.Invoke(this, EventArgs.Empty);
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public void UnregisterComponentInstance(IComponent component)
     {
         if (component is ObservableElement observable)
-            observable.PropertyChanged -= (s, e) => SaveConfiguration();
-
-        if (_componentInstances.TryRemove(component.Id, out _))
-            SaveConfiguration();
-    }
-
-    /// <inheritdoc/>
-    public IEnumerable<T> GetInstancesOfType<T>()
-        => _componentInstances.Values.OfType<T>();
-
-    /// <inheritdoc/>
-    public IEnumerable<IComponent> GetInstances()
-        => _componentInstances.Values;
-
-    /// <inheritdoc/>
-    public IReadOnlyDictionary<ComponentTypeDescription, Factory> GetRegisteredTypeDictionnary()
-        => _componentRegister.TypesRegistery.AsReadOnly();
-
-    /// <inheritdoc/>
-    public IComponent? GetInstanceByName(string name)
-    {
-        IComponent? component = _componentInstances.Values.Where(x => x.InstanceName == name).FirstOrDefault();
-        return component;
-    }
-
-    /// <inheritdoc/>
-    public IComponent? GetInstanceByID(Guid id)
-        => _componentInstances.TryGetValue(id, out IComponent? component) ? component : null;
-
-    /// <inheritdoc/>
-    public void Dispose()
-    {
-        SaveConfiguration();
-
-        foreach (IComponent component in _componentInstances.Values)
         {
-            if (component is ObservableElement observable)
-                observable.PropertyChanged -= (s, e) => SaveConfiguration();
+            observable.PropertyChanged -= (s, e) => RequestSaveConfiguration();
         }
 
-        _componentRegister.NewComponentAvailable -= (s, e) => OnNewTypesAvailable();
-        GC.SuppressFinalize(this);
+        if (_componentInstances.TryRemove(component.Id, out _))
+        {
+            RequestSaveConfiguration();
+        }
     }
 
-    /// <inheritdoc/>
-    public event EventHandler<EventArgs>? NewComponentAvailable;
+    #endregion
 
-    private void OnNewTypesAvailable()
-        => NewComponentAvailable?.Invoke(this, EventArgs.Empty);
+    #region others methods
 
     /// <summary>
-    /// Generates a unique name for the component by adding suffixes if necessary.
+    ///     Generates a unique name for the component by adding suffixes if necessary.
     /// </summary>
     /// <param name="baseName">The base name of the component.</param>
     /// <returns>A unique name for the component.</returns>
@@ -117,27 +170,7 @@ public class ComponentService : IComponentService
     }
 
     /// <summary>
-    /// Saves the current component instances to a JSON file using Newtonsoft.Json.
-    /// </summary>
-    private void SaveConfiguration()
-    {
-        try
-        {
-            string json = JsonConvert.SerializeObject(
-                _componentInstances,
-                Formatting.Indented,
-                new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
-
-            ConfigurationUtils.SaveFile(ConfigurationFileName, json, FolderType.Config);
-        }
-        catch (Exception ex)
-        {
-            LogService.LogApp(LogSeverity.Error, $"Failed to save component configuration. Error: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Loads the component instances from a JSON file using Newtonsoft.Json.
+    ///     Loads the component instances from a JSON file using Newtonsoft.Json.
     /// </summary>
     private void LoadConfiguration()
     {
@@ -147,8 +180,8 @@ public class ComponentService : IComponentService
 
             try
             {
-                ConcurrentDictionary<Guid, IComponent>? savedInstances
-                    = JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, IComponent>>(
+                ConcurrentDictionary<Guid, IComponent>? savedInstances =
+                    JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, IComponent>>(
                         json,
                         new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
 
@@ -172,11 +205,48 @@ public class ComponentService : IComponentService
         }
     }
 
-    private const string ConfigurationFileName = "ComponentServiceConfiguration.json";
-    private const string DefaultComponentName = "Component";
+    private void OnNewTypesAvailable() => NewComponentAvailable?.Invoke(this, EventArgs.Empty);
 
-    private readonly ComponentRegister _componentRegister;
+    private async Task SaveConfigurationAsync()
+    {
+        try
+        {
+            string json = JsonConvert.SerializeObject(
+                _componentInstances,
+                Formatting.Indented,
+                new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
 
-    private ConcurrentDictionary<Guid, IComponent>
-        _componentInstances = new();
+            await ConfigurationUtils.SaveFileAsync(ConfigurationFileName, json, FolderType.Config);
+            _saveRequested = false;
+        }
+        catch (Exception ex)
+        {
+            LogService.LogApp(LogSeverity.Error, $"Failed to save component configuration. Error: {ex.Message}");
+        }
+    }
+
+    private void RequestSaveConfiguration() => _saveRequested = true;
+
+    private async void StartBackgroundSaveTask(CancellationToken token)
+    {
+        while (!token.IsCancellationRequested)
+        {
+            try
+            {
+                if (_saveRequested)
+                {
+                    _saveTask = SaveConfigurationAsync();
+                    await _saveTask;
+                }
+
+                await Task.Delay(_saveInterval, token);
+            }
+            catch (TaskCanceledException)
+            {
+                break;
+            }
+        }
+    }
+
+    #endregion
 }

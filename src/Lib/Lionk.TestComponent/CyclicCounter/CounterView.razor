@@ -1,0 +1,28 @@
+﻿@using System.ComponentModel
+@using Lionk.Core.View
+@using MudBlazor
+@namespace Lionk.TestComponent.CyclicCounter
+
+@attribute [ViewOf("Counter view", typeof(Counter), typeof(CounterView), ViewContext.Widget)]
+<MudText Typo="Typo.h4">@Component?.CounterValue</MudText>
+
+@code {
+    /// <summary>
+    /// The component to show.
+    /// </summary>
+    [Parameter]
+    public Counter? Component { get; set; }
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (Component is not null)
+            Component.PropertyChanged += ModelChange;
+    }
+
+    private void ModelChange(object? sender, PropertyChangedEventArgs e)
+        => InvokeAsync(StateHasChanged);
+    
+
+}

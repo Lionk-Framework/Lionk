@@ -1,0 +1,53 @@
+﻿@using Lionk.Core.Component
+@using Lionk.Core.Component.Cyclic
+@namespace Lionk.Core.View
+@attribute [ViewOf("Cyclic component configuration", typeof(ICyclicComponent), typeof(CyclicComponentConfig), ViewContext.Configuration)]
+
+<MudTextField @bind-Value="_seconds" Label="Update frequency in s" T="int"/>
+<MudRadioGroup T="CyclicComputationMethod" @bind-Value="_cycleComputationMethode">
+    @foreach (CyclicComputationMethod method in Enum.GetValues(typeof(CyclicComputationMethod)))
+    {
+        <MudTooltip Text="@method.GetDescription()">
+            <MudRadio Value="@method">@method.ToFriendlyString()</MudRadio>
+        </MudTooltip>
+    }
+</MudRadioGroup>
+
+@code {
+    /// <summary>
+    /// The cyclic component to configure.
+    /// </summary>
+    [Parameter]
+    public ICyclicComponent? Component { get; set; }
+
+    private int _seconds
+    {
+        get
+        {
+            if (Component is null) return 0;
+            return Component.Period.Seconds;
+        }
+
+        set
+        {
+            if (Component is null) return;
+            Component.Period = new TimeSpan(0, 0, value);
+        }
+    }
+
+    private CyclicComputationMethod _cycleComputationMethode
+    {
+        get
+        {
+            if (Component is null) return CyclicComputationMethod.RelativeToLastExecution;
+            return Component.CyclicComputationMethod;
+        }
+
+        set
+        {
+            if (Component is null) return;
+            Component.CyclicComputationMethod = value;
+        }
+    }
+
+}

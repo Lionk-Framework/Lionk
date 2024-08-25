@@ -26,6 +26,12 @@
         box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.2);
     }
 
+.description-container {
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
 .non-selectable {
     user-select: none;
 }

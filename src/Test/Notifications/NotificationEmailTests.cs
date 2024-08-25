@@ -8,29 +8,72 @@ using LionkTest.Notifications.Mock;
 namespace LionkTest.Notifications;
 
 /// <summary>
-/// This class is used to test the email notification.
+///     This class is used to test the email notification.
 /// </summary>
 public class NotificationEmailTests
 {
+    #region fields
+
     private Content _content;
+
     private EmailChannel _emailChannel;
+
     private Notification _notification;
-    private MockNotifyer _notifyer;
+
+    private MockNotifier _notifier;
+
+    #endregion
+
+    #region public and override methods
 
     /// <summary>
-    /// One time setup the test.
-    /// </summary>
-    [OneTimeSetUp]
-    public void Initialize() => SmtpServerTest.Start();
-
-    /// <summary>
-    /// Clean up the test.
+    ///     Clean up the test.
     /// </summary>
     [OneTimeTearDown]
     public void Cleanup() => SmtpServerTest.Stop();
 
     /// <summary>
-    /// Set up the test.
+    ///     One time set up the test.
+    /// </summary>
+    [OneTimeSetUp]
+    public void Initialize() => SmtpServerTest.Start();
+
+    /// <summary>
+    ///     Test the email notification.
+    /// </summary>
+    [Test]
+    public void SendEmailNotification()
+    {
+        // Arrange
+        string smtpServer = "localhost";
+        int port = 2526;
+        bool enableSsl = false;
+        string username = "notifier@email.test";
+        string password = "passwordTest";
+
+        // Act
+        _emailChannel.SetSmtpConfiguration(
+            smtpServer,
+            port,
+            enableSsl,
+            username,
+            password);
+        _emailChannel.Initialize();
+        _emailChannel.AddRecipients(new EmailRecipients("Recipient", "recipient@email.test"));
+        NotificationService.MapNotifierToChannel(_notifier, _emailChannel);
+        Notification notification = new(_content, _notifier);
+        NotificationService.Send(notification);
+
+        // Assert
+        Assert.That(SmtpServerTest.Mailbox.Count, Is.EqualTo(1));
+        Assert.That(SmtpServerTest.Mailbox.First(), Does.Contain("Title"));
+        Assert.That(SmtpServerTest.Mailbox.First(), Does.Contain("Message"));
+        Assert.That(SmtpServerTest.Mailbox.First(), Does.Contain("notifier@email.test"));
+        Assert.That(SmtpServerTest.Mailbox.First(), Does.Contain("recipient@email.test"));
+    }
+
+    /// <summary>
+    ///     Set up the test.
     /// </summary>
     [SetUp]
     public void SetUp()
@@ -46,38 +89,11 @@ public class NotificationEmailTests
         ConfigurationUtils.TryDeleteFile(notifyerChannelFilePath, FolderType.Data);
         ConfigurationUtils.TryDeleteFile(notificationFilePath, FolderType.Data);
         ConfigurationUtils.TryDeleteFile(smtpConfigurationFilePath, FolderType.Config);
-        _notifyer = new MockNotifyer("EmailTestNotifyer");
+        _notifier = new MockNotifier("EmailTestNotifyer");
         _content = new Content(Severity.Information, "Title", "Message");
-        _notification = new Notification(_content, _notifyer);
+        _notification = new Notification(_content, _notifier);
         _emailChannel = new EmailChannel("Email Channel");
     }
 
-    /// <summary>
-    /// Test the email notification.
-    /// </summary>
-    [Test]
-    public void SendEmailNotification()
-    {
-        // Arrange
-        string smtpServer = "localhost";
-        int port = 2526;
-        bool enableSsl = false;
-        string username = "notifyer@email.test";
-        string password = "passwordTest";
-
-        // Act
-        _emailChannel.SetSmtpConfiguration(smtpServer, port, enableSsl, username, password);
-        _emailChannel.Initialize();
-        _emailChannel.AddRecipients(new EmailRecipients("Recipient", "recipient@email.test"));
-        NotificationService.MapNotifyerToChannel(_notifyer, _emailChannel);
-        Notification notification = new(_content, _notifyer);
-        NotificationService.Send(notification);
-
-        // Assert
-        Assert.That(SmtpServerTest.Mailbox.Count, Is.EqualTo(1));
-        Assert.That(SmtpServerTest.Mailbox.First(), Does.Contain("Title"));
-        Assert.That(SmtpServerTest.Mailbox.First(), Does.Contain("Message"));
-        Assert.That(SmtpServerTest.Mailbox.First(), Does.Contain("notifyer@email.test"));
-        Assert.That(SmtpServerTest.Mailbox.First(), Does.Contain("recipient@email.test"));
-    }
+    #endregion
 }

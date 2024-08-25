@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Lionk.Core.Razor\Lionk.Core.Razor.csproj" />
     <ProjectReference Include="..\Lionk.Plugin\Lionk.Plugin.csproj" />
   </ItemGroup>
 

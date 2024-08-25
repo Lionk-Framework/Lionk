@@ -1,34 +1,38 @@
 ﻿// Copyright © 2024 Lionk Project
-using LionkApp.Components.Model;
+using Lionk.Core.View;
 
 namespace LionkApp.Services;
 
 /// <summary>
-/// Define an interface which can manage the persistence of dashboard items.
+///     Define an interface which can manage the persistence of dashboard items.
 /// </summary>
 public interface IDashboardItemPersistenceManager
 {
+    #region public and override methods
+
     /// <summary>
-    /// Method to get all the dashboard items saved.
+    ///     Method to get all the dashboard items saved.
     /// </summary>
     /// <returns> The list of dashboard items saved. </returns>
-    public List<DashboardItemModel> GetDashboardItems();
+    public List<ComponentViewModel> GetDashboardItems();
 
     /// <summary>
-    /// Method to remove a dashboard item.
+    ///     Method to remove a dashboard item.
     /// </summary>
     /// <param name="dashboardItemModel"> The dashboard item to remove. </param>
-    public void RemoveDashboardItemModel(DashboardItemModel dashboardItemModel);
+    public void RemoveDashboardItemModel(ComponentViewModel dashboardItemModel);
 
     /// <summary>
-    /// Method to save a dashboard item.
+    ///     Method to save a dashboard item.
     /// </summary>
     /// <param name="dashboardItemModel"> The dashboard item to save. </param>
-    public void SaveDashboardItem(DashboardItemModel dashboardItemModel);
+    public void SaveDashboardItem(ComponentViewModel dashboardItemModel);
 
     /// <summary>
-    /// Method to edit a dashboard item.
+    ///     Method to edit a dashboard item.
     /// </summary>
     /// <param name="dashboardItemModel"> The dashboard item to edit. </param>
-    public void UpdateDashboardItem(DashboardItemModel dashboardItemModel);
+    public void UpdateDashboardItem(ComponentViewModel dashboardItemModel);
+
+    #endregion
 }

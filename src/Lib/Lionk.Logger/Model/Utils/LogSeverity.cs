@@ -3,37 +3,37 @@
 namespace Lionk.Log;
 
 /// <summary>
-/// Log severity enum.
+///     Log severity enum.
 /// </summary>
 public enum LogSeverity
 {
     /// <summary>
-    /// Trace log severity.
+    ///     Trace log severity.
     /// </summary>
     Trace,
 
     /// <summary>
-    /// Debug log severity.
+    ///     Debug log severity.
     /// </summary>
     Debug,
 
     /// <summary>
-    /// Information log severity.
+    ///     Information log severity.
     /// </summary>
     Information,
 
     /// <summary>
-    /// Warning log severity.
+    ///     Warning log severity.
     /// </summary>
     Warning,
 
     /// <summary>
-    /// Error log severity.
+    ///     Error log severity.
     /// </summary>
     Error,
 
     /// <summary>
-    /// Fatal log severity.
+    ///     Fatal log severity.
     /// </summary>
     Critical,
 }

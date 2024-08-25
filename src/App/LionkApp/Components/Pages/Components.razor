@@ -1,12 +1,9 @@
 ﻿@page "/components"
-@using LionkApp.Components.Widgets.Dialogs
-@using MudBlazor
+@inject IComponentService ComponentService
 @using Lionk.Core.Component
 @using Lionk.Core.TypeRegister
-@using System.Collections
-@inject IComponentService ComponentService
-
 @using IComponent = Lionk.Core.Component.IComponent
+@implements IDisposable
 
 <MudGrid>
     <MudItem xs="6">
@@ -25,8 +22,8 @@
                 </MudItem>
             </MudGrid>
 
-            <ComponentList TypesRegistery="@TypesRegistery"
-                           OnComponentSelected="OnComponentSelected" />
+            <ComponentList TypesRegistry="@TypesRegister"
+                           OnComponentSelected="OnComponentSelected"/>
         </MudPaper>
     </MudItem>
 
@@ -47,20 +44,21 @@
             </MudGrid>
 
             <IComponentInstanceList Components="InstantiatedComponents"
-                                    OnComponentSelected="OnComponentSelectedInstance" />
+                                    OnComponentSelected="OnComponentSelectedInstance"/>
         </MudPaper>
     </MudItem>
 </MudGrid>
 
 @code {
-    private IReadOnlyDictionary<ComponentTypeDescription, Factory>? TypesRegistery
-        => ComponentService.GetRegisteredTypeDictionnary();
+    private IReadOnlyDictionary<ComponentTypeDescription, Factory> TypesRegister => ComponentService.GetRegisteredTypeDictionary();
 
     private KeyValuePair<ComponentTypeDescription, Factory>? _selectedComponent;
+
     private IComponent? _selectedInstanceComponent;
 
-    private IEnumerable<Lionk.Core.Component.IComponent> InstantiatedComponents => ComponentService.GetInstances();
+    private IEnumerable<IComponent> InstantiatedComponents => ComponentService.GetInstances();
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         await LoadComponentTypes();
@@ -81,7 +79,7 @@
     {
         if (_selectedComponent.HasValue)
         {
-            var factory = _selectedComponent.Value.Value;
+            Factory factory = _selectedComponent.Value.Value;
             factory.CreateInstance();
             StateHasChanged();
         }
@@ -109,6 +107,10 @@
         StateHasChanged();
     }
 
+    /// <inheritdoc />
     public void Dispose()
-        => ComponentService.NewComponentAvailable -= (s, e) => OnNewTypesAvailable();
+    {
+        ComponentService.NewComponentAvailable -= (s, e) => OnNewTypesAvailable();
+    }
+
 }

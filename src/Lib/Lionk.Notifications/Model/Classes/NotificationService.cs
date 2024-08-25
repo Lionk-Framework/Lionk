@@ -5,33 +5,33 @@ using Lionk.Notification.Event;
 namespace Lionk.Notification;
 
 /// <summary>
-/// this class implements the way notifications are saved.
+///     this class implements the way notifications are saved.
 /// </summary>
 public static class NotificationService
 {
-    private static List<INotifyer> _notifyers = [];
+    #region fields
+
     private static List<IChannel> _channels = [];
-    private static Dictionary<Guid, List<IChannel>> _notifyerChannels = [];
+
+    private static Dictionary<Guid, List<IChannel>> _notifierChannels = [];
+
+    private static List<INotifier> _notifiers = [];
+
+    #endregion
+
+    #region delegate and events
 
     /// <summary>
-    /// This event is raised when a notification is sent.
+    ///     This event is raised when a notification is sent.
     /// </summary>
     public static event EventHandler<NotificationEventArgs>? NotificationSent;
 
-    /// <summary>
-    /// Gets get the list of all the notifyers.
-    /// </summary>
-    public static ReadOnlyCollection<INotifyer> Notifyers
-    {
-        get
-        {
-            GetNotifyers();
-            return _notifyers.AsReadOnly();
-        }
-    }
+    #endregion
+
+    #region properties
 
     /// <summary>
-    /// Gets the list of all the channels.
+    ///     Gets the list of all the channels.
     /// </summary>
     public static ReadOnlyCollection<IChannel> Channels
     {
@@ -43,82 +43,35 @@ public static class NotificationService
     }
 
     /// <summary>
-    /// Gets a Dictionary that maps the Notifyer name with multiple channels.
+    ///     Gets a Dictionary that maps the Notifier name with multiple channels.
     /// </summary>
-    public static ReadOnlyDictionary<Guid, List<IChannel>> NotifyerChannels
+    public static ReadOnlyDictionary<Guid, List<IChannel>> NotifierChannels
     {
         get
         {
-            GetNotifyerChannels();
-            return _notifyerChannels.AsReadOnly();
+            GetNotifierChannels();
+            return _notifierChannels.AsReadOnly();
         }
     }
 
     /// <summary>
-    /// This method sends a notification and raises the event.
+    ///     Gets get the list of all the notifiers.
     /// </summary>
-    /// <param name="notification">the notification to send.</param>
-    public static void Send(Notification notification)
+    public static ReadOnlyCollection<INotifier> Notifiers
     {
-        ArgumentNullException.ThrowIfNull(notification, nameof(notification));
-        List<IChannel> channels = NotifyerChannels[notification.Notifyer.Id];
-        foreach (IChannel channel in channels)
+        get
         {
-            channel.Send(notification.Notifyer, notification.Content);
+            GetNotifiers();
+            return _notifiers.AsReadOnly();
         }
-
-        SaveNotificationHistory(notification);
-        NotificationSent?.Invoke(null, new NotificationEventArgs(notification, channels));
     }
 
-    /// <summary>
-    /// Save a notification in history.
-    /// </summary>
-    /// <param name="notification"> The notification to save.</param>
-    public static void SaveNotificationHistory(Notification notification)
-    {
-        var notificationHistory = new NotificationHistory(notification, _notifyerChannels[notification.Notifyer.Id]);
-        NotificationFileHandler.SaveNotification(notificationHistory);
-    }
+    #endregion
+
+    #region public and override methods
 
     /// <summary>
-    /// Edit a notification in history.
-    /// </summary>
-    /// <param name="notificationHistory">The notification history to edit.</param>
-    public static void EditNotificationHistory(NotificationHistory notificationHistory) => NotificationFileHandler.EditNotificationHistory(notificationHistory);
-
-    /// <summary>
-    /// Get all the notifications saved.
-    /// </summary>
-    /// <returns> The list of notifications saved.</returns>
-    public static List<NotificationHistory> GetNotifications() => NotificationFileHandler.GetNotifications();
-
-    /// <summary>
-    /// Get a notification by its unique identifier.
-    /// </summary>
-    /// <param name="guid"> the unique identifier of the notification.</param>
-    /// <returns> The notification with the specified unique identifier.</returns>
-    public static NotificationHistory? GetNotificationByGuid(Guid guid) => NotificationFileHandler.GetNotificationByGuid(guid);
-
-    /// <summary>
-    /// Map a notifyer to a channel and add them to the list of Notifyers and Channels if they are not already in the list.
-    /// If the notifyer is already mapped to the channel, the channels will be added if they are not already in the list.
-    /// </summary>
-    /// <param name="notifyer"> The notifyer to map.</param>
-    /// <param name="channels"> The list of channels to map.</param>
-    public static void MapNotifyerToChannel(INotifyer notifyer, params IChannel[] channels)
-    {
-        if (channels is null || notifyer is null) return;
-        AddChannels(channels);
-        AddNotifyers(notifyer);
-        GetNotifyerChannels();
-        if (!_notifyerChannels.ContainsKey(notifyer.Id)) _notifyerChannels.Add(notifyer.Id, []);
-        foreach (IChannel item in channels) if (!_notifyerChannels[notifyer.Id].Contains(item)) _notifyerChannels[notifyer.Id].Add(item);
-        SaveNotifyerChannels();
-    }
-
-    /// <summary>
-    /// This method adds channels to the list of channels if they are not already in the list.
+    ///     This method adds channels to the list of channels if they are not already in the list.
     /// </summary>
     /// <param name="channels"> The channels to add.</param>
     public static void AddChannels(params IChannel[] channels)
@@ -126,22 +79,9 @@ public static class NotificationService
         ArgumentNullException.ThrowIfNull(channels, nameof(channels));
         GetChannels();
 
-        if (_channels == null)
-        {
-            _channels = [];
-        }
-
         foreach (IChannel item in channels)
         {
-            bool exists = false;
-            foreach (IChannel channel in _channels)
-            {
-                if (channel.Equals(item))
-                {
-                    exists = true;
-                    break;
-                }
-            }
+            bool exists = _channels.Any(channel => channel.Equals(item));
 
             if (!exists)
             {
@@ -153,119 +93,212 @@ public static class NotificationService
     }
 
     /// <summary>
-    /// Methode to remove a channel from the list of channels.
-    /// If the channel is mapped to a notifyer, it will be removed from the notifyer.
+    ///     This method adds notifiers to the list of notifiers if they are not already in the list.
+    /// </summary>
+    /// <param name="notifiers"> The notifiers to add.</param>
+    public static void AddNotifiers(params INotifier[] notifiers)
+    {
+        ArgumentNullException.ThrowIfNull(notifiers, nameof(notifiers));
+        GetNotifiers();
+        foreach (INotifier item in notifiers)
+        {
+            if (_notifiers.Count == 0)
+            {
+                _notifiers.Add(item);
+            }
+            else
+            {
+                List<INotifier> list = [];
+                foreach (INotifier notifier in _notifiers)
+                {
+                    if (notifier.Equals(item))
+                    {
+                        continue;
+                    }
+
+                    list.Add(item);
+                }
+
+                _notifiers.AddRange(list);
+            }
+        }
+
+        SaveNotifiers();
+    }
+
+    /// <summary>
+    ///     Edit a notification in history.
+    /// </summary>
+    /// <param name="notificationHistory">The notification history to edit.</param>
+    public static void EditNotificationHistory(NotificationHistory notificationHistory) =>
+        NotificationFileHandler.EditNotificationHistory(notificationHistory);
+
+    /// <summary>
+    ///     Get a notification by its unique identifier.
+    /// </summary>
+    /// <param name="guid"> the unique identifier of the notification.</param>
+    /// <returns> The notification with the specified unique identifier.</returns>
+    public static NotificationHistory? GetNotificationByGuid(Guid guid) => NotificationFileHandler.GetNotificationByGuid(guid);
+
+    /// <summary>
+    ///     Get all the notifications saved.
+    /// </summary>
+    /// <returns> The list of notifications saved.</returns>
+    public static List<NotificationHistory> GetNotifications() => NotificationFileHandler.GetNotifications();
+
+    /// <summary>
+    ///     Map a notifier to a channel and add them to the list of Notifiers and Channels if they are not already in the list.
+    ///     If the notifier is already mapped to the channel, the channels will be added if they are not already in the list.
+    /// </summary>
+    /// <param name="notifier"> The notifier to map.</param>
+    /// <param name="channels"> The list of channels to map.</param>
+    public static void MapNotifierToChannel(INotifier notifier, params IChannel[] channels)
+    {
+        AddChannels(channels);
+        AddNotifiers(notifier);
+        GetNotifierChannels();
+        if (!_notifierChannels.ContainsKey(notifier.Id))
+        {
+            _notifierChannels.Add(notifier.Id, []);
+        }
+
+        foreach (IChannel item in channels)
+        {
+            if (!_notifierChannels[notifier.Id].Contains(item))
+            {
+                _notifierChannels[notifier.Id].Add(item);
+            }
+        }
+
+        SaveNotifierChannels();
+    }
+
+    /// <summary>
+    ///     Methode to remove a channel from the list of channels.
+    ///     If the channel is mapped to a notifier, it will be removed from the notifier.
     /// </summary>
     /// <param name="channel"> The channel to remove.</param>
     public static void RemoveChannel(IChannel channel)
     {
         ArgumentNullException.ThrowIfNull(channel, nameof(channel));
         GetChannels();
-        GetNotifyerChannels();
-
-        if (_channels == null) return;
+        GetNotifierChannels();
 
         // Remove the channel from the list of channels
         int index = _channels.FindIndex(c => c.Equals(channel));
-        if (index >= 0) _channels.RemoveAt(index);
-
-        // Remove the channel from the dictionary of notifyer channels
-        foreach (Guid key in _notifyerChannels.Keys.ToList())
+        if (index >= 0)
         {
-            _notifyerChannels[key].RemoveAll(c => c.Equals(channel));
+            _channels.RemoveAt(index);
+        }
+
+        // Remove the channel from the dictionary of notifier channels
+        foreach (Guid key in _notifierChannels.Keys.ToList())
+        {
+            _notifierChannels[key].RemoveAll(c => c.Equals(channel));
         }
 
         SaveChannels();
-        SaveNotifyerChannels();
+        SaveNotifierChannels();
     }
 
     /// <summary>
-    /// This method adds notifyers to the list of notifyers if they are not already in the list.
+    ///     This method removes a
+    ///     notifier from the list of notifiers.
     /// </summary>
-    /// <param name="notifyers"> The notifyers to add.</param>
-    public static void AddNotifyers(params INotifyer[] notifyers)
+    /// <param name="notifier"> The notifier to remove.</param>
+    public static void RemoveNotifier(INotifier notifier)
     {
-        ArgumentNullException.ThrowIfNull(notifyers, nameof(notifyers));
-        GetNotifyers();
-        foreach (INotifyer item in notifyers)
-        {
-            if (_notifyers.Count == 0)
-            {
-                _notifyers.Add(item);
-            }
-            else
-            {
-                List<INotifyer> notifyerToAdd = [];
-                foreach (INotifyer notifyer in _notifyers)
-                {
-                    if (notifyer.Equals(item)) continue;
-                    else notifyerToAdd.Add(item);
-                }
+        ArgumentNullException.ThrowIfNull(notifier, nameof(notifier));
+        GetNotifiers();
+        GetNotifierChannels();
 
-                _notifyers.AddRange(notifyerToAdd);
-            }
+        // Remove the notifier from the list of notifiers
+        int index = _notifiers.FindIndex(n => n.Equals(notifier));
+        if (index >= 0)
+        {
+            _notifiers.RemoveAt(index);
         }
 
-        SaveNotifyers();
+        // Remove the notifier from the dictionary of notifier channels
+        _notifierChannels.Remove(notifier.Id);
+
+        SaveNotifiers();
+        SaveNotifierChannels();
     }
 
     /// <summary>
-    /// This method removes a notifyer from the list of notifyers.
+    ///     Save a notification in history.
     /// </summary>
-    /// <param name="notifyer"> The notifyer to remove.</param>
-    public static void RemoveNotifyer(INotifyer notifyer)
+    /// <param name="notification"> The notification to save.</param>
+    public static void SaveNotificationHistory(Notification notification)
     {
-        ArgumentNullException.ThrowIfNull(notifyer, nameof(notifyer));
-        GetNotifyers();
-        GetNotifyerChannels();
-
-        if (_notifyers == null) return;
-
-        // Remove the notifyer from the list of notifyers
-        int index = _notifyers.FindIndex(n => n.Equals(notifyer));
-        if (index >= 0) _notifyers.RemoveAt(index);
-
-        // Remove the notifyer from the dictionary of notifyer channels
-        _notifyerChannels.Remove(notifyer.Id);
-
-        SaveNotifyers();
-        SaveNotifyerChannels();
+        var notificationHistory = new NotificationHistory(notification, _notifierChannels[notification.Notifier.Id]);
+        NotificationFileHandler.SaveNotification(notificationHistory);
     }
 
     /// <summary>
-    /// Methode that returns the list of notifyers that use a channel.
+    ///     This method sends a notification and raises the event.
+    /// </summary>
+    /// <param name="notification">the notification to send.</param>
+    public static void Send(Notification notification)
+    {
+        ArgumentNullException.ThrowIfNull(notification, nameof(notification));
+
+        if (NotifierChannels.TryGetValue(notification.Notifier.Id, out List<IChannel>? channels))
+        {
+            foreach (IChannel channel in channels)
+            {
+                channel.Send(notification.Notifier, notification.Content);
+            }
+
+            SaveNotificationHistory(notification);
+            NotificationSent?.Invoke(null, new NotificationEventArgs(notification, channels));
+        }
+    }
+
+    /// <summary>
+    ///     Methode that returns the list of notifiers that use a channel.
     /// </summary>
     /// <param name="channel"> The channel to check.</param>
-    /// <returns> The list of notifyers that use the channel.</returns>
-    public static List<INotifyer> WhoUseThisChannel(IChannel channel)
+    /// <returns> The list of notifiers that use the channel.</returns>
+    public static List<INotifier> WhoUseThisChannel(IChannel channel)
     {
         ArgumentNullException.ThrowIfNull(channel, nameof(channel));
-        GetNotifyerChannels();
-        List<INotifyer> notifyers = [];
-        foreach (Guid key in _notifyerChannels.Keys)
+        GetNotifierChannels();
+        List<INotifier> notifiers = [];
+        foreach (Guid key in _notifierChannels.Keys)
         {
-            foreach (IChannel item in _notifyerChannels[key])
+            foreach (IChannel item in _notifierChannels[key])
             {
                 if (item.Equals(channel))
                 {
-                    INotifyer? notifyer = _notifyers.FirstOrDefault(n => n.Id == key);
-                    if (notifyer != null) notifyers.Add(notifyer);
+                    INotifier? notifier = _notifiers.FirstOrDefault(n => n.Id == key);
+                    if (notifier != null)
+                    {
+                        notifiers.Add(notifier);
+                    }
                 }
             }
         }
 
-        return notifyers;
+        return notifiers;
     }
 
-    private static void SaveNotifyers() => NotificationFileHandler.SaveNotifyerToJson(_notifyers);
+    #endregion
 
-    private static void SaveChannels() => NotificationFileHandler.SaveChannelToJson(_channels);
-
-    private static void SaveNotifyerChannels() => NotificationFileHandler.SaveNotifyerChannelsToJson(_notifyerChannels);
+    #region others methods
 
     private static void GetChannels() => _channels = NotificationFileHandler.GetChannelsFromJson();
 
-    private static void GetNotifyers() => _notifyers = NotificationFileHandler.GetNotifyersFromJson();
+    private static void GetNotifierChannels() => _notifierChannels = NotificationFileHandler.GetNotifierChannelsFromJSon();
 
-    private static void GetNotifyerChannels() => _notifyerChannels = NotificationFileHandler.GetNotifyerChannelsFromJson();
+    private static void GetNotifiers() => _notifiers = NotificationFileHandler.GetNotifiersFromJson();
+
+    private static void SaveChannels() => NotificationFileHandler.SaveChannelToJson(_channels);
+
+    private static void SaveNotifierChannels() => NotificationFileHandler.SaveNotifierChannelsToJson(_notifierChannels);
+
+    private static void SaveNotifiers() => NotificationFileHandler.SaveNotifierToJson(_notifiers);
+
+    #endregion
 }

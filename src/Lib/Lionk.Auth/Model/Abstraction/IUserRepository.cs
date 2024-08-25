@@ -5,31 +5,35 @@ using Lionk.Auth.Identity;
 namespace Lionk.Auth.Abstraction;
 
 /// <summary>
-/// This interface is used to manage the storage of users.
+///     This interface is used to manage the storage of users.
 /// </summary>
 public interface IUserRepository
 {
-    /// <summary>
-    /// Method to save a user.
-    /// </summary>
-    /// <param name="user">The user to save.</param>
-    public void SaveUser(User user);
+    #region public and override methods
 
     /// <summary>
-    /// Method to update a user.
-    /// </summary>
-    /// <param name="user">The user to update.</param>
-    public void UpdateUser(User user);
-
-    /// <summary>
-    /// Method to delete a user.
+    ///     Method to delete a user.
     /// </summary>
     /// <param name="id">The id of the user to delete.</param>
     public void DeleteUser(User id);
 
     /// <summary>
-    /// Method to get a <see cref="HashSet{T}"/> of all the users.
+    ///     Method to get a <see cref="HashSet{T}" /> of all the users.
     /// </summary>
-    /// <returns>A <see cref="HashSet{T}"/> of all the users.</returns>
+    /// <returns>A <see cref="HashSet{T}" /> of all the users.</returns>
     public HashSet<User> GetUsers();
+
+    /// <summary>
+    ///     Method to save a user.
+    /// </summary>
+    /// <param name="user">The user to save.</param>
+    public void SaveUser(User user);
+
+    /// <summary>
+    ///     Method to update a user.
+    /// </summary>
+    /// <param name="user">The user to update.</param>
+    public void UpdateUser(User user);
+
+    #endregion
 }

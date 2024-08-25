@@ -1,9 +1,9 @@
 ﻿@page "/role"
+@using Lionk.Auth.Abstraction
 @using Lionk.Auth.Identity
-@using Microsoft.AspNetCore.Components.Authorization
 @inject ISnackbar Snackbar
 @inject UserAuthenticationStateProvider AuthStateProvider
-@inject UserService userService
+@inject IUserService UserService
 
 @if (Users != null)
 {
@@ -24,11 +24,11 @@
                 </MudTd>
                 <MudTd>
                     <div>
-                        @foreach (var role in AvailableRoles)
+                        @foreach (string role in _availableRoles)
                         {
                             <div style="display: inline-flex; align-items: center; margin-right: 16px;">
                                 <MudText style="margin-right: 8px;">@role</MudText>
-                                <MudSwitch T="bool" Value=RoleStates[context.Id][role] ValueChanged="@(() => OnRoleChanged(context.Id, role, RoleStates[context.Id][role]))" Color="Color.Primary" />
+                                <MudSwitch T="bool" Value=_roleStates[context.Id][role] ValueChanged="@(() => OnRoleChanged(context.Id, role, _roleStates[context.Id][role]))" Color="Color.Primary"/>
                             </div>
                         }
                     </div>
@@ -48,10 +48,16 @@ else
 }
 
 @code {
-    public HashSet<User>? Users;
-    private List<string> AvailableRoles = new List<string> { "Admin", "User"}; // TODO - Link to enum or global strings
-    private Dictionary<Guid, Dictionary<string, bool>> RoleStates = new();
+    /// <summary>
+    /// A HASH set of users.
+    /// </summary>
+    public HashSet<User>? Users { get; private set; }
 
+    private List<string> _availableRoles = ["Admin", "User"]; // TODO - Link to enum or global strings
+
+    private Dictionary<Guid, Dictionary<string, bool>> _roleStates = new();
+
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -60,34 +66,35 @@ else
 
     private void InitializeRoleStates()
     {
-        Users = userService.GetUsers();
+        Users = UserService.GetUsers();
         if (Users is null) return;
 
-        foreach (var user in Users)
+        foreach (User user in Users)
         {
-            RoleStates[user.Id] = new Dictionary<string, bool>();
-            foreach (var role in AvailableRoles)
+            _roleStates[user.Id] = new Dictionary<string, bool>();
+            foreach (string role in _availableRoles)
             {
-                RoleStates[user.Id][role] = user.Roles.Contains(role);
+                _roleStates[user.Id][role] = user.Roles.Contains(role);
             }
         }
     }
 
-    private void OnRoleChanged(Guid userID, string role, bool previousRoleState)
+    private void OnRoleChanged(Guid userId, string role, bool previousRoleState)
     {
-        var user = Users?.FirstOrDefault(u => u.Id == userID);
+        User? user = Users?.FirstOrDefault(u => u.Id == userId);
         if (user is null) return;
 
         // Add role
-        if ((previousRoleState == false) && !user.Roles.Contains(role))
+        if (previousRoleState == false && !user.Roles.Contains(role))
         {
             user.AddRole(role);
-            userService.Update(user);
+            UserService.Update(user);
         }
+
         // Remove role
-        else if ((previousRoleState == true) && user.Roles.Contains(role))
+        else if (previousRoleState && user.Roles.Contains(role))
         {
-            if ((user.Id == AuthStateProvider.CurrentUser?.Id) && (role == "Admin"))
+            if (user.Id == AuthStateProvider.CurrentUser?.Id && role == "Admin")
             {
                 Snackbar.Add("You cannot remove your admin role", Severity.Warning);
                 return;
@@ -100,21 +107,22 @@ else
             }
 
             user.RemoveRole(role);
-            userService.Update(user);
+            UserService.Update(user);
         }
 
-        RoleStates[userID][role] = !previousRoleState;
+        _roleStates[userId][role] = !previousRoleState;
         StateHasChanged();
     }
 
-    private void OnDeletePressed(Guid userID)
+    private void OnDeletePressed(Guid userId)
     {
-        var user = Users?.FirstOrDefault(u => u.Id == userID);
+        User? user = Users?.FirstOrDefault(u => u.Id == userId);
         if (user is null) return;
 
         Users?.Remove(user);
-        userService.Delete(user);
+        UserService.Delete(user);
         Snackbar.Add($"User {user.Username} has been deleted.", Severity.Success);
         StateHasChanged();
     }
+
 }

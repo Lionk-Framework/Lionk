@@ -1,23 +1,22 @@
 ﻿@page "/login"
+@using System.ComponentModel.DataAnnotations
 @using Lionk.Auth.Abstraction
 @using Lionk.Auth.Identity
 @using Lionk.Auth.Utils
-@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
-@using System.ComponentModel.DataAnnotations
 @inject IUserService UserService
 @inject ISnackbar Snackbar
 @inject NavigationManager NavManager
 @inject UserAuthenticationStateProvider AuthStateProvider
 
-<EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
-    <DataAnnotationsValidator />
+<EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator/>
     <MudGrid>
         <MudItem xs="12" sm="12">
             <MudCard>
                 <MudCardContent>
-                    <MudTextField Label="Username" @bind-Value="Model.Username" For="@(() => Model.Username)" />
-                    <MudTextField Label="Password" Class="mt-3" @bind-Value="Model.Password" For="@(() => Model.Password)" InputType="InputType.Password" />
+                    <MudTextField Label="Username" @bind-Value="_model.Username" For="@(() => _model.Username)"/>
+                    <MudTextField Label="Password" Class="mt-3" @bind-Value="_model.Password" For="@(() => _model.Password)" InputType="InputType.Password"/>
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Login</MudButton>
@@ -28,26 +27,36 @@
 </EditForm>
 
 @code {
-    RegisterAccountForm Model = new RegisterAccountForm();
+    private RegisterAccountForm _model = new();
 
+    /// <summary>
+    /// Class that represents the register account form.
+    /// </summary>
     public class RegisterAccountForm
     {
+        /// <summary>
+        /// The username.
+        /// </summary>
         [Required(ErrorMessage = "Username is required.")]
         public string? Username { get; set; }
 
+        /// <summary>
+        /// The 
+        /// </summary>
         [Required(ErrorMessage = "Password is required.")]
         public string? Password { get; set; }
     }
 
     private readonly string _mainPageRoute = "/";
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        bool isAuthenticated = authState?.User?.Identity?.IsAuthenticated ?? false;
+        AuthenticationState? authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        bool isAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
         if (!isAuthenticated)
         {
-            base.OnInitialized();
+            await base.OnInitializedAsync();
         }
         else
         {
@@ -55,13 +64,19 @@
         }
     }
 
+    /// <summary>
+    /// Asynchronously login the user.
+    /// </summary>
+    /// <param name="userName">The username.</param>
+    /// <param name="password">The password.</param>
+    /// <returns>A task which run to log the user.</returns>
     public async Task LoginAsync(string userName, string password)
     {
         string salt = UserService.GetUserSalt(userName);
         string passwordHash = PasswordUtils.HashPassword(password, salt);
         await AuthStateProvider.LoginAsync(userName, passwordHash);
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        bool isAuthenticated = authState?.User?.Identity?.IsAuthenticated ?? false;
+        AuthenticationState? authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        bool isAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
         if (isAuthenticated)
         {
             NavManager.NavigateTo(_mainPageRoute);
@@ -75,11 +90,13 @@
 
     private async void OnValidSubmit()
     {
-        if (string.IsNullOrWhiteSpace(Model.Username) || string.IsNullOrWhiteSpace(Model.Password))
+        if (string.IsNullOrWhiteSpace(_model.Username) || string.IsNullOrWhiteSpace(_model.Password))
         {
             Snackbar.Add("Username and password are required.", Severity.Warning);
             return;
         }
-        await LoginAsync(Model.Username, Model.Password);
+
+        await LoginAsync(_model.Username, _model.Password);
     }
+
 }

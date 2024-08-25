@@ -1,21 +1,21 @@
 ﻿@page "/email"
-@using Lionk.Auth.Identity
-@using Microsoft.AspNetCore.Components.Authorization
 @using System.ComponentModel.DataAnnotations
+@using Lionk.Auth.Abstraction
+@using Lionk.Auth.Identity
 @inject UserAuthenticationStateProvider AuthStateProvider
-@inject UserService userService
+@inject IUserService UserService
 @inject ISnackbar Snackbar
 
-<EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
-    <DataAnnotationsValidator />
+<EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator/>
     <MudGrid>
         <MudItem>
             <MudCard Style="width: 600px">
                 <MudCardContent>
-                    <MudTextField T="string" Label="Email" Text="@CurrentEmail" ReadOnly="true" />
+                    <MudTextField T="string" Label="Email" Text="@CurrentEmail" ReadOnly="true"/>
                 </MudCardContent>
                 <MudCardContent>
-                    <MudTextField T="string" Label="New Email" Class="mt-3" @bind-Value="Model.NewEmail" For="@(() => Model.NewEmail)" />
+                    <MudTextField T="string" Label="New Email" Class="mt-3" @bind-Value="_model.NewEmail" For="@(() => _model.NewEmail ?? string.Empty)"/>
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save</MudButton>
@@ -31,16 +31,27 @@
 </EditForm>
 
 @code {
-    RegisterAccountForm Model = new RegisterAccountForm();
-    public string CurrentEmail = "";
+    private RegisterAccountForm _model = new();
 
+    /// <summary>
+    /// The current email.
+    /// </summary>
+    public string CurrentEmail { get; set; }= string.Empty;
+
+    /// <summary>
+    /// The register account form.
+    /// </summary>
     public class RegisterAccountForm
     {
+        /// <summary>
+        /// The new email.
+        /// </summary>
         [Required]
         [EmailAddress]
         public string? NewEmail { get; set; }
     }
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -49,7 +60,7 @@
 
     private void OnValidSubmit()
     {
-        var user = AuthStateProvider.CurrentUser;
+        User? user = AuthStateProvider.CurrentUser;
 
         if (user is null)
         {
@@ -57,18 +68,19 @@
             return;
         }
 
-        if (string.IsNullOrEmpty(Model.NewEmail))
+        if (string.IsNullOrEmpty(_model.NewEmail))
         {
             Snackbar.Add("Please enter a valid email address.", Severity.Warning);
             return;
         }
 
-        user.UpdateEmail(Model.NewEmail);
-        userService.Update(user);
-        CurrentEmail = Model.NewEmail;
-        Model = new();
+        user.UpdateEmail(_model.NewEmail);
+        UserService.Update(user);
+        CurrentEmail = _model.NewEmail;
+        _model = new RegisterAccountForm();
         Snackbar.Add("Email updated successfully", Severity.Success);
 
         StateHasChanged();
     }
+
 }
