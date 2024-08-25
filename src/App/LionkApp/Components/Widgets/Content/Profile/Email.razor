@@ -15,7 +15,7 @@
                     <MudTextField T="string" Label="Email" Text="@CurrentEmail" ReadOnly="true"/>
                 </MudCardContent>
                 <MudCardContent>
-                    <MudTextField T="string" Label="New Email" Class="mt-3" @bind-Value="_model.NewEmail" For="@(() => _model.NewEmail ?? string.Empty)"/>
+                    <MudTextField T="string" Label="New Email" Class="mt-3" @bind-Value="_model.NewEmail" For="@(() => _model.NewEmail)"/>
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save</MudButton>
