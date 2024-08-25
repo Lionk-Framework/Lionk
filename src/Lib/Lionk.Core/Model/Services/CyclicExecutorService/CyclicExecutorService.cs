@@ -1,5 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
+using System.Diagnostics;
 using Lionk.Core.Observable;
 using Lionk.Log;
 using Lionk.Notification;
@@ -19,6 +20,8 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
 
     private readonly object _stateLock = new();
 
+    private readonly Stopwatch _cycleStopwatch = new();
+
     private CancellationTokenSource _cancellationTokenSource = new();
 
     private Task _componentsTask = Task.CompletedTask;
@@ -26,6 +29,12 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     private CycleState _cycleState;
 
     private TimeSpan _watchdogTimeout;
+
+    private TimeSpan _meanCycleTime;
+
+    private TimeSpan _maxCycleTime;
+
+    private long _nCycle;
 
     #endregion
 
@@ -62,6 +71,20 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     {
         get => _watchdogTimeout;
         set => SetField(ref _watchdogTimeout, value);
+    }
+
+    /// <inheritdoc />
+    public TimeSpan MeanCycleTime
+    {
+        get => _meanCycleTime;
+        set => SetField(ref _meanCycleTime, value);
+    }
+
+    /// <inheritdoc />
+    public TimeSpan MaxCycleTime
+    {
+        get => _maxCycleTime;
+        set => SetField(ref _maxCycleTime, value);
     }
 
     #endregion
@@ -168,7 +191,11 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
 
             try
             {
+                _nCycle++;
+                _cycleStopwatch.Restart();
                 await ExecuteComponents(combinedCancellation.Token);
+                _cycleStopwatch.Stop();
+                ManageTimeMeasurement();
             }
             catch (TaskCanceledException)
             {
@@ -187,6 +214,23 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
             }
 
             await Task.Delay(10, _cancellationTokenSource.Token); // Delay between cycles
+        }
+    }
+
+    private void ManageTimeMeasurement()
+    {
+        TimeSpan measuredTime = _cycleStopwatch.Elapsed;
+
+        if (measuredTime > MaxCycleTime)
+            MaxCycleTime = measuredTime;
+
+        if (MeanCycleTime == TimeSpan.Zero)
+        {
+            MeanCycleTime = measuredTime;
+        }
+        else
+        {
+            MeanCycleTime += (measuredTime - MeanCycleTime) / _nCycle;
         }
     }
 

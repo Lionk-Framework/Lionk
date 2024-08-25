@@ -24,6 +24,16 @@ public interface ICyclicExecutorService
     /// </summary>
     TimeSpan WatchDogTimeout { get; set; }
 
+    /// <summary>
+    ///     Gets or sets the mean cycle time. This is the average time between the start of two consecutive cycles.
+    /// </summary>
+    TimeSpan MeanCycleTime { get; set; }
+
+    /// <summary>
+    ///    Gets or sets the maximum cycle time. This is the maximum time between the start of two consecutive cycles.
+    /// </summary>
+    TimeSpan MaxCycleTime { get; set; }
+
     #endregion
 
     #region public and override methods
