@@ -1,24 +1,95 @@
-﻿@using Lionk.Core.Component
+﻿@using System.ComponentModel
+@using Lionk.Core.Component
 @using Lionk.Core.Component.Cyclic
+@using Lionk.Core.Observable
 @using Lionk.Core.Razor.Views.CyclicComponent
+@implements IDisposable
 @inject ICyclicExecutorService CyclicExecutorService
+
 <link href="_content/Lionk.Core.Razor/css/CyclicExecutor.css" rel="stylesheet" />
 
+<MudPaper Class="cyclic-executor-view" Elevation="4" Style="padding: 20px;">
+    <MudGrid Justify="Justify.SpaceBetween">
+        <MudItem xs="12" class="text-end">
+            <MudIconButton Icon="@GetButtonIcon()" Color="Color.Info" OnClick="TogglePauseResume" />
+        </MudItem>
 
+        <MudItem xs="12" md="6" lg="4">
+            <MudCard Elevation="2">
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">State:</MudText>
+                        </MudItem>
+                        <MudItem xs="6" class="text-right">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Right">@CyclicExecutorService.State</MudText>
+                        </MudItem>
+                    </MudGrid>
+                    <MudGrid>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Mean Cycle Time:</MudText>
+                        </MudItem>
+                        <MudItem xs="6" class="text-right">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Right">@CyclicExecutorService.MeanCycleTime.TotalMilliseconds ms</MudText>
+                        </MudItem>
+                    </MudGrid>
+                    <MudGrid>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Max Cycle Time:</MudText>
+                        </MudItem>
+                        <MudItem xs="6" class="text-right">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Right">@CyclicExecutorService.MaxCycleTime.TotalMilliseconds ms</MudText>
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
 
-<div class="cyclic-executor-view">
-    <div class="header">
-        <button @onclick="CyclicExecutorService.Pause" class="btn btn-warning">Pause</button>
-        <button @onclick="CyclicExecutorService.Resume" class="btn btn-success">Resume</button>
-        <span class="state">State: @CyclicExecutorService.State</span>
-        <span class="mean-cycle-time">Mean Cycle Time: @CyclicExecutorService.MeanCycleTime.TotalMilliseconds ms</span>
-        <span class="max-cycle-time">Max Cycle Time: @CyclicExecutorService.MaxCycleTime.TotalMilliseconds ms</span>
-    </div>
-
-    <div class="components-grid">
+    <MudGrid Class="components-grid">
         @foreach (ICyclicComponent component in CyclicExecutorService.Components)
         {
-            <CyclicComponentCard Component="component" />
+            <MudItem xs="12" sm="6" md="4">
+                <CyclicComponentCard Component="component" />
+            </MudItem>
         }
-    </div>
-</div>
+    </MudGrid>
+</MudPaper>
+
+@code {
+    private void TogglePauseResume()
+    {
+        if (CyclicExecutorService.State == CycleState.Running)
+        {
+            CyclicExecutorService.Pause();
+        }
+        else if (CyclicExecutorService.State == CycleState.Paused)
+        {
+            CyclicExecutorService.Resume();
+        }
+    }
+
+    private string GetButtonIcon()
+    {
+        return CyclicExecutorService.State == CycleState.Running ? Icons.Material.Filled.Pause : Icons.Material.Filled.PlayArrow;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        if (CyclicExecutorService is ObservableElement obs)
+            obs.PropertyChanged += OnCyclicExecutorServicePropertyChanged;
+    }
+
+    private void OnCyclicExecutorServicePropertyChanged(object? sender, PropertyChangedEventArgs e)
+        => InvokeAsync(StateHasChanged);
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        if (CyclicExecutorService is ObservableElement obs)
+            obs.PropertyChanged -= OnCyclicExecutorServicePropertyChanged;
+    }
+}
