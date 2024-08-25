@@ -41,7 +41,7 @@
     {
         foreach (var channel in NotificationService.Channels)
         {
-            ChannelStates[channel.Name] = NotificationService.NotifyerChannels[Guid].Contains(channel);
+            ChannelStates[channel.Name] = NotificationService.NotifierChannels[Guid].Contains(channel);
         }
     }
 

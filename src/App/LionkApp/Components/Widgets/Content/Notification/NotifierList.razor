@@ -29,14 +29,14 @@
 @code {
     private string SearchString = "";
 
-    private IEnumerable<INotifyer> FilteredNotifiers => FilterNotifiers(SearchString);
+    private IEnumerable<INotifier> FilteredNotifiers => FilterNotifiers(SearchString);
 
-    private IEnumerable<INotifyer> FilterNotifiers(string searchString)
+    private IEnumerable<INotifier> FilterNotifiers(string searchString)
     {
         if (string.IsNullOrWhiteSpace(searchString))
-            return NotificationService.Notifyers;
+            return NotificationService.Notifiers;
 
-        return NotificationService.Notifyers.Where(n => n.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase));
+        return NotificationService.Notifiers.Where(n => n.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase));
     }
 
     private Task OnEditClicked(Guid notifierId)
@@ -57,10 +57,10 @@
 
         if (result == true)
         {
-            var notifier = NotificationService.Notifyers.FirstOrDefault(n => n.Id == notifierId);
+            var notifier = NotificationService.Notifiers.FirstOrDefault(n => n.Id == notifierId);
             if (notifier != null)
             {
-                NotificationService.RemoveNotifyer(notifier);
+                NotificationService.RemoveNotifier(notifier);
                 StateHasChanged();
             }
         }

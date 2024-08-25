@@ -100,26 +100,12 @@ public static class NotificationService
     {
         ArgumentNullException.ThrowIfNull(notifiers, nameof(notifiers));
         GetNotifiers();
+
         foreach (INotifier item in notifiers)
         {
-            if (_notifiers.Count == 0)
+            if (!_notifiers.Contains(item))
             {
                 _notifiers.Add(item);
-            }
-            else
-            {
-                List<INotifier> list = [];
-                foreach (INotifier notifier in _notifiers)
-                {
-                    if (notifier.Equals(item))
-                    {
-                        continue;
-                    }
-
-                    list.Add(item);
-                }
-
-                _notifiers.AddRange(list);
             }
         }
 
