@@ -1,0 +1,33 @@
+﻿<MudDialog Class="blur dialog-background custom-dialog-width" TitleClass="blur dialog-background-title" ContentClass="dialog-background-surface py-10" ActionsClass="dialog-background-surface" Style="width: 50%; max-width: 800px;">
+    <DialogContent>
+        <MudForm>
+            <MudSelect @bind-Value="SelectedPlugin" Label="Select plugin" Variant="Variant.Outlined" Class="my-4">
+            </MudSelect>
+            <MudTextField @bind-Value="PluginName" Label="Plugin name" Variant="Variant.Outlined" Placeholder="My Clock" Class="my-4"/>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Error" OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Add</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private string SelectedPlugin { get; set; } = "Clock.dll";
+
+    private string PluginName { get; set; } = "My Clock";
+
+    [CascadingParameter]
+    private MudDialogInstance? MudDialog { get; set; }
+
+    private void Submit()
+    {
+        MudDialog?.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel()
+    {
+        MudDialog?.Cancel();
+    }
+
+}

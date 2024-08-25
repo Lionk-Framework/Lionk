@@ -1,14 +1,11 @@
-﻿@using Lionk.Core.Component
-@using Lionk.Core.View
-@inject IComponentService ComponentService
+﻿@using Lionk.Core.View
 @inject IViewLocatorService ViewLocatorService
-@inject ISnackbar Snackbar
 
 <MudDialog>
     <DialogContent>
         <MudTable @ref="_table" Hover="true"
                   Items="@_availableWidgets"
-                    Style="width:fit-content">
+                  Style="width:fit-content">
             <RowTemplate>
                 <MudTr>
                     <MudTd>
@@ -27,13 +24,20 @@
 </MudDialog>
 
 @code {
-
     private MudTable<ComponentViewDescription> _table = new();
+
     private List<ComponentViewDescription>? _availableWidgets;
 
-    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
-    [Parameter] public Type? ComponentType { get; set; }
+    [CascadingParameter]
+    MudDialogInstance? MudDialog { get; set; }
 
+    /// <summary>
+    /// The component type to select.
+    /// </summary>
+    [Parameter]
+    public Type? ComponentType { get; set; }
+
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         if (ComponentType is not null)
@@ -44,15 +48,8 @@
 
     private void ComponentSelected(ComponentViewDescription viewType)
     {
-        if (viewType is not null)
-        {
-            if (MudDialog is null) return;
-            MudDialog.Close(DialogResult.Ok(viewType));
-        }
-        else
-        {
-            Snackbar.Add("Widget is null", Severity.Error);
-        }
+        if (MudDialog is null) return;
+        MudDialog.Close(DialogResult.Ok(viewType));
     }
 
     private void Cancel()
@@ -60,4 +57,5 @@
         if (MudDialog is null) return;
         MudDialog.Cancel();
     }
+
 }

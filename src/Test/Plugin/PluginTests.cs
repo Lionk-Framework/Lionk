@@ -5,13 +5,15 @@ using System.Reflection;
 namespace LionkTest.Plugin;
 
 /// <summary>
-/// Test class for <see cref="Plugin"/>.
+///     Test class for <see cref="Plugin" />.
 /// </summary>
 [TestFixture]
 public class PluginTests
 {
+    #region public and override methods
+
     /// <summary>
-    /// Test method for Plugin class.
+    ///     Test method for Plugin class.
     /// </summary>
     [Test]
     public void Constructor_WithValidAssembly_ShouldInitializeProperties()
@@ -31,4 +33,6 @@ public class PluginTests
         Assert.That(plugin.Author, Is.EqualTo("Lionk Project"));
         Assert.IsNotNull(plugin.Dependencies);
     }
+
+    #endregion
 }

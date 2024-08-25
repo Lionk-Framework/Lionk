@@ -9,16 +9,56 @@ using Moq;
 namespace LionkTest.Core;
 
 /// <summary>
-/// Tests for the <see cref="ViewLocatorService"/> class.
+///     Tests for the <see cref="ViewLocatorService" /> class.
 /// </summary>
 [TestFixture]
 public class ViewLocatorServiceTests
 {
+    #region fields
+
     private Mock<ITypesProvider> _mockTypesProvider;
+
     private ViewLocatorService _viewLocatorService;
 
+    #endregion
+
+    #region public and override methods
+
     /// <summary>
-    /// Setup method.
+    ///     Test to ensure that new types are registered when available.
+    /// </summary>
+    [Test]
+    public void OnNewTypesAvailable_ShouldAddNewViews_WhenNewTypesAreProvided()
+    {
+        var typesEventArgs = new TypesEventArgs([typeof(TestView)]);
+        _mockTypesProvider.Raise(provider => provider.NewTypesAvailable += null, typesEventArgs);
+
+        IEnumerable<ComponentViewDescription> result = _viewLocatorService.GetViewOf(typeof(TestComponent), ViewContext.Widget);
+
+        Assert.Multiple(
+            () =>
+            {
+                Assert.That(result.Count(), Is.EqualTo(1));
+                Assert.That(result.First().ViewType, Is.EqualTo(typeof(TestView)));
+            });
+    }
+
+    /// <summary>
+    ///     Test to ensure that views without the correct attribute are not added.
+    /// </summary>
+    [Test]
+    public void OnNewTypesAvailable_ShouldNotAddViews_WhenNoViewOfAttributeIsPresent()
+    {
+        var typesEventArgs = new TypesEventArgs([typeof(NoViewAttributeComponent)]);
+        _mockTypesProvider.Raise(provider => provider.NewTypesAvailable += null, typesEventArgs);
+
+        IEnumerable<ComponentViewDescription> result = _viewLocatorService.GetViewOf(typeof(TestComponent), ViewContext.Widget);
+
+        Assert.That(result, Is.Empty);
+    }
+
+    /// <summary>
+    ///     Setup method.
     /// </summary>
     [SetUp]
     public void SetUp()
@@ -28,56 +68,32 @@ public class ViewLocatorServiceTests
     }
 
     /// <summary>
-    /// Tear down method.
+    ///     Tear down method.
     /// </summary>
     [TearDown]
-    public void TearDown() =>
-        _viewLocatorService.Dispose();
+    public void TearDown() => _viewLocatorService.Dispose();
 
-    /// <summary>
-    /// Test to ensure that new types are registered when available.
-    /// </summary>
-    [Test]
-    public void OnNewTypesAvailable_ShouldAddNewViews_WhenNewTypesAreProvided()
-    {
-        var typesEventArgs = new TypesEventArgs(new[] { typeof(TestView) });
-        _mockTypesProvider.Raise(provider => provider.NewTypesAvailable += null, typesEventArgs);
+    #endregion
 
-        IEnumerable<ComponentViewDescription> result
-            = _viewLocatorService.GetViewOf(typeof(TestComponent), ViewContext.Widget);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(result.Count(), Is.EqualTo(1));
-            Assert.That(result.First().ViewType, Is.EqualTo(typeof(TestView)));
-        });
-    }
-
-    /// <summary>
-    /// Test to ensure that views without the correct attribute are not added.
-    /// </summary>
-    [Test]
-    public void OnNewTypesAvailable_ShouldNotAddViews_WhenNoViewOfAttributeIsPresent()
-    {
-        var typesEventArgs = new TypesEventArgs(new[] { typeof(NoViewAttributeComponent) });
-        _mockTypesProvider.Raise(provider => provider.NewTypesAvailable += null, typesEventArgs);
-
-        IEnumerable<ComponentViewDescription> result
-            = _viewLocatorService.GetViewOf(typeof(TestComponent), ViewContext.Widget);
-
-        Assert.That(result, Is.Empty);
-    }
+    #region others methods
 
     private ViewLocatorService SetupViewLocatorServiceWithViews(params ComponentViewDescription[] views)
     {
-        var typesWithViewAttributes = views.Select(view =>
-        {
-            var mockViewType = new Mock<Type>();
-            mockViewType.Setup(t => t.GetTypeInfo().GetCustomAttributes(typeof(ViewOfAttribute), false))
-                        .Returns(new object[] { new ViewOfAttribute("test", view.ComponentType, view.ViewType, view.ViewContext) });
+        var typesWithViewAttributes = views.Select(
+            view =>
+            {
+                var mockViewType = new Mock<Type>();
+                mockViewType.Setup(t => t.GetTypeInfo().GetCustomAttributes(typeof(ViewOfAttribute), false)).Returns(
+                [
+                    new ViewOfAttribute(
+                            "test",
+                            view.ComponentType,
+                            view.ViewType,
+                            view.ViewContext),
+                ]);
 
-            return mockViewType.Object;
-        }).ToList();
+                return mockViewType.Object;
+            }).ToList();
 
         _mockTypesProvider.Setup(p => p.GetTypes()).Returns(typesWithViewAttributes);
         var service = new ViewLocatorService(_mockTypesProvider.Object);
@@ -85,21 +101,51 @@ public class ViewLocatorServiceTests
         return service;
     }
 
-    private class TestComponent : IComponent
-    {
-        public string InstanceName { get; set; } = string.Empty;
-
-        public Guid Id { get; } = Guid.NewGuid();
-    }
+    #endregion
 
     private class NoViewAttributeComponent : IComponent
     {
-        public string InstanceName { get; set; } = string.Empty;
+        #region properties
 
         public Guid Id { get; } = Guid.NewGuid();
+
+        public string InstanceName { get; set; } = string.Empty;
+
+        #endregion
+
+        #region public and override methods
+
+        public void Dispose()
+        {
+        }
+
+        #endregion
     }
 
-    [ViewOf("test", typeof(TestComponent), typeof(TestView), ViewContext.Widget)]
+    private class TestComponent : IComponent
+    {
+        #region properties
+
+        public Guid Id { get; } = Guid.NewGuid();
+
+        public string InstanceName { get; set; } = string.Empty;
+
+        #endregion
+
+        #region public and override methods
+
+        public void Dispose()
+        {
+        }
+
+        #endregion
+    }
+
+    [ViewOf(
+        "test",
+        typeof(TestComponent),
+        typeof(TestView),
+        ViewContext.Widget)]
     private class TestView
     {
     }

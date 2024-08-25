@@ -1,26 +1,26 @@
 ﻿@page "/register"
+@using System.ComponentModel.DataAnnotations
+@using Lionk.Auth.Abstraction
 @using Lionk.Auth.Identity
 @using Lionk.Auth.Utils
-@using Microsoft.AspNetCore.Components.Authorization
-@using System.ComponentModel.DataAnnotations
 @inject UserAuthenticationStateProvider AuthStateProvider
-@inject UserService userService
+@inject IUserService UserService
 @inject ISnackbar Snackbar
 
-<EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
+<EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
     <MudGrid>
         <MudItem xs="12" sm="12">
             <MudCard>
                 <MudCardContent>
                     <MudTextField Label="Username" HelperText="Max. 20 characters"
-                                  @bind-Value="Model.Username" For="@(() => Model.Username)" />
+                                  @bind-Value="_model.Username" For="@(() => _model.Username)" />
                     <MudTextField Label="Email" Class="mt-3"
-                                  @bind-Value="Model.Email" For="@(() => Model.Email)" />
+                                  @bind-Value="_model.Email" For="@(() => _model.Email)" />
                     <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
-                                  @bind-Value="Model.Password" For="@(() => Model.Password)" InputType="InputType.Password" />
+                                  @bind-Value="_model.Password" For="@(() => _model.Password)" InputType="InputType.Password" />
                     <MudTextField Label="Confirm Password" HelperText="Repeat the password" Class="mt-3"
-                                  @bind-Value="Model.Password2" For="@(() => Model.Password2)" InputType="InputType.Password" />
+                                  @bind-Value="_model.Password2" For="@(() => _model.Password2)" InputType="InputType.Password" />
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
@@ -31,22 +31,37 @@
 </EditForm>
 
 @code {
-    RegisterAccountForm Model = new RegisterAccountForm();
+    private RegisterAccountForm _model = new();
 
+    /// <summary>
+    /// The register account form.
+    /// </summary>
     public class RegisterAccountForm
     {
+        /// <summary>
+        /// The username.
+        /// </summary>
         [Required]
         [StringLength(20, ErrorMessage = "Username length can't be more than 20 characters.")]
         public string? Username { get; set; }
 
+        /// <summary>
+        /// The email.
+        /// </summary>
         [Required]
         [EmailAddress]
         public string? Email { get; set; }
 
+        /// <summary>
+        /// The password.
+        /// </summary>
         [Required]
         [StringLength(30, ErrorMessage = "Password must be at least 8 characters long.", MinimumLength = 8)]
         public string? Password { get; set; }
 
+        /// <summary>
+        /// The confirmation password.
+        /// </summary>
         [Required]
         [Compare(nameof(Password), ErrorMessage = "The password and confirmation password do not match.")]
         public string? Password2 { get; set; }
@@ -54,27 +69,28 @@
 
     private async Task OnValidSubmit()
     {
-        if (userService.IsUsernameExist(Model.Username!))
+        if (UserService.IsUsernameExist(_model.Username!))
         {
             Snackbar.Add("Username already exists.", Severity.Warning);
             return;
         }
 
-        if (userService.IsEmailExist(Model.Email!))
+        if (UserService.IsEmailExist(_model.Email!))
         {
             Snackbar.Add("Email already exists.", Severity.Warning);
             return;
         }
 
-        var salt = PasswordUtils.GenerateSalt(16);
-        var passwordHash = PasswordUtils.HashPassword(Model.Password!, salt);
-        var registeredUser = userService.Insert(new User(Model.Username!, Model.Email!, passwordHash, salt, new List<string> { "User" }));
+        string salt = PasswordUtils.GenerateSalt(16);
+        string passwordHash = PasswordUtils.HashPassword(_model.Password!, salt);
+        User? registeredUser = UserService.Insert(new User(_model.Username!, _model.Email!, passwordHash, salt, ["User"]));
         if (registeredUser != null)
         {
-            await AuthStateProvider.LoginAsync(Model.Username!, passwordHash);
-            Model = new RegisterAccountForm();
+            await AuthStateProvider.LoginAsync(_model.Username!, passwordHash);
+            _model = new RegisterAccountForm();
         }
 
         StateHasChanged();
     }
+
 }

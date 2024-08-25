@@ -6,12 +6,14 @@ using System.Text;
 namespace Lionk.Auth.Utils;
 
 /// <summary>
-/// This class contains methods to manage users authentication.
+///     This class contains methods to manage users authentication.
 /// </summary>
 public static class PasswordUtils
 {
+    #region public and override methods
+
     /// <summary>
-    /// Method to generate a salt with a specific size.
+    ///     Method to generate a salt with a specific size.
     /// </summary>
     /// <param name="size"> The size of the salt to generate.</param>
     /// <returns> The generated salt.</returns>
@@ -24,7 +26,7 @@ public static class PasswordUtils
     }
 
     /// <summary>
-    /// Method to hash a password with a specific salt.
+    ///     Method to hash a password with a specific salt.
     /// </summary>
     /// <param name="password"> The password to hash.</param>
     /// <param name="salt"> The salt to use to hash the password.</param>
@@ -36,4 +38,6 @@ public static class PasswordUtils
         byte[] hashBytes = hmac.ComputeHash(passwordBytes);
         return Convert.ToBase64String(hashBytes);
     }
+
+    #endregion
 }

@@ -1,0 +1,95 @@
+﻿@using Lionk.Core.Component
+@using Lionk.Core.TypeRegister
+@namespace Lionk.Core.Razor
+
+<ListSearcher Items="@_componentTypeDescriptions"
+              Properties="@_properties"
+              PropertiesFriendlyNames="@_propertiesFriendlyNames"
+              ItemsChanged="ItemsChanged"
+              T="ComponentTypeDescription"/>
+
+<MudTable @ref="_table"
+          T="ComponentTypeDescription"
+          Items="@_componentTypeDescriptions"
+          OnRowClick="@RowClicked">
+    <HeaderContent>
+        <MudText Align="Align.Left">Type Name</MudText>
+    </HeaderContent>
+
+    <RowTemplate>
+        <MudTooltip Text="@context.Description" Placement="Placement.Right">
+            <MudTr Class="@(context == _selectedComponent ? "selected-row" : string.Empty)">
+                <MudTd>
+                    <MudIcon Icon="@Icons.Material.Filled.AutoAwesomeMosaic"/>
+                </MudTd>
+                <MudTd DataLabel="Type Name">@context.Name</MudTd>
+            </MudTr>
+        </MudTooltip>
+    </RowTemplate>
+
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new[] { 10, 25, 50, 100 }"/>
+    </PagerContent>
+    <FooterContent>
+    </FooterContent>
+</MudTable>
+
+@code {
+
+    /// <summary>
+    ///     The types registry used to display the components.
+    /// </summary>
+    [Parameter]
+    public IReadOnlyDictionary<ComponentTypeDescription, Factory> TypesRegistry { get; set; } = new Dictionary<ComponentTypeDescription, Factory>();
+
+    /// <summary>
+    ///     Method to call when a component is selected.
+    /// </summary>
+    [Parameter]
+    public EventCallback<KeyValuePair<ComponentTypeDescription, Factory>> OnComponentSelected { get; set; }
+
+    private MudTable<ComponentTypeDescription> _table = new();
+
+    private List<ComponentTypeDescription> _componentTypeDescriptions = [];
+
+    private List<string> _properties = [nameof(NamedElement.Name), nameof(NamedElement.Description)];
+
+    private List<string> _propertiesFriendlyNames = ["Type Name", "Description"];
+
+    private ComponentTypeDescription? _selectedComponent;
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        _componentTypeDescriptions = TypesRegistry.Keys.ToList();
+        StateHasChanged();
+    }
+
+    private void ItemsChanged(List<ComponentTypeDescription> items)
+    {
+        _componentTypeDescriptions = items;
+        StateHasChanged();
+    }
+
+    private void RowClicked(TableRowClickEventArgs<ComponentTypeDescription> item)
+    {
+        ComponentTypeDescription? componentTypeDescription = item.Item;
+        if (componentTypeDescription is null) return;
+
+        _selectedComponent = componentTypeDescription;
+
+        Factory factory = TypesRegistry[componentTypeDescription];
+        OnComponentSelected.InvokeAsync(new KeyValuePair<ComponentTypeDescription, Factory>(componentTypeDescription, factory));
+        StateHasChanged();
+    }
+
+}
+
+<style>
+    .selected-row {
+        background-color: #007acc;
+        color: #ffffff;
+        font-weight: bold;
+        border: 2px solid #005b99;
+    }
+</style>

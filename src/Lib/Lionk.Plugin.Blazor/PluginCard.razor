@@ -1,6 +1,10 @@
-﻿@using Lionk.Plugin
-@using MudBlazor
-<link href="_content/Lionk.Plugin.Blazor/css/PluginCard.css" rel="stylesheet" />
+﻿@using System.Reflection
+@using Lionk.Core.Component
+@using Lionk.Core.View
+@using IComponent = Lionk.Core.Component.IComponent
+@inject IComponentService ComponentService
+@inject IViewRegistryService ViewRegistryService
+<link href="_content/Lionk.Plugin.Blazor/css/PluginCard.css" rel="stylesheet"/>
 
 @if (Plugin is null)
 {
@@ -32,13 +36,13 @@ else
                 </MudTooltip>
             }
 
-            <MudText Typo="Typo.body1">@Plugin.Description</MudText>
+            <MudText Typo="Typo.body1" Class="description-container">@Plugin.Description</MudText>
             <MudText Typo="Typo.body2">Author: @Plugin.Author</MudText>
 
             <MudCollapse Expanded="@ShowDependencies">
                 <MudText Typo="Typo.caption">Dependencies:</MudText>
                 <MudList T="string" Class="small-font non-selectable">
-                    @foreach (var dependency in Plugin.Dependencies)
+                    @foreach (Dependency dependency in Plugin.Dependencies)
                     {
                         <MudListItem OnClick="() => OnDependencySelectAsync(dependency)">
                             @if (dependency.IsLoaded)
@@ -60,7 +64,11 @@ else
             <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="ToggleDependencies">
                 @(ShowDependencies ? "Hide Dependencies" : "Show Dependencies")
             </MudButton>
-            <MudButton Color="Color.Error" OnClick="() => OnDelete.InvokeAsync(Plugin)">Delete</MudButton>
+            <MudTooltip Text="Cannot delete this plugin because some types are still in use." Disabled="!IsPluginUsed()">
+                <MudButton Color="Color.Error" OnClick="() => OnDelete.InvokeAsync(Plugin)" Disabled="IsPluginUsed()">
+                    Delete
+                </MudButton>
+            </MudTooltip>
         </MudCardActions>
     </MudCard>
 }
@@ -79,12 +87,40 @@ else
             await OnDependencySelect.InvokeAsync(dependency);
     }
 
+    private bool IsPluginUsed()
+    {
+        IEnumerable<Type>? usedTypes = Plugin?.Assembly.GetTypes().Where(x => x.GetInterfaces().Contains(typeof(IComponent)));
+
+        IEnumerable<Type>? usedViews = Plugin?.Assembly.GetTypes().Where(x => x.GetCustomAttribute<ViewOfAttribute>() != null);
+
+        if (usedTypes is not null)
+        {
+            if (usedTypes.Any(usedType => ComponentService.GetInstances().Any(x => x.GetType() == usedType)))
+                return true;
+        }
+
+        if (usedViews is not null)
+            return usedViews.Any(view => ViewRegistryService.HasActiveViews(view));
+
+        return false;
+    }
+
+    /// <summary>
+    ///     The plugin that is displayed in the card.
+    /// </summary>
     [Parameter]
     public Plugin? Plugin { get; set; }
 
+    /// <summary>
+    ///     Parameter that is triggered when a dependency is selected.
+    /// </summary>
     [Parameter]
     public EventCallback<Dependency> OnDependencySelect { get; set; }
 
+    /// <summary>
+    ///     Event that is triggered when the delete button is clicked.
+    /// </summary>
     [Parameter]
     public EventCallback<Plugin> OnDelete { get; set; }
+
 }
