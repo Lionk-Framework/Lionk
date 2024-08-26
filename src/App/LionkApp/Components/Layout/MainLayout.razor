@@ -17,7 +17,7 @@
             <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((MouseEventArgs e) => DrawerToggle())" />
             <MudText Typo="Typo.h5" Class="ml-3">Lionk</MudText>
             <MudSpacer />
-            <MudBadge Origin=Origin.CenterLeft Content="@_badgeContent" Color="Color.Primary">
+            <MudBadge Origin=Origin.CenterLeft Content="@NotificationState.BadgeContent" Color="Color.Primary">
                 <MudIconButton Icon="@Icons.Material.Filled.CircleNotifications" Color="Color.Primary" OnClick="OnNotificationPressed" />
             </MudBadge>
             <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
@@ -80,8 +80,6 @@
 
     private bool _isDarkMode = true;
 
-    public int? _badgeContent { get; set; } = 0;
-
     /// <summary>
     /// The current username.
     /// </summary>
@@ -94,6 +92,7 @@
         UserName = AuthStateProvider.CurrentUser?.Username ?? "Not Logged In";
         _theme = new MudTheme { PaletteLight = Theme.LightPalette, PaletteDark = Theme.DarkPalette, LayoutProperties = new LayoutProperties() };
         NotificationState.OnNotificationReceived += UpdateBadge;
+        NotificationState.OnBadgeContentChanged += StateHasChanged;
     }
 
     private void DarkModeToggle()
@@ -110,7 +109,6 @@
     {
         NavManager.NavigateTo("/active");
         _isNotifcationExpanded = true;
-        ResetBadgeContent();
     }
 
     private void OnProfilePressed()
@@ -136,18 +134,12 @@
 
     private void UpdateBadge()
     {
-        _badgeContent++;
-        InvokeAsync(StateHasChanged);
-    }
-
-    private void ResetBadgeContent()
-    {
-        _badgeContent = 0;
-        InvokeAsync(StateHasChanged);
+        NotificationState.IncrementBadgeContent();
     }
 
     public void Dispose()
     {
         NotificationState.OnNotificationReceived -= UpdateBadge;
+        NotificationState.OnBadgeContentChanged -= StateHasChanged;
     }
 }
