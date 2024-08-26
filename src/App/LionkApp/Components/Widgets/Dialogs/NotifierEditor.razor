@@ -10,7 +10,6 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; height: 30px;">
                         <MudText>@channel.Name</MudText>
                         <MudSwitch T="bool" Value=_channelStates[channel.Guid] ValueChanged="@(() => OnChannelStateChanged(channel.Guid))" Color="Color.Primary" />
-
                     </div>
                 </MudListItem>
             }
