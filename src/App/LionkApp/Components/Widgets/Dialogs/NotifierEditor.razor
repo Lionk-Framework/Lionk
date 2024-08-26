@@ -9,7 +9,7 @@
                 <MudListItem>
                     <div style="display: flex; justify-content: space-between; align-items: center; height: 30px;">
                         <MudText>@channel.Name</MudText>
-                        <MudSwitch T="bool" Value=ChannelStates[channel.Name] ValueChanged="@(() => OnChannelChanged(channel.Name, ChannelStates[channel.Name]))" Color="Color.Primary" />
+                        <MudSwitch T="bool" Value=ChannelStates[channel.Guid] ValueChanged="@(() => OnChannelChanged(channel.Guid, ChannelStates[channel.Guid]))" Color="Color.Primary" />
 
                     </div>
                 </MudListItem>
@@ -29,7 +29,7 @@
     [CascadingParameter]
     private MudDialogInstance? MudDialog { get; set; }
 
-    private Dictionary<String, bool> ChannelStates { get; set; } = new();
+    private Dictionary<Guid, bool> ChannelStates { get; set; } = new();
 
     protected override void OnInitialized()
     {
@@ -41,11 +41,11 @@
     {
         foreach (var channel in NotificationService.Channels)
         {
-            ChannelStates[channel.Name] = NotificationService.NotifierChannels[Guid].Contains(channel);
+            ChannelStates[channel.Guid] = NotificationService.NotifierChannels[Guid].Contains(channel);
         }
     }
 
-    private void OnChannelChanged(string channelName, bool previousChannelState)
+    private void OnChannelChanged(Guid channelGuid, bool previousChannelState)
     {
         // TODO - Use methods for map or unmap when ready
     }
