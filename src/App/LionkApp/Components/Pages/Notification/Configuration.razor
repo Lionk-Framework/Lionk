@@ -8,6 +8,9 @@
 
 <NotifierList/>
 <ChannelList/>
+<MudButton Variant=Variant.Filled Color=Color.Primary OnClick="SendTestNotification">
+    Send test notification
+</MudButton>
 
 @code {
 
@@ -81,6 +84,11 @@
 
         Notifiers = NotificationService.Notifiers;
         Channels = NotificationService.Channels;
+    }
+
+    private void SendTestNotification()
+    {
+
     }
 
     public void Dispose()
