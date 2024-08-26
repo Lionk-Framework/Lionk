@@ -41,7 +41,7 @@
 
     private Task OnEditClicked(Guid notifierId)
     {
-        var dialogParameters = new DialogParameters { { "Guid", notifierId } };
+        var dialogParameters = new DialogParameters { { "NotifierGuid", notifierId } };
 
         var options = new DialogOptions { CloseOnEscapeKey = true };
 

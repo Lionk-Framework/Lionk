@@ -9,7 +9,7 @@
                 <MudListItem>
                     <div style="display: flex; justify-content: space-between; align-items: center; height: 30px;">
                         <MudText>@channel.Name</MudText>
-                        <MudSwitch T="bool" Value=ChannelStates[channel.Guid] ValueChanged="@(() => OnChannelChanged(channel.Guid, ChannelStates[channel.Guid]))" Color="Color.Primary" />
+                        <MudSwitch T="bool" Value=_channelStates[channel.Guid] ValueChanged="@(() => OnChannelChanged(channel.Guid))" Color="Color.Primary" />
 
                     </div>
                 </MudListItem>
@@ -24,12 +24,12 @@
 
 @code {
     [Parameter]
-    public Guid Guid { get; set; }
+    public Guid NotifierGuid { get; set; }
 
     [CascadingParameter]
     private MudDialogInstance? MudDialog { get; set; }
 
-    private Dictionary<Guid, bool> ChannelStates { get; set; } = new();
+    private Dictionary<Guid, bool> _channelStates { get; set; } = new();
 
     protected override void OnInitialized()
     {
@@ -41,13 +41,25 @@
     {
         foreach (var channel in NotificationService.Channels)
         {
-            ChannelStates[channel.Guid] = NotificationService.NotifierChannels[Guid].Contains(channel);
+            _channelStates[channel.Guid] = NotificationService.NotifierChannels[NotifierGuid].Contains(channel);
         }
     }
 
-    private void OnChannelChanged(Guid channelGuid, bool previousChannelState)
+    private void OnChannelChanged(Guid channelGuid)
     {
-        // TODO - Use methods for map or unmap when ready
+        bool previousChannelState = _channelStates[channelGuid];
+
+        _channelStates[channelGuid] = !previousChannelState;
+
+        var notifier = NotificationService.Notifiers.First(n => n.Id == NotifierGuid);
+
+        var activeChannels = NotificationService.Channels
+            .Where(channel => _channelStates[channel.Guid])
+            .ToArray();
+
+        NotificationService.MapNotifierToChannel(notifier, activeChannels);
+
+        StateHasChanged();
     }
 
     private void Cancel() => MudDialog?.Cancel();
