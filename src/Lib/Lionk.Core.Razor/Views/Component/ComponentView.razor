@@ -73,6 +73,14 @@
                                        Size="Size.Small"
                                        OnClick="ExecutableResetAsync"
                                        Disabled="!((IExecutableComponent?)Component)?.IsInError ?? true" />
+                        @if (((IExecutableComponent?)Component)?.IsInError ?? false)
+                        {
+                            <MudTooltip Text="Component is in error you must reset it to restart the component.">
+                                <MudIconButton Icon="@Icons.Material.Filled.Error"
+                                               Size="Size.Small"
+                                               Color="Color.Error" />
+                            </MudTooltip>
+                        }
                     }
                 }
                 <MudMenu Icon="@Icons.Material.Filled.MoreVert"
@@ -81,15 +89,6 @@
                         <MudText Color="Color.Error">Delete Item</MudText>
                     </MudMenuItem>
                 </MudMenu>
-
-                @if (((IExecutableComponent?)Component)?.IsInError ?? false)
-                {
-                    <MudTooltip Text="Component is in error you must reset it to restart the component.">
-                        <MudIconButton Icon="@Icons.Material.Filled.Error"
-                                       Size="Size.Small"
-                                       Color="Color.Error" />
-                    </MudTooltip>
-                }
 
             </div>
             <div style="margin-right:50px">
