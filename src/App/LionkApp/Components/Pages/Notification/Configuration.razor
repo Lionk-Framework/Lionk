@@ -5,6 +5,7 @@
 @using LionkApp.Components.Widgets.Dialogs
 @using Lionk.Notification
 @using System.Collections.ObjectModel
+@using Newtonsoft.Json
 
 <NotifierList/>
 <ChannelList/>
@@ -15,10 +16,12 @@
 @code {
 
     // ********************************** Mock
+
     public class MockRecipient : IRecipient
     {
         public MockRecipient(string name) => Name = name;
 
+        [JsonConstructor]
         public MockRecipient(string name, Guid guid)
             : this(name) =>
             Guid = guid;
@@ -30,55 +33,99 @@
 
     public class MockNotifier : INotifier
     {
-        public Guid Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-
-        public bool Equals(INotifier? other)
+        [JsonConstructor]
+        public MockNotifier(Guid guid, string name)
         {
-            return other != null && Id == other.Id;
+            Id = guid;
+            Name = name;
         }
+
+        public MockNotifier(string name) => Name = name;
+
+        public Guid Id { get; private set; } = Guid.NewGuid();
+
+        public string Name { get; private set; } = "NotifyerTest";
+
+        public bool Equals(INotifier? obj) => obj is MockNotifier notifier && notifier.Id == Id;
     }
 
     public class MockChannel : IChannel
     {
-        public Guid Guid { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public List<IRecipient> Recipients { get; set; } = new();
-        public bool IsInitialized { get; set; } = false;
+        public MockChannel(string name)
+        {
+            Name = name;
+            Recipients = [];
+        }
+
+        [JsonConstructor]
+        public MockChannel(Guid guid, string name, List<IRecipient> recipients, bool isInitialized)
+        {
+            Guid = guid;
+            Name = name;
+            IsInitialized = isInitialized;
+            Recipients = recipients;
+        }
+
+        public Guid Guid { get; private set; } = Guid.NewGuid();
+
+        public bool IsInitialized { get; private set; }
+
+        public string Name { get; set; } = "Channel";
+
+        [JsonProperty]
+        public List<IRecipient> Recipients { get; private set; }
 
         public void AddRecipients(params IRecipient[] recipients)
         {
-            Recipients.AddRange(recipients);
+            List<IRecipient> recipientsToAdd = [];
+            foreach (IRecipient recipient in recipients)
+            {
+                if (Recipients.Contains(recipient) || recipient is not MockRecipient)
+                {
+                    continue;
+                }
+
+                recipientsToAdd.Add(recipient);
+            }
+
+            Recipients.AddRange(recipientsToAdd);
+        }
+
+        public bool Equals(IChannel? obj)
+        {
+            if (obj is MockChannel channel)
+            {
+                return Guid == channel.Guid && Name == channel.Name;
+            }
+
+            return false;
         }
 
         public void Initialize()
         {
-            IsInitialized = true;
+            // do nothing
         }
 
-        public void Send(INotifier notifyer, Content content)
+        public void Send(INotifier notifier, Content content)
         {
-        }
-
-        public bool Equals(IChannel? other)
-        {
-            return other != null && Guid == other.Guid;
+            // do nothing
         }
     }
 
     private List<INotifier> MockNotifiers = new List<INotifier>
     {
-        new MockNotifier { Id = Guid.NewGuid(), Name = "Chimpey" },
-        new MockNotifier { Id = Guid.NewGuid(), Name = "Clock alarm" },
-        new MockNotifier { Id = Guid.NewGuid(), Name = "MX321" }
+        new MockNotifier(Guid.NewGuid(), "Chimpey"),
+        new MockNotifier(Guid.NewGuid(), "Clock alarm"),
+        new MockNotifier(Guid.NewGuid(), "MX321")
     };
 
     private List<IChannel> MockChannels = new List<IChannel>
     {
-        new MockChannel { Guid = Guid.NewGuid(), Name = "Discord", IsInitialized = true },
-        new MockChannel { Guid = Guid.NewGuid(), Name = "Telegram", IsInitialized = false },
-        new MockChannel { Guid = Guid.NewGuid(), Name = "Push bullet", IsInitialized = true }
+        new MockChannel(Guid.NewGuid(), "Discord", new List<IRecipient>(), true),
+        new MockChannel(Guid.NewGuid(), "Telegram", new List<IRecipient>(), false),
+        new MockChannel(Guid.NewGuid(), "Push bullet", new List<IRecipient>(), true)
     };
+
     // **********************************
 
     public ReadOnlyCollection<INotifier> Notifiers { get; set; } = new List<INotifier>().AsReadOnly();
@@ -101,13 +148,10 @@
 
     private void SendTestNotification()
     {
-        // Content content = new(Lionk.Notification.Severity.Information, "Test", "Test");
-
-        // INotifier notifier = MockNotifiers[0];
-
-        // Notification notification = new(content, notifier);
-
-        // NotificationService.Send(notification);
+        Content content = new(Lionk.Notification.Severity.Information, "Test Notification", "This is a test notification.");
+        INotifier notifier = MockNotifiers[0];
+        Notification notification = new(content, notifier);
+        NotificationService.Send(notification);
     }
 
     public void Dispose()
