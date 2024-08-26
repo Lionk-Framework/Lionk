@@ -51,9 +51,9 @@
 
         _channelStates[channelGuid] = !previousChannelState;
 
-        var notifier = NotificationService.Notifiers.First(n => n.Id == NotifierGuid);
+        INotifier notifier = NotificationService.Notifiers.First(n => n.Id == NotifierGuid);
 
-        var activeChannels = NotificationService.Channels
+        IChannel[] activeChannels = NotificationService.Channels
             .Where(channel => _channelStates[channel.Guid])
             .ToArray();
 
