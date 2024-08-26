@@ -15,7 +15,9 @@
             <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((MouseEventArgs e) => DrawerToggle())" />
             <MudText Typo="Typo.h5" Class="ml-3">Lionk</MudText>
             <MudSpacer />
-            <MudIconButton Icon="@Icons.Material.Filled.CircleNotifications" Color="Color.Primary" OnClick="OnNotificationPressed" />
+            <MudBadge Origin=Origin.CenterLeft Content="@_badgeContent" Color="Color.Primary">
+                <MudIconButton Icon="@Icons.Material.Filled.CircleNotifications" Color="Color.Primary" OnClick="OnNotificationPressed" />
+            </MudBadge>
             <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
         </MudAppBar>
         <MudDrawer @bind-Open="_isDrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
@@ -76,6 +78,8 @@
 
     private bool _isDarkMode = true;
 
+    public int? _badgeContent { get; set; }
+
     /// <summary>
     /// The current username.
     /// </summary>
@@ -126,4 +130,20 @@
             false => Icons.Material.Outlined.DarkMode,
         };
 
+    public void AddBadgeContent()
+    {
+        if (_badgeContent == null)
+        {
+            _badgeContent = 1;
+        }
+        else
+        {
+            _badgeContent += 25;
+        }
+    }
+
+    public void ClearBadgeContent()
+    {
+        _badgeContent = null;
+    }
 }
