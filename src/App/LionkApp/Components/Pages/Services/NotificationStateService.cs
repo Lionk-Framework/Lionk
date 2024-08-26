@@ -7,6 +7,8 @@ using Lionk.Notification;
 /// </summary>
 public class NotificationStateService
 {
+    private int _badgeContent;
+
     /// <summary>
     ///     This event is triggered when a notification is received.
     /// </summary>
@@ -16,8 +18,6 @@ public class NotificationStateService
     ///     This event is triggered when the badge content changes.
     /// </summary>
     public event Action? OnBadgeContentChanged;
-
-    private int _badgeContent;
 
     /// <summary>
     ///     Gets or sets the badge content.
@@ -40,11 +40,6 @@ public class NotificationStateService
     ///     and subscribes to the notification sent event.
     /// </summary>
     public NotificationStateService() => NotificationService.NotificationSent += (sender, args) => OnNotificationReceived?.Invoke();
-
-    /// <summary>
-    /// Resets the badge content to zero.
-    /// </summary>
-    public void ResetBadgeContent() => BadgeContent = 0;
 
     /// <summary>
     /// Increments the badge content by one.
