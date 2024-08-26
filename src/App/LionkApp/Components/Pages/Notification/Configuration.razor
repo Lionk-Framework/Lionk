@@ -15,7 +15,20 @@
 @code {
 
     // ********************************** Mock
-    public class MockNotifyer : INotifier
+    public class MockRecipient : IRecipient
+    {
+        public MockRecipient(string name) => Name = name;
+
+        public MockRecipient(string name, Guid guid)
+            : this(name) =>
+            Guid = guid;
+
+        public Guid Guid { get; private set; } = Guid.NewGuid();
+
+        public string Name { get; private set; }
+    }
+
+    public class MockNotifier : INotifier
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
@@ -53,11 +66,11 @@
         }
     }
 
-    private List<INotifier> MockNotifyers = new List<INotifier>
+    private List<INotifier> MockNotifiers = new List<INotifier>
     {
-        new MockNotifyer { Id = Guid.NewGuid(), Name = "Chimpey" },
-        new MockNotifyer { Id = Guid.NewGuid(), Name = "Clock alarm" },
-        new MockNotifyer { Id = Guid.NewGuid(), Name = "MX321" }
+        new MockNotifier { Id = Guid.NewGuid(), Name = "Chimpey" },
+        new MockNotifier { Id = Guid.NewGuid(), Name = "Clock alarm" },
+        new MockNotifier { Id = Guid.NewGuid(), Name = "MX321" }
     };
 
     private List<IChannel> MockChannels = new List<IChannel>
@@ -76,11 +89,11 @@
     {
         base.OnInitialized();
 
-        NotificationService.AddNotifiers(MockNotifyers[0], MockNotifyers[1], MockNotifyers[2]);
+        NotificationService.AddNotifiers(MockNotifiers[0], MockNotifiers[1], MockNotifiers[2]);
         NotificationService.AddChannels(MockChannels[0], MockChannels[1], MockChannels[2]);
-        NotificationService.MapNotifierToChannel(MockNotifyers[0], MockChannels[0], MockChannels[1]);
-        NotificationService.MapNotifierToChannel(MockNotifyers[1], MockChannels[1], MockChannels[2]);
-        NotificationService.MapNotifierToChannel(MockNotifyers[2], MockChannels[2], MockChannels[0]);
+        NotificationService.MapNotifierToChannel(MockNotifiers[0], MockChannels[0], MockChannels[1]);
+        NotificationService.MapNotifierToChannel(MockNotifiers[1], MockChannels[1], MockChannels[2]);
+        NotificationService.MapNotifierToChannel(MockNotifiers[2], MockChannels[2], MockChannels[0]);
 
         Notifiers = NotificationService.Notifiers;
         Channels = NotificationService.Channels;
@@ -88,7 +101,13 @@
 
     private void SendTestNotification()
     {
+        // Content content = new(Lionk.Notification.Severity.Information, "Test", "Test");
 
+        // INotifier notifier = MockNotifiers[0];
+
+        // Notification notification = new(content, notifier);
+
+        // NotificationService.Send(notification);
     }
 
     public void Dispose()
