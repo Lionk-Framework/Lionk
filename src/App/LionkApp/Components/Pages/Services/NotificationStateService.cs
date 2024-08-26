@@ -42,7 +42,12 @@ public class NotificationStateService
     public NotificationStateService() => NotificationService.NotificationSent += (sender, args) => OnNotificationReceived?.Invoke();
 
     /// <summary>
-    /// Increments the badge content by one.
+    /// Increments the badge content by 1.
     /// </summary>
     public void IncrementBadgeContent() => BadgeContent++;
+
+    /// <summary>
+    ///     Decrements the badge content by 1.
+    /// </summary>
+    public void DecrementBadgeContent() => BadgeContent = Math.Max(BadgeContent - 1, 0);
 }

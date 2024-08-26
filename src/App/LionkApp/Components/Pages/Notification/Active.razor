@@ -47,7 +47,7 @@
     private void MarkAsRead(NotificationHistory notification)
     {
         notification.Read();
-        NotificationState.BadgeContent = Math.Max(NotificationState.BadgeContent - 1, 0);
+        NotificationState.DecrementBadgeContent();
         LoadUnreadNotifications();
         StateHasChanged();
     }
