@@ -174,11 +174,6 @@ public static class NotificationService
                 _notifierChannels[notifier.Id].Remove(channel);
             }
 
-            if (!_notifierChannels[notifier.Id].Any())
-            {
-                _notifierChannels.Remove(notifier.Id);
-            }
-
             SaveNotifierChannels();
         }
     }

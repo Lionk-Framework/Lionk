@@ -53,24 +53,17 @@
 
         INotifier notifier = NotificationService.Notifiers.First(n => n.Id == NotifierGuid);
 
+        IChannel channel = NotificationService.Channels.First(c => c.Guid == channelGuid);
+
         // Add channel
-        if (previousChannelState == false)
+        if (!previousChannelState)
         {
-            IChannel[] activeChannels = NotificationService.Channels
-            .Where(channel => _channelStates[channel.Guid])
-            .ToArray();
-
-            NotificationService.MapNotifierToChannel(notifier, activeChannels);
+            NotificationService.MapNotifierToChannel(notifier, channel);
         }
-
         // Remove channel
-        else 
+        else
         {
-            IChannel[] inactiveChannels = NotificationService.Channels
-            .Where(channel => !_channelStates[channel.Guid])
-            .ToArray();
-
-            NotificationService.UnmapNotifierFromChannel(notifier, inactiveChannels);
+            NotificationService.UnmapNotifierFromChannel(notifier, channel);
         }
 
         StateHasChanged();
