@@ -86,16 +86,15 @@ else
 
         bool previousRoleState = _roleStates[userId][role];
 
-        // Add role
         if (previousRoleState == false && !user.Roles.Contains(role))
         {
+            // Add role
             user.AddRole(role);
             UserService.Update(user);
         }
-
-        // Remove role
         else if (previousRoleState && user.Roles.Contains(role))
         {
+            // Remove role
             if (user.Id == AuthStateProvider.CurrentUser?.Id && role == "Admin")
             {
                 Snackbar.Add("You cannot remove your admin role", Severity.Warning);
@@ -110,6 +109,10 @@ else
 
             user.RemoveRole(role);
             UserService.Update(user);
+        }
+        else
+        {
+            // Do nothing
         }
 
         _roleStates[userId][role] = !previousRoleState;

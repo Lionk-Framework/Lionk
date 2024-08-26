@@ -52,14 +52,14 @@
 
         IChannel channel = NotificationService.Channels.First(c => c.Guid == channelGuid);
 
-        // Add channel
         if (!previousChannelState)
         {
+            // Add channel
             NotificationService.MapNotifierToChannel(notifier, channel);
         }
-        // Remove channel
         else
         {
+            // Remove channel
             NotificationService.UnmapNotifierFromChannel(notifier, channel);
         }
 
