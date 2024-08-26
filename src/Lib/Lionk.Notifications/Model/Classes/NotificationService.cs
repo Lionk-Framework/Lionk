@@ -160,6 +160,30 @@ public static class NotificationService
     }
 
     /// <summary>
+    ///     Unmap a notifier from a list of channels.
+    ///     Removes the channels from the list of channels associated with the notifier.
+    /// </summary>
+    /// <param name="notifier">The notifier to unmap.</param>
+    /// <param name="channels">The list of channels to unmap.</param>
+    public static void UnmapNotifierFromChannel(INotifier notifier, params IChannel[] channels)
+    {
+        if (_notifierChannels.ContainsKey(notifier.Id))
+        {
+            foreach (IChannel channel in channels)
+            {
+                _notifierChannels[notifier.Id].Remove(channel);
+            }
+
+            if (!_notifierChannels[notifier.Id].Any())
+            {
+                _notifierChannels.Remove(notifier.Id);
+            }
+
+            SaveNotifierChannels();
+        }
+    }
+
+    /// <summary>
     ///     Methode to remove a channel from the list of channels.
     ///     If the channel is mapped to a notifier, it will be removed from the notifier.
     /// </summary>
