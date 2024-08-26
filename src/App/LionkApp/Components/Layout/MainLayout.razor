@@ -2,8 +2,10 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @inherits LayoutComponentBase
 @inject NavigationManager NavManager
+@inject NotificationStateService NotificationState
 @inject UserAuthenticationStateProvider AuthStateProvider
 @inject LionkPalette Theme
+
 <AuthorizeView>
     <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
     <MudPopoverProvider />
@@ -78,7 +80,7 @@
 
     private bool _isDarkMode = true;
 
-    public int? _badgeContent { get; set; }
+    public int? _badgeContent { get; set; } = 0;
 
     /// <summary>
     /// The current username.
@@ -91,6 +93,7 @@
         base.OnInitialized();
         UserName = AuthStateProvider.CurrentUser?.Username ?? "Not Logged In";
         _theme = new MudTheme { PaletteLight = Theme.LightPalette, PaletteDark = Theme.DarkPalette, LayoutProperties = new LayoutProperties() };
+        NotificationState.OnNotificationReceived += UpdateBadge;
     }
 
     private void DarkModeToggle()
@@ -107,6 +110,7 @@
     {
         NavManager.NavigateTo("/active");
         _isNotifcationExpanded = true;
+        ResetBadgeContent();
     }
 
     private void OnProfilePressed()
@@ -130,7 +134,7 @@
             false => Icons.Material.Outlined.DarkMode,
         };
 
-    public void AddBadgeContent()
+    private void UpdateBadge()
     {
         if (_badgeContent == null)
         {
@@ -138,12 +142,20 @@
         }
         else
         {
-            _badgeContent += 25;
+            _badgeContent++;
         }
+
+        InvokeAsync(StateHasChanged);
     }
 
-    public void ClearBadgeContent()
+    private void ResetBadgeContent()
     {
-        _badgeContent = null;
+        _badgeContent = 0;
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        NotificationState.OnNotificationReceived -= UpdateBadge;
     }
 }
