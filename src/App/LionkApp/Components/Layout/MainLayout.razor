@@ -136,15 +136,7 @@
 
     private void UpdateBadge()
     {
-        if (_badgeContent == null)
-        {
-            _badgeContent = 1;
-        }
-        else
-        {
-            _badgeContent++;
-        }
-
+        _badgeContent++;
         InvokeAsync(StateHasChanged);
     }
 
