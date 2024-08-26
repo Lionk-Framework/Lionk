@@ -1,5 +1,6 @@
 ﻿@page "/active"
 @using Lionk.Notification
+@inject NotificationStateService NotificationState
 
 @if (notifications != null)
 {
@@ -46,6 +47,7 @@
     private void MarkAsRead(NotificationHistory notification)
     {
         notification.Read();
+        NotificationState.BadgeContent = Math.Max(NotificationState.BadgeContent - 1, 0);
         LoadUnreadNotifications();
         StateHasChanged();
     }
