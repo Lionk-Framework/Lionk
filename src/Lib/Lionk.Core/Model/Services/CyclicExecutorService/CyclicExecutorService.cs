@@ -1,5 +1,6 @@
 ﻿// Copyright © 2024 Lionk Project
 
+using System.Diagnostics;
 using Lionk.Core.Observable;
 using Lionk.Log;
 using Lionk.Notification;
@@ -19,6 +20,8 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
 
     private readonly object _stateLock = new();
 
+    private readonly Stopwatch _cycleStopwatch = new();
+
     private CancellationTokenSource _cancellationTokenSource = new();
 
     private Task _componentsTask = Task.CompletedTask;
@@ -26,6 +29,14 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     private CycleState _cycleState;
 
     private TimeSpan _watchdogTimeout;
+
+    private TimeSpan _meanCycleTime;
+
+    private TimeSpan _maxCycleTime;
+
+    private TimeSpan _lastExecutionTime;
+
+    private long _nCycle;
 
     #endregion
 
@@ -38,7 +49,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     public CyclicExecutorService(IComponentService componentService)
     {
         _componentService = componentService;
-        WatchDogTimeout = TimeSpan.FromSeconds(10);
+        WatchDogTimeout = TimeSpan.FromSeconds(1);
 
         State = CycleState.Stopped;
     }
@@ -62,6 +73,27 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     {
         get => _watchdogTimeout;
         set => SetField(ref _watchdogTimeout, value);
+    }
+
+    /// <inheritdoc />
+    public TimeSpan MeanCycleTime
+    {
+        get => _meanCycleTime;
+        set => SetField(ref _meanCycleTime, value);
+    }
+
+    /// <inheritdoc />
+    public TimeSpan MaxCycleTime
+    {
+        get => _maxCycleTime;
+        set => SetField(ref _maxCycleTime, value);
+    }
+
+    /// <inheritdoc />
+    public TimeSpan LastExecutionTime
+    {
+        get => _lastExecutionTime;
+        set => SetField(ref _lastExecutionTime, value);
     }
 
     #endregion
@@ -155,23 +187,29 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     {
         while (!_cancellationTokenSource.Token.IsCancellationRequested)
         {
+            var watchdogCancellationSource = new CancellationTokenSource(WatchDogTimeout);
+            var combinedCancellation = CancellationTokenSource.CreateLinkedTokenSource(
+                _cancellationTokenSource.Token,
+                watchdogCancellationSource.Token);
+
             if (State == CycleState.Paused)
             {
                 await Task.Delay(100, _cancellationTokenSource.Token); // Sleep briefly while paused
                 continue;
             }
 
-            var watchdogCancellationSource = new CancellationTokenSource(WatchDogTimeout);
-            var combinedCancellation = CancellationTokenSource.CreateLinkedTokenSource(
-                _cancellationTokenSource.Token,
-                watchdogCancellationSource.Token);
-
             try
             {
+                _nCycle++;
+                _cycleStopwatch.Restart();
                 await ExecuteComponents(combinedCancellation.Token);
+                _cycleStopwatch.Stop();
+                ManageTimeMeasurement();
             }
-            catch (TaskCanceledException)
+            catch (Exception e)
             {
+                Console.WriteLine(e.Message);
+
                 if (watchdogCancellationSource.Token.IsCancellationRequested && !_cancellationTokenSource.Token.IsCancellationRequested)
                 {
                     Abort();
@@ -185,8 +223,30 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
                     LogService.LogApp(LogSeverity.Warning, "Watchdog timeout exceeded");
                 }
             }
+            finally
+            {
+                combinedCancellation.Dispose();
+                watchdogCancellationSource.Dispose();
+            }
 
             await Task.Delay(10, _cancellationTokenSource.Token); // Delay between cycles
+        }
+    }
+
+    private void ManageTimeMeasurement()
+    {
+        LastExecutionTime = _cycleStopwatch.Elapsed;
+
+        if (LastExecutionTime > MaxCycleTime)
+            MaxCycleTime = LastExecutionTime;
+
+        if (MeanCycleTime == TimeSpan.Zero)
+        {
+            MeanCycleTime = LastExecutionTime;
+        }
+        else
+        {
+            MeanCycleTime = (LastExecutionTime + (MeanCycleTime * (_nCycle - 1))) / _nCycle;
         }
     }
 
