@@ -9,14 +9,12 @@
             <MudTh><MudTableSortLabel SortBy="new Func<NotificationHistory, object>(x => x.Notification.Content.Level)">Severity</MudTableSortLabel></MudTh>
             <MudTh>Title</MudTh>
             <MudTh>Message</MudTh>
-            <MudTh>Status</MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Date">@context.Notification.Timestamp.ToString("g")</MudTd>
             <MudTd DataLabel="Severity">@context.Notification.Content.Level.ToString()</MudTd>
             <MudTd DataLabel="Title">@context.Notification.Content.Title</MudTd>
             <MudTd DataLabel="Message">@context.Notification.Content.Message</MudTd>
-            <MudTd DataLabel="Status">@context.IsRead ? "Read" : "Unread"</MudTd>
         </RowTemplate>
         <PagerContent>
             <MudTablePager PageSizeOptions="new int[]{50, 100}" />
