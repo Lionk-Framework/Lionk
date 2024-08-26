@@ -5,18 +5,18 @@
 @inject UserAuthenticationStateProvider AuthStateProvider
 @inject LionkPalette Theme
 <AuthorizeView>
-    <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode"/>
-    <MudPopoverProvider/>
-    <MudDialogProvider/>
-    <MudSnackbarProvider/>
+    <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
+    <MudPopoverProvider />
+    <MudDialogProvider />
+    <MudSnackbarProvider />
     <MudLayout>
 
         <MudAppBar Elevation="1">
-            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((MouseEventArgs e) => DrawerToggle())"/>
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((MouseEventArgs e) => DrawerToggle())" />
             <MudText Typo="Typo.h5" Class="ml-3">Lionk</MudText>
-            <MudSpacer/>
-            <MudIconButton Icon="@Icons.Material.Filled.CircleNotifications" Color="Color.Primary" OnClick="OnNotificationPressed"/>
-            <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle"/>
+            <MudSpacer />
+            <MudIconButton Icon="@Icons.Material.Filled.CircleNotifications" Color="Color.Primary" OnClick="OnNotificationPressed" />
+            <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
         </MudAppBar>
         <MudDrawer @bind-Open="_isDrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
 
@@ -34,6 +34,9 @@
                 <AuthorizeView Context="componentContext" Roles="Admin">
                     <MudNavLink Href="/components" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.DeviceHub">Components</MudNavLink>
                 </AuthorizeView>
+                <AuthorizeView Context="componentContext" Roles="Admin">
+                    <MudNavLink Href="/cyclic" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Cyclone">Cyclic</MudNavLink>
+                </AuthorizeView>
 
             </MudNavMenu>
 
@@ -41,12 +44,12 @@
             <MudContainer Class="mt-auto pa-2">
                 <MudGrid Justify="Justify.SpaceBetween">
                     <MudItem>
-                        <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Primary" OnClick="OnProfilePressed"/>
+                        <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Primary" OnClick="OnProfilePressed" />
                         <MudText Typo="Typo.body2">Profile</MudText>
                         <MudText Typo="Typo.body2">@UserName</MudText>
                     </MudItem>
                     <MudItem>
-                        <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Primary" OnClick="OnLogoutPressed"/>
+                        <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Primary" OnClick="OnLogoutPressed" />
                     </MudItem>
                 </MudGrid>
             </MudContainer>
