@@ -1,4 +1,5 @@
 ﻿@using Lionk.Auth.Identity
+@using Lionk.Notification
 @using Microsoft.AspNetCore.Components.Authorization
 @inherits LayoutComponentBase
 @inject NavigationManager NavManager
@@ -91,6 +92,7 @@
         base.OnInitialized();
         UserName = AuthStateProvider.CurrentUser?.Username ?? "Not Logged In";
         _theme = new MudTheme { PaletteLight = Theme.LightPalette, PaletteDark = Theme.DarkPalette, LayoutProperties = new LayoutProperties() };
+        NotificationState.BadgeCounter = NotificationService.GetUnreadNotificationCount();
         NotificationState.OnNotificationReceived += IncrementBadgeCounter;
         NotificationState.OnBadgeCounterChanged += StateHasChanged;
     }

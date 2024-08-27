@@ -133,6 +133,19 @@ public static class NotificationService
     public static List<NotificationHistory> GetNotifications() => NotificationFileHandler.GetNotifications();
 
     /// <summary>
+    ///     Get the unread notifications count.
+    /// </summary>
+    /// <returns> The list of unread notifications.</returns>
+    public static int GetUnreadNotificationCount()
+    {
+        List<NotificationHistory> notifications = GetNotifications();
+
+        int unreadNotificationsCount = notifications.Count(notification => !notification.IsRead);
+
+        return unreadNotificationsCount;
+    }
+
+    /// <summary>
     ///     Map a notifier to a channel and add them to the list of Notifiers and Channels if they are not already in the list.
     ///     If the notifier is already mapped to the channel, the channels will be added if they are not already in the list.
     /// </summary>
