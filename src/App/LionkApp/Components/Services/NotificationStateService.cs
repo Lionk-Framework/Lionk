@@ -7,7 +7,7 @@ using Lionk.Notification;
 /// </summary>
 public class NotificationStateService
 {
-    private int _badgeContent;
+    private int _badgeCounter;
 
     /// <summary>
     ///     This event is triggered when a notification is received.
@@ -15,22 +15,22 @@ public class NotificationStateService
     public event Action? OnNotificationReceived;
 
     /// <summary>
-    ///     This event is triggered when the badge content changes.
+    ///     This event is triggered when the badge coounter changes.
     /// </summary>
-    public event Action? OnBadgeContentChanged;
+    public event Action? OnBadgeCounterChanged;
 
     /// <summary>
-    ///     Gets or sets the badge content.
+    ///     Gets or sets the badge coounter.
     /// </summary>
-    public int BadgeContent
+    public int BadgeCounter
     {
-        get => _badgeContent;
+        get => _badgeCounter;
         set
         {
-            if (_badgeContent != value)
+            if (_badgeCounter != value)
             {
-                _badgeContent = value;
-                OnBadgeContentChanged?.Invoke();
+                _badgeCounter = value;
+                OnBadgeCounterChanged?.Invoke();
             }
         }
     }
@@ -42,12 +42,12 @@ public class NotificationStateService
     public NotificationStateService() => NotificationService.NotificationSent += (sender, args) => OnNotificationReceived?.Invoke();
 
     /// <summary>
-    /// Increments the badge content by 1.
+    /// Increments the badge coounter by 1.
     /// </summary>
-    public void IncrementBadgeContent() => BadgeContent++;
+    public void IncrementBadgeCounter() => BadgeCounter++;
 
     /// <summary>
-    ///     Decrements the badge content by 1.
+    ///     Decrements the badge coounter by 1.
     /// </summary>
-    public void DecrementBadgeContent() => BadgeContent = Math.Max(BadgeContent - 1, 0);
+    public void DecrementBadgeCounter() => BadgeCounter = Math.Max(BadgeCounter - 1, 0);
 }
