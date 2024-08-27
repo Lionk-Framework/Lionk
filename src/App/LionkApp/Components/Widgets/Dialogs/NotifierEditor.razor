@@ -1,0 +1,73 @@
+﻿@using Lionk.Notification
+@using System.Collections.ObjectModel
+
+<MudDialog Style="min-width: 300px;">
+    <DialogContent>
+        <MudList T="string">
+            @foreach (var channel in NotificationService.Channels)
+            {
+                <MudListItem>
+                    <div style="display: flex; justify-content: space-between; align-items: center; height: 30px;">
+                        <MudText>@channel.Name</MudText>
+                        <MudSwitch T="bool" Value=_channelStates[channel.Guid] ValueChanged="@(() => OnChannelStateChanged(channel.Guid))" Color="Color.Primary" />
+                    </div>
+                </MudListItem>
+            }
+        </MudList>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter]
+    public Guid NotifierGuid { get; set; }
+
+    [CascadingParameter]
+    private MudDialogInstance? MudDialog { get; set; }
+
+    private Dictionary<Guid, bool> _channelStates { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        InitializeChannelStates();
+    }
+
+    private void InitializeChannelStates()
+    {
+        foreach (var channel in NotificationService.Channels)
+        {
+            _channelStates[channel.Guid] = NotificationService.NotifierChannels[NotifierGuid].Contains(channel);
+        }
+    }
+
+    private void OnChannelStateChanged(Guid channelGuid)
+    {
+        bool previousChannelState = _channelStates[channelGuid];
+
+        INotifier notifier = NotificationService.Notifiers.First(n => n.Id == NotifierGuid);
+
+        IChannel channel = NotificationService.Channels.First(c => c.Guid == channelGuid);
+
+        if (!previousChannelState)
+        {
+            // Add channel
+            NotificationService.MapNotifierToChannel(notifier, channel);
+        }
+        else
+        {
+            // Remove channel
+            NotificationService.UnmapNotifierFromChannel(notifier, channel);
+        }
+
+        _channelStates[channelGuid] = !previousChannelState;
+        StateHasChanged();
+    }
+
+    private void Cancel() => MudDialog?.Cancel();
+
+    private void Submit() => MudDialog?.Close(DialogResult.Ok(true));
+}
