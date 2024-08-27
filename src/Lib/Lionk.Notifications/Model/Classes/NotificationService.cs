@@ -100,26 +100,12 @@ public static class NotificationService
     {
         ArgumentNullException.ThrowIfNull(notifiers, nameof(notifiers));
         GetNotifiers();
+
         foreach (INotifier item in notifiers)
         {
-            if (_notifiers.Count == 0)
+            if (!_notifiers.Contains(item))
             {
                 _notifiers.Add(item);
-            }
-            else
-            {
-                List<INotifier> list = [];
-                foreach (INotifier notifier in _notifiers)
-                {
-                    if (notifier.Equals(item))
-                    {
-                        continue;
-                    }
-
-                    list.Add(item);
-                }
-
-                _notifiers.AddRange(list);
             }
         }
 
@@ -147,6 +133,19 @@ public static class NotificationService
     public static List<NotificationHistory> GetNotifications() => NotificationFileHandler.GetNotifications();
 
     /// <summary>
+    ///     Get the unread notifications count.
+    /// </summary>
+    /// <returns> The list of unread notifications.</returns>
+    public static int GetUnreadNotificationCount()
+    {
+        List<NotificationHistory> notifications = GetNotifications();
+
+        int unreadNotificationsCount = notifications.Count(notification => !notification.IsRead);
+
+        return unreadNotificationsCount;
+    }
+
+    /// <summary>
     ///     Map a notifier to a channel and add them to the list of Notifiers and Channels if they are not already in the list.
     ///     If the notifier is already mapped to the channel, the channels will be added if they are not already in the list.
     /// </summary>
@@ -171,6 +170,25 @@ public static class NotificationService
         }
 
         SaveNotifierChannels();
+    }
+
+    /// <summary>
+    ///     Unmap a notifier from a list of channels.
+    ///     Removes the channels from the list of channels associated with the notifier.
+    /// </summary>
+    /// <param name="notifier">The notifier to unmap.</param>
+    /// <param name="channels">The list of channels to unmap.</param>
+    public static void UnmapNotifierFromChannel(INotifier notifier, params IChannel[] channels)
+    {
+        if (_notifierChannels.ContainsKey(notifier.Id))
+        {
+            foreach (IChannel channel in channels)
+            {
+                _notifierChannels[notifier.Id].Remove(channel);
+            }
+
+            SaveNotifierChannels();
+        }
     }
 
     /// <summary>

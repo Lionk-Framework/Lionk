@@ -1,9 +1,12 @@
 ﻿@using Lionk.Auth.Identity
+@using Lionk.Notification
 @using Microsoft.AspNetCore.Components.Authorization
 @inherits LayoutComponentBase
 @inject NavigationManager NavManager
+@inject NotificationStateService NotificationState
 @inject UserAuthenticationStateProvider AuthStateProvider
 @inject LionkPalette Theme
+
 <AuthorizeView>
     <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
     <MudPopoverProvider />
@@ -15,7 +18,9 @@
             <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((MouseEventArgs e) => DrawerToggle())" />
             <MudText Typo="Typo.h5" Class="ml-3">Lionk</MudText>
             <MudSpacer />
-            <MudIconButton Icon="@Icons.Material.Filled.CircleNotifications" Color="Color.Primary" OnClick="OnNotificationPressed" />
+            <MudBadge Origin=Origin.CenterLeft Content="@NotificationState.BadgeCounter" Color="Color.Primary">
+                <MudIconButton Icon="@Icons.Material.Filled.CircleNotifications" Color="Color.Primary" OnClick="OnNotificationPressed" />
+            </MudBadge>
             <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
         </MudAppBar>
         <MudDrawer @bind-Open="_isDrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
@@ -87,6 +92,15 @@
         base.OnInitialized();
         UserName = AuthStateProvider.CurrentUser?.Username ?? "Not Logged In";
         _theme = new MudTheme { PaletteLight = Theme.LightPalette, PaletteDark = Theme.DarkPalette, LayoutProperties = new LayoutProperties() };
+        NotificationState.BadgeCounter = NotificationService.GetUnreadNotificationCount();
+        NotificationState.OnNotificationReceived += IncrementBadgeCounter;
+        NotificationState.OnBadgeCounterChanged += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        NotificationState.OnNotificationReceived -= IncrementBadgeCounter;
+        NotificationState.OnBadgeCounterChanged -= StateHasChanged;
     }
 
     private void DarkModeToggle()
@@ -116,6 +130,11 @@
         NavManager.NavigateTo("/auth");
     }
 
+    private void IncrementBadgeCounter()
+    {
+        NotificationState.IncrementBadgeCounter();
+    }
+
     /// <summary>
     /// Switches the dark mode.
     /// </summary>
@@ -125,5 +144,4 @@
             true => Icons.Material.Rounded.LightMode,
             false => Icons.Material.Outlined.DarkMode,
         };
-
 }

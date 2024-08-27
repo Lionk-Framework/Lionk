@@ -92,6 +92,9 @@ builder.Services.AddSingleton<ICyclicExecutorService>(
 
 builder.Services.AddHostedService<CyclicExecutorHostedService>();
 
+// Registers NotificationStateService as a singleton to share notification state across the application
+builder.Services.AddSingleton<NotificationStateService>();
+
 WebApplication app = builder.Build();
 
 // Configure the LogService with the singleton logger

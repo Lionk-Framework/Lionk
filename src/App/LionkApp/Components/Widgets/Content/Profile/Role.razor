@@ -28,13 +28,13 @@
                         {
                             <div style="display: inline-flex; align-items: center; margin-right: 16px;">
                                 <MudText style="margin-right: 8px;">@role</MudText>
-                                <MudSwitch T="bool" Value=_roleStates[context.Id][role] ValueChanged="@(() => OnRoleChanged(context.Id, role, _roleStates[context.Id][role]))" Color="Color.Primary"/>
+                                <MudSwitch T="bool" Value=_roleStates[context.Id][role] ValueChanged="@(() => OnRoleStateChanged(context.Id, role))" Color="Color.Primary" />
                             </div>
                         }
                     </div>
                 </MudTd>
                 <MudTd style="text-align: center; vertical-align: middle;">
-                    <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => OnDeletePressed(context.Id)">
+                    <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => OnDeleteClicked(context.Id)">
                         Delete
                     </MudButton>
                 </MudTd>
@@ -79,21 +79,22 @@ else
         }
     }
 
-    private void OnRoleChanged(Guid userId, string role, bool previousRoleState)
+    private void OnRoleStateChanged(Guid userId, string role)
     {
         User? user = Users?.FirstOrDefault(u => u.Id == userId);
         if (user is null) return;
 
-        // Add role
+        bool previousRoleState = _roleStates[userId][role];
+
         if (previousRoleState == false && !user.Roles.Contains(role))
         {
+            // Add role
             user.AddRole(role);
             UserService.Update(user);
         }
-
-        // Remove role
         else if (previousRoleState && user.Roles.Contains(role))
         {
+            // Remove role
             if (user.Id == AuthStateProvider.CurrentUser?.Id && role == "Admin")
             {
                 Snackbar.Add("You cannot remove your admin role", Severity.Warning);
@@ -109,12 +110,16 @@ else
             user.RemoveRole(role);
             UserService.Update(user);
         }
+        else
+        {
+            // Do nothing
+        }
 
         _roleStates[userId][role] = !previousRoleState;
         StateHasChanged();
     }
 
-    private void OnDeletePressed(Guid userId)
+    private void OnDeleteClicked(Guid userId)
     {
         User? user = Users?.FirstOrDefault(u => u.Id == userId);
         if (user is null) return;
