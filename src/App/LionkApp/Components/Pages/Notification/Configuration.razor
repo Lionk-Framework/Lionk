@@ -5,6 +5,7 @@
 @using LionkApp.Components.Widgets.Dialogs
 @using Lionk.Notification
 @using System.Collections.ObjectModel
+@using LionkTest.Notifications.Mock
 @using Newtonsoft.Json
 
 <NotifierList/>
@@ -15,102 +16,7 @@
 
 @code {
 
-    // ********************************** Mock
-
-    public class MockRecipient : IRecipient
-    {
-        public MockRecipient(string name) => Name = name;
-
-        [JsonConstructor]
-        public MockRecipient(string name, Guid guid)
-            : this(name) =>
-            Guid = guid;
-
-        public Guid Guid { get; private set; } = Guid.NewGuid();
-
-        public string Name { get; private set; }
-    }
-
-    public class MockNotifier : INotifier
-    {
-        [JsonConstructor]
-        public MockNotifier(Guid guid, string name)
-        {
-            Id = guid;
-            Name = name;
-        }
-
-        public MockNotifier(string name) => Name = name;
-
-        public Guid Id { get; private set; } = Guid.NewGuid();
-
-        public string Name { get; private set; } = "NotifyerTest";
-
-        public bool Equals(INotifier? obj) => obj is MockNotifier notifier && notifier.Id == Id;
-    }
-
-    public class MockChannel : IChannel
-    {
-        public MockChannel(string name)
-        {
-            Name = name;
-            Recipients = [];
-        }
-
-        [JsonConstructor]
-        public MockChannel(Guid guid, string name, List<IRecipient> recipients, bool isInitialized)
-        {
-            Guid = guid;
-            Name = name;
-            IsInitialized = isInitialized;
-            Recipients = recipients;
-        }
-
-        public Guid Guid { get; private set; } = Guid.NewGuid();
-
-        public bool IsInitialized { get; private set; }
-
-        public string Name { get; set; } = "Channel";
-
-        [JsonProperty]
-        public List<IRecipient> Recipients { get; private set; }
-
-        public void AddRecipients(params IRecipient[] recipients)
-        {
-            List<IRecipient> recipientsToAdd = [];
-            foreach (IRecipient recipient in recipients)
-            {
-                if (Recipients.Contains(recipient) || recipient is not MockRecipient)
-                {
-                    continue;
-                }
-
-                recipientsToAdd.Add(recipient);
-            }
-
-            Recipients.AddRange(recipientsToAdd);
-        }
-
-        public bool Equals(IChannel? obj)
-        {
-            if (obj is MockChannel channel)
-            {
-                return Guid == channel.Guid && Name == channel.Name;
-            }
-
-            return false;
-        }
-
-        public void Initialize()
-        {
-            // do nothing
-        }
-
-        public void Send(INotifier notifier, Content content)
-        {
-            // do nothing
-        }
-    }
+    // TODO - Remove mock in LionkApp\Components\Pages\Notification\Mock when ready
 
     private List<INotifier> MockNotifiers = new List<INotifier>
     {
@@ -125,8 +31,6 @@
         new MockChannel(Guid.NewGuid(), "Telegram", new List<IRecipient>(), false),
         new MockChannel(Guid.NewGuid(), "Push bullet", new List<IRecipient>(), true)
     };
-
-    // **********************************
 
     public ReadOnlyCollection<INotifier> Notifiers { get; set; } = new List<INotifier>().AsReadOnly();
 
