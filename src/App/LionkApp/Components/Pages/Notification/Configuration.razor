@@ -53,9 +53,12 @@
     private void SendTestNotification()
     {
         Content content = new(Lionk.Notification.Severity.Information, "Test Notification", "This is a test notification.");
-        INotifier notifier = MockNotifiers[0];
-        Notification notification = new(content, notifier);
-        NotificationService.Send(notification);
+
+        foreach (INotifier notifier in MockNotifiers)
+        {
+            Notification notification = new(content, notifier);
+            NotificationService.Send(notification);
+        }
     }
 
     public void Dispose()
