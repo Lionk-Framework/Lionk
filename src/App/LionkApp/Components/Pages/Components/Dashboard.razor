@@ -6,7 +6,7 @@
 @namespace LionkApp.Components.Pages
 
 <PageTitle>Dashboard</PageTitle>
-<MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
+<MudGrid Class="mt-16 px-8">
     @foreach (ComponentViewModel item in DashboardRegistry ?? [])
     {
         <ContainerView @key="item.Id" ComponentViewModel="@item"
@@ -15,7 +15,7 @@
                        Style="min-height:200px"/>
     }
 
-</MudContainer>
+</MudGrid>
 
 <MudFab @onclick="OpenDialogAsync"
         Color="Color.Secondary"
