@@ -14,7 +14,5 @@ RUN dotnet publish -c Release -o out
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 COPY --from=build-env /out .
 
-# Exposer le port 5000
-EXPOSE 8080
 # Définir le point d'entrée de l'application
 ENTRYPOINT ["dotnet", "LionkApp.dll"]
