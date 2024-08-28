@@ -56,8 +56,14 @@ Before starting the installation, ensure that your system meets the following re
 ### Navigating the Interface
 
 - **Dashboard**: Your main hub for accessing the application's features.
-- **Menu**: Located [location of the menu], providing access to [main sections/features].
+- **Notification**: Located [location of the menu], providing access to [main sections/features].
+- **Plugins**: 
+- **Components**: 
+- **Cyclic**: 
 - **Profile**: Manage your account settings and preferences here.
+- **Logout**: This will end your session and return you to the login screen, ensuring that your account remains secure when you're done using the application.
+
+---
 
 ## Main Features
 
