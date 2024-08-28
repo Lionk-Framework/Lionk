@@ -49,9 +49,9 @@ for project in projects:
     new_version = newversions[projects.index(project)]   
 
     if project in changelogs:
-        changes = f"## {new_version} Changelog"
+        changes = ""
         for change in changelogs[project]:
-            changes += f"\n- {change}"
+            changes += f"- {change}\n"
     
     tree = ET.parse(csproj_file)
     root = tree.getroot()

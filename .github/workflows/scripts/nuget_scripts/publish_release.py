@@ -59,5 +59,5 @@ for i, project in enumerate(projects):
             changes += f"\n- {change}"
 
     # Create the release with the description
-    run_command(['gh', 'release', 'create', tag, '--title', tag, '--notes', changelog])
+    run_command(['gh', 'release', 'create', tag, '--title', tag, '--notes', changes])
 
