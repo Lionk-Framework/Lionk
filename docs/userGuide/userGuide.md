@@ -52,9 +52,9 @@ Make sure to complete this step first to ensure you can fully explore and utiliz
 The Active section displays notifications that are currently unresolved or require your attention. Each notification is listed with the following details:
 
 - Date: The timestamp when the notification was triggered.
-Severity: The level of importance, such as Information, Warning, or Critical.
+- Severity: The level of importance, such as Information, Warning, or Critical.
 - Title: A brief title summarizing the notification.
-Message: A more detailed description of the notification.
+- Message: A more detailed description of the notification.
 - Status: Indicates whether the notification has been read or remains unread.
 - Actions: You can take immediate action on the notification by clicking the MARK AS READ button, which will change its status and move it out of the active notifications list.
 
