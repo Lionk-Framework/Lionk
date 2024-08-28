@@ -45,6 +45,9 @@ SetupDebugUser(app);
 
 app.Run();
 
+builder.WebHost.UseKestrel(options => options.ListenAnyIP(5000));
+
+/*
 #if !DEBUG
 // Methods for configuring services, Kestrel, logging, and request pipeline
 static void ConfigureKestrel(WebApplicationBuilder builder)
@@ -56,6 +59,7 @@ static void ConfigureKestrel(WebApplicationBuilder builder)
         options.ListenAnyIP(httpsPort, listenOptions => listenOptions.UseHttps()));
 }
 #endif
+*/
 
 static void ConfigureServices(IServiceCollection services)
 {
@@ -108,10 +112,12 @@ static void ConfigureRequestPipeline(WebApplication app)
     if (!app.Environment.IsDevelopment())
     {
         app.UseExceptionHandler("/Error", true);
-        app.UseHsts();
+
+        // app.UseHsts();
+        // remove this comment to enable HSTS
     }
 
-    app.UseHttpsRedirection();
+    // app.UseHttpsRedirection();
     app.UseStaticFiles();
     app.UseAntiforgery();
     app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
