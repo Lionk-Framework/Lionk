@@ -82,6 +82,26 @@ Before starting the installation, ensure that your system meets the following re
 
 ![](configuration.png)
 
+In this view, you can manage the various Notifiers and Channels within your application. This interface allows you to configure how notifications are handled and which channels are used to deliver them.
+
+**Notifiers:**
+
+The Notifiers section lists the different notification triggers that you have set up. Each notifier is represented by its name, and you have the following options:
+
+- Edit: Clicking the pencil icon allows you to modify the settings of an existing notifier such as disabling a channel.
+- Delete: The trash bin icon allows you to remove a notifier completely.
+
+You can search for specific notifiers using the search bar located at the top right of this section.
+
+**Channels:**
+
+The Channels section lists the platforms through which notifications are sent, such as Discord, Telegram, and Pushbullet. For each channel, you have the following options:
+
+- Edit Settings: The gear icon allows you to configure the specific settings for each channel.
+- Delete: The trash bin icon allows you to remove a channel from the list.
+
+Add: You can add a new channel by clicking the + ADD button.
+
 ---
 
 ### Manage your account
