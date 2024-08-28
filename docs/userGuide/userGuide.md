@@ -3,20 +3,33 @@
 ## Table of Contents
 
 1. [Introduction](#introduction)
-2. [Main View and Features](#main-features)
+2. [Registration](#registration)
+3. [Main View and Features](#main-features)
    - [Dashboard](#dashboard)
    - [Notifications](#notifications)
    - [Plugins](#plugins)
    - [Components](#components)
    - [Cyclic](#cyclic)
    - [Manage your account](#manage-your-account)
-3. [Customization](#customization)
+4. [Customization](#customization)
 
 ---
 
 ## Introduction
 
 Welcome to Lionk! This guide will help you navigate the application's key features. We'll cover the Dashboard for an overview of your system, Notifications to keep you updated, and Manage your account to personalize your settings. You'll also learn about the Plugins, Components, and Cyclic views, which offer additional tools and functionalities to enhance your experience with Lionk. By the end, you'll be well-equipped to use each view effectively.
+
+---
+
+## Registration
+
+![](registration.png)
+
+Before you can start using the Lionk application, you need to register an account. 
+
+If you are the first user to register, you will automatically be assigned the Admin role, giving you full access to manage the application. If you are not the first user, you will be registered as a standard user with regular access rights.
+
+Make sure to complete this step first to ensure you can fully explore and utilize everything Lionk has to offer.
 
 ---
 
