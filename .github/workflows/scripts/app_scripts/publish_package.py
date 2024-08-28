@@ -27,6 +27,8 @@ with open('newversion.txt', 'r') as file:
 
 print(f"Publishing {app_name} as version {newversion}")
 
+run_command(['ls'])
+
 # Construire l'image Docker avec une étiquette de description
 run_command(['docker', 'build', '-t', f"{docker_registry}/{app_name.lower()}:{newversion}", '-t',f"{docker_registry}/{app_name.lower()}:latest", context])
 
