@@ -98,6 +98,13 @@ public interface IUserService
     public bool IsUsernameExist(string username);
 
     /// <summary>
+    ///     Method to check if the current user being registered is the first user in the system.
+    ///     If true, this indicates that the user should be assigned the Admin role.
+    /// </summary>
+    /// <returns> True if the current user is the first to be registered, false otherwise.</returns>
+    public bool IsFirstUserRegistered();
+
+    /// <summary>
     ///     Method to update a user.
     /// </summary>
     /// <param name="user"> The user to update.</param>
