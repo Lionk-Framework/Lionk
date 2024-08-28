@@ -8,12 +8,9 @@
 4. [Main Features](#main-features)
    - [Feature 1](#feature-1)
    - [Feature 2](#feature-2)
-   - [Feature 3](#feature-3)
+   - [Manage your account](#manage-your-account)
 5. [Settings and Customization](#settings-and-customization)
-6. [Troubleshooting](#troubleshooting)
-7. [FAQ](#faq)
-8. [Support](#support)
-9. [Updates](#updates)
+6. [Updates](#updates)
 
 ---
 
@@ -75,36 +72,30 @@ Before starting the installation, ensure that your system meets the following re
 
 [Description of Feature 2, how to use it, and any tips.]
 
-### Feature 3
+### Manage your account
 
-[Description of Feature 3, how to use it, and any tips.]
+![](drawerBottomProfile.png)
+
+
+**Overview:**
+
+![](profile.png)
+
+In the section, you can view the basic information about your username and email. Both the Email and Password are editable and can be modified in their respective sections.
+
+**Role:**
+
+![](role.png)
+
+In this section, you can manage the roles of different users in your application. The table displays the usernames, their associated email addresses, and the roles assigned to each user. You can also delete a user by clicking the red DELETE button in the "Actions" column. This interface allows for quick and easy role management to ensure that users have the appropriate level of access within the application.
 
 ---
 
 ## Settings and Customization
 
-- **General Settings**: Customize the application behavior and appearance.
-- **Notifications**: Manage how and when you receive alerts.
-- **Account Settings**: Update your personal information and security settings.
+![](AppBarDarkMode.png)
 
----
-
-## Troubleshooting
-
-### Common Issues
-
-- **Issue 1**: [Description of common issue and how to fix it.]
-- **Issue 2**: [Description of common issue and how to fix it.]
-
-### Contacting Support
-
-If you encounter any issues that cannot be resolved through this guide, please contact our support team.
-
----
-
-## Support
-
-For additional help, visit our [support page](support link) or contact us directly at [support email/phone number].
+**Dark Mode**: Customize the application's appearance by toggling Dark Mode. This option allows you to switch between the default light theme and a dark theme, which may be easier on the eyes, especially in low-light environments.
 
 ---
 
