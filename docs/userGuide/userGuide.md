@@ -134,17 +134,25 @@ After the plugin is loaded, you can click on the SHOW DEPENDENCIES button to see
 
 ![](components.png)
 
+The View section allows you to manage and organize components within your application. This interface provides an overview of available and existing components, enabling you to add or remove them as needed.
+
 **Available components:**
 
 ![](componentsAvailability.png)
+
+In the Available components section, you can see a list of all the components that can be added to your application. Each component is listed with its type and description. To add a component to your application, select it and click the ADD SELECTED button.
 
 **Existing components:**
 
 ![](componentsExistence.png)
 
+The Existing components section displays the components that have already been added to your application. You can search, rename, and delete components from this list. To remove a component, select it and click the DELETE SELECTED button.
+
 **Finalization:**
 
 ![](componentsFinalization.png)
+
+The Finalization step confirms your component configurations. Once you have reviewed the existing components and made the necessary adjustments, finalize your setup by clicking the appropriate button. This ensures that your components are correctly configured and ready for use within the application.
 
 ---
 
