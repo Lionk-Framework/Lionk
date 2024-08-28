@@ -23,11 +23,6 @@ using Lionk.Auth.Utils;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-// Configure Kestrel for non-DEBUG builds
-#if !DEBUG
-ConfigureKestrel(builder);
-#endif
-
 // Add services to the container
 ConfigureServices(builder.Services);
 
@@ -44,22 +39,6 @@ SetupDebugUser(app);
 #endif
 
 app.Run();
-
-builder.WebHost.UseKestrel(options => options.ListenAnyIP(5000));
-
-/*
-#if !DEBUG
-// Methods for configuring services, Kestrel, logging, and request pipeline
-static void ConfigureKestrel(WebApplicationBuilder builder)
-{
-    string? configPort = builder.Configuration.GetValue<string>("Kestrel:Endpoints:Https:Url")?.Split(':').Last();
-    int httpsPort = int.TryParse(configPort, out int port) ? port : 6001;
-
-    builder.WebHost.UseKestrel(options =>
-        options.ListenAnyIP(httpsPort, listenOptions => listenOptions.UseHttps()));
-}
-#endif
-*/
 
 static void ConfigureServices(IServiceCollection services)
 {
@@ -113,13 +92,14 @@ static void ConfigureRequestPipeline(WebApplication app)
     {
         app.UseExceptionHandler("/Error", true);
 
-        // app.UseHsts();
-        // remove this comment to enable HSTS
+        app.UseHsts();
     }
 
-    // app.UseHttpsRedirection();
+    app.UseHttpsRedirection();
+
     app.UseStaticFiles();
     app.UseAntiforgery();
+
     app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 }
 

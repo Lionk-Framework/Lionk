@@ -3,10 +3,12 @@ version: '3.8'
 services:
   lionkapp:
     image: ghcr.io/lionk-framework/lionkapp:latest
-    ports:
-      - "8088:5000"
-    # environment:
-    #   - ASPNETCORE_ENVIRONMENT=Development
+     ports:
+      - "80:80"  # Expose le port 80 pour HTTP
+    volumes:
+      - ./data-protection-keys:/root/.aspnet/DataProtection-Keys  # Volume pour la persistance des clés de protection des données
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
     networks:
       - lionkapp-network
 
