@@ -60,6 +60,10 @@ The Active section displays notifications that are currently unresolved or requi
 - Status: Indicates whether the notification has been read or remains unread.
 - Actions: You can take immediate action on the notification by clicking the MARK AS READ button, which will change its status and move it out of the active notifications list.
 
+You can also access active notifications by clicking the button in the app bar wich also indicates the number of unread notifications:
+
+![](appBarNotification.png)
+
 <br>
 
 **History:**
