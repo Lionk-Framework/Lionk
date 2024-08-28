@@ -4,11 +4,12 @@ on:
   pull_request:
     branches:
       - test-docker
-    types: [closed]
+    types: [opened, synchronize, reopened]
+    # types: [closed]
 
 jobs:
   check_state:
-    if: github.event.pull_request.merged == true
+    # if: github.event.pull_request.merged == true
     runs-on: ${{vars.RUNNER_DISTRIBUTION}}
     steps:
 

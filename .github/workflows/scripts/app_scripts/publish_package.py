@@ -17,6 +17,7 @@ sln_path = os.getenv('SLN_PATH')
 app_name = os.getenv('APP_NAME')
 docker_registry = os.getenv('DOCKER_REGISTRY')
 gh_token = os.getenv('GH_TOKEN')
+print(f"Publishing {app_name} from {sln_path} to {docker_registry}")
 
 
 context = os.path.dirname(sln_path)
