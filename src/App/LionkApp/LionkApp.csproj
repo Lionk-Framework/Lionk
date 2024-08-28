@@ -4,11 +4,11 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>0.3.4</Version>
+    <Version>0.3.3</Version>
     <Description>
 
 ## Change Log
-- Add  `linux/amd64`, `linux/arm64` and `winmdows/amd64` images
+- test
 
 # Lionk App
 
