@@ -26,11 +26,17 @@ print(f"Publishing {app_name} as version {newversion}")
 
 run_command(['ls' , 'src'])
 
+# Créer un builder multiplateforme s'il n'existe pas déjà
+run_command(['docker', 'buildx', 'create', '--name', 'mybuilder', '--use'])
 
-# Construire l'image Docker avec une étiquette de description
-run_command(['docker', 'build', sln_path , '-t', f"{docker_registry}/{app_name.lower()}:{newversion}", '-t',f"{docker_registry}/{app_name.lower()}:latest"])	
+# Construire les images Docker pour x86_64 et arm64
+run_command([
+    'docker', 'buildx', 'build', sln_path,
+    '--platform', 'linux/amd64,linux/arm64,windows/amd64',
+    '--tag', f"{docker_registry}/{app_name.lower()}:{newversion}",
+    '--tag', f"{docker_registry}/{app_name.lower()}:latest",
+    '--push'
+])
 
-
-# Pousser l'image Docker au registre
-run_command(['docker', 'push', f"{docker_registry}/{app_name.lower()}:{newversion}"])
-run_command(['docker', 'push', f"{docker_registry}/{app_name.lower()}:latest"])
+# Vous pouvez supprimer le builder après si vous n'en avez plus besoin
+run_command(['docker', 'buildx', 'rm', 'mybuilder'])
