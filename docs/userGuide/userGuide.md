@@ -114,11 +114,13 @@ The Plugin Importation section allows you to add external plugins to enhance the
 
 File Selection: Begin by clicking the BROWSE button to open the file explorer. Navigate to the directory where your plugin .dll file is located, select it (e.g., Lionk.TestComponent.dll), and click Open.
 
-Once the plugin is loaded, it will appear in the list of active plugins, displaying key details such as the name, version, and author of the plugin.
+**Plugins dependancies:**
 
 ![](pluginsAfterImportation.png)
 
 ![](pluginsDependancies.png)
+
+Once the plugin is loaded, it will appear in the list of active plugins, displaying key details such as the name, version, and author of the plugin.
 
 After the plugin is loaded, you can click on the SHOW DEPENDENCIES button to see a list of all the dependencies associated with the plugin. This section provides a detailed view of the required libraries and their specific versions, ensuring that all necessary components are present.
 
@@ -133,6 +135,32 @@ After the plugin is loaded, you can click on the SHOW DEPENDENCIES button to see
 ### Cyclic
 
 ![](drawerTopCyclic.png)
+
+**View**
+
+![](cyclic.png)
+
+The View displays the current state of the cyclic processes, including key metrics such as:
+
+- State: Indicates whether the process is currently running or paused.
+- Mean Cycle Time: The average time taken for one complete cycle, measured in milliseconds.
+- Max Cycle Time: The maximum duration recorded for a single cycle.
+- Watchdog Time: A configurable time threshold that monitors the maximum allowable cycle time before triggering a warning.
+
+You can pause the cyclic processes using the Pause button, and adjust the Watchdog Time as necessary to ensure optimal performance.
+
+<br>
+
+**Components:**
+
+![](cyclicComponents.png)
+
+The Components section lists all the active components that participate in the cyclic process. Each component is displayed with the following details:
+
+- Period: The time interval at which the component operates.
+- Cycle Count: The number of cycles the component has completed.
+
+Components in error state will prompt an action button (e.g., RESET) allowing you to address issues directly from this view, ensuring that all components function correctly within the cyclic system.
 
 ---
 
