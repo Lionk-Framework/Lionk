@@ -3,7 +3,7 @@ name: Preprocessing PR data
 on:
   pull_request:
     branches:
-      - main
+      - test-docker
     types: [opened, synchronize, reopened]
 
 jobs:
