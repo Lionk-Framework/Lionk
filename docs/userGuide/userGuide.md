@@ -1,4 +1,4 @@
-# User Guide for Lionk
+# User Guide
 
 ## Table of Contents
 
