@@ -32,7 +32,7 @@ run_command(['docker', 'buildx', 'create', '--name', 'mybuilder', '--use'])
 # Construire les images Docker pour x86_64 et arm64
 run_command([
     'docker', 'buildx', 'build', sln_path,
-    '--platform', 'linux/amd64,linux/arm64,windows/amd64',
+    '--platform', 'linux/amd64,linux/arm64',
     '--tag', f"{docker_registry}/{app_name.lower()}:{newversion}",
     '--tag', f"{docker_registry}/{app_name.lower()}:latest",
     '--push'
