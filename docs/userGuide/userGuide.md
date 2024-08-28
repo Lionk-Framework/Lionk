@@ -106,6 +106,22 @@ Add: You can add a new channel by clicking the + ADD button.
 
 ![](drawerTopPlugins.png)
 
+**Plugins importation:**
+
+![](plugins.png)
+
+The Plugin Importation section allows you to add external plugins to enhance the functionality of your application. Follow these steps to successfully import a plugin:
+
+File Selection: Begin by clicking the BROWSE button to open the file explorer. Navigate to the directory where your plugin .dll file is located, select it (e.g., Lionk.TestComponent.dll), and click Open.
+
+Once the plugin is loaded, it will appear in the list of active plugins, displaying key details such as the name, version, and author of the plugin.
+
+![](pluginsAfterImportation.png)
+
+![](pluginsDependancies.png)
+
+After the plugin is loaded, you can click on the SHOW DEPENDENCIES button to see a list of all the dependencies associated with the plugin. This section provides a detailed view of the required libraries and their specific versions, ensuring that all necessary components are present.
+
 ---
 
 ### Components
