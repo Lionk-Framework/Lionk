@@ -13,19 +13,16 @@ def run_command(command):
         print("STDERR:", e.stderr)
         sys.exit(1)
 
-app_path = os.getenv('APP_PATH')
+sln_path = os.getenv('SLN_PATH')
 app_name = os.getenv('APP_NAME')
 docker_registry = os.getenv('DOCKER_REGISTRY')
 gh_token = os.getenv('GH_TOKEN')
 
 
-context = os.path.dirname(app_path)
+context = os.path.dirname(sln_path)
 
 with open('newversion.txt', 'r') as file:
     newversion = file.read().strip()
-
-with open(f'{context}/README.md', 'r') as file:
-    description = file.read()
 
 print(f"Publishing {app_name} as version {newversion}")
 
