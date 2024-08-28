@@ -22,12 +22,6 @@ Welcome to Lionk, this guide will help you understand how to install, configure,
 
 ## Main Features
 
-### Feature 1
-
-[Description of Feature 1, how to use it, and any tips.]
-
----
-
 ### Dashboard
 
 ---
