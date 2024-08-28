@@ -5,48 +5,43 @@ using Lionk.Auth.Abstraction;
 namespace Lionk.Auth.Identity;
 
 /// <summary>
-/// This class represents a user service.
+///     This class represents a user service.
 /// </summary>
 public class UserService : IUserService
 {
+    #region constructors
+
     /// <summary>
-    /// Initializes a new instance of the <see cref="UserService"/> class.
+    ///     Initializes a new instance of the <see cref="UserService" /> class.
     /// </summary>
     /// <param name="repository">The user repository.</param>
-    public UserService(IUserRepository repository)
-        => UserRepository = repository;
+    public UserService(IUserRepository repository) => UserRepository = repository;
 
-    /// <inheritdoc/>
+    #endregion
+
+    #region properties
+
+    /// <inheritdoc />
     public IUserRepository UserRepository { get; set; }
 
-    /// <inheritdoc/>
-    public HashSet<User> GetUsers() => UserRepository.GetUsers();
+    #endregion
 
-    /// <inheritdoc/>
-    public User? GetUserById(Guid id)
+    #region public and override methods
+
+    /// <inheritdoc />
+    public bool Delete(User user)
     {
-        HashSet<User> users = GetUsers();
-        User? user = users.FirstOrDefault(user => user.Id.Equals(id));
-        return user;
+        ArgumentNullException.ThrowIfNull(user);
+        if (!IsIdExist(user.Id))
+        {
+            return false;
+        }
+
+        UserRepository.DeleteUser(user);
+        return true;
     }
 
-    /// <inheritdoc/>
-    public User? GetUserByUsername(string username)
-    {
-        HashSet<User> users = GetUsers();
-        User? user = users.FirstOrDefault(user => string.Equals(user.Username, username));
-        return user;
-    }
-
-    /// <inheritdoc/>
-    public User? GetUserByEmail(string email)
-    {
-        HashSet<User> users = GetUsers();
-        User? user = users.FirstOrDefault(user => string.Equals(user.Email, email));
-        return user;
-    }
-
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public User? GetRegisteredUser(string username, string passwordHash)
     {
         HashSet<User> users = GetUsers();
@@ -54,7 +49,34 @@ public class UserService : IUserService
         return user;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
+    public User? GetUserByEmail(string email)
+    {
+        HashSet<User> users = GetUsers();
+        User? user = users.FirstOrDefault(user => string.Equals(user.Email, email));
+        return user;
+    }
+
+    /// <inheritdoc />
+    public User? GetUserById(Guid id)
+    {
+        HashSet<User> users = GetUsers();
+        User? user = users.FirstOrDefault(user => user.Id.Equals(id));
+        return user;
+    }
+
+    /// <inheritdoc />
+    public User? GetUserByUsername(string username)
+    {
+        HashSet<User> users = GetUsers();
+        User? user = users.FirstOrDefault(user => string.Equals(user.Username, username));
+        return user;
+    }
+
+    /// <inheritdoc />
+    public HashSet<User> GetUsers() => UserRepository.GetUsers();
+
+    /// <inheritdoc />
     public string GetUserSalt(string username)
     {
         HashSet<User> users = GetUsers();
@@ -62,41 +84,43 @@ public class UserService : IUserService
         return user?.Salt ?? string.Empty;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public User? Insert(User user)
     {
         ArgumentNullException.ThrowIfNull(user);
-        if (IsUsernameExist(user.Username) || IsEmailExist(user.Email)) return null;
+        if (IsUsernameExist(user.Username) || IsEmailExist(user.Email))
+        {
+            return null;
+        }
+
         UserRepository.SaveUser(user);
         return user;
     }
 
-    /// <inheritdoc/>
-    public bool IsUsernameExist(string username)
-        => GetUserByUsername(username) != null;
+    /// <inheritdoc />
+    public bool IsEmailExist(string email) => GetUserByEmail(email) != null;
 
-    /// <inheritdoc/>
-    public bool IsEmailExist(string email)
-        => GetUserByEmail(email) != null;
-
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public bool IsIdExist(Guid id) => GetUserById(id) != null;
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
+    public bool IsUsernameExist(string username) => GetUserByUsername(username) != null;
+
+    /// <inheritdoc />
+    public bool IsFirstUserRegistered() => GetUsers().Count == 0;
+
+    /// <inheritdoc />
     public User? Update(User user)
     {
         ArgumentNullException.ThrowIfNull(user);
-        if (!IsIdExist(user.Id)) return null;
+        if (!IsIdExist(user.Id))
+        {
+            return null;
+        }
+
         UserRepository.UpdateUser(user);
         return user;
     }
 
-    /// <inheritdoc/>
-    public bool Delete(User user)
-    {
-        ArgumentNullException.ThrowIfNull(user);
-        if (!IsIdExist(user.Id)) return false;
-        UserRepository.DeleteUser(user);
-        return true;
-    }
+    #endregion
 }

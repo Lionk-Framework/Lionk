@@ -1,0 +1,124 @@
+﻿@using System.ComponentModel
+@using Lionk.Core.Component.Cyclic
+@using Lionk.Core.Observable
+@using MudBlazor.Components.Chart.Models
+@inject ICyclicExecutorService CyclicExecutorService
+
+<div>
+    @if (_series.Count > 0 && _series.Any(x => x.Data.Count > 0))
+    {
+        <MudTimeSeriesChart ChartSeries="@_series"
+                            Width="100%"
+                            Height="@graphHeight"
+                            ChartOptions="@_options"
+                            CanHideSeries
+                            Style=""/>
+    }
+</div>
+
+@code {
+    private ChartOptions _options = new ChartOptions
+        {
+            YAxisLines = true,
+            YAxisTicks = 100,
+            MaxNumYAxisTicks = 10,
+            YAxisRequireZeroPoint = true,
+            XAxisLines = true,
+            LineStrokeWidth = 2,
+        };
+
+    private TimeSeriesChartSeries _cycleTimeSeries = new();
+    private List<TimeSeriesChartSeries> _series = new();
+    private TimeSpan selectedTimeSpan = TimeSpan.FromMinutes(1);
+    private string graphHeight = "350px";
+
+    private readonly object _dataLock = new object();
+
+    /// <inheritdoc/>
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _cycleTimeSeries = new TimeSeriesChartSeries
+            {
+                Index = 0,
+                Name = "Cycle Time (ms)",
+                Data = new List<TimeSeriesChartSeries.TimeValue>(),
+                IsVisible = true,
+                Type = TimeSeriesDiplayType.Line
+            };
+
+        _series.Add(_cycleTimeSeries);
+
+        if (CyclicExecutorService is ObservableElement observableService)
+        {
+            observableService.PropertyChanged += OnCyclicExecutorServicePropertyChanged;
+        }
+
+        UpdateChartOptions();
+    }
+
+    private void OnCyclicExecutorServicePropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ICyclicExecutorService.LastExecutionTime))
+        {
+            double cycleTime = CyclicExecutorService.LastExecutionTime.TotalMilliseconds;
+            DateTime currentTime = DateTime.Now;
+
+            lock (_dataLock)
+            {
+                _cycleTimeSeries.Data.Add(new TimeSeriesChartSeries.TimeValue(currentTime, cycleTime));
+
+                var minTime = DateTime.Now.Subtract(selectedTimeSpan);
+                _cycleTimeSeries.Data = _cycleTimeSeries.Data.Where(d => d.DateTime >= minTime).ToList();
+
+                if (_cycleTimeSeries.Data.Count > 1000)
+                {
+                    _cycleTimeSeries.Data.RemoveAt(0);
+                }
+            }
+
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void UpdateChartOptions()
+    {
+        lock (_dataLock)
+        {
+            _options = new ChartOptions
+                {
+                    YAxisLines = true,
+                    YAxisTicks = (int)CyclicExecutorService.MaxCycleTime.TotalMilliseconds / 10,
+                    MaxNumYAxisTicks = 10,
+                    YAxisRequireZeroPoint = true,
+                    XAxisLines = true,
+                    LineStrokeWidth = 2,
+                };
+
+            graphHeight = selectedTimeSpan == TimeSpan.FromHours(1) ? "700px" : "350px";
+        }
+    }
+
+    /// <inheritdoc/>
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        UpdateChartOptions();
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        if (CyclicExecutorService is ObservableElement observableService)
+        {
+            observableService.PropertyChanged -= OnCyclicExecutorServicePropertyChanged;
+        }
+    }
+}
+
+<style>
+    .mud-charts-xaxis {
+        opacity: 0;
+    }
+</style>

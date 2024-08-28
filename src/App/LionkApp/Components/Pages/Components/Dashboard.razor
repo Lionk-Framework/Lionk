@@ -1,0 +1,75 @@
+﻿@page "/"
+@using Lionk.Core.View
+@using LionkApp.Components.Widgets.Dialogs
+@using LionkApp.Services
+@inject IDialogService DialogService
+@namespace LionkApp.Components.Pages
+
+<PageTitle>Dashboard</PageTitle>
+<MudGrid Class="mt-16 px-8">
+    @foreach (ComponentViewModel item in DashboardRegistry ?? [])
+    {
+        <ContainerView @key="item.Id" ComponentViewModel="@item"
+                       OnUpdate="UpdateDashboardItem"
+                       OnDelete="RemoveDashboardItem"
+                       Style="min-height:200px"/>
+    }
+
+</MudGrid>
+
+<MudFab @onclick="OpenDialogAsync"
+        Color="Color.Secondary"
+        StartIcon="@Icons.Material.Filled.Add"
+        Size="Size.Large"
+        Style="position: fixed; bottom: 20px; right: 20px;"/>
+
+@code {
+    /// <summary>
+    /// The dashboard registry.
+    /// </summary>
+    public List<ComponentViewModel>? DashboardRegistry { get; set; } = [];
+
+    private IDashboardItemPersistenceManager? _persistenceManager;
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        _persistenceManager = new DashboardItemPersistenceManagerJson();
+        RestoreDashboard();
+    }
+
+    private async Task OpenDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
+        var parameters = new DialogParameters();
+        IDialogReference dialog = await DialogService.ShowAsync<WidgetAdder>("Widget selection", parameters, options);
+        DialogResult? result = await dialog.Result;
+
+        if (result is { Canceled: false, Data: ComponentViewModel newWidget })
+        {
+            _persistenceManager?.SaveDashboardItem(newWidget);
+            RestoreDashboard();
+            StateHasChanged();
+        }
+    }
+
+    private void RestoreDashboard()
+    {
+        DashboardRegistry?.Clear();
+        DashboardRegistry = _persistenceManager?.GetDashboardItems();
+        StateHasChanged();
+    }
+
+    private void UpdateDashboardItem(ComponentViewModel item)
+    {
+        _persistenceManager?.UpdateDashboardItem(item);
+        RestoreDashboard();
+    }
+
+    private void RemoveDashboardItem(ComponentViewModel item)
+    {
+        _persistenceManager?.RemoveDashboardItemModel(item);
+        RestoreDashboard();
+    }
+
+}

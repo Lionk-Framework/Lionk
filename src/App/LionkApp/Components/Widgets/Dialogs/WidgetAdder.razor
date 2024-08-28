@@ -1,0 +1,76 @@
+﻿@using Lionk.Core.Component
+@using Lionk.Core.View
+@using IComponent = Lionk.Core.Component.IComponent
+@inject IComponentService ComponentService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+        <IComponentInstanceList Components="_components" OnComponentSelected="ComponentSelected"/>
+    </DialogContent>
+    <DialogActions>
+        <MudSpacer/>
+        <MudButton OnClick="ChooseWidgetToLinkAsync">Choose widget</MudButton>
+        <MudSpacer/>
+        <MudButton OnClick="Submit">Ok</MudButton>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance? MudDialog { get; set; }
+
+    private List<IComponent> _components => ComponentService.GetInstancesOfType<IComponent>().ToList();
+
+    private IComponent? _selectedComponent;
+
+    private Type? _selectedViewType;
+
+    private void ComponentSelected(IComponent? component)
+    {
+        _selectedComponent = component;
+    }
+
+    private async Task ChooseWidgetToLinkAsync()
+    {
+        if (_selectedComponent is null)
+        {
+            Snackbar.Add("Please select a widget", Severity.Error);
+            return;
+        }
+
+        DialogParameters parameters = new()
+                                      {
+                                          { "ComponentType", _selectedComponent.GetType() },
+                                      };
+
+        IDialogReference dialogReference = await DialogService.ShowAsync<WidgetSelector>("Widget Selection", parameters);
+
+        DialogResult? dialogResult = await dialogReference.Result;
+
+        if (dialogResult is { Canceled: false, Data: ComponentViewDescription selectedWidget })
+        {
+            _selectedViewType = selectedWidget.ViewType;
+        }
+    }
+
+    private void Submit()
+    {
+        if (_selectedComponent is null || _selectedViewType is null)
+        {
+            Snackbar.Add("Please select a widget and a view type", Severity.Error);
+            return;
+        }
+
+        var dashboardItem = new ComponentViewModel(_selectedComponent.Id, _selectedViewType);
+        MudDialog?.Close(DialogResult.Ok(dashboardItem));
+    }
+
+    private void Cancel()
+    {
+        MudDialog?.Cancel();
+    }
+
+}

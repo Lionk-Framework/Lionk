@@ -1,24 +1,76 @@
 ﻿@page "/configuration"
+@inject IDialogService DialogService
+@implements IDisposable
+@using LionkApp.Components.Widgets.Content.Notification
+@using LionkApp.Components.Widgets.Dialogs
+@using Lionk.Notification
+@using System.Collections.ObjectModel
+@using LionkTest.Notifications.Mock
+@using Newtonsoft.Json
 
-@using LionkApp.Components.Model
-@using LionkApp.Components.Widgets.Content
-
-<SwitchList SwitchListTitle="Notifier list" Switchs=NotifierList />
-
-<SwitchList SwitchListTitle="Channel list" Switchs=ChannelList />
+<NotifierList/>
+<ChannelList/>
+<MudButton Variant=Variant.Filled Color=Color.Primary OnClick="SendTestNotification">
+    Send test notification
+</MudButton>
 
 @code {
-    private List<Switch> NotifierList = new List<Switch>
+
+    // TODO - Remove mock in LionkApp\Components\Pages\Notification\Mock when ready
+
+    private List<INotifier> MockNotifiers = new List<INotifier>
     {
-        new Switch { Label = "Chimpey", IsEnabled = true },
-        new Switch { Label = "Nastaran", IsEnabled = true },
-        new Switch { Label = "Ronflex", IsEnabled = true }
+        new MockNotifier(Guid.NewGuid(), "Chimpey"),
+        new MockNotifier(Guid.NewGuid(), "Clock alarm"),
+        new MockNotifier(Guid.NewGuid(), "MX321")
     };
 
-    private List<Switch> ChannelList = new List<Switch>
+    private List<IChannel> MockChannels = new List<IChannel>
     {
-        new Switch { Label = "Discord", IsEnabled = true },
-        new Switch { Label = "Telegram", IsEnabled = true },
-        new Switch { Label = "Push", IsEnabled = true }
+        new MockChannel(Guid.NewGuid(), "Discord", new List<IRecipient>(), true),
+        new MockChannel(Guid.NewGuid(), "Telegram", new List<IRecipient>(), false),
+        new MockChannel(Guid.NewGuid(), "Push bullet", new List<IRecipient>(), true)
     };
+
+    public ReadOnlyCollection<INotifier> Notifiers { get; set; } = new List<INotifier>().AsReadOnly();
+
+    public ReadOnlyCollection<IChannel> Channels { get; set; } = new List<IChannel>().AsReadOnly();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        NotificationService.AddNotifiers(MockNotifiers[0], MockNotifiers[1], MockNotifiers[2]);
+        NotificationService.AddChannels(MockChannels[0], MockChannels[1], MockChannels[2]);
+        NotificationService.MapNotifierToChannel(MockNotifiers[0], MockChannels[0], MockChannels[1]);
+        NotificationService.MapNotifierToChannel(MockNotifiers[1], MockChannels[1], MockChannels[2]);
+        NotificationService.MapNotifierToChannel(MockNotifiers[2], MockChannels[2], MockChannels[0]);
+
+        Notifiers = NotificationService.Notifiers;
+        Channels = NotificationService.Channels;
+    }
+
+    private void SendTestNotification()
+    {
+        Content content = new(Lionk.Notification.Severity.Information, "Test Notification", "This is a test notification.");
+
+        foreach (INotifier notifier in MockNotifiers)
+        {
+            Notification notification = new(content, notifier);
+            NotificationService.Send(notification);
+        }
+    }
+
+    public void Dispose()
+    {
+        foreach (var notifier in Notifiers.ToList())
+        {
+            NotificationService.RemoveNotifier(notifier);
+        }
+
+        foreach (var channel in Channels.ToList())
+        {
+            NotificationService.RemoveChannel(channel);
+        }
+    }
 }

@@ -1,53 +1,134 @@
-﻿# User Authentication library for Blazor Server
+﻿# Lionk User Authentication Library for Blazor Server
 
-To use this library, add the following NuGet package to your Blazor Server project:
+## Overview
+
+The Lionk User Authentication Library provides a robust and flexible authentication solution for Blazor Server applications. This library allows developers to manage user authentication, handle roles, and persist user data securely within the browser. With easy-to-use components and services, it integrates seamlessly into Blazor applications, supporting both basic authentication and role-based access control.
+
+## Features
+
+- **User Management**: Create, update, retrieve, and delete users using `UserService`.
+- **Role-Based Access Control**: Display content conditionally based on user roles using Blazor's `AuthorizeView` component.
+- **Persistent Authentication State**: Maintain user sessions across page reloads or browser restarts using local storage with `UserServiceRazor`.
+- **Secure Data Handling**: Use hashing and salting techniques for password security.
+- **Extensible**: Easily extend or replace storage mechanisms for user data persistence.
+
+## Installation
+
+To use this library, add the following NuGet packages to your Blazor Server project:
 
 ```bash
 dotnet add package Lionk.Auth
 dotnet add package Lionk.Auth.Razor
 ```
 
-It's simple to use, just add a `List<string> roles` when you call the `user` constructor.
+## Getting Started
+
+### 1. Setting Up the Services
+
+Register the necessary services in your `Startup.cs` or `Program.cs` file to integrate the authentication library:
 
 ```csharp
-var user = new User("MyUsername", "MyPasswordHash", "My@email.com","MySalt", new List<string> { "admin" });
+using Lionk.Auth.Abstraction;
+using Lionk.Auth.Identity;
+
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddRazorComponents().AddInteractiveServerComponents();
+    services.AddMudServices();
+
+    // Register the authentication services
+    services.AddScoped<UserService>();
+    services.AddScoped<UserServiceRazor>();
+    services.AddSingleton<IUserRepository, UserFileHandler>();
+    services.AddSingleton<IUserService>(sp => new UserService(sp.GetRequiredService<IUserRepository>()));
+    services.AddScoped<UserAuthenticationStateProvider>();
+    services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<UserAuthenticationStateProvider>());
+}
 ```
 
-Then, you can use the `AuthorizeView` component to show content based on the user's role. 
+### 2. Creating a User
 
-```html
+To create a user, instantiate the `User` class with the necessary properties, including roles, and then use the `UserService` to insert the user:
+
+```csharp
+using Lionk.Auth.Identity;
+using Lionk.Auth.Utils;
+
+var salt = PasswordUtils.GenerateSalt(32);
+var passwordHash = PasswordUtils.HashPassword("MyPassword", salt);
+var user = new User("MyUsername", "myemail@example.com", passwordHash, salt, new List<string> { "admin" });
+
+var userService = serviceProvider.GetRequiredService<IUserService>();
+var result = userService.Insert(user);
+
+if (result == null)
+{
+    Console.WriteLine("User creation failed: Username or email already exists.");
+}
+else
+{
+    Console.WriteLine("User created successfully.");
+}
+```
+
+### 3. Using Role-Based Authorization
+
+Use the `AuthorizeView` component to control access to specific parts of your application based on user roles:
+
+```razor
 <AuthorizeView Roles="admin, super admin">
     <Authorized>
-        <p>Admin content</p>
+        <p>Admin content visible only to users with 'admin' or 'super admin' roles.</p>
     </Authorized>
     <NotAuthorized>
-        <p>Not authorized</p>
+        <p>You do not have permission to view this content.</p>
     </NotAuthorized>
 </AuthorizeView>
 ```
 
-Now, if you are authenticated, you can access the authorized view.
+### 4. Managing User Sessions
 
-## `UserServiceRazor` Class
+The `UserServiceRazor` class handles user data persistence within the browser's local storage, ensuring the user's authentication state is preserved across sessions:
 
-The `UserServiceRazor` class is designed to manage user data in the context of a Blazor application. It interacts with
-the browser's protected local storage to persist user information securely.
+- **Persist User to Browser**: Saves the user's data securely in the browser's local storage.
+- **Fetch User from Browser**: Retrieves the user's data from the local storage.
+- **Clear User Data**: Clears the user's data from the browser, typically used during logout.
 
-- **PersistUserToBrowserAsync(User user)**: Saves the user's data to the browser's local storage.
-- **FetchUserFromBrowserAsync()**: Retrieves the user data stored in the browser, if available.
-- **ClearBrowserUserDataAsync()**: Clears the user data from the browser's local storage.
+### 5. Authentication State Management
 
-## `UserAuthenticationStateProvider` Class
+The `UserAuthenticationStateProvider` class extends Blazor's `AuthenticationStateProvider` to manage the authentication state of users within the application. It interacts with `UserServiceRazor` for handling user data persistence in the browser.
 
-The `UserAuthenticationStateProvider` class extends `AuthenticationStateProvider` to manage the authentication state of
-users in a Blazor application. It uses `UserServiceRazor` to persist and retrieve user authentication data.
+#### Example: Logging In a User
 
-- **LoginAsync(string username, string passwordHash)**: Authenticates the user and updates the authentication state.
-- **LogoutAsync()**: Logs the user out and clears their authentication data from the browser.
-- **GetAuthenticationStateAsync()**: Retrieves the current authentication state, checking both the browser storage and the database.
+```csharp
+var authProvider = serviceProvider.GetRequiredService<UserAuthenticationStateProvider>();
+await authProvider.LoginAsync("MyUsername", "MyPasswordHash");
+```
 
-## Data Persistence
+#### Example: Logging Out a User
 
-The `UserServiceRazor` class is responsible for data persistence by storing user information in the browser's local storage.
-This allows for maintaining user sessions across page reloads or browser restarts. The `UserAuthenticationStateProvider`
-relies on this service to keep the user's authentication state consistent across the application.
+```csharp
+await authProvider.LogoutAsync();
+```
+
+## Security Considerations
+
+- **Password Security**: The library uses HMACSHA256 for hashing passwords with unique salts per user, providing a secure method of storing credentials.
+- **Protected Local Storage**: User data is stored in the browser's protected local storage, offering security enhancements compared to regular local storage.
+
+## Extending Data Persistence
+
+By default, user data is stored in JSON files using `UserFileHandler`. To use a different storage mechanism, implement the `IUserRepository` interface and register your implementation:
+
+```csharp
+public class CustomUserRepository : IUserRepository
+{
+    // Implement methods for Save, Update, Delete, and Get users
+}
+
+services.AddSingleton<IUserRepository, CustomUserRepository>();
+```
+
+## Contribution
+
+Contributions are welcome! Please fork the repository, create a feature branch, and submit a pull request with your changes.

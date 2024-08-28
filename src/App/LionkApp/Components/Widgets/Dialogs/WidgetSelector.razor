@@ -1,0 +1,61 @@
+﻿@using Lionk.Core.View
+@inject IViewLocatorService ViewLocatorService
+
+<MudDialog>
+    <DialogContent>
+        <MudTable @ref="_table" Hover="true"
+                  Items="@_availableWidgets"
+                  Style="width:fit-content">
+            <RowTemplate>
+                <MudTr>
+                    <MudTd>
+                        @context.Name
+                    </MudTd>
+                    <MudTd>
+                        <MudButton OnClick="() => ComponentSelected(context)">Select</MudButton>
+                    </MudTd>
+                </MudTr>
+            </RowTemplate>
+        </MudTable>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private MudTable<ComponentViewDescription> _table = new();
+
+    private List<ComponentViewDescription>? _availableWidgets;
+
+    [CascadingParameter]
+    MudDialogInstance? MudDialog { get; set; }
+
+    /// <summary>
+    /// The component type to select.
+    /// </summary>
+    [Parameter]
+    public Type? ComponentType { get; set; }
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        if (ComponentType is not null)
+        {
+            _availableWidgets = ViewLocatorService.GetViewOf(ComponentType, ViewContext.Widget).ToList();
+        }
+    }
+
+    private void ComponentSelected(ComponentViewDescription viewType)
+    {
+        if (MudDialog is null) return;
+        MudDialog.Close(DialogResult.Ok(viewType));
+    }
+
+    private void Cancel()
+    {
+        if (MudDialog is null) return;
+        MudDialog.Cancel();
+    }
+
+}

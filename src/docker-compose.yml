@@ -1,0 +1,8 @@
+version: '3.8'
+
+services:
+  lionkapp:
+    image: ghcr.io/lionk-framework/lionkapp:latest
+    ports:
+      - "5001:5001" 
+

@@ -5,13 +5,15 @@ using System.Reflection;
 namespace Lionk.Plugin;
 
 /// <summary>
-/// Represents a plugin within the Lionk project, encapsulating its assembly
-/// and metadata information such as name, version, description, author, and dependencies.
+///     Represents a plugin within the Lionk project, encapsulating its assembly
+///     and metadata information such as name, version, description, author, and dependencies.
 /// </summary>
 public class Plugin
 {
+    #region constructors
+
     /// <summary>
-    /// Initializes a new instance of the <see cref="Plugin"/> class using the provided assembly.
+    ///     Initializes a new instance of the <see cref="Plugin" /> class using the provided assembly.
     /// </summary>
     /// <param name="assembly">The assembly that contains the plugin.</param>
     public Plugin(Assembly assembly)
@@ -21,38 +23,57 @@ public class Plugin
         Version = assembly.GetName().Version?.ToString() ?? "Unknown";
         Description = GetAttribute<AssemblyDescriptionAttribute>(assembly)?.Description ?? "No description";
         Author = GetAttribute<AssemblyCompanyAttribute>(assembly)?.Company ?? "Unknown";
-        Dependencies = assembly.GetReferencedAssemblies().Select(a => a.FullName).ToArray();
+
+        AssemblyName[] assemblies = assembly.GetReferencedAssemblies();
+
+        foreach (AssemblyName assemblyName in assemblies)
+        {
+            Dependencies.Add(new Dependency(false, assemblyName));
+        }
     }
 
+    #endregion
+
+    #region properties
+
     /// <summary>
-    /// Gets the assembly associated with this plugin.
+    ///     Gets the assembly associated with this plugin.
     /// </summary>
     public Assembly Assembly { get; }
 
     /// <summary>
-    /// Gets the name of the plugin.
-    /// </summary>
-    public string Name { get; }
-
-    /// <summary>
-    /// Gets the version of the plugin.
-    /// </summary>
-    public string Version { get; }
-
-    /// <summary>
-    /// Gets the description of the plugin.
-    /// </summary>
-    public string Description { get; }
-
-    /// <summary>
-    /// Gets the author of the plugin.
+    ///     Gets the author of the plugin.
     /// </summary>
     public string Author { get; }
 
     /// <summary>
-    /// Gets the dependencies of the plugin as an array of strings.
+    ///     Gets the dependencies of the plugin as an array of strings.
     /// </summary>
-    public string[] Dependencies { get; }
+    public List<Dependency> Dependencies { get; } = [];
+
+    /// <summary>
+    ///     Gets the description of the plugin.
+    /// </summary>
+    public string Description { get; }
+
+    /// <summary>
+    ///     Gets or sets a value indicating whether the plugin has been correctly loaded.
+    /// </summary>
+    public bool IsLoaded { get; set; }
+
+    /// <summary>
+    ///     Gets the name of the plugin.
+    /// </summary>
+    public string Name { get; }
+
+    /// <summary>
+    ///     Gets the version of the plugin.
+    /// </summary>
+    public string Version { get; }
+
+    #endregion
+
+    #region others methods
 
     private T? GetAttribute<T>(Assembly assembly)
         where T : Attribute
@@ -60,4 +81,6 @@ public class Plugin
         object[] attributes = assembly.GetCustomAttributes(typeof(T), false);
         return attributes.Length > 0 ? (T)attributes[0] : null;
     }
+
+    #endregion
 }

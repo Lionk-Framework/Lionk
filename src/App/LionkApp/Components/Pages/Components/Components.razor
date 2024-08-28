@@ -1,0 +1,116 @@
+﻿@page "/components"
+@inject IComponentService ComponentService
+@using Lionk.Core.Component
+@using Lionk.Core.TypeRegister
+@using IComponent = Lionk.Core.Component.IComponent
+@implements IDisposable
+
+<MudGrid>
+    <MudItem xs="6">
+        <MudPaper Class="pa-4">
+            <MudGrid>
+                <MudItem xs="12" md="8">
+                    <MudText Typo="Typo.h4">Component Manager</MudText>
+                </MudItem>
+                <MudItem xs="12" md="4" Class="d-flex justify-end">
+                    <MudButton Variant="Variant.Outlined"
+                               Color="Color.Primary"
+                               OnClick="AddComponent"
+                               Disabled="@(_selectedComponent == null)">
+                        Add selected
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
+
+            <ComponentList TypesRegistry="@TypesRegister"
+                           OnComponentSelected="OnComponentSelected"/>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="6">
+        <MudPaper Class="pa-4">
+            <MudGrid>
+                <MudItem xs="12" md="8">
+                    <MudText Typo="Typo.h4">Existing components</MudText>
+                </MudItem>
+                <MudItem xs="12" md="4" Class="d-flex justify-end">
+                    <MudButton Variant="Variant.Outlined"
+                               Color="Color.Secondary"
+                               OnClick="DeleteComponent"
+                               Disabled="@(_selectedInstanceComponent == null)">
+                        Delete selected
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
+
+            <IComponentInstanceList Components="InstantiatedComponents"
+                                    OnComponentSelected="OnComponentSelectedInstance"/>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private IReadOnlyDictionary<ComponentTypeDescription, Factory> TypesRegister => ComponentService.GetRegisteredTypeDictionary();
+
+    private KeyValuePair<ComponentTypeDescription, Factory>? _selectedComponent;
+
+    private IComponent? _selectedInstanceComponent;
+
+    private IEnumerable<IComponent> InstantiatedComponents => ComponentService.GetInstances();
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadComponentTypes();
+        ComponentService.NewComponentAvailable += (s, e) => OnNewTypesAvailable();
+    }
+
+    private async Task LoadComponentTypes()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void OnNewTypesAvailable()
+    {
+        StateHasChanged();
+    }
+
+    private void AddComponent()
+    {
+        if (_selectedComponent.HasValue)
+        {
+            Factory factory = _selectedComponent.Value.Value;
+            factory.CreateInstance();
+            StateHasChanged();
+        }
+    }
+
+    private void DeleteComponent()
+    {
+        if (_selectedInstanceComponent is not null)
+        {
+            _selectedInstanceComponent.Dispose();
+            ComponentService.UnregisterComponentInstance(_selectedInstanceComponent);
+            StateHasChanged();
+        }
+    }
+
+    private void OnComponentSelected(KeyValuePair<ComponentTypeDescription, Factory> selectedComponent)
+    {
+        _selectedComponent = selectedComponent;
+        StateHasChanged();
+    }
+
+    private void OnComponentSelectedInstance(IComponent component)
+    {
+        _selectedInstanceComponent = component;
+        StateHasChanged();
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        ComponentService.NewComponentAvailable -= (s, e) => OnNewTypesAvailable();
+    }
+
+}

@@ -1,0 +1,139 @@
+﻿@page "/role"
+@using Lionk.Auth.Abstraction
+@using Lionk.Auth.Identity
+@inject ISnackbar Snackbar
+@inject UserAuthenticationStateProvider AuthStateProvider
+@inject IUserService UserService
+
+@if (Users != null)
+{
+    <MudContainer>
+        <MudTable Items="Users" Bordered="true" Dense="true" Hover="true">
+            <HeaderContent>
+                <MudTh>Username</MudTh>
+                <MudTh>Email</MudTh>
+                <MudTh>Roles</MudTh>
+                <MudTh style="text-align: center;">Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>
+                    <MudText>@context.Username</MudText>
+                </MudTd>
+                <MudTd>
+                    <MudText>@context.Email</MudText>
+                </MudTd>
+                <MudTd>
+                    <div>
+                        @foreach (string role in _availableRoles)
+                        {
+                            <div style="display: inline-flex; align-items: center; margin-right: 16px;">
+                                <MudText style="margin-right: 8px;">@role</MudText>
+                                <MudSwitch T="bool" Value=_roleStates[context.Id][role] ValueChanged="@(() => OnRoleStateChanged(context.Id, role))" Color="Color.Primary" />
+                            </div>
+                        }
+                    </div>
+                </MudTd>
+                <MudTd style="text-align: center; vertical-align: middle;">
+                    <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => OnDeleteClicked(context.Id)">
+                        Delete
+                    </MudButton>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudContainer>
+}
+else
+{
+    <MudText Typo="Typo.body1" Align="Align.Left" Style="margin: 20px; font-size: 14px;">Loading users...</MudText>
+}
+
+@code {
+    /// <summary>
+    /// A HASH set of users.
+    /// </summary>
+    public HashSet<User>? Users { get; private set; }
+
+    private List<string> _availableRoles = ["Admin", "User"]; // TODO - Link to enum or global strings
+
+    private Dictionary<Guid, Dictionary<string, bool>> _roleStates = new();
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        InitializeRoleStates();
+    }
+
+    private void InitializeRoleStates()
+    {
+        Users = UserService.GetUsers();
+        if (Users is null) return;
+
+        foreach (User user in Users)
+        {
+            _roleStates[user.Id] = new Dictionary<string, bool>();
+            foreach (string role in _availableRoles)
+            {
+                _roleStates[user.Id][role] = user.Roles.Contains(role);
+            }
+        }
+    }
+
+    private void OnRoleStateChanged(Guid userId, string role)
+    {
+        User? user = Users?.FirstOrDefault(u => u.Id == userId);
+        if (user is null) return;
+
+        bool previousRoleState = _roleStates[userId][role];
+
+        if (previousRoleState == false && !user.Roles.Contains(role))
+        {
+            // Add role
+            user.AddRole(role);
+            UserService.Update(user);
+        }
+        else if (previousRoleState && user.Roles.Contains(role))
+        {
+            // Remove role
+            if (user.Id == AuthStateProvider.CurrentUser?.Id && role == "Admin")
+            {
+                Snackbar.Add("You cannot remove your admin role", Severity.Warning);
+                return;
+            }
+
+            if (user.Roles.Count <= 1)
+            {
+                Snackbar.Add("You cannot remove the only role", Severity.Warning);
+                return;
+            }
+
+            user.RemoveRole(role);
+            UserService.Update(user);
+        }
+        else
+        {
+            // Do nothing
+        }
+
+        _roleStates[userId][role] = !previousRoleState;
+        StateHasChanged();
+    }
+
+    private void OnDeleteClicked(Guid userId)
+    {
+        User? user = Users?.FirstOrDefault(u => u.Id == userId);
+        if (user is null) return;
+
+        if (user.Id == AuthStateProvider.CurrentUser?.Id)
+        {
+            Snackbar.Add("You cannot delete your own account.", Severity.Warning);
+            return;
+        }
+
+        Users?.Remove(user);
+        UserService.Delete(user);
+        Snackbar.Add($"User {user.Username} has been deleted.", Severity.Success);
+        StateHasChanged();
+    }
+
+}

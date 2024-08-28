@@ -1,53 +1,54 @@
 ﻿@page "/active"
+@using Lionk.Notification
+@inject NotificationStateService NotificationState
 
-@if (forecasts == null)
+@if (notifications != null)
 {
-    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
-}
-else
-{
-    <MudTable Items="forecasts" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
+    <MudTable Items="notifications" Hover="true" SortLabel="Sort by" Elevation="0" AllowUnsorted="false">
         <HeaderContent>
-            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<WeatherForecast, object>(x=>x.Date)">Date</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<WeatherForecast, object>(x=>x.TemperatureC)">Temp. (C)</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<WeatherForecast, object>(x=>x.TemperatureF)">Temp. (F)</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<WeatherForecast, object>(x=>x.Summary!)">Summary</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<NotificationHistory, object>(x => x.Notification.Timestamp)">Date</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<NotificationHistory, object>(x => x.Notification.Content.Level)">Severity</MudTableSortLabel></MudTh>
+            <MudTh>Title</MudTh>
+            <MudTh>Message</MudTh>
+            <MudTh>Status</MudTh>
+            <MudTh style="text-align: center;">Actions</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Date">@context.Date</MudTd>
-            <MudTd DataLabel="Temp. (C)">@context.TemperatureC</MudTd>
-            <MudTd DataLabel="Temp. (F)">@context.TemperatureF</MudTd>
-            <MudTd DataLabel="Summary">@context.Summary</MudTd>
+            <MudTd DataLabel="Date">@context.Notification.Timestamp.ToString("g")</MudTd>
+            <MudTd DataLabel="Severity">@context.Notification.Content.Level.ToString()</MudTd>
+            <MudTd DataLabel="Title">@context.Notification.Content.Title</MudTd>
+            <MudTd DataLabel="Message">@context.Notification.Content.Message</MudTd>
+            <MudTd DataLabel="Status">Unread</MudTd>
+            <MudTd style="text-align: center; vertical-align: middle;">
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="@(() => MarkAsRead(@context))">Mark as read</MudButton>
+            </MudTd>
         </RowTemplate>
         <PagerContent>
-            <MudTablePager PageSizeOptions="new int[]{50, 100}" />
+            <MudTablePager PageSizeOptions="new[] { 50, 100 }"/>
         </PagerContent>
     </MudTable>
 }
 
 @code {
-    private WeatherForecast[]? forecasts;
+    List<NotificationHistory>? notifications;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        // Simulate asynchronous loading to demonstrate a loading indicator
-        await Task.Delay(500);
-
-        var startDate = DateOnly.FromDateTime(DateTime.Now);
-        var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
-        forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = startDate.AddDays(index),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = summaries[Random.Shared.Next(summaries.Length)]
-            }).ToArray();
+        LoadUnreadNotifications();
     }
 
-    private class WeatherForecast
+    private void LoadUnreadNotifications()
     {
-        public DateOnly Date { get; set; }
-        public int TemperatureC { get; set; }
-        public string? Summary { get; set; }
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        notifications = NotificationService.GetNotifications()
+                                           .Where(n => !n.IsRead)
+                                           .ToList();
+    }
+
+    private void MarkAsRead(NotificationHistory notification)
+    {
+        notification.Read();
+        NotificationState.DecrementBadgeCounter();
+        LoadUnreadNotifications();
+        StateHasChanged();
     }
 }

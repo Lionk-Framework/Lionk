@@ -1,19 +1,18 @@
-﻿@using Microsoft.AspNetCore.Authorization
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 @inject NavigationManager NavManager
 @inject LionkPalette Palette
 
-<MudThemeProvider Theme="@Theme" IsDarkMode="IsDarkMode" />
-<MudPopoverProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
+<MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode"/>
+<MudPopoverProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
 
 <MudLayout>
     <MudAppBar Elevation="10">
         <MudText Typo="Typo.h5" Class="ml-3">Lionk</MudText>
         <MudSpacer/>
-        <MudIconButton Icon="@Icons.Material.Filled.Login" Color="Color.Primary" OnClick="OnLoginPressed" />
-        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
+        <MudIconButton Icon="@Icons.Material.Filled.Login" Color="Color.Primary" OnClick="OnLoginPressed"/>
+        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle"/>
     </MudAppBar>
     <MudMainContent Class="mt-16 pa-4">
         @Body
@@ -27,32 +26,40 @@
 </div>
 
 @code {
+    private MudTheme? _theme;
 
-    private MudTheme? Theme = null;
-    private bool IsDarkMode = true;
-    public string _userName = "";
+    private bool _isDarkMode = true;
 
+    /// <summary>
+    /// The current username.
+    /// </summary>
+    public string Username = string.Empty;
+
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        Theme = new()
-            {
-                PaletteLight = Palette.LightPalette,
-                PaletteDark = Palette.DarkPalette,
-                LayoutProperties = new LayoutProperties()
-            };
+        _theme = new MudTheme { PaletteLight = Palette.LightPalette, PaletteDark = Palette.DarkPalette, LayoutProperties = new LayoutProperties() };
     }
 
     private void DarkModeToggle()
     {
-        IsDarkMode = !IsDarkMode;
+        _isDarkMode = !_isDarkMode;
     }
 
-    public string DarkLightModeButtonIcon => IsDarkMode switch
-    {
-        true => Icons.Material.Rounded.LightMode,
-        false => Icons.Material.Outlined.DarkMode,
-    };
+    /// <summary>
+    /// Toggle the dark mode.
+    /// </summary>
+    public string DarkLightModeButtonIcon =>
+        _isDarkMode switch
+        {
+            true => Icons.Material.Rounded.LightMode,
+            false => Icons.Material.Outlined.DarkMode,
+        };
 
-    private void OnLoginPressed() => NavManager.NavigateTo("/auth");
+    private void OnLoginPressed()
+    {
+        NavManager.NavigateTo("/auth");
+    }
+
 }

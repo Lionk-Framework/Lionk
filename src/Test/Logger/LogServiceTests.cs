@@ -6,12 +6,40 @@ using Moq;
 namespace LionkTest.Logger;
 
 /// <summary>
-/// Test class for <see cref="LogService"/>.
+///     Test class for <see cref="LogService" />.
 /// </summary>
 public class LogServiceTests
 {
+    #region fields
+
+    private Mock<IStandardLogger> _mockAppLogger;
+
+    private Mock<IStandardLogger> _mockDebugLogger;
+
+    private Mock<ILoggerFactory> _mockLoggerFactory;
+
+    #endregion
+
+    #region public and override methods
+
     /// <summary>
-    /// Initialize the test class.
+    ///     Test for <see cref="LogService.Configure(ILoggerFactory)" />.
+    /// </summary>
+    [Test]
+    public void Configure_ShouldInitializeLoggers()
+    {
+        _mockLoggerFactory.Setup(factory => factory.CreateLogger("app")).Returns(_mockAppLogger.Object);
+
+        _mockLoggerFactory.Setup(factory => factory.CreateLogger("debug")).Returns(_mockDebugLogger.Object);
+
+        LogService.Configure(_mockLoggerFactory.Object);
+
+        Assert.That(LogService.CreateLogger("app"), Is.Not.Null);
+        Assert.That(LogService.CreateLogger("debug"), Is.Not.Null);
+    }
+
+    /// <summary>
+    ///     Initialize the test class.
     /// </summary>
     [OneTimeSetUp]
     public void Initialize()
@@ -22,53 +50,12 @@ public class LogServiceTests
     }
 
     /// <summary>
-    /// Test for <see cref="LogService.Configure(ILoggerFactory)"/>.
-    /// </summary>
-    [Test]
-    public void Configure_ShouldInitializeLoggers()
-    {
-        _mockLoggerFactory.Setup(
-            factory => factory.CreateLogger("app"))
-            .Returns(_mockAppLogger.Object);
-
-        _mockLoggerFactory.Setup(
-            factory => factory.CreateLogger("debug"))
-            .Returns(_mockDebugLogger.Object);
-
-        LogService.Configure(_mockLoggerFactory.Object);
-
-        Assert.That(LogService.CreateLogger("app"), Is.Not.Null);
-        Assert.That(LogService.CreateLogger("debug"), Is.Not.Null);
-    }
-
-    /// <summary>
-    /// Test for <see cref="LogService.LogDebug(string)"/>.
-    /// </summary>
-    [Test]
-    public void LogDebug_ShouldCallDebugLogger()
-    {
-        _mockLoggerFactory.Setup(
-            factory => factory.CreateLogger("debug"))
-            .Returns(_mockDebugLogger.Object);
-
-        LogService.Configure(_mockLoggerFactory.Object);
-
-        string message = "Debug message";
-
-        LogService.LogDebug(message);
-
-        _mockDebugLogger.Verify(logger => logger.Log(LogSeverity.Debug, message), Times.Once);
-    }
-
-    /// <summary>
-    /// Test for <see cref="LogService.LogApp(LogSeverity, string)"/>.
+    ///     Test for <see cref="LogService.LogApp(LogSeverity, string)" />.
     /// </summary>
     [Test]
     public void LogApp_ShouldCallAppLogger()
     {
-        _mockLoggerFactory.Setup(
-            factory => factory.CreateLogger("app"))
-            .Returns(_mockAppLogger.Object);
+        _mockLoggerFactory.Setup(factory => factory.CreateLogger("app")).Returns(_mockAppLogger.Object);
 
         LogService.Configure(_mockLoggerFactory.Object);
 
@@ -80,7 +67,22 @@ public class LogServiceTests
         _mockAppLogger.Verify(logger => logger.Log(severity, message), Times.Once);
     }
 
-    private Mock<ILoggerFactory> _mockLoggerFactory;
-    private Mock<IStandardLogger> _mockAppLogger;
-    private Mock<IStandardLogger> _mockDebugLogger;
+    /// <summary>
+    ///     Test for <see cref="LogService.LogDebug(string)" />.
+    /// </summary>
+    [Test]
+    public void LogDebug_ShouldCallDebugLogger()
+    {
+        _mockLoggerFactory.Setup(factory => factory.CreateLogger("debug")).Returns(_mockDebugLogger.Object);
+
+        LogService.Configure(_mockLoggerFactory.Object);
+
+        string message = "Debug message";
+
+        LogService.LogDebug(message);
+
+        _mockDebugLogger.Verify(logger => logger.Log(LogSeverity.Debug, message), Times.Once);
+    }
+
+    #endregion
 }

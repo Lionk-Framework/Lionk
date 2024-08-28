@@ -1,0 +1,48 @@
+﻿@using Lionk.Core.Component
+
+@if (Component is not null)
+{
+    <MudCard Elevation="2" Class="hover-card" Style="max-width: 275px; min-height: 230px; padding: 16px; margin: 10px;">
+        <MudCardContent>
+            <MudText Typo="Typo.h6" Color="Color.Primary" Style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                @Component.InstanceName
+            </MudText>
+            <MudDivider Light="true" DividerType="DividerType.Middle" />
+            <MudGrid>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.body2">Period:</MudText>
+                </MudItem>
+                <MudItem xs="6" class="text-right">
+                    <MudText Typo="Typo.body2">@Component.Period</MudText>
+                </MudItem>
+
+                <MudItem xs="6">
+                    <MudText Typo="Typo.body2">Cycle Count:</MudText>
+                </MudItem>
+                <MudItem xs="6" class="text-right">
+                    <MudText Typo="Typo.body2">@Component.NbCycle</MudText>
+                </MudItem>
+            </MudGrid>
+        </MudCardContent>
+        @if (Component.IsInError)
+        {
+            <MudCardActions>
+                <MudButton Color="Color.Error" Variant="Variant.Outlined" OnClick="ResetComponent">Reset</MudButton>
+                <MudTooltip Text="This component is in error please reset it.">
+                    <MudIcon Icon="@Icons.Material.Filled.Error" Color="Color.Error" Style="margin-left: 5px;"></MudIcon>
+                </MudTooltip>
+            </MudCardActions>
+        }
+    </MudCard>
+}
+
+@code {
+    /// <summary>
+    ///     The cyclic component to display.
+    /// </summary>
+    [Parameter]
+    public ICyclicComponent? Component { get; set; }
+
+    private void ResetComponent()
+        => Component?.Reset();
+}

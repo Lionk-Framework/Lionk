@@ -1,0 +1,32 @@
+﻿@using Lionk.Core.Component.Cyclic
+@inject ICyclicExecutorService CyclicExecutorService
+<link href="_content/Lionk.Core.Razor/css/CyclicExecutor.css" rel="stylesheet" />
+
+<MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="TogglePauseResume">
+    <MudIcon Icon="@GetButtonIcon()" />
+    <MudText Class="ml-2">@GetButtonText()</MudText>
+</MudButton>
+
+@code {
+    private void TogglePauseResume()
+    {
+        if (CyclicExecutorService.State == CycleState.Running)
+        {
+            CyclicExecutorService.Pause();
+        }
+        else if (CyclicExecutorService.State == CycleState.Paused)
+        {
+            CyclicExecutorService.Resume();
+        }
+    }
+
+    private string GetButtonIcon()
+    {
+        return CyclicExecutorService.State == CycleState.Running ? Icons.Material.Filled.Pause : Icons.Material.Filled.PlayArrow;
+    }
+
+    private string GetButtonText()
+    {
+        return CyclicExecutorService.State == CycleState.Running ? "Pause" : "Play";
+    }
+}

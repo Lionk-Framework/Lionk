@@ -4,11 +4,11 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>0.3.0</Version>
+    <Version>0.3.3</Version>
     <Description>
 
 ## Change Log
-- Deleting text
+- test
 
 # Lionk App
 
@@ -23,6 +23,7 @@ This is the Lionk App README file.
     <ProjectReference Include="..\..\Lib\Lionk.Core.Razor\Lionk.Core.Razor.csproj" />
     <ProjectReference Include="..\..\Lib\Lionk.Core\Lionk.Core.csproj" />
     <ProjectReference Include="..\..\Lib\Lionk.Logger\Lionk.Logger.csproj" />
+    <ProjectReference Include="..\..\Lib\Lionk.Notification\Lionk.Notification.csproj" />
     <ProjectReference Include="..\..\Lib\Lionk.Plugin.Blazor\Lionk.Plugin.Blazor.csproj" />
     <ProjectReference Include="..\..\Lib\Lionk.Plugin\Lionk.Plugin.csproj" />
   </ItemGroup>

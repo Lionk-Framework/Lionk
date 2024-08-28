@@ -1,0 +1,31 @@
+﻿@using Lionk.Notification
+@using System.Collections.ObjectModel
+
+<MudDialog>
+    <DialogContent>
+        <MudSelect T="string" Label="Available channel" AnchorOrigin="Origin.BottomCenter" Class="mb-4">
+            @foreach (var channel in Channels)
+            {
+                <MudSelectItem Value="@channel.Name">@channel.Name</MudSelectItem>
+            }
+        </MudSelect>
+        <MudTextField T="string" Label="Name" Class="mb-4"></MudTextField>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="OpenComponentConfigurer">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter]
+    public ReadOnlyCollection<IChannel> Channels { get; set; } = new List<IChannel>().AsReadOnly();
+
+    [CascadingParameter]
+    private MudDialogInstance? MudDialog { get; set; }
+
+    private void Cancel() => MudDialog?.Cancel();
+
+    // TODO - Use view from plugin when ready
+    private void OpenComponentConfigurer() => MudDialog?.Close(DialogResult.Ok(true));
+}

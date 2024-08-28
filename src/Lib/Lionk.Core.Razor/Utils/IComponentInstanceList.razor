@@ -1,0 +1,114 @@
+﻿@namespace Lionk.Core.Razor
+@inject IComponentService ComponentService
+@using Lionk.Core.Component
+@using IComponent = Lionk.Core.Component.IComponent
+
+<ListSearcher Items="@_components"
+              Properties="@_properties"
+              PropertiesFriendlyNames="@_propertiesFriendlyNames"
+              ItemsChanged="ItemsChanged"
+              T="IComponent"/>
+
+<MudTable @ref="_table"
+          T="IComponent"
+          Items="@_components"
+          OnRowClick="@RowClicked">
+    <RowTemplate>
+        <MudTr class="@(context == _selectedComponent && !_isEditing ? "selected-row" : string.Empty)">
+            <MudTd>
+                <MudIcon Icon="@Icons.Material.Filled.AutoAwesomeMosaic"/>
+            </MudTd>
+            <MudTd>
+                <MudTextField @bind-Value="context.InstanceName"
+                              Label="Name"
+                              Variant="Variant.Outlined"
+                              Immediate="true"
+                              OnKeyDown="StartEditing"
+                              OnBlur="StopEditing"/>
+            </MudTd>
+            <MudTd DataLabel="Component type">@GetComponentName(context)</MudTd>
+        </MudTr>
+    </RowTemplate>
+</MudTable>
+
+@code {
+
+    /// <summary>
+    ///     The components to display.
+    /// </summary>
+    [Parameter]
+    public IEnumerable<IComponent> Components { get; set; } = new List<IComponent>();
+
+    /// <summary>
+    ///     The method to call when a component is selected.
+    /// </summary>
+    [Parameter]
+    public EventCallback<IComponent> OnComponentSelected { get; set; }
+
+    private MudTable<IComponent> _table = new();
+
+    private List<IComponent> _components = [];
+
+    private List<string> _properties = [nameof(IComponent.InstanceName)];
+
+    private List<string> _propertiesFriendlyNames = ["Instance Name"];
+
+    private IComponent? _selectedComponent;
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        _components = Components.ToList();
+        StateHasChanged();
+    }
+
+    private bool _isEditing = false;
+
+    private void StartEditing()
+    {
+        _isEditing = true;
+    }
+
+    private void StopEditing()
+    {
+        _isEditing = false;
+        StateHasChanged();
+    }
+
+    private void ItemsChanged(List<IComponent> items)
+    {
+        _components = items;
+        StateHasChanged();
+    }
+
+    private void RowClicked(TableRowClickEventArgs<IComponent> item)
+    {
+        if (_isEditing) return;
+        IComponent? component = item.Item;
+        if (component is null) return;
+        _selectedComponent = component;
+
+        OnComponentSelected.InvokeAsync(component);
+        StateHasChanged();
+    }
+
+    private string GetComponentName(IComponent component)
+    {
+        string name =
+            ComponentService.GetRegisteredTypeDictionary()
+                .First(x => x.Key.Type == component.GetType())
+                .Key.Name ?? "Unknown";
+
+        return name;
+    }
+
+}
+
+<style>
+    .selected-row {
+        background-color: #007acc;
+        color: #ffffff;
+        font-weight: bold;
+        border: 2px solid #005b99;
+    }
+</style>

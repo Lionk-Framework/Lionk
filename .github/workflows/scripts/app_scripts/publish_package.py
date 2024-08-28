@@ -13,24 +13,22 @@ def run_command(command):
         print("STDERR:", e.stderr)
         sys.exit(1)
 
-app_path = os.getenv('APP_PATH')
+sln_path = os.getenv('SLN_PATH')
 app_name = os.getenv('APP_NAME')
 docker_registry = os.getenv('DOCKER_REGISTRY')
 gh_token = os.getenv('GH_TOKEN')
-
-
-context = os.path.dirname(app_path)
+print(f"Publishing {app_name} from {sln_path} to {docker_registry}")
 
 with open('newversion.txt', 'r') as file:
     newversion = file.read().strip()
 
-with open(f'{context}/README.md', 'r') as file:
-    description = file.read()
-
 print(f"Publishing {app_name} as version {newversion}")
 
+run_command(['ls' , 'src'])
+
+
 # Construire l'image Docker avec une étiquette de description
-run_command(['docker', 'build', '-t', f"{docker_registry}/{app_name.lower()}:{newversion}", '-t',f"{docker_registry}/{app_name.lower()}:latest", context])
+run_command(['docker', 'build', sln_path , '-t', f"{docker_registry}/{app_name.lower()}:{newversion}", '-t',f"{docker_registry}/{app_name.lower()}:latest"])	
 
 
 # Pousser l'image Docker au registre

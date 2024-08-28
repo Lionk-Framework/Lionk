@@ -1,0 +1,86 @@
+﻿@page "/email"
+@using System.ComponentModel.DataAnnotations
+@using Lionk.Auth.Abstraction
+@using Lionk.Auth.Identity
+@inject UserAuthenticationStateProvider AuthStateProvider
+@inject IUserService UserService
+@inject ISnackbar Snackbar
+
+<EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator/>
+    <MudGrid>
+        <MudItem>
+            <MudCard Style="width: 600px">
+                <MudCardContent>
+                    <MudTextField T="string" Label="Email" Text="@CurrentEmail" ReadOnly="true"/>
+                </MudCardContent>
+                <MudCardContent>
+                    <MudTextField T="string" Label="New Email" Class="mt-3" @bind-Value="_model.NewEmail" For="@(() => _model.NewEmail)"/>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12">
+            <MudText Typo="Typo.body2" Align="Align.Center">
+                Fill out the form correctly to save your changes.
+            </MudText>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+@code {
+    private RegisterAccountForm _model = new();
+
+    /// <summary>
+    /// The current email.
+    /// </summary>
+    public string CurrentEmail { get; set; }= string.Empty;
+
+    /// <summary>
+    /// The register account form.
+    /// </summary>
+    public class RegisterAccountForm
+    {
+        /// <summary>
+        /// The new email.
+        /// </summary>
+        [Required]
+        [EmailAddress]
+        public string? NewEmail { get; set; }
+    }
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        CurrentEmail = AuthStateProvider.CurrentUser?.Email ?? "Not Logged In";
+    }
+
+    private void OnValidSubmit()
+    {
+        User? user = AuthStateProvider.CurrentUser;
+
+        if (user is null)
+        {
+            Snackbar.Add("User is not authenticated.", Severity.Error);
+            return;
+        }
+
+        if (string.IsNullOrEmpty(_model.NewEmail))
+        {
+            Snackbar.Add("Please enter a valid email address.", Severity.Warning);
+            return;
+        }
+
+        user.UpdateEmail(_model.NewEmail);
+        UserService.Update(user);
+        CurrentEmail = _model.NewEmail;
+        _model = new RegisterAccountForm();
+        Snackbar.Add("Email updated successfully", Severity.Success);
+
+        StateHasChanged();
+    }
+
+}

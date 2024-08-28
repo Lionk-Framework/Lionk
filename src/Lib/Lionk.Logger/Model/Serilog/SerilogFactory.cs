@@ -5,20 +5,21 @@ using Lionk.Utils;
 namespace Lionk.Log.Serilog;
 
 /// <summary>
-/// A factory for creating Serilog loggers.
+///     A factory for creating Serilog loggers.
 /// </summary>
 public class SerilogFactory : ILoggerFactory
 {
-    /// <inheritdoc/>
+    #region public and override methods
+
+    /// <inheritdoc />
     public IStandardLogger CreateLogger(string loggerName)
     {
-        string logFilePath =
-            Path.Combine(
-                ConfigurationUtils.GetFolderPath(FolderType.Logs),
-                $"{loggerName}{Utils.LogExtension}");
+        string logFilePath = Path.Combine(ConfigurationUtils.GetFolderPath(FolderType.Logs), $"{loggerName}{Utils.LogExtension}");
 
         logFilePath = Path.GetFullPath(logFilePath);
 
         return new SerilogLogger(logFilePath);
     }
+
+    #endregion
 }
