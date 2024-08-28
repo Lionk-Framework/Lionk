@@ -83,7 +83,7 @@
 
         string salt = PasswordUtils.GenerateSalt(16);
         string passwordHash = PasswordUtils.HashPassword(_model.Password!, salt);
-        User? registeredUser = UserService.Insert(new User(_model.Username!, _model.Email!, passwordHash, salt, ["User"]));
+        User? registeredUser = UserService.Insert(new User(_model.Username!, _model.Email!, passwordHash, salt, [UserService.IsFirstUserRegistered() ? "Admin" : "User"]));
         if (registeredUser != null)
         {
             await AuthStateProvider.LoginAsync(_model.Username!, passwordHash);

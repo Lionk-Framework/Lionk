@@ -107,6 +107,9 @@ public class UserService : IUserService
     public bool IsUsernameExist(string username) => GetUserByUsername(username) != null;
 
     /// <inheritdoc />
+    public bool IsFirstUserRegistered() => GetUsers().Count == 0;
+
+    /// <inheritdoc />
     public User? Update(User user)
     {
         ArgumentNullException.ThrowIfNull(user);
