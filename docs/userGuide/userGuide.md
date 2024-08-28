@@ -130,13 +130,29 @@ After the plugin is loaded, you can click on the SHOW DEPENDENCIES button to see
 
 ![](drawerTopComponents.png)
 
+**View:**
+
+![](components.png)
+
+**Available components:**
+
+![](componentsAvailability.png)
+
+**Existing components:**
+
+![](componentsExistence.png)
+
+**Finalization:**
+
+![](componentsFinalization.png)
+
 ---
 
 ### Cyclic
 
 ![](drawerTopCyclic.png)
 
-**View**
+**View:**
 
 ![](cyclic.png)
 
