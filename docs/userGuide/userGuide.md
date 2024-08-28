@@ -5,7 +5,7 @@
 1. [Introduction](#introduction)
 2. [Installation](#installation)
 3. [Getting Started](#getting-started)
-4. [Main Features](#main-features)
+4. [Main View and Features](#main-features)
    - [Dashboard](#dashboard)
    - [Notifications](#notifications)
    - [Plugins](#plugins)
