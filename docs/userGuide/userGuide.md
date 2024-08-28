@@ -16,7 +16,7 @@
 
 ## Introduction
 
-Welcome to Lionk, this guide will help you understand how to install, configure, and use the application effectively.
+Welcome to Lionk! This guide will help you navigate the application's key features. We'll cover the Dashboard for an overview of your system, Notifications to keep you updated, and Manage your account to personalize your settings. You'll also learn about the Plugins, Components, and Cyclic views, which offer additional tools and functionalities to enhance your experience with Lionk. By the end, you'll be well-equipped to use each view effectively.
 
 ---
 
