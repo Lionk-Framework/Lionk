@@ -25,10 +25,10 @@ with open('newversion.txt', 'r') as file:
 print(f"Publishing {app_name} as version {newversion}")
 
 run_command(['ls' , 'src'])
-dockerfile = os.path.join('src', 'Dockerfile')
+
 
 # Construire l'image Docker avec une étiquette de description
-run_command(['docker', 'build', dockerfile , '-t', f"{docker_registry}/{app_name.lower()}:{newversion}", '-t',f"{docker_registry}/{app_name.lower()}:latest"])	
+run_command(['docker', 'build', sln_path , '-t', f"{docker_registry}/{app_name.lower()}:{newversion}", '-t',f"{docker_registry}/{app_name.lower()}:latest"])	
 
 
 # Pousser l'image Docker au registre
