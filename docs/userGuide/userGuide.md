@@ -178,6 +178,4 @@ In this section, you can manage the roles of different users in your application
 
 ## Updates
 
-### Checking for Updates
-
 To ensure you have the latest features and security updates, regularly check for updates through [update method or link].
