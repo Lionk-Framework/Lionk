@@ -7,7 +7,7 @@
 3. [Getting Started](#getting-started)
 4. [Main Features](#main-features)
    - [Feature 1](#feature-1)
-   - [Feature 2](#feature-2)
+   - [Notifications](#notifications)
    - [Manage your account](#manage-your-account)
 5. [Settings and Customization](#settings-and-customization)
 6. [Updates](#updates)
@@ -68,14 +68,25 @@ Before starting the installation, ensure that your system meets the following re
 
 [Description of Feature 1, how to use it, and any tips.]
 
-### Feature 2
+---
 
-[Description of Feature 2, how to use it, and any tips.]
+### Notifications
+
+![](drawerTopNotification.png)
+
+**Active:**
+
+**History:**
+
+**Configuration:**
+
+![](configuration.png)
+
+---
 
 ### Manage your account
 
 ![](drawerBottomProfile.png)
-
 
 **Overview:**
 
@@ -93,7 +104,7 @@ In this section, you can manage the roles of different users in your application
 
 ## Settings and Customization
 
-![](AppBarDarkMode.png)
+![](appBarDarkMode.png)
 
 **Dark Mode**: Customize the application's appearance by toggling Dark Mode. This option allows you to switch between the default light theme and a dark theme, which may be easier on the eyes, especially in low-light environments.
 
