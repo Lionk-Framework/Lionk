@@ -4,6 +4,8 @@ using System.Diagnostics;
 using Lionk.Core.Observable;
 using Lionk.Log;
 using Lionk.Notification;
+using Lionk.Utils;
+using Newtonsoft.Json;
 
 namespace Lionk.Core.Component.Cyclic;
 
@@ -13,6 +15,8 @@ namespace Lionk.Core.Component.Cyclic;
 public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
 {
     #region fields
+
+    private const string ConfigFileName = "CyclicExecutorConfig.json";
 
     private readonly IComponentService _componentService;
 
@@ -37,7 +41,6 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     private TimeSpan _lastExecutionTime;
 
     private long _nCycle;
-
     #endregion
 
     #region constructors
@@ -49,7 +52,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     public CyclicExecutorService(IComponentService componentService)
     {
         _componentService = componentService;
-        WatchDogTimeout = TimeSpan.FromSeconds(1);
+        WatchDogTimeout = LoadWatchDogTimeout() ?? TimeSpan.FromSeconds(1);
 
         State = CycleState.Stopped;
     }
@@ -69,10 +72,15 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     }
 
     /// <inheritdoc />
+    [JsonProperty]
     public TimeSpan WatchDogTimeout
     {
         get => _watchdogTimeout;
-        set => SetField(ref _watchdogTimeout, value);
+        set
+        {
+            SetField(ref _watchdogTimeout, value);
+            SaveWatchDogTimeout(_watchdogTimeout);
+        }
     }
 
     /// <inheritdoc />
@@ -202,9 +210,9 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
             {
                 _nCycle++;
                 _cycleStopwatch.Restart();
-                await ExecuteComponents(combinedCancellation.Token);
+                int nbExecutedComponents = await ExecuteComponents(combinedCancellation.Token);
                 _cycleStopwatch.Stop();
-                ManageTimeMeasurement();
+                ManageTimeMeasurement(nbExecutedComponents);
             }
             catch (Exception e)
             {
@@ -233,20 +241,24 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
         }
     }
 
-    private void ManageTimeMeasurement()
+    private void ManageTimeMeasurement(int nbExecutedComponents)
     {
         LastExecutionTime = _cycleStopwatch.Elapsed;
 
         if (LastExecutionTime > MaxCycleTime)
             MaxCycleTime = LastExecutionTime;
 
-        if (MeanCycleTime == TimeSpan.Zero)
+        // do not include first cycle in the mean cycle time
+        if (_nCycle > 10 && nbExecutedComponents > 0)
         {
-            MeanCycleTime = LastExecutionTime;
-        }
-        else
-        {
-            MeanCycleTime = (LastExecutionTime + (MeanCycleTime * (_nCycle - 1))) / _nCycle;
+            if (MeanCycleTime == TimeSpan.Zero)
+            {
+                MeanCycleTime = LastExecutionTime;
+            }
+            else
+            {
+                MeanCycleTime = (LastExecutionTime + (MeanCycleTime * (_nCycle - 1))) / _nCycle;
+            }
         }
     }
 
@@ -306,8 +318,10 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     ///     Iterates through all cyclic components and executes those that are ready and not in error.
     /// </summary>
     /// <param name="combinedToken">A combined cancellation token that includes both the service's and the watchdog's cancellation tokens.</param>
-    private async Task ExecuteComponents(CancellationToken combinedToken)
+    private async Task<int> ExecuteComponents(CancellationToken combinedToken)
     {
+        int counter = 0;
+
         foreach (ICyclicComponent component in Components)
         {
             if (_cancellationTokenSource.Token.IsCancellationRequested)
@@ -318,11 +332,44 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
             if (component.NextExecution <= DateTime.Now
                 && component is { CanExecute: true, IsInError: false })
             {
+                counter++;
                 await ExecuteComponent(component, combinedToken);
             }
         }
+
+        return counter;
     }
 
+    private void SaveWatchDogTimeout(TimeSpan timeout)
+    {
+        try
+        {
+            string json = JsonConvert.SerializeObject(timeout);
+            ConfigurationUtils.SaveFile(ConfigFileName, json, FolderType.Config);
+        }
+        catch (Exception ex)
+        {
+            LogService.LogApp(LogSeverity.Error, $"Failed to save WatchDogTimeout. Error: {ex.Message}");
+        }
+    }
+
+    private TimeSpan? LoadWatchDogTimeout()
+    {
+        try
+        {
+            if (ConfigurationUtils.FileExists(ConfigFileName, FolderType.Config))
+            {
+                string json = ConfigurationUtils.ReadFile(ConfigFileName, FolderType.Config);
+                return JsonConvert.DeserializeObject<TimeSpan>(json);
+            }
+        }
+        catch (Exception ex)
+        {
+            LogService.LogApp(LogSeverity.Warning, $"Failed to load WatchDogTimeout. Using default value. Error: {ex.Message}");
+        }
+
+        return null;
+    }
     #endregion
 
     private class ServiceNotifier : INotifier

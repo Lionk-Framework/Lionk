@@ -11,7 +11,8 @@
                             Width="100%"
                             Height="@graphHeight"
                             ChartOptions="@_options"
-                            CanHideSeries/>
+                            CanHideSeries
+                            Style=""/>
     }
 </div>
 
@@ -115,3 +116,9 @@
         }
     }
 }
+
+<style>
+    .mud-charts-xaxis {
+        opacity: 0;
+    }
+</style>
