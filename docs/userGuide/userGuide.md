@@ -39,6 +39,26 @@ Make sure to complete this step first to ensure you can fully explore and utiliz
 
 ![](drawerTopDashboard.png)
 
+**Widget selection:**
+
+![](dashboardSelection.png)
+
+**Widget confirmation:**
+
+![](dashboardWidgetConfirmation.png)
+
+**Widget base configuration:**
+
+![](dashboardBaseConfiguration.png)
+
+**Widget cyclic configuration:**
+
+![](dashboardCyclicConfiguration.png)
+
+**Widget view:**
+
+![](dashboardWidgetView.png)
+
 ---
 
 ### Notifications
