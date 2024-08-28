@@ -3,9 +3,8 @@ name: Conditional Workflow on PR
 on:
   pull_request:
     branches:
-      - test-docker
-    types: [opened, synchronize, reopened]
-    # types: [closed]
+      - main
+    types: [closed]
 
 jobs:
   check_state:
@@ -15,13 +14,12 @@ jobs:
 
       - name: Check PR state and source branch
         run: |
-          echo "PR is merged and comes from the test-docker branch"
-          # if [ "${{ github.event.pull_request.merged }}" == "true" ] && [ "${{ github.event.pull_request.base.ref }}" == "test-docker" ]; then
-          #   echo "PR is merged and comes from the dev branch"
-          # else
-          #   echo "PR must be merged and come from the dev branch"
-          #   exit 1
-          # fi
+          if [ "${{ github.event.pull_request.merged }}" == "true" ] && [ "${{ github.event.pull_request.base.ref }}" == "main" ]; then
+            echo "PR is merged and comes from the dev branch"
+          else
+            echo "PR must be merged and come from the dev branch"
+            exit 1
+          fi
 
   app_workflow:
     needs: check_state
