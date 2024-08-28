@@ -5,9 +5,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>1.1.1</Version>
-    <PackageReleaseNotes>## 1.1.1 Changelog
-- Modification of README.md file</PackageReleaseNotes>
+    <Version>1.2.0</Version>
+    <PackageReleaseNotes>- First release
+</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Serilog" Version="4.0.1" />

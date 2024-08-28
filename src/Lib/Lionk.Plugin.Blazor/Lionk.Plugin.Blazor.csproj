@@ -1,28 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
 <Project Sdk="Microsoft.NET.Sdk.Razor">
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Version>1.0.0</Version>
+    <PackageReleaseNotes>- First release
+</PackageReleaseNotes>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
-
   <ItemGroup>
     <_ContentIncludedByDefault Remove="wwwroot\PluginCard.css" />
+    <None Include="README.md" Pack="true" PackagePath="" />
   </ItemGroup>
-
-
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.7" />
     <PackageReference Include="MudBlazor" Version="7.6.0" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Lionk.Core.Razor\Lionk.Core.Razor.csproj" />
     <ProjectReference Include="..\Lionk.Plugin\Lionk.Plugin.csproj" />
   </ItemGroup>
-
 </Project>
