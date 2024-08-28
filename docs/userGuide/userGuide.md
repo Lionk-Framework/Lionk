@@ -37,6 +37,8 @@ Make sure to complete this step first to ensure you can fully explore and utiliz
 
 ### Dashboard
 
+![](drawerTopDashboard.png)
+
 ---
 
 ### Notifications
@@ -98,13 +100,19 @@ Add: You can add a new channel by clicking the + ADD button.
 
 ### Plugins
 
+![](drawerTopPlugins.png)
+
 ---
 
 ### Components
 
+![](drawerTopComponents.png)
+
 ---
 
 ### Cyclic
+
+![](drawerTopCyclic.png)
 
 ---
 
