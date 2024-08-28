@@ -27,7 +27,7 @@ print(f"Publishing {app_name} as version {newversion}")
 dockerfile = os.path.join(sln_path, 'Dockerfile')
 
 # Construire l'image Docker avec une étiquette de description
-run_command(['docker', 'build', '-t', f"{docker_registry}/{app_name.lower()}:{newversion}", '-t',f"{docker_registry}/{app_name.lower()}:latest", '.'])	
+run_command(['docker', 'build', '-t', f"{docker_registry}/{app_name.lower()}:{newversion}", '-t',f"{docker_registry}/{app_name.lower()}:latest", dockerfile])	
 
 
 # Pousser l'image Docker au registre
