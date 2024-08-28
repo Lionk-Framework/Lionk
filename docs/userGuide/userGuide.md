@@ -6,8 +6,11 @@
 2. [Installation](#installation)
 3. [Getting Started](#getting-started)
 4. [Main Features](#main-features)
-   - [Feature 1](#feature-1)
+   - [Dashboard](#dashboard)
    - [Notifications](#notifications)
+   - [Plugins](#plugins)
+   - [Components](#components)
+   - [Cyclic](#cyclic)
    - [Manage your account](#manage-your-account)
 5. [Settings and Customization](#settings-and-customization)
 6. [Updates](#updates)
@@ -70,13 +73,40 @@ Before starting the installation, ensure that your system meets the following re
 
 ---
 
+### Dashboard
+
+---
+
 ### Notifications
 
 ![](drawerTopNotification.png)
 
+<br>
+
 **Active:**
 
+![](active.png)
+
+The Active section displays notifications that are currently unresolved or require your attention. Each notification is listed with the following details:
+
+- Date: The timestamp when the notification was triggered.
+Severity: The level of importance, such as Information, Warning, or Critical.
+- Title: A brief title summarizing the notification.
+Message: A more detailed description of the notification.
+- Status: Indicates whether the notification has been read or remains unread.
+- Actions: You can take immediate action on the notification by clicking the MARK AS READ button, which will change its status and move it out of the active notifications list.
+
+<br>
+
 **History:**
+
+![](history.png)
+
+The History section displays all notifications that have been received, regardless of their current status. This includes both read and unread notifications, providing a complete log of all alerts for your reference.
+
+Together, these sections provide a comprehensive view of both ongoing and past notifications, allowing for efficient monitoring and management of alerts within your application.
+
+<br>
 
 **Configuration:**
 
@@ -104,15 +134,31 @@ Add: You can add a new channel by clicking the + ADD button.
 
 ---
 
+### Plugins
+
+---
+
+### Components
+
+---
+
+### Cyclic
+
+---
+
 ### Manage your account
 
 ![](drawerBottomProfile.png)
+
+<br>
 
 **Overview:**
 
 ![](profile.png)
 
 In the section, you can view the basic information about your username and email. Both the Email and Password are editable and can be modified in their respective sections.
+
+<br>
 
 **Role:**
 
