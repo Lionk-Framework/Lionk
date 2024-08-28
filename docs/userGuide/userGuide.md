@@ -12,7 +12,7 @@
    - [Components](#components)
    - [Cyclic](#cyclic)
    - [Manage your account](#manage-your-account)
-5. [Settings and Customization](#settings-and-customization)
+5. [Customization](#customization)
 6. [Updates](#updates)
 
 ---
@@ -168,7 +168,7 @@ In this section, you can manage the roles of different users in your application
 
 ---
 
-## Settings and Customization
+## Customization
 
 ![](appBarDarkMode.png)
 
