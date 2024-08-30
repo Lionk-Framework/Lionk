@@ -45,13 +45,13 @@ The Dashboard section allows you to manage and configure widgets that display va
 
 ![](dashboardSelection.png)
 
-In the Widget selection step, you can choose from a list of available components to add to your dashboard. Each component is listed with its name and type. Select the desired component and click on CHOOSE WIDGET to proceed.
+In the Widget selection step, you can choose from a list of available components to add to your dashboard. Each component is listed with its name. Select the desired component and click on OK to proceed.
 
 **Widget confirmation:**
 
 ![](dashboardWidgetConfirmation.png)
 
-After selecting a component, you will be prompted to confirm your choice. This step ensures that the correct widget is being added to the dashboard. If everything looks good, click on OK to continue.
+After selecting a component, you will be prompted to confirm your choice. This step ensures that the correct widget is being added to the dashboard. If everything looks good, click on SELECT to continue.
 
 **Widget base configuration:**
 
@@ -69,7 +69,7 @@ For components that operate on a cyclic basis, you will need to configure the cy
 
 ![](dashboardWidgetView.png)
 
-Once the widget is configured and added to the dashboard, you can see it in action on the main dashboard view. The widget will display real-time data based on the component’s performance, and you can interact with it directly, including options to refresh or delete the widget.
+Once the widget is configured and added to the dashboard, you can see it in action on the main dashboard view. The widget will display real-time data based on the component’s performance, and you can interact with it directly, including options to configure, refresh or delete the widget.
 
 ---
 
