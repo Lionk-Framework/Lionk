@@ -4,24 +4,22 @@ on:
   pull_request:
     branches:
       - test-docker
-    types: [opened, synchronize, reopened]
-    # types: [closed]
+    types: [closed]
 
 jobs:
   check_state:
-    # if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     runs-on: ${{vars.RUNNER_DISTRIBUTION}}
     steps:
 
       - name: Check PR state and source branch
-        run : echo "test"
-        # run: |
-        #   if [ "${{ github.event.pull_request.merged }}" == "true" ] && [ "${{ github.event.pull_request.base.ref }}" == "main" ]; then
-        #     echo "PR is merged and comes from the dev branch"
-        #   else
-        #     echo "PR must be merged and come from the dev branch"
-        #     exit 1
-        #   fi
+        run: |
+          if [ "${{ github.event.pull_request.merged }}" == "true" ] && [ "${{ github.event.pull_request.base.ref }}" == "main" ]; then
+            echo "PR is merged and comes from the dev branch"
+          else
+            echo "PR must be merged and come from the dev branch"
+            exit 1
+          fi
 
   app_workflow:
     needs: check_state
