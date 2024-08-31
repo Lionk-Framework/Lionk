@@ -26,10 +26,10 @@ print(f"Publishing {app_name} as version {newversion}")
 
 run_command(['ls' , 'src'])
 
-# Créer un builder multiplateforme s'il n'existe pas déjà
+# Create a new builder instance
 run_command(['docker', 'buildx', 'create', '--name', 'mybuilder', '--use'])
 
-# Construire les images Docker pour x86_64 et arm64
+# Create image and push it to the registry
 run_command([
     'docker', 'buildx', 'build', sln_path,
     '--platform', 'linux/amd64,linux/arm64',
@@ -38,5 +38,5 @@ run_command([
     '--push'
 ])
 
-# Vous pouvez supprimer le builder après si vous n'en avez plus besoin
+# Clean up the builder instance
 run_command(['docker', 'buildx', 'rm', 'mybuilder'])
