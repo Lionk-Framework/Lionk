@@ -26,11 +26,17 @@ print(f"Publishing {app_name} as version {newversion}")
 
 run_command(['ls' , 'src'])
 
+# Create a new builder instance
+run_command(['docker', 'buildx', 'create', '--name', 'mybuilder', '--use'])
 
-# Construire l'image Docker avec une étiquette de description
-run_command(['docker', 'build', sln_path , '-t', f"{docker_registry}/{app_name.lower()}:{newversion}", '-t',f"{docker_registry}/{app_name.lower()}:latest"])	
+# Create image and push it to the registry
+run_command([
+    'docker', 'buildx', 'build', sln_path,
+    '--platform', 'linux/amd64,linux/arm64',
+    '--tag', f"{docker_registry}/{app_name.lower()}:{newversion}",
+    '--tag', f"{docker_registry}/{app_name.lower()}:latest",
+    '--push'
+])
 
-
-# Pousser l'image Docker au registre
-run_command(['docker', 'push', f"{docker_registry}/{app_name.lower()}:{newversion}"])
-run_command(['docker', 'push', f"{docker_registry}/{app_name.lower()}:latest"])
+# Clean up the builder instance
+run_command(['docker', 'buildx', 'rm', 'mybuilder'])

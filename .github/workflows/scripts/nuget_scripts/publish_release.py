@@ -54,7 +54,7 @@ for i, project in enumerate(projects):
     # Extract description from description.txt
     changelog = ""
     if project in changelogs:
-        changes = f"##{newversion} Changelog"
+        changes = f"## {newversion} Changelog"
         for change in changelogs[project]:
             changes += f"\n- {change}"
 

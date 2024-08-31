@@ -1,21 +1,22 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<?xml version='1.0' encoding='utf-8'?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Version>1.0.0</Version>
+    <PackageReleaseNotes>- First release
+</PackageReleaseNotes>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <None Include="README.md" Pack="true" PackagePath="" />
   </ItemGroup>
-
   <ItemGroup>
     <Folder Include="Model\Events\" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Lionk.Utils\Lionk.Utils.csproj" />
   </ItemGroup>
-
 </Project>

@@ -1,18 +1,25 @@
-# Utiliser l'image officielle .NET en version 8.0 pour la construction
+# Use the official .NET SDK image for the build process
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+WORKDIR /app
 
-# Copier les fichiers du projet dans le conteneur
+# Copy the project file
 COPY . ./
 
-# Restaurer les dépendances
-RUN dotnet restore
+# Restore dependencies
+RUN dotnet restore App/LionkApp/LionkApp.csproj
 
-# Publier l'application
-RUN dotnet publish -c Release -o out
+# Publish the application as a single executable file
+RUN dotnet publish App/LionkApp/LionkApp.csproj -c Release -p:PublishSingleFile=true --self-contained -o /app/out
 
-# Utiliser l'image runtime .NET en version 8.0 pour exécuter l'application
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
-COPY --from=build-env /out .
+# Use the official .NET runtime image
+FROM mcr.microsoft.com/dotnet/runtime-deps:8.0
+WORKDIR /app
 
-# Définir le point d'entrée de l'application
-ENTRYPOINT ["dotnet", "LionkApp.dll"]
+# Copy the published application to the runtime image
+COPY --from=build-env /app/out .
+
+# Set the permissions to execute the application
+RUN chmod +x LionkApp
+
+# Set the entry point
+ENTRYPOINT ["./LionkApp"]
