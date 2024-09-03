@@ -109,7 +109,9 @@ This repo hosts all the software bricks making up our framework. Here's a brief 
 ## 🚀 Getting Started
 
 ### 📦 Deployment
-To see how to deploy the application, please refer to the deployment guide: [Deployment guide]().
+To see how to deploy the application, please refer to the deployment guide: [Deployment guide](https://github.com/Lionk-Framework/Lionk/blob/update-readme/docs/deployement/DockerDeploy.md).
+
+For a full documentation on how to deploy the application on a raspberry with GPIO enable see [Rpi guide](https://github.com/Lionk-Framework/Lionk/blob/update-readme/docs/deployement/RaspberryDeploy.md)
 
 ### 🤖 Usage
 To see how to use the application, please refer to the user guide: [User guide]().
@@ -127,9 +129,9 @@ We welcome contributions! Here are several ways you can contribute to the projec
 
 - **[Report Issues](https://github.com/Lionk-Framework/Lionk/issues)**: Submit bug reports or feature requests for the `Lionk` project.
 - **[Submit Pull Requests](https://github.com/Lionk-Framework/Lionk/pulls)**: Review open PRs and submit your own to improve the codebase.
-- **[Develop New Plugins](TODO)**: Develop your own plugins and implement the components of your choice! 
+- **[Develop New Plugins](https://github.com/Lionk-Framework/Lionk/blob/update-readme/docs/developer-guide/PluginDevGuide.md)**: Develop your own plugins and implement the components of your choice! 
 
-Please refer to the [Contributing Guidelines](https://github.com/Lionk-Framework/Lionk/blob/update-readme/docs/developer-guide/contributionGuide.md) to learn how to contribute effectively.
+Please refer to the [Contributing Guidelines](https://github.com/Lionk-Framework/Lionk/blob/update-readme/docs/developer-guide/ContributionGuide.md) to learn how to contribute effectively.
 
 You can find the complete documentation of the code [here](https://lionk-framework.github.io/).
 
