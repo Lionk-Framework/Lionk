@@ -1,7 +1,3 @@
-Voici le document mis à jour avec les chemins des images adaptés pour refléter leur nouveau dossier `Images` :
-
----
-
 # User Guide
 
 ## Table of Contents
@@ -284,7 +280,3 @@ You can also manage the roles of different users in your application. The table 
 ![](Images/appBarDarkMode.png)
 
 **`Dark Mode`**: Customize the application's appearance by toggling **`Dark Mode`**. This option allows you to switch between the default light theme and a dark theme, which may be easier on the eyes, especially in low-light environments.
-
----
-
-Toutes les références d'images ont été mises à jour pour refléter leur nouvel emplacement dans le dossier `Images`. Assurez-vous que le dossier `Images` est correctement nommé et accessible pour que les images s'affichent correctement dans le document.
