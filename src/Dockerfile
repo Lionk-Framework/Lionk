@@ -3,13 +3,13 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
 # Copy the project file
-COPY ../ ./
+COPY . ./
 
 # Restore dependencies
-RUN dotnet restore ../App/LionkApp/LionkApp.csproj
+RUN dotnet restore App/LionkApp/LionkApp.csproj
 
 # Publish the application as a single executable file
-RUN dotnet publish ../App/LionkApp/LionkApp.csproj -c Release -p:PublishSingleFile=true --self-contained -o /app/out
+RUN dotnet publish App/LionkApp/LionkApp.csproj -c Release -p:PublishSingleFile=true --self-contained -o /app/out
 
 # Use the official .NET runtime image
 FROM mcr.microsoft.com/dotnet/runtime-deps:8.0
