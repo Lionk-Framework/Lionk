@@ -129,7 +129,7 @@ We welcome contributions! Here are several ways you can contribute to the projec
 - **[Submit Pull Requests](https://github.com/Lionk-Framework/Lionk/pulls)**: Review open PRs and submit your own to improve the codebase.
 - **[Develop New Plugins](TODO)**: Develop your own plugins and implement the components of your choice! 
 
-Please refer to the [Contributing Guidelines](TODO) to learn how to contribute effectively.
+Please refer to the [Contributing Guidelines](https://github.com/Lionk-Framework/Lionk/blob/update-readme/docs/developer-guide/contributionGuide.md) to learn how to contribute effectively.
 
 You can find the complete documentation of the code [here](https://lionk-framework.github.io/).
 
