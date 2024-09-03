@@ -19,7 +19,7 @@ if %ERRORLEVEL% NEQ 0 (
 )
 
 set RASPBERRY_PI_USER=pi
-set RASPBERRY_PI_HOST=192.168.1.99
+set RASPBERRY_PI_HOST=192.168.1.111
 set RASPBERRY_PI_DIR=Lionk
 
 rem Check if the remote directory exists, create if it doesn't
