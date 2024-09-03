@@ -45,7 +45,7 @@ The Dashboard section allows you to manage and configure widgets that display va
 
 ![](dashboardSelection.png)
 
-In the Widget selection step, you can choose from a list of available components to add to your dashboard. Each component is listed with its name. Select the desired component and click on **`OK`** to proceed.
+By clicking on the **`+`** flaoting button, you can choose from a list of available components to add to your dashboard. Each component is listed with its name. Select the desired component and click on **`OK`** to proceed.
 
 **Widget confirmation:**
 
@@ -152,9 +152,11 @@ The Plugin Importation section allows you to add external plugins to enhance the
 
 ![](pluginsDependancies.png)
 
-Once the plugin is loaded, it will appear in the list of active plugins, displaying key details such as the name, version, and author of the plugin.
+Once the plugin is loaded, it will appear in the list of loaded plugins, displaying key details such as the name, version, and author of the plugin.
 
-After the plugin is loaded, you can click on the **`SHOW DEPENDENCIES`** button to see a list of all the dependencies associated with the plugin. This section provides a detailed view of the required libraries and their specific versions, ensuring that all necessary components are present.
+After the plugin is loaded, you can click on the **`SHOW DEPENDENCIES`** button to see a list of all the dependencies associated with the plugin. This section provides a detailed view of the required libraries and their specific versions, ensuring that all necessary components are present. 
+
+If some dependecies are missing, an error will be displayed.
 
 ---
 
