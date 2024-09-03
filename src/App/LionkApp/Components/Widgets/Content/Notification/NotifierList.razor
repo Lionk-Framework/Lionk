@@ -61,7 +61,7 @@
             if (notifier != null)
             {
                 NotificationService.RemoveNotifier(notifier);
-                StateHasChanged();
+                await InvokeAsync(StateHasChanged);
             }
         }
     }
