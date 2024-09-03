@@ -93,14 +93,14 @@
         UserName = AuthStateProvider.CurrentUser?.Username ?? "Not Logged In";
         _theme = new MudTheme { PaletteLight = Theme.LightPalette, PaletteDark = Theme.DarkPalette, LayoutProperties = new LayoutProperties() };
         NotificationState.BadgeCounter = NotificationService.GetUnreadNotificationCount();
-        NotificationState.OnNotificationReceived += IncrementBadgeCounter;
-        NotificationState.OnBadgeCounterChanged += StateHasChanged;
+        NotificationState.OnNotificationReceived += () => InvokeAsync(IncrementBadgeCounter);
+        NotificationState.OnBadgeCounterChanged += () => InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()
     {
-        NotificationState.OnNotificationReceived -= IncrementBadgeCounter;
-        NotificationState.OnBadgeCounterChanged -= StateHasChanged;
+        NotificationState.OnNotificationReceived -= () => InvokeAsync(IncrementBadgeCounter);
+        NotificationState.OnBadgeCounterChanged -= () => InvokeAsync(StateHasChanged);
     }
 
     private void DarkModeToggle()
