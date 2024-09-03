@@ -26,14 +26,14 @@ Now you need to configure the ufw to allow the ports that you want to use on Lio
 Please keep in mind that you need to allow the port that you will use for LionkApp and SSH.
 
 ```bash
-sudo ufw allow 22
+sudo ufw allow 22 # 22 or the port that you use for SSH
 sudo ufw allow <LionkAppPort>
 sudo ufw enable
 ```
 
 ## 4. Create a docker-compose.yml file
 
-Create a docker-compose.yml file in the directory that you want to deploy LionkApp. You can use the following template for the docker-compose.yml file.
+Create a docker-compose.yml file in the directory that you want to deploy LionkApp. You can use the following template for the docker-compose.yml file or copy the file in [../src/docker-compose.yml](../src/docker-compose.yml)
 
 ```yaml
 version: '3.8'
@@ -41,14 +41,15 @@ version: '3.8'
 services:
   lionkapp:
     image: ghcr.io/lionk-framework/lionkapp:latest
-    privileged: true
+    privileged: true # Required to access GPIO
+    user: root # Run as root to access GPIO
     devices:
       - "/dev/gpiomem:/dev/gpiomem"
       - "/dev/mem:/dev/mem"
       - "/dev/ttyAMA0:/dev/ttyAMA0"
       - "/dev/ttyS0:/dev/ttyS0"
     volumes:
-      - ./sys/class/gpio:/sys/class/gpio
+      - /sys:/sys # Give the full access to sys folder
       - ./config:/app/config
       - ./plugins:/app/plugins
       - ./data:/app/data
@@ -57,14 +58,17 @@ services:
       - ./keys:/root/.aspnet/DataProtection-Keys
     ports:
       - "5001:5001"
+    restart: always # can be removed if you don't want to restart the container
 ```
 
 ### 4.1. Explanation of the docker-compose.yml file
 - `image`: The image that will be used to deploy LionkApp. You can use the latest version of the image by using `ghcr.io/lionk-framework/lionkapp:latest`.
 - `privileged`: This is required to access the GPIO pins on the Raspberry Pi.
+- `user: root` : This is required to access the GPIO pins on the Raspberry Pi.
 - `devices`: The devices that will be used by the LionkApp to access the GPIO pins.
 - `volumes`: The volumes that will be used by the LionkApp to store the configuration, plugins, data, logs, temp files, and keys. Keys are used for the authentication protection, if you don't store the keys, you will need to re-authenticate every time you restart the LionkApp by clearing the cookies. `Sys` folder is used to access the GPIO pins. The `settings` folder is used to store the configuration file.
 - `ports`: The port that will be used by the LionkApp. You can change the port by changing the first port number in the port mapping.
+- `restart`: This is used to restart the container if it is stopped. You can remove this line if you don't want to restart the container.
 
 ### 4.2. Changing the ports settings
 
@@ -155,3 +159,10 @@ You can access the docker logs of the container by using the following command. 
 docker logs <CONTAINER ID>
 ```
 
+## 12. Launch docker at startup
+
+if you want to launch the docker container at the startup, you can use the following command.
+
+```bash
+sudo systemctl enable docker
+```
