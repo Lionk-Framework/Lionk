@@ -2,7 +2,6 @@
 
 ## Table of Contents
 
-
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=4 orderedList=false} -->
 
 <!-- code_chunk_output -->
@@ -12,25 +11,30 @@
   - [1. Introduction](#1-introduction)
   - [2. Registration](#2-registration)
   - [3. Main Features](#3-main-features)
-    - [3.1. Dashboard](#31-dashboard)
-      - [3.1.1. Widget selection](#311-widget-selection)
-      - [3.1.2. Widget base configuration](#312-widget-base-configuration)
-      - [3.1.3. Widget cyclic configuration](#313-widget-cyclic-configuration)
-      - [3.1.4. Manage widgets](#314-manage-widgets)
-    - [3.2. Notifications](#32-notifications)
-      - [3.2.1 Active tab](#321-active-tab)
-      - [3.2.2 History tab](#322-history-tab)
-      - [3.2.3 Configuration tab](#323-configuration-tab)
-    - [3.3 Plugins](#33-plugins)
-      - [3.3.1 Plugins importation](#331-plugins-importation)
-      - [3.3.2 Plugins dependencies](#332-plugins-dependencies)
-    - [3.4 Components](#34-components)
-    - [Cyclic](#cyclic)
-    - [Manage your account](#manage-your-account)
-  - [Customization](#customization)
+    - [3.1. Plugins](#31-plugins)
+      - [3.1.1 Plugins importation](#311-plugins-importation)
+      - [3.1.2 Plugins dependencies](#312-plugins-dependencies)
+    - [3.2. Components](#32-components)
+      - [3.2.1 View](#321-view)
+      - [3.2.2 Available components](#322-available-components)
+      - [3.2.3 Existing components](#323-existing-components)
+      - [3.2.4 Finalization](#324-finalization)
+    - [3.3. Dashboard](#33-dashboard)
+      - [3.3.1. Widget selection](#331-widget-selection)
+      - [3.3.2. Widget base configuration](#332-widget-base-configuration)
+      - [3.3.3. Widget cyclic configuration](#333-widget-cyclic-configuration)
+      - [3.3.4. Manage widgets](#334-manage-widgets)
+    - [3.4. Cyclic](#34-cyclic)
+      - [3.4.1 View](#341-view)
+      - [3.4.2 Components](#342-components)
+    - [3.5. Notifications](#35-notifications)
+      - [3.5.1 Active tab](#351-active-tab)
+      - [3.5.2 History tab](#352-history-tab)
+      - [3.5.3 Configuration tab](#353-configuration-tab)
+  - [4. Manage your account](#4-manage-your-account)
+  - [5. Customization](#5-customization)
 
 <!-- /code_chunk_output -->
-
 
 ---
 
@@ -54,28 +58,84 @@ Make sure to complete this step first to ensure you can fully explore and utiliz
 
 ## 3. Main Features
 
-### 3.1. Dashboard
+### 3.1. Plugins
+
+![](drawerTopPlugins.png)
+
+#### 3.1.1 Plugins importation
+
+![](plugins.png)
+
+The Plugin Importation section allows you to add external plugins to enhance the functionality of your application. Follow these steps to successfully import a plugin:
+
+**`File Selection`**: Begin by clicking the **`BROWSE`** button to open the file explorer. Navigate to the directory where your plugin .dll file is located, select it (e.g., Lionk.TestComponent.dll), and click **`Open`**.
+
+#### 3.1.2 Plugins dependencies
+
+![](pluginsAfterImportation.png)
+
+![](pluginsDependancies.png)
+
+Once the plugin is loaded, it will appear in the list of loaded plugins, displaying key details such as the name, version, and author of the plugin.
+
+After the plugin is loaded, you can click on the **`SHOW DEPENDENCIES`** button to see a list of all the dependencies associated with the plugin. This section provides a detailed view of the required libraries and their specific versions, ensuring that all necessary components are present. 
+
+If some dependencies are missing, an error will be displayed.
+
+---
+
+### 3.2. Components
+
+![](drawerTopComponents.png)
+
+#### 3.2.1 View
+
+![](components.png)
+
+The View section allows you to manage and organize components within your application. This interface provides an overview of available and existing components, enabling you to add or remove them as needed.
+
+#### 3.2.2 Available components
+
+![](componentsAvailability.png)
+
+In the Available components section, you can see a list of all the components that can be added to your application. Each component is listed with its type and description. To add a component to your application, select it and click the **`ADD SELECTED`** button.
+
+#### 3.2.3 Existing components
+
+![](componentsExistence.png)
+
+The Existing components section displays the components that have already been added to your application. You can search, rename, and delete components from this list. To remove a component, select it and click the **`DELETE SELECTED`** button.
+
+#### 3.2.4 Finalization
+
+![](componentsFinalization.png)
+
+The Finalization step confirms your component configurations. Once you have reviewed the existing components and made the necessary adjustments, finalize your setup by clicking the appropriate button. This ensures that your components are correctly configured and ready for use within the application.
+
+---
+
+### 3.3. Dashboard
 
 ![](drawerTopDashboard.png)
 
 The Dashboard section allows you to manage and configure widgets that display various components and their data within your application. Here’s how you can set up and customize your widgets
 
-#### 3.1.1. Widget selection
+#### 3.3.1. Widget selection
 
 ![](dashboardSelection.png)
 
-By clicking on the **`+`** flaoting button, you can choose from a list of available components to add to your dashboard. Each component is listed with its name. Select the desired component and click on `CHOOSE WIDGET` to proceed.
+By clicking on the **`+`** floating button, you can choose from a list of available components to add to your dashboard. Each component is listed with its name. Select the desired component and click on `CHOOSE WIDGET` to proceed.
 
 ##### View selection:
 
 ![](dashboardWidgetConfirmation.png)
 
-After selecting a component, you will be prompted to select the disponible view. Choose the view by clicking `SELECT`.
+After selecting a component, you will be prompted to select the available view. Choose the view by clicking `SELECT`.
 Then, click on `OK` to proceed.
 
 Now you can see the selected component with the selected view in the dashboard.
 
-#### 3.1.2. Widget base configuration
+#### 3.3.2. Widget base configuration
 
 By clicking on the configuration button, you can configure the widget's base settings.
 
@@ -91,9 +151,9 @@ This configuration is accessible by each widget and allows you to set the name o
 
 This modification will affect the component name in the `component` tab.
 
-#### 3.1.3. Widget cyclic configuration
+#### 3.3.3. Widget cyclic configuration
 
-If the component that you want configure is cyclic, a cyclic configuration will be available. by clicking on the left or right arrow.
+If the component that you want to configure is cyclic, a cyclic configuration will be available. by clicking on the left or right arrow.
 
 ![](dashboardCyclicConfiguration.png)
 
@@ -102,7 +162,7 @@ You can update the period of the component and the "next execution" computation.
 
 When you pass your mouse over the selection of the "Next execution computation" selection radio buttons, you will see a tooltip that explains the different options.
 
-#### 3.1.4. Manage widgets
+#### 3.3.4. Manage widgets
 
 ![](dashboardWidgetView.png)
 
@@ -110,13 +170,45 @@ Once the widget is configured and added to the dashboard, you can see it in acti
 
 ---
 
-### 3.2. Notifications
+### 3.4. Cyclic
+
+![](drawerTopCyclic.png)
+
+#### 3.4.1 View
+
+![](cyclic.png)
+
+The View displays the current state of the cyclic processes, including key metrics such as:
+
+- State: Indicates whether the process is currently running or paused.
+- Mean Cycle Time: The average time taken for one complete cycle, measured in milliseconds.
+- Max Cycle Time: The maximum duration recorded for a single cycle.
+- Watchdog Time: A configurable time threshold that monitors the maximum allowable cycle time before triggering a warning.
+
+You can pause the cyclic processes using the **`Pause`** button, and adjust the Watchdog Time as necessary to ensure optimal performance.
+
+<br>
+
+#### 3.4.2 Components
+
+![](cyclicComponents.png)
+
+The Components section lists all the active components that participate in the cyclic process. Each component is displayed with the following details:
+
+- Period: The time interval at which the component operates.
+- Cycle Count: The number of cycles the component has completed.
+
+Components in error state will prompt an **`action button`** (e.g., **`RESET`**) allowing you to address issues directly from this view, ensuring that all components function correctly within the cyclic system.
+
+---
+
+### 3.5. Notifications
 
 ![](drawerTopNotification.png)
 
 <br>
 
-#### 3.2.1 Active tab
+#### 3.5.1 Active tab
 
 ![](active.png)
 
@@ -135,7 +227,7 @@ You can also access active notifications by clicking the **`bell button`** in th
 
 <br>
 
-#### 3.2.2 History tab
+#### 3.5.2 History tab
 
 ![](history.png)
 
@@ -145,7 +237,7 @@ Together, these sections provide a comprehensive view of both ongoing and past n
 
 <br>
 
-#### 3.2.3 Configuration tab
+#### 3.5.3 Configuration tab
 
 ![](configuration.png)
 
@@ -171,120 +263,18 @@ The Channels section lists the platforms through which notifications are sent, s
 
 ---
 
-### 3.3 Plugins
-
-![](drawerTopPlugins.png)
-
-#### 3.3.1 Plugins importation
-
-![](plugins.png)
-
-The Plugin Importation section allows you to add external plugins to enhance the functionality of your application. Follow these steps to successfully import a plugin:
-
-**`File Selection`**: Begin by clicking the **`BROWSE`** button to open the file explorer. Navigate to the directory where your plugin .dll file is located, select it (e.g., Lionk.TestComponent.dll), and click **`Open`**.
-
-#### 3.3.2 Plugins dependencies
-
-![](pluginsAfterImportation.png)
-
-![](pluginsDependancies.png)
-
-Once the plugin is loaded, it will appear in the list of loaded plugins, displaying key details such as the name, version, and author of the plugin.
-
-After the plugin is loaded, you can click on the **`SHOW DEPENDENCIES`** button to see a list of all the dependencies associated with the plugin. This section provides a detailed view of the required libraries and their specific versions, ensuring that all necessary components are present. 
-
-If some dependecies are missing, an error will be displayed.
-
----
-
-### 3.4 Components
-
-![](drawerTopComponents.png)
-
-**View:**
-
-![](components.png)
-
-The View section allows you to manage and organize components within your application. This interface provides an overview of available and existing components, enabling you to add or remove them as needed.
-
-**Available components:**
-
-![](componentsAvailability.png)
-
-In the Available components section, you can see a list of all the components that can be added to your application. Each component is listed with its type and description. To add a component to your application, select it and click the **`ADD SELECTED`** button.
-
-**Existing components:**
-
-![](componentsExistence.png)
-
-The Existing components section displays the components that have already been added to your application. You can search, rename, and delete components from this list. To remove a component, select it and click the **`DELETE SELECTED`** button.
-
-**Finalization:**
-
-![](componentsFinalization.png)
-
-The Finalization step confirms your component configurations. Once you have reviewed the existing components and made the necessary adjustments, finalize your setup by clicking the appropriate button. This ensures that your components are correctly configured and ready for use within the application.
-
----
-
-### Cyclic
-
-![](drawerTopCyclic.png)
-
-**View:**
-
-![](cyclic.png)
-
-The View displays the current state of the cyclic processes, including key metrics such as:
-
-- State: Indicates whether the process is currently running or paused.
-- Mean Cycle Time: The average time taken for one complete cycle, measured in milliseconds.
-- Max Cycle Time: The maximum duration recorded for a single cycle.
-- Watchdog Time: A configurable time threshold that monitors the maximum allowable cycle time before triggering a warning.
-
-You can pause the cyclic processes using the **`Pause`** button, and adjust the Watchdog Time as necessary to ensure optimal performance.
-
-<br>
-
-**Components:**
-
-![](cyclicComponents.png)
-
-The Components section lists all the active components that participate in the cyclic process. Each component is displayed with the following details:
-
-- Period: The time interval at which the component operates.
-- Cycle Count: The number of cycles the component has completed.
-
-Components in error state will prompt an **`action button`** (e.g., **`RESET`**) allowing you to address issues directly from this view, ensuring that all components function correctly within the cyclic system.
-
----
-
-### Manage your account
+## 4. Manage your account
 
 ![](drawerBottomProfile.png)
 
-<br>
+In this section, you can view the basic information about your username and email. Both the **`Email`** and **`Password`** are editable and can be modified in their respective sections.
 
-**Overview:**
-
-![](profile.png)
-
-In the section, you can view the basic information about your username and email. Both the **`Email`** and **`Password`** are editable and can be modified in their respective sections.
-
-<br>
-
-**Role:**
-
-![](role.png)
-
-In this section, you can manage the roles of different users in your application. The table displays the usernames, their associated email addresses, and the roles assigned to each user. You can also delete a user by clicking the red **`DELETE`** button in the "Actions" column. This interface allows for quick and easy role management to ensure that users have the appropriate level of access within the application.
+You can also manage the roles of different users in your application. The table displays the usernames, their associated email addresses, and the roles assigned to each user. You can also delete a user by clicking the red **`DELETE`** button in the "Actions" column. This interface allows for quick and easy role management to ensure that users have the appropriate level of access within the application.
 
 ---
 
-## Customization
+## 5. Customization
 
 ![](appBarDarkMode.png)
 
-**`Dark Mode`**: Customize the application's
-
- appearance by toggling **`Dark Mode`**. This option allows you to switch between the default light theme and a dark theme, which may be easier on the eyes, especially in low-light environments.
+**`Dark Mode`**: Customize the application's appearance by toggling **`Dark Mode`**. This option allows you to switch between the default light theme and a dark theme, which may be easier on the eyes, especially in low-light environments.
