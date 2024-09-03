@@ -45,7 +45,7 @@ Lionk Core is a modular platform developed in .NET designed to enable the manage
 
 The application provides a web interface for configuring components and visualizing data. Users can easily add new plugins to define additional components. The application is published as a Docker image for easy deployment, with each release also publishing new NuGet packages to facilitate plugin development.
 
-[Full project description]()
+[Full project description](https://github.com/Lionk-Framework/Lionk/blob/dev/docs/projectDescription.md)
 
 ## 👾 Features
 - **Dashboard Data Consultation:** Users can add component views to the dashboard to continuously monitor component-specific data through an up-to-date dashboard.
