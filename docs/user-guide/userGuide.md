@@ -286,5 +286,6 @@ To quickly get started with Lionk, follow these steps:
 
 1. **Register an account**: Create a new account to access the application.
 2. **Import Plugins**: Add external plugins to enhance the application's functionality. To test the plugin importation, you can use the provided `Lionk.TestComponent.dll` file and `Lionk.Core.dll` file and `Lionk.Core.Razor.dll` file. This will give you 2 components to work with and default views.
+[plugins available here](https://github.com/Lionk-Framework/Lionk/releases/tag/LionkApp_1.0.0)
 3. **Add Components**: Choose from the available components to add to your application.
 4. **Configure Widgets**: Customize your dashboard by selecting widgets and configuring their settings.
