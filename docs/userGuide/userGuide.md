@@ -1,3 +1,7 @@
+Voici le document mis à jour avec les chemins des images adaptés pour refléter leur nouveau dossier `Images` :
+
+---
+
 # User Guide
 
 ## Table of Contents
@@ -46,7 +50,7 @@ Welcome to Lionk! This guide will help you navigate the application's key featur
 
 ## 2. Registration
 
-![](registration.png)
+![](Images/registration.png)
 
 Before you can start using the Lionk application, you need to register an account. 
 
@@ -60,11 +64,11 @@ Make sure to complete this step first to ensure you can fully explore and utiliz
 
 ### 3.1. Plugins
 
-![](drawerTopPlugins.png)
+![](Images/drawerTopPlugins.png)
 
 #### 3.1.1 Plugins importation
 
-![](plugins.png)
+![](Images/plugins.png)
 
 The Plugin Importation section allows you to add external plugins to enhance the functionality of your application. Follow these steps to successfully import a plugin:
 
@@ -72,9 +76,9 @@ The Plugin Importation section allows you to add external plugins to enhance the
 
 #### 3.1.2 Plugins dependencies
 
-![](pluginsAfterImportation.png)
+![](Images/pluginsAfterImportation.png)
 
-![](pluginsDependancies.png)
+![](Images/pluginsDependancies.png)
 
 Once the plugin is loaded, it will appear in the list of loaded plugins, displaying key details such as the name, version, and author of the plugin.
 
@@ -86,29 +90,29 @@ If some dependencies are missing, an error will be displayed.
 
 ### 3.2. Components
 
-![](drawerTopComponents.png)
+![](Images/drawerTopComponents.png)
 
 #### 3.2.1 View
 
-![](components.png)
+![](Images/components.png)
 
 The View section allows you to manage and organize components within your application. This interface provides an overview of available and existing components, enabling you to add or remove them as needed.
 
 #### 3.2.2 Available components
 
-![](componentsAvailability.png)
+![](Images/componentsAvailability.png)
 
 In the Available components section, you can see a list of all the components that can be added to your application. Each component is listed with its type and description. To add a component to your application, select it and click the **`ADD SELECTED`** button.
 
 #### 3.2.3 Existing components
 
-![](componentsExistence.png)
+![](Images/componentsExistence.png)
 
 The Existing components section displays the components that have already been added to your application. You can search, rename, and delete components from this list. To remove a component, select it and click the **`DELETE SELECTED`** button.
 
 #### 3.2.4 Finalization
 
-![](componentsFinalization.png)
+![](Images/componentsFinalization.png)
 
 The Finalization step confirms your component configurations. Once you have reviewed the existing components and made the necessary adjustments, finalize your setup by clicking the appropriate button. This ensures that your components are correctly configured and ready for use within the application.
 
@@ -116,19 +120,19 @@ The Finalization step confirms your component configurations. Once you have revi
 
 ### 3.3. Dashboard
 
-![](drawerTopDashboard.png)
+![](Images/drawerTopDashboard.png)
 
 The Dashboard section allows you to manage and configure widgets that display various components and their data within your application. Here’s how you can set up and customize your widgets
 
 #### 3.3.1. Widget selection
 
-![](dashboardSelection.png)
+![](Images/dashboardSelection.png)
 
 By clicking on the **`+`** floating button, you can choose from a list of available components to add to your dashboard. Each component is listed with its name. Select the desired component and click on `CHOOSE WIDGET` to proceed.
 
 ##### View selection:
 
-![](dashboardWidgetConfirmation.png)
+![](Images/dashboardWidgetConfirmation.png)
 
 After selecting a component, you will be prompted to select the available view. Choose the view by clicking `SELECT`.
 Then, click on `OK` to proceed.
@@ -137,15 +141,15 @@ Now you can see the selected component with the selected view in the dashboard.
 
 #### 3.3.2. Widget base configuration
 
-By clicking on the configuration button, you can configure the widget's base settings.
+By clicking on the configuration button, you can configure the component's base settings.
 
-//TODO: add image with the configuration button identified
+![](Images/componentConfiguration.png)
 
-then you will be prompted to configure the widget.
+then you will be prompted to configure the component.
 
 ##### Widget base configuration:
 
-![](dashboardBaseConfiguration.png)
+![](Images/dashboardBaseConfiguration.png)
 
 This configuration is accessible by each widget and allows you to set the name of the component directly in the widget.
 
@@ -155,7 +159,7 @@ This modification will affect the component name in the `component` tab.
 
 If the component that you want to configure is cyclic, a cyclic configuration will be available. by clicking on the left or right arrow.
 
-![](dashboardCyclicConfiguration.png)
+![](Images/dashboardCyclicConfiguration.png)
 
 At this point, you can configure the cyclic settings of the component as you wish.
 You can update the period of the component and the "next execution" computation. 
@@ -164,7 +168,7 @@ When you pass your mouse over the selection of the "Next execution computation" 
 
 #### 3.3.4. Manage widgets
 
-![](dashboardWidgetView.png)
+![](Images/dashboardWidgetView.png)
 
 Once the widget is configured and added to the dashboard, you can see it in action on the main dashboard view. The widget will display real-time data based on the component’s performance, and you can interact with it directly, including options to **`configure`**, **`refresh`**, or **`delete`** the widget.
 
@@ -172,11 +176,11 @@ Once the widget is configured and added to the dashboard, you can see it in acti
 
 ### 3.4. Cyclic
 
-![](drawerTopCyclic.png)
+![](Images/drawerTopCyclic.png)
 
 #### 3.4.1 View
 
-![](cyclic.png)
+![](Images/cyclic.png)
 
 The View displays the current state of the cyclic processes, including key metrics such as:
 
@@ -191,7 +195,7 @@ You can pause the cyclic processes using the **`Pause`** button, and adjust the 
 
 #### 3.4.2 Components
 
-![](cyclicComponents.png)
+![](Images/cyclicComponents.png)
 
 The Components section lists all the active components that participate in the cyclic process. Each component is displayed with the following details:
 
@@ -204,13 +208,13 @@ Components in error state will prompt an **`action button`** (e.g., **`RESET`**)
 
 ### 3.5. Notifications
 
-![](drawerTopNotification.png)
+![](Images/drawerTopNotification.png)
 
 <br>
 
 #### 3.5.1 Active tab
 
-![](active.png)
+![](Images/active.png)
 
 The Active section displays notifications that are currently unresolved or require your attention. Each notification is listed with the following details:
 
@@ -218,18 +222,20 @@ The Active section displays notifications that are currently unresolved or requi
 - Severity: The level of importance, such as Information, Warning, or Critical.
 - Title: A brief title summarizing the notification.
 - Message: A more detailed description of the notification.
-- Status: Indicates whether the notification has been read or remains unread.
+- Status: Indicates
+
+ whether the notification has been read or remains unread.
 - Actions: You can take immediate action on the notification by clicking the **`MARK AS READ`** button, which will change its status and move it out of the active notifications list.
 
 You can also access active notifications by clicking the **`bell button`** in the app bar which also indicates the number of unread notifications:
 
-![](appBarNotification.png)
+![](Images/appBarNotification.png)
 
 <br>
 
 #### 3.5.2 History tab
 
-![](history.png)
+![](Images/history.png)
 
 The History section displays all notifications that have been received, regardless of their current status. This includes both read and unread notifications, providing a complete log of all alerts for your reference.
 
@@ -239,7 +245,7 @@ Together, these sections provide a comprehensive view of both ongoing and past n
 
 #### 3.5.3 Configuration tab
 
-![](configuration.png)
+![](Images/configuration.png)
 
 In this view, you can manage the various Notifiers and Channels within your application. This interface allows you to configure how notifications are handled and which channels are used to deliver them.
 
@@ -265,7 +271,7 @@ The Channels section lists the platforms through which notifications are sent, s
 
 ## 4. Manage your account
 
-![](drawerBottomProfile.png)
+![](Images/drawerBottomProfile.png)
 
 In this section, you can view the basic information about your username and email. Both the **`Email`** and **`Password`** are editable and can be modified in their respective sections.
 
@@ -275,6 +281,10 @@ You can also manage the roles of different users in your application. The table 
 
 ## 5. Customization
 
-![](appBarDarkMode.png)
+![](Images/appBarDarkMode.png)
 
 **`Dark Mode`**: Customize the application's appearance by toggling **`Dark Mode`**. This option allows you to switch between the default light theme and a dark theme, which may be easier on the eyes, especially in low-light environments.
+
+---
+
+Toutes les références d'images ont été mises à jour pour refléter leur nouvel emplacement dans le dossier `Images`. Assurez-vous que le dossier `Images` est correctement nommé et accessible pour que les images s'affichent correctement dans le document.
