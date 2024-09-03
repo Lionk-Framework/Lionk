@@ -1,5 +1,7 @@
 ## Plugin Development Guide for Lionk
 
+[Full API documentation](https://lionk-framework.github.io/)
+
 ### Overview
 
 The Lionk framework allows developers to create custom plugins in the form of **Components** and **Views**. Components represent the core functionality, while Views provide a UI representation for these components. This guide explains how to develop these plugins, the lifecycle of components, and how to create corresponding views.
