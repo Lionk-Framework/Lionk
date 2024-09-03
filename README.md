@@ -35,9 +35,17 @@
 
 ## 📍 Overview
 
+### 👀 Problem
+Managing a diverse set of home and industrial components in an integrated and efficient manner is challenging. Existing solutions often lack flexibility, requiring significant customization and redevelopment when integrating new components. This inflexibility can lead to increased costs and reduced system efficiency.
+
+Additionally, many existing systems are not designed to handle real-time data exchange and monitoring efficiently, leading to delays and potential errors in critical operations. There is also a need for a secure, user-friendly interface that allows administrators and operators to supervise and control the system easily.
+
+### 🚀 Solution
 Lionk Core is a modular platform developed in .NET designed to enable the management and integration of various components through plugins. The project is crafted to cater to end users (operators and administrators) as well as plugin developers, offering maximum flexibility and extensibility. The primary goal is to enhance the quality of life in home environments by allowing seamless integration and management of various components.
 
 The application provides a web interface for configuring components and visualizing data. Users can easily add new plugins to define additional components. The application is published as a Docker image for easy deployment, with each release also publishing new NuGet packages to facilitate plugin development.
+
+[Full project description]()
 
 ## 👾 Features
 - **Dashboard Data Consultation:** Users can add component views to the dashboard to continuously monitor component-specific data through an up-to-date dashboard.
