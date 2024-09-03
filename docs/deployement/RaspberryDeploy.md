@@ -33,7 +33,7 @@ sudo ufw enable
 
 ## 4. Create a docker-compose.yml file
 
-Create a docker-compose.yml file in the directory that you want to deploy LionkApp. You can use the following template for the docker-compose.yml file or copy the file in [../src/docker-compose.yml](../src/docker-compose.yml)
+Create a docker-compose.yml file in the directory that you want to deploy LionkApp.
 
 ```yaml
 version: '3.8'

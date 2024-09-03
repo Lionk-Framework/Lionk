@@ -58,7 +58,7 @@ The application provides a web interface for configuring components and visualiz
 - **Cyclical Execution:** The application supports cyclical execution of components, enabling them to run at specified intervals automatically.
 
 ## 🧩 Example
-Use Case: Boiler Room Control Integration
+Use Case:  Home heating system management.
 - **Energy Storage:** Administrators can manage energy storage from a living room chimney.
 - **Temperature Optimization:** The system optimizes heat flow based on storage temperatures using a 3-way valve.
 - **Auto-Regulation:** The system auto-regulates based on the chimney's temperature.
@@ -83,7 +83,8 @@ Use Case: Boiler Room Control Integration
         ├── resources/            # Contains project resources such as logs, etc.
         ├── Directory.Build.Props # MSBuild properties for all projects in the solution.
         ├── .editorconfig         # Configuration for coding style and conventions.
-        └── stylecop.json         # StyleCop settings for enforcing code style rules.
+        ├── stylecop.json         # StyleCop settings for enforcing code style rules.
+        └── DockerFile            # Dockerfile for building the Lionk app.
 
 ```
 
@@ -119,9 +120,10 @@ To see how to use the application, please refer to the user guide: [User guide](
 ## 📌 Project Roadmap
 
 - [X] **`Task 1`**: <strike>Deploy version 1.0.0.</strike>
-- [ ] **`Task 2`**: Implement Time series data logging and exportation.
-- [ ] **`Task 3`**: Implement new notification channels.
-- [ ] **`Task 4`**: To be defined.
+- [ ] **`Task 2`**: Manage issue and fix bugs.
+- [ ] **`Task 3`**: Implement Time series data logging and exportation.
+- [ ] **`Task 4`**: Implement new notification channels.
+- [ ] **`Task 5`**: To be defined.
 
 ## 🤝 Contributing
 
