@@ -202,7 +202,7 @@ jobs:
         echo "BOT_NAME=${{ vars.BOT_NAME }}" >> $GITHUB_ENV
         echo "BOT_MAIL=${{ vars.BOT_MAIL }}" >> $GITHUB_ENV
         echo "DOCKER_REGISTRY=${{ vars.DOCKER_REGISTRY }}" >> $GITHUB_ENV
-        echo "SLN_PATH=${{ vars.SLN_PATH }}" >> $GITHUB_ENV
+        echo "DOCKERFILE_CONTEXT=${{ vars.DOCKERFILE_CONTEXT }}" >> $GITHUB_ENV
 
     - name: Log in to GitHub Container Registry
       uses: docker/login-action@v1
@@ -215,7 +215,7 @@ jobs:
       run: python .github/workflows/scripts/app_scripts/publish_package.py
       env: 
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        SLN_PATH: ${{ vars.SLN_PATH }}
+        DOCKERFILE_CONTEXT: ${{ vars.DOCKERFILE_CONTEXT }}
         APP_NAME: ${{ vars.APP_NAME }}
         BOT_NAME: ${{ vars.BOT_NAME }}
         BOT_MAIL: ${{ vars.BOT_MAIL }}

@@ -20,4 +20,4 @@ services:
       - ./keys:/root/.aspnet/DataProtection-Keys
     ports:
       - "5001:5001"
-      
+    restart: always # can be removed if you don't want to restart the container

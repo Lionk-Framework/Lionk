@@ -13,7 +13,7 @@ def run_command(command):
         print("STDERR:", e.stderr)
         sys.exit(1)
 
-sln_path = os.getenv('SLN_PATH')
+dockerfile_context = os.getenv('DOCKERFILE_CONTEXT')
 app_name = os.getenv('APP_NAME')
 docker_registry = os.getenv('DOCKER_REGISTRY')
 gh_token = os.getenv('GH_TOKEN')
@@ -31,7 +31,7 @@ run_command(['docker', 'buildx', 'create', '--name', 'mybuilder', '--use'])
 
 # Create image and push it to the registry
 run_command([
-    'docker', 'buildx', 'build', sln_path,
+    'docker', 'buildx', 'build', dockerfile_context,
     '--platform', 'linux/amd64,linux/arm64',
     '--tag', f"{docker_registry}/{app_name.lower()}:{newversion}",
     '--tag', f"{docker_registry}/{app_name.lower()}:latest",
