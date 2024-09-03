@@ -93,13 +93,13 @@
         UserName = AuthStateProvider.CurrentUser?.Username ?? "Not Logged In";
         _theme = new MudTheme { PaletteLight = Theme.LightPalette, PaletteDark = Theme.DarkPalette, LayoutProperties = new LayoutProperties() };
         NotificationState.BadgeCounter = NotificationService.GetUnreadNotificationCount();
-        NotificationState.OnNotificationReceived += () => InvokeAsync(IncrementBadgeCounter);
+        NotificationState.OnNotificationReceived += IncrementBadgeCounter;
         NotificationState.OnBadgeCounterChanged += () => InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()
     {
-        NotificationState.OnNotificationReceived -= () => InvokeAsync(IncrementBadgeCounter);
+        NotificationState.OnNotificationReceived -= IncrementBadgeCounter;
         NotificationState.OnBadgeCounterChanged -= () => InvokeAsync(StateHasChanged);
     }
 
@@ -133,6 +133,7 @@
     private void IncrementBadgeCounter()
     {
         NotificationState.IncrementBadgeCounter();
+        InvokeAsync(StateHasChanged);
     }
 
     /// <summary>
