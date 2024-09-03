@@ -67,35 +67,24 @@ Use Case: Boiler Room Control Integration
 ## 📂 Repository Structure
 
 ```sh
-└── Lionk/
-    ├── .github
-    │   └── workflows
+└── lionk/
     ├── LICENSE.txt
     ├── README.md
-    ├── docs
-    │   ├── Best-practices
-    │   ├── Mockup
-    │   ├── RaspberryDeploy.md
-    │   ├── Workflow
-    │   ├── architectureDescription.md
-    │   ├── processDevelopment.md
-    │   ├── projectDescription.md
-    │   ├── technicalSpecification.md
-    │   ├── unitTests.md
-    │   └── userstories.md
-    └── src
-        ├── .editorconfig
-        ├── App
-        ├── Directory.Build.Props
-        ├── Dockerfile
-        ├── ExportToRpi.bat
-        ├── Lib
-        ├── Lionk.sln
-        ├── PublishLinuxArm64.bat
-        ├── Test
-        ├── docker-compose.yml
-        ├── resources
-        └── stylecop.json
+    ├── docs/
+    │   ├── analysis/             # Contains all documentation related to analysis.
+    │   ├── best-practices/       # Contains best practices used in the development of the app.
+    │   ├── deployment/           # Contains guides for deploying the app.
+    │   └── project-description.md  # General description of the project.
+    └── src/
+        ├── lionk.sln             # Visual Studio solution file for the Lionk project.
+        ├── app/                  # Contains the Visual Studio project files for the Lionk app.
+        ├── lib/                  # Contains subfolders for each module.
+        ├── test/                 # Contains all unit tests.
+        ├── resources/            # Contains project resources such as logs, etc.
+        ├── Directory.Build.Props # MSBuild properties for all projects in the solution.
+        ├── .editorconfig         # Configuration for coding style and conventions.
+        └── stylecop.json         # StyleCop settings for enforcing code style rules.
+
 ```
 
 ## 🧩 Modules
@@ -134,60 +123,15 @@ To see how to use the application, please refer to the user guide: [User guide](
 
 ## 🤝 Contributing
 
-Contributions are welcome! Here are several ways you can contribute:
+We welcome contributions! Here are several ways you can contribute to the project:
 
-- **[Report Issues](https://github.com/Lionk-Framework/Lionk/issues)**: Submit bugs found or log feature requests for the `Lionk` project.
-- **[Submit Pull Requests](https://github.com/Lionk-Framework/Lionk/pulls)**: Review open PRs, and submit your own PRs.
+- **[Report Issues](https://github.com/Lionk-Framework/Lionk/issues)**: Submit bug reports or feature requests for the `Lionk` project.
+- **[Submit Pull Requests](https://github.com/Lionk-Framework/Lionk/pulls)**: Review open PRs and submit your own to improve the codebase.
+- **[Develop New Plugins](TODO)**: Develop your own plugins and implement the components of your choice! 
 
-## 🛠️ Contributing Guidelines
+Please refer to the [Contributing Guidelines](https://github.com/Lionk-Framework/Lionk/blob/update-readme/docs/developer-guide/contributionGuide.md) to learn how to contribute effectively.
 
-0. **Open an Issue**: Before making any changes, open a new issue in the repository. Clearly describe the problem or feature you want to address, including any relevant context, use cases, or screenshots. This step helps us track work and discuss possible solutions before development begins.
-
-1. **Fork the Repository**: Start by forking the project repository to your GitHub account. This will create a copy of the repository under your control.
-
-2. **Clone Locally**: Clone the forked repository to your local machine using a Git client.
-   ```sh
-   git clone https://github.com/your-username/Lionk
-   ```
-
-3. **Create a New Branch**: Always work on a new branch. Make sure to name your branch in a way that clearly reflects the issue number and the
-
- nature of your changes. For example:
-   ```sh
-   git checkout -b issue-#123-add-new-feature-x
-   ```
-   Ensure that your branch name includes the issue number (e.g., `issue-#123`) to maintain traceability.
-
-4. **Develop Your Changes**: Make your changes in the new branch. Ensure that your code is clean, follows the project's coding standards, and is well-documented. Make small, incremental changes and commit often.
-
-5. **Write Unit Tests**: Ensure that any new functionality is thoroughly covered by unit tests. Also, make sure to run the existing test suite to confirm that no existing functionality is broken.
-   - To run tests, you can use the following command:
-     ```sh
-     dotnet test
-     ```
-
-6. **Commit Your Changes**: Once you are satisfied with your changes and tests, commit your updates with a clear and descriptive commit message. Reference the issue number in your commit message for better traceability.
-   ```sh
-   git commit -m 'Fixes #123: Implemented new feature x.'
-   ```
-
-7. **Push to GitHub**: Push your branch to your forked repository.
-   ```sh
-   git push origin issue-#123-add-new-feature-x
-   ```
-
-8. **Submit a Pull Request (PR)**: Go to the original repository and create a Pull Request (PR) from your forked repository. Make sure to:
-   - Reference the issue number in the PR description (e.g., "Fixes #123") to automatically link the PR to the issue.
-   - Provide a detailed description of the changes, why they are necessary, and any potential impacts.
-   - Ensure your PR adheres to the project's contribution guidelines and passes all continuous integration (CI) checks.
-
-9. **Request a Review**: Tag project maintainers or relevant team members for a review. Be open to feedback and be prepared to make changes if requested.
-
-10. **Ensure Tests Pass**: Make sure all CI checks and tests pass before the PR is merged. This includes running unit tests, linting, and any other checks that are part of the CI process.
-
-11. **Merge and Celebrate**: Once your PR is reviewed, approved, and all tests are passing, it will be merged into the main branch. Congratulations on your contribution!
-
-12. **Close the Issue**: After the PR is merged, ensure that the associated issue is closed automatically by including "Fixes #123" in the PR description, or manually close it if needed.
+You can find the complete documentation of the code [here](https://lionk-framework.github.io/).
 
 **Contributor Graph**
 <br>
