@@ -261,3 +261,5 @@ __pycache__/
 *.pyc
 src/App/LionkApp/Properties/PublishProfiles/FolderProfile.pubxml
 src/Output
+
+src/App/LionkApp/.config/dotnet-tools.json

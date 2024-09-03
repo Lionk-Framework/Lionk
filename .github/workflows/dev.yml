@@ -40,6 +40,11 @@ jobs:
 
     steps:
 
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ vars.DOTNET_VERSION }}
+
     - name: get build output
       uses: actions/download-artifact@v2
       with:

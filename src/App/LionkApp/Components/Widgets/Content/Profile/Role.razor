@@ -124,6 +124,12 @@ else
         User? user = Users?.FirstOrDefault(u => u.Id == userId);
         if (user is null) return;
 
+        if (user.Id == AuthStateProvider.CurrentUser?.Id)
+        {
+            Snackbar.Add("You cannot delete your own account.", Severity.Warning);
+            return;
+        }
+
         Users?.Remove(user);
         UserService.Delete(user);
         Snackbar.Add($"User {user.Username} has been deleted.", Severity.Success);

@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  lionkapp:
+    image: ghcr.io/lionk-framework/lionkapp:latest
+    privileged: true
+    devices:
+      - "/dev/gpiomem:/dev/gpiomem"
+      - "/dev/mem:/dev/mem"
+      - "/dev/ttyAMA0:/dev/ttyAMA0"
+      - "/dev/ttyS0:/dev/ttyS0"
+    volumes:
+      - ./sys/class/gpio:/sys/class/gpio
+      - ./settings/appsettings.json:/app/appsettings.json
+      - ./config:/app/config
+      - ./plugins:/app/plugins
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./temp:/app/temp
+      - ./keys:/root/.aspnet/DataProtection-Keys
+    ports:
+      - "5001:5001"
