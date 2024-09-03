@@ -16,7 +16,7 @@ sudo apt-get install docker-compose
 ```
 
 ### On Windows or macOS
-Download and install Docker Desktop from the official Docker website.
+Download and install Docker Desktop from the official [Docker website](https://docs.docker.com/get-started/).
 
 ## 2. Create a `docker-compose.yml` File
 
