@@ -2,26 +2,45 @@
 
 ## Table of Contents
 
-1. [Introduction](#introduction)
-2. [Registration](#registration)
-3. [Main View and Features](#main-features)
-   - [Dashboard](#dashboard)
-   - [Notifications](#notifications)
-   - [Plugins](#plugins)
-   - [Components](#components)
-   - [Cyclic](#cyclic)
-   - [Manage your account](#manage-your-account)
-4. [Customization](#customization)
+
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=4 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [User Guide](#user-guide)
+  - [Table of Contents](#table-of-contents)
+  - [1. Introduction](#1-introduction)
+  - [2. Registration](#2-registration)
+  - [3. Main Features](#3-main-features)
+    - [3.1. Dashboard](#31-dashboard)
+      - [3.1.1. Widget selection](#311-widget-selection)
+      - [3.1.2. Widget base configuration](#312-widget-base-configuration)
+      - [3.1.3. Widget cyclic configuration](#313-widget-cyclic-configuration)
+      - [3.1.4. Manage widgets](#314-manage-widgets)
+    - [3.2. Notifications](#32-notifications)
+      - [3.2.1 Active tab](#321-active-tab)
+      - [3.2.2 History tab](#322-history-tab)
+      - [3.2.3 Configuration tab](#323-configuration-tab)
+    - [3.3 Plugins](#33-plugins)
+      - [3.3.1 Plugins importation](#331-plugins-importation)
+      - [3.3.2 Plugins dependencies](#332-plugins-dependencies)
+    - [3.4 Components](#34-components)
+    - [Cyclic](#cyclic)
+    - [Manage your account](#manage-your-account)
+  - [Customization](#customization)
+
+<!-- /code_chunk_output -->
+
 
 ---
 
-## Introduction
+## 1. Introduction
 
 Welcome to Lionk! This guide will help you navigate the application's key features. We'll cover the Dashboard for an overview of your system, Notifications to keep you updated, and Manage your account to personalize your settings. You'll also learn about the Plugins, Components, and Cyclic views, which offer additional tools and functionalities to enhance your experience with Lionk. By the end, you'll be well-equipped to use each view effectively.
 
 ---
 
-## Registration
+## 2. Registration
 
 ![](registration.png)
 
@@ -33,39 +52,57 @@ Make sure to complete this step first to ensure you can fully explore and utiliz
 
 ---
 
-## Main Features
+## 3. Main Features
 
-### Dashboard
+### 3.1. Dashboard
 
 ![](drawerTopDashboard.png)
 
 The Dashboard section allows you to manage and configure widgets that display various components and their data within your application. Here’s how you can set up and customize your widgets
 
-**Widget selection:**
+#### 3.1.1. Widget selection
 
 ![](dashboardSelection.png)
 
-By clicking on the **`+`** flaoting button, you can choose from a list of available components to add to your dashboard. Each component is listed with its name. Select the desired component and click on **`OK`** to proceed.
+By clicking on the **`+`** flaoting button, you can choose from a list of available components to add to your dashboard. Each component is listed with its name. Select the desired component and click on `CHOOSE WIDGET` to proceed.
 
-**Widget confirmation:**
+##### View selection:
 
 ![](dashboardWidgetConfirmation.png)
 
-After selecting a component, you will be prompted to confirm your choice. This step ensures that the correct widget is being added to the dashboard. If everything looks good, click on **`SELECT`** to continue.
+After selecting a component, you will be prompted to select the disponible view. Choose the view by clicking `SELECT`.
+Then, click on `OK` to proceed.
 
-**Widget base configuration:**
+Now you can see the selected component with the selected view in the dashboard.
+
+#### 3.1.2. Widget base configuration
+
+By clicking on the configuration button, you can configure the widget's base settings.
+
+//TODO: add image with the configuration button identified
+
+then you will be prompted to configure the widget.
+
+##### Widget base configuration:
 
 ![](dashboardBaseConfiguration.png)
 
-In the Widget base configuration step, you can configure the basic settings for your selected widget. This includes specifying the component name and adjusting any other base parameters necessary for its operation.
+This configuration is accessible by each widget and allows you to set the name of the component directly in the widget.
 
-**Widget cyclic configuration:**
+This modification will affect the component name in the `component` tab.
+
+#### 3.1.3. Widget cyclic configuration
+
+If the component that you want configure is cyclic, a cyclic configuration will be available. by clicking on the left or right arrow.
 
 ![](dashboardCyclicConfiguration.png)
 
-For components that operate on a cyclic basis, you will need to configure the cyclic settings. This involves setting the update frequency and determining whether the timing is relative to the last execution or the start time.
+At this point, you can configure the cyclic settings of the component as you wish.
+You can update the period of the component and the "next execution" computation. 
 
-**Widget view:**
+When you pass your mouse over the selection of the "Next execution computation" selection radio buttons, you will see a tooltip that explains the different options.
+
+#### 3.1.4. Manage widgets
 
 ![](dashboardWidgetView.png)
 
@@ -73,13 +110,13 @@ Once the widget is configured and added to the dashboard, you can see it in acti
 
 ---
 
-### Notifications
+### 3.2. Notifications
 
 ![](drawerTopNotification.png)
 
 <br>
 
-**Active:**
+#### 3.2.1 Active tab
 
 ![](active.png)
 
@@ -98,7 +135,7 @@ You can also access active notifications by clicking the **`bell button`** in th
 
 <br>
 
-**History:**
+#### 3.2.2 History tab
 
 ![](history.png)
 
@@ -108,13 +145,13 @@ Together, these sections provide a comprehensive view of both ongoing and past n
 
 <br>
 
-**Configuration:**
+#### 3.2.3 Configuration tab
 
 ![](configuration.png)
 
 In this view, you can manage the various Notifiers and Channels within your application. This interface allows you to configure how notifications are handled and which channels are used to deliver them.
 
-**Notifiers:**
+##### Notifiers:
 
 The Notifiers section lists the different notification triggers that you have set up. Each notifier is represented by its name, and you have the following options:
 
@@ -123,7 +160,7 @@ The Notifiers section lists the different notification triggers that you have se
 
 You can search for specific notifiers using the **`search bar`** located at the top right of this section.
 
-**Channels:**
+##### Channels:
 
 The Channels section lists the platforms through which notifications are sent, such as Discord, Telegram, and Pushbullet. For each channel, you have the following options:
 
@@ -134,11 +171,11 @@ The Channels section lists the platforms through which notifications are sent, s
 
 ---
 
-### Plugins
+### 3.3 Plugins
 
 ![](drawerTopPlugins.png)
 
-**Plugins importation:**
+#### 3.3.1 Plugins importation
 
 ![](plugins.png)
 
@@ -146,7 +183,7 @@ The Plugin Importation section allows you to add external plugins to enhance the
 
 **`File Selection`**: Begin by clicking the **`BROWSE`** button to open the file explorer. Navigate to the directory where your plugin .dll file is located, select it (e.g., Lionk.TestComponent.dll), and click **`Open`**.
 
-**Plugins dependancies:**
+#### 3.3.2 Plugins dependencies
 
 ![](pluginsAfterImportation.png)
 
@@ -160,7 +197,7 @@ If some dependecies are missing, an error will be displayed.
 
 ---
 
-### Components
+### 3.4 Components
 
 ![](drawerTopComponents.png)
 
