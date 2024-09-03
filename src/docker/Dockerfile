@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
 # Copy the project file
-COPY . ./
+COPY ../ ./
 
 # Restore dependencies
 RUN dotnet restore ../App/LionkApp/LionkApp.csproj
