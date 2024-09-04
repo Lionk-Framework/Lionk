@@ -15,6 +15,9 @@ RUN dotnet publish App/LionkApp/LionkApp.csproj -c Release -p:PublishSingleFile=
 FROM mcr.microsoft.com/dotnet/runtime-deps:8.0
 WORKDIR /app
 
+# Set the user to run the application
+USER root
+
 # Copy the published application to the runtime image
 COPY --from=build-env /app/out .
 

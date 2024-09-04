@@ -53,7 +53,7 @@
             if (channel != null)
             {
                 NotificationService.RemoveChannel(channel);
-                StateHasChanged();
+                await InvokeAsync(StateHasChanged);
             }
         }
     }
