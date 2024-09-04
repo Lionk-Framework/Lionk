@@ -77,6 +77,8 @@ If you have correctly configured the ports, you can access LionkApp using the fo
 http://localhost:<LionkAppPort>
 ```
 
+You can now configure the app. Refers to the user-guide: [Here](https://github.com/Lionk-Framework/Lionk/blob/main/docs/user-guide/userGuide.md)
+
 ## 5. Stop or Restart LionkApp
 
 You can stop or restart LionkApp using the following commands:
