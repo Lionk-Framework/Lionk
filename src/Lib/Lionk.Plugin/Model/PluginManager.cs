@@ -195,7 +195,6 @@ public class PluginManager : IPluginManager
 
             List<Dependency> referencedAssemblies = plugin.Dependencies;
             TryLoadDependencies(referencedAssemblies, plugin, path);
-
             _plugins.Add(plugin);
 
             Type[] types = assembly.GetTypes();
