@@ -168,6 +168,9 @@ public class PluginManager : IPluginManager
 
             var assembly = Assembly.Load(assemblyName);
             _loadedAssemblies.Add(assemblyName.FullName);
+            Type[] types = assembly.GetTypes();
+            NewTypesAvailable?.Invoke(this, new TypesEventArgs(types));
+
             InternalLoadDependencies(assembly.GetReferencedAssemblies());
         }
     }
@@ -202,7 +205,7 @@ public class PluginManager : IPluginManager
 
             LogService.LogApp(LogSeverity.Information, $"Plugin loaded: {plugin.Name}");
         }
-        catch (ReflectionTypeLoadException ex)
+        catch (Exception ex)
         {
             LogService.LogApp(LogSeverity.Error, $"Failed to load plugin from path: {path}. Error: {ex.Message}");
 
