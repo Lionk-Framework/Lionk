@@ -179,13 +179,22 @@ public class PluginManager : IPluginManager
         try
         {
             path = CopyPluginToTempStorage(path);
-            var assembly = Assembly.LoadFrom(path);
+
+            string assemblyName = AssemblyName.GetAssemblyName(path).Name ?? string.Empty;
+
+            Assembly? assembly = GetLoadedAssembly(assemblyName);
+            if (assembly == null)
+            {
+                assembly = Assembly.LoadFrom(path);
+            }
+
             plugin = new Plugin(assembly);
 
             List<Dependency> referencedAssemblies = plugin.Dependencies;
             TryLoadDependencies(referencedAssemblies, plugin, path);
 
             _plugins.Add(plugin);
+
             Type[] types = assembly.GetTypes();
             NewTypesAvailable?.Invoke(this, new TypesEventArgs(types));
 
@@ -203,6 +212,10 @@ public class PluginManager : IPluginManager
             }
         }
     }
+
+    private Assembly? GetLoadedAssembly(string assemblyName)
+        => AppDomain.CurrentDomain.GetAssemblies()
+                                      .FirstOrDefault(a => a.GetName().Name?.Equals(assemblyName, StringComparison.OrdinalIgnoreCase) ?? false);
 
     private void LoadPluginPaths()
     {
