@@ -7,6 +7,7 @@ using Lionk.Core.TypeRegister;
 using Lionk.Log;
 using Lionk.Utils;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Lionk.Core.Component;
 
@@ -169,39 +170,91 @@ public class ComponentService : IComponentService
         return uniqueName;
     }
 
-    /// <summary>
-    ///     Loads the component instances from a JSON file using Newtonsoft.Json.
-    /// </summary>
     private void LoadConfiguration()
     {
-        if (ConfigurationUtils.FileExists(ConfigurationFileName, FolderType.Config))
-        {
-            string json = ConfigurationUtils.ReadFile(ConfigurationFileName, FolderType.Config);
-
-            try
-            {
-                ConcurrentDictionary<Guid, IComponent>? savedInstances =
-                    JsonConvert.DeserializeObject<ConcurrentDictionary<Guid, IComponent>>(
-                        json,
-                        new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
-
-                if (savedInstances != null)
-                {
-                    _componentInstances = savedInstances;
-                }
-                else
-                {
-                    LogService.LogApp(LogSeverity.Error, "Failed to load component instances. The configuration file might be corrupted.");
-                }
-            }
-            catch (JsonException ex)
-            {
-                LogService.LogApp(LogSeverity.Error, $"Failed to deserialize component configuration. Error: {ex.Message}");
-            }
-        }
-        else
+        if (!ConfigurationUtils.FileExists(ConfigurationFileName, FolderType.Config))
         {
             LogService.LogApp(LogSeverity.Information, "Component configuration file not found.");
+            return;
+        }
+
+        string json = ConfigurationUtils.ReadFile(ConfigurationFileName, FolderType.Config);
+        JObject? jsonObject = ParseJson(json);
+
+        if (jsonObject == null)
+        {
+            LogService.LogApp(LogSeverity.Error, "Failed to load component instances. The configuration file might be corrupted.");
+            return;
+        }
+
+        _componentInstances = DeserializeComponents(jsonObject);
+    }
+
+    private JObject? ParseJson(string json)
+    {
+        try
+        {
+            return JObject.Parse(json);
+        }
+        catch (JsonException ex)
+        {
+            LogService.LogApp(LogSeverity.Error, $"Failed to parse JSON configuration. Error: {ex.Message}");
+            return null;
+        }
+    }
+
+    private ConcurrentDictionary<Guid, IComponent> DeserializeComponents(JObject jsonObject)
+    {
+        var loadedInstances = new ConcurrentDictionary<Guid, IComponent>();
+
+        foreach (JProperty property in jsonObject.Properties())
+        {
+            Guid? componentId = ParseComponentId(property.Name);
+            if (componentId == null) continue;
+
+            IComponent? component = DeserializeComponent(property.Value, componentId.Value);
+            if (component != null)
+            {
+                loadedInstances[componentId.Value] = component;
+            }
+        }
+
+        return loadedInstances;
+    }
+
+    private Guid? ParseComponentId(string componentIdString)
+    {
+        try
+        {
+            return Guid.Parse(componentIdString);
+        }
+        catch (FormatException)
+        {
+            LogService.LogApp(LogSeverity.Error, $"Invalid component ID format: {componentIdString}");
+            return null;
+        }
+    }
+
+    private IComponent? DeserializeComponent(JToken token, Guid componentId)
+    {
+        try
+        {
+            IComponent? component = token.ToObject<IComponent>(new JsonSerializer
+            {
+                TypeNameHandling = TypeNameHandling.All,
+            });
+
+            if (component == null)
+            {
+                LogService.LogApp(LogSeverity.Warning, $"Failed to deserialize component with ID {componentId}. The component is null.");
+            }
+
+            return component;
+        }
+        catch (Exception ex)
+        {
+            LogService.LogApp(LogSeverity.Error, $"Error deserializing component with ID {componentId}: {ex.Message}");
+            return null;
         }
     }
 

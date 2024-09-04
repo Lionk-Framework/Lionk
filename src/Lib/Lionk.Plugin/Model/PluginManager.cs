@@ -168,6 +168,9 @@ public class PluginManager : IPluginManager
 
             var assembly = Assembly.Load(assemblyName);
             _loadedAssemblies.Add(assemblyName.FullName);
+            Type[] types = assembly.GetTypes();
+            NewTypesAvailable?.Invoke(this, new TypesEventArgs(types));
+
             InternalLoadDependencies(assembly.GetReferencedAssemblies());
         }
     }
@@ -179,13 +182,21 @@ public class PluginManager : IPluginManager
         try
         {
             path = CopyPluginToTempStorage(path);
-            var assembly = Assembly.LoadFrom(path);
+
+            string assemblyName = AssemblyName.GetAssemblyName(path).Name ?? string.Empty;
+
+            Assembly? assembly = GetLoadedAssembly(assemblyName);
+            if (assembly == null)
+            {
+                assembly = Assembly.LoadFrom(path);
+            }
+
             plugin = new Plugin(assembly);
 
             List<Dependency> referencedAssemblies = plugin.Dependencies;
             TryLoadDependencies(referencedAssemblies, plugin, path);
-
             _plugins.Add(plugin);
+
             Type[] types = assembly.GetTypes();
             NewTypesAvailable?.Invoke(this, new TypesEventArgs(types));
 
@@ -193,7 +204,7 @@ public class PluginManager : IPluginManager
 
             LogService.LogApp(LogSeverity.Information, $"Plugin loaded: {plugin.Name}");
         }
-        catch (ReflectionTypeLoadException ex)
+        catch (Exception ex)
         {
             LogService.LogApp(LogSeverity.Error, $"Failed to load plugin from path: {path}. Error: {ex.Message}");
 
@@ -203,6 +214,10 @@ public class PluginManager : IPluginManager
             }
         }
     }
+
+    private Assembly? GetLoadedAssembly(string assemblyName)
+        => AppDomain.CurrentDomain.GetAssemblies()
+                                      .FirstOrDefault(a => a.GetName().Name?.Equals(assemblyName, StringComparison.OrdinalIgnoreCase) ?? false);
 
     private void LoadPluginPaths()
     {

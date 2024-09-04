@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -16,12 +16,17 @@ This is the Lionk App README file.
 </Description>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Lionk.Auth" Version="1.0.0" />
-    <PackageReference Include="Lionk.Auth.Razor" Version="1.0.0" />
-    <PackageReference Include="Lionk.Core" Version="2.0.0" />
-    <PackageReference Include="Lionk.Core.Razor" Version="2.0.0" />
-    <PackageReference Include="Lionk.Notification" Version="1.0.0" />
-    <PackageReference Include="Lionk.Plugin.Blazor" Version="1.0.0" />
     <PackageReference Include="MudBlazor" Version="7.6.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Lib\Lionk.Auth.Razor\Lionk.Auth.Razor.csproj" />
+    <ProjectReference Include="..\..\Lib\Lionk.Auth\Lionk.Auth.csproj" />
+    <ProjectReference Include="..\..\Lib\Lionk.Core.Razor\Lionk.Core.Razor.csproj" />
+    <ProjectReference Include="..\..\Lib\Lionk.Core\Lionk.Core.csproj" />
+    <ProjectReference Include="..\..\Lib\Lionk.Logger\Lionk.Logger.csproj" />
+    <ProjectReference Include="..\..\Lib\Lionk.Notification\Lionk.Notification.csproj" />
+    <ProjectReference Include="..\..\Lib\Lionk.Plugin.Blazor\Lionk.Plugin.Blazor.csproj" />
+    <ProjectReference Include="..\..\Lib\Lionk.Plugin\Lionk.Plugin.csproj" />
+    <ProjectReference Include="..\..\Lib\Lionk.Utils\Lionk.Utils.csproj" />
   </ItemGroup>
 </Project>

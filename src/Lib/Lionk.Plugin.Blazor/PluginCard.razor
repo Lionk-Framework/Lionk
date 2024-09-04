@@ -4,7 +4,7 @@
 @using IComponent = Lionk.Core.Component.IComponent
 @inject IComponentService ComponentService
 @inject IViewRegistryService ViewRegistryService
-<link href="_content/Lionk.Plugin.Blazor/css/PluginCard.css" rel="stylesheet"/>
+<link href="_content/Lionk.Plugin.Blazor/css/PluginCard.css" rel="stylesheet" />
 
 @if (Plugin is null)
 {
@@ -89,9 +89,18 @@ else
 
     private bool IsPluginUsed()
     {
-        IEnumerable<Type>? usedTypes = Plugin?.Assembly.GetTypes().Where(x => x.GetInterfaces().Contains(typeof(IComponent)));
+        IEnumerable<Type>? usedTypes;
+        IEnumerable<Type>? usedViews;
 
-        IEnumerable<Type>? usedViews = Plugin?.Assembly.GetTypes().Where(x => x.GetCustomAttribute<ViewOfAttribute>() != null);
+        try
+        {
+            usedTypes = Plugin?.Assembly.GetTypes().Where(x => x.GetInterfaces().Contains(typeof(IComponent)));
+            usedViews = Plugin?.Assembly.GetTypes().Where(x => x.GetCustomAttribute<ViewOfAttribute>() != null);
+        }
+        catch (ReflectionTypeLoadException)
+        {
+            return false;
+        }
 
         if (usedTypes is not null)
         {
