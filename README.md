@@ -117,7 +117,7 @@ For a full documentation on how to deploy the application on a raspberry with GP
 Some basic plugins for raspberry can be found [here](https://github.com/Lionk-Framework/Lionk-rpi-components/releases/tag/RPI_Plugins_1.0.0)
 
 ### 🤖 Usage
-To see how to use the application, please refer to the user guide: [User guide]().
+To see how to use the application, please refer to the user guide: [User guide](https://github.com/Lionk-Framework/Lionk/blob/main/docs/user-guide/userGuide.md).
 
 ## 📌 Project Roadmap
 
