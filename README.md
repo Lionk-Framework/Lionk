@@ -45,7 +45,7 @@ Lionk Core is a modular platform developed in .NET designed to enable the manage
 
 The application provides a web interface for configuring components and visualizing data. Users can easily add new plugins to define additional components. The application is published as a Docker image for easy deployment, with each release also publishing new NuGet packages to facilitate plugin development.
 
-[Full project description](https://github.com/Lionk-Framework/Lionk/blob/dev/docs/projectDescription.md)
+[Full project description](https://github.com/Lionk-Framework/Lionk-documentation/wiki/Project-description)
 
 ## 👾 Features
 - **Dashboard Data Consultation:** Users can add component views to the dashboard to continuously monitor component-specific data through an up-to-date dashboard.
@@ -110,14 +110,14 @@ This repo hosts all the software bricks making up our framework. Here's a brief 
 ## 🚀 Getting Started
 
 ### 📦 Deployment
-To see how to deploy the application, please refer to the deployment guide: [Deployment guide](https://github.com/Lionk-Framework/Lionk/blob/main/docs/deployement/DockerDeploy.md).
+To see how to deploy the application, please refer to the deployment guide: [Deployment guide](https://github.com/Lionk-Framework/Lionk-documentation/wiki/Deploy-on-docker).
 
-For a full documentation on how to deploy the application on a raspberry with GPIO enable see [Rpi guide](https://github.com/Lionk-Framework/Lionk/blob/main/docs/deployement/RaspberryDeploy.md)
+For a full documentation on how to deploy the application on a raspberry with GPIO enable see [Rpi guide](https://github.com/Lionk-Framework/Lionk-documentation/wiki/Deploy-on-a-raspberry-with-docker)
 
 Some basic plugins for raspberry can be found [here](https://github.com/Lionk-Framework/Lionk-rpi-components/releases/tag/RPI_Plugins_1.0.0)
 
 ### 🤖 Usage
-To see how to use the application, please refer to the user guide: [User guide](https://github.com/Lionk-Framework/Lionk/blob/main/docs/user-guide/userGuide.md).
+To see how to use the application, please refer to the user guide: [User guide](https://github.com/Lionk-Framework/Lionk-documentation/wiki/User-guide).
 
 ## 📌 Project Roadmap
 
@@ -134,9 +134,9 @@ We welcome contributions! Here are several ways you can contribute to the projec
 
 - **[Report Issues](https://github.com/Lionk-Framework/Lionk/issues)**: Submit bug reports or feature requests for the `Lionk` project.
 - **[Submit Pull Requests](https://github.com/Lionk-Framework/Lionk/pulls)**: Review open PRs and submit your own to improve the codebase.
-- **[Develop New Plugins](https://github.com/Lionk-Framework/Lionk/blob/main/docs/developer-guide/PluginDevGuide.md)**: Develop your own plugins and implement the components of your choice! 
+- **[Develop New Plugins](https://github.com/Lionk-Framework/Lionk-documentation/wiki/Plugin-dev-guide)**: Develop your own plugins and implement the components of your choice! 
 
-Please refer to the [Contributing Guidelines](https://github.com/Lionk-Framework/Lionk/blob/main/docs/developer-guide/ContributionGuide.md) to learn how to contribute effectively.
+Please refer to the [Contributing Guidelines](https://github.com/Lionk-Framework/Lionk-documentation/wiki/Contribution-guide) to learn how to contribute effectively.
 
 You can find the complete documentation of the code [here](https://lionk-framework.github.io/).
 
