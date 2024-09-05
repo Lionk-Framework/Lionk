@@ -34,7 +34,6 @@ def main():
             changelog = line.lstrip('-').strip()
             changelogs.append(changelog)
 
-
     print(f'Changelogs: {changelogs}')
 
     #populate oldversions and newversions arrays
