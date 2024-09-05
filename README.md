@@ -125,7 +125,8 @@ To see how to use the application, please refer to the user guide: [User guide](
 - [ ] **`Task 2`**: Manage issue and fix bugs.
 - [ ] **`Task 3`**: Implement Time series data logging and exportation.
 - [ ] **`Task 4`**: Implement new notification channels.
-- [ ] **`Task 5`**: To be defined.
+- [ ] **`Task 5`**: Implement plugins repository to simplify the plugin download process.
+- [ ] **`Task 6`**: TBD
 
 ## 🤝 Contributing
 
