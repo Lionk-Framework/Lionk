@@ -117,7 +117,7 @@ For a full documentation on how to deploy the application on a raspberry with GP
 Some basic plugins for raspberry can be found [here](https://github.com/Lionk-Framework/Lionk-rpi-components/releases/tag/RPI_Plugins_1.0.0)
 
 ### 🤖 Usage
-To see how to use the application, please refer to the user guide: [User guide]().
+To see how to use the application, please refer to the user guide: [User guide](https://github.com/Lionk-Framework/Lionk/blob/main/docs/user-guide/userGuide.md).
 
 ## 📌 Project Roadmap
 
@@ -125,7 +125,8 @@ To see how to use the application, please refer to the user guide: [User guide](
 - [ ] **`Task 2`**: Manage issue and fix bugs.
 - [ ] **`Task 3`**: Implement Time series data logging and exportation.
 - [ ] **`Task 4`**: Implement new notification channels.
-- [ ] **`Task 5`**: To be defined.
+- [ ] **`Task 5`**: Implement plugins repository to simplify the plugin download process.
+- [ ] **`Task 6`**: TBD
 
 ## 🤝 Contributing
 
