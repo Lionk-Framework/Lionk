@@ -60,26 +60,31 @@
 
     private void OnCyclicExecutorServicePropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(ICyclicExecutorService.LastExecutionTime))
+        if (e.PropertyName != nameof(ICyclicExecutorService.LastExecutionTime)) return;
+
+        double cycleTime = CyclicExecutorService.LastExecutionTime.TotalMilliseconds;
+        DateTime currentTime = DateTime.Now;
+
+        lock (_dataLock)
         {
-            double cycleTime = CyclicExecutorService.LastExecutionTime.TotalMilliseconds;
-            DateTime currentTime = DateTime.Now;
+            var updatedData =
+                new List<TimeSeriesChartSeries.TimeValue>(_cycleTimeSeries.Data)
+                              {
+                                  new(currentTime, cycleTime),
+                              };
 
-            lock (_dataLock)
+            DateTime minTime = DateTime.Now.Subtract(selectedTimeSpan);
+            updatedData = updatedData.Where(d => d.DateTime >= minTime).ToList();
+
+            if (updatedData.Count > 1000)
             {
-                _cycleTimeSeries.Data.Add(new TimeSeriesChartSeries.TimeValue(currentTime, cycleTime));
-
-                var minTime = DateTime.Now.Subtract(selectedTimeSpan);
-                _cycleTimeSeries.Data = _cycleTimeSeries.Data.Where(d => d.DateTime >= minTime).ToList();
-
-                if (_cycleTimeSeries.Data.Count > 1000)
-                {
-                    _cycleTimeSeries.Data.RemoveAt(0);
-                }
+                updatedData.RemoveAt(0);
             }
 
-            InvokeAsync(StateHasChanged);
+            _cycleTimeSeries.Data = updatedData;
         }
+
+        InvokeAsync(StateHasChanged);
     }
 
     private void UpdateChartOptions()
