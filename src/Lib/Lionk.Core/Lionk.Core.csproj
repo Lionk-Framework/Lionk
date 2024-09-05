@@ -5,8 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>2.0.0</Version>
-    <PackageReleaseNotes>- First release
+    <Version>2.0.1</Version>
+    <PackageReleaseNotes>- Deserialize component one by one to avoid data loss on error
 </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
