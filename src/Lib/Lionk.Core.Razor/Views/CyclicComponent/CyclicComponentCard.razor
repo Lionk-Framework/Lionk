@@ -12,6 +12,14 @@
                 <MudItem xs="6">
                     <MudText Typo="Typo.body2">Period:</MudText>
                 </MudItem>
+
+                <MudTextField Label="Period [s]" Variant="Variant.Outlined"
+                              T="double" Value="@_seconde"
+                              Adornment="Adornment.End"
+                              AdornmentIcon="@_icon"
+                              OnAdornmentClick="ButtonPeriodClick"
+                              AdornmentAriaLabel="@_adornmentText" />
+
                 <MudItem xs="6" class="text-right">
                     <MudText Typo="Typo.body2">@Component.Period</MudText>
                 </MudItem>
@@ -41,7 +49,21 @@
     ///     The cyclic component to display.
     /// </summary>
     [Parameter]
-    public ICyclicComponent? Component { get; set; }
+    public ICyclicComponent Component { get; set; } = null!;
+    private bool _editPeriod = false;
+    private string _icon => _editPeriod ? Icons.Material.Filled.Done : Icons.Material.Filled.Edit;
+    private string _adornmentText => _editPeriod ? "Lock edit" : "Edit period";
+    private double _seconde
+    {
+        get => Component.Period.TotalSeconds;
+        set => Component.Period = TimeSpan.FromSeconds(value);
+    }
+
+    private void ButtonPeriodClick()
+    {
+        _editPeriod = !_editPeriod;
+        InvokeAsync(StateHasChanged);
+    }
 
     private void ResetComponent()
         => Component?.Reset();
