@@ -9,19 +9,22 @@
             </MudText>
             <MudDivider Light="true" DividerType="DividerType.Middle" />
             <MudGrid>
-                <MudItem xs="6">
+                <MudItem xs="3">
                     <MudText Typo="Typo.body2">Period:</MudText>
                 </MudItem>
-
-                <MudTextField Label="Period [s]" Variant="Variant.Outlined"
-                              T="double" Value="@_seconde"
-                              Adornment="Adornment.End"
-                              AdornmentIcon="@_icon"
-                              OnAdornmentClick="ButtonPeriodClick"
-                              AdornmentAriaLabel="@_adornmentText" />
-
                 <MudItem xs="6" class="text-right">
-                    <MudText Typo="Typo.body2">@Component.Period</MudText>
+                    @if (_editPeriod)
+                    {
+                        <MudTextField T="double" @bind-Value="_seconde" Variant="Variant.Filled" Label="Period [s]"/>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.body2">@Component.Period</MudText>
+                    }
+                </MudItem>
+
+                <MudItem xs="3">
+                    <MudButton StartIcon="@_icon" OnClick="ButtonPeriodClick" IconSize="Size.Small"/>
                 </MudItem>
 
                 <MudItem xs="6">
@@ -30,6 +33,7 @@
                 <MudItem xs="6" class="text-right">
                     <MudText Typo="Typo.body2">@Component.NbCycle</MudText>
                 </MudItem>
+
             </MudGrid>
         </MudCardContent>
         @if (Component.IsInError)
