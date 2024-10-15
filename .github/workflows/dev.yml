@@ -29,7 +29,7 @@ jobs:
       run: dotnet build --no-restore
 
     - name: Archive build output
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: build-output
         path: ${{ vars.SLN_PATH }}  
@@ -46,7 +46,7 @@ jobs:
         dotnet-version: ${{ vars.DOTNET_VERSION }}
 
     - name: get build output
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: build-output  
 

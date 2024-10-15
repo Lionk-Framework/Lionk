@@ -24,7 +24,7 @@ jobs:
         PR_BODY: ${{ github.event.pull_request.body }}
 
     - name: Save project datas Artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: project-datas    
         path: |
@@ -74,7 +74,7 @@ jobs:
         python-version: '3.x'
 
     - name: Download project datas Artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: project-datas  
 
@@ -104,7 +104,7 @@ jobs:
         GITHUB_HEAD_REF: ${{ github.head_ref }}
 
     - name: Save csproj Artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: csproj    
         path: |
@@ -112,7 +112,7 @@ jobs:
           ${{ vars.APP_PATH }}.bkp
 
     - name: Save description Artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: description    
         path: |
@@ -135,12 +135,12 @@ jobs:
         python-version: '3.x'
 
     - name: Download project datas Artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: project-datas
 
     - name: Download description Artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: description   
     
@@ -156,7 +156,7 @@ jobs:
 
     - name: On Failure Download csproj
       if: failure()
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: csproj     
 
@@ -186,12 +186,12 @@ jobs:
         python-version: '3.x'
 
     - name: Download project datas Artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: project-datas
 
     - name: Download description Artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: description
 
@@ -223,7 +223,7 @@ jobs:
 
     - name: On Failure Download csproj
       if: failure()
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: csproj
         
