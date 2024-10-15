@@ -188,6 +188,18 @@ public class ComponentService : IComponentService
         }
 
         _componentInstances = DeserializeComponents(jsonObject);
+        SubscribeObservableComponents();
+    }
+
+    private void SubscribeObservableComponents()
+    {
+        foreach (IComponent component in _componentInstances.Values)
+        {
+            if (component is ObservableElement observable)
+            {
+                observable.PropertyChanged += (s, e) => RequestSaveConfiguration();
+            }
+        }
     }
 
     private JObject? ParseJson(string json)

@@ -114,7 +114,7 @@ To see how to deploy the application, please refer to the deployment guide: [Dep
 
 For a full documentation on how to deploy the application on a raspberry with GPIO enable see [Rpi guide](https://github.com/Lionk-Framework/Lionk-documentation/wiki/Deploy-on-a-raspberry-with-docker)
 
-Some basic plugins for raspberry can be found [here](https://github.com/Lionk-Framework/Lionk-rpi-components/releases/tag/RPI_Plugins_1.0.0)
+Some basic plugins for raspberry can be found [here](https://github.com/Lionk-Framework/Lionk-rpi-components/releases/tag/RPI_Plugins_1.0.1)
 
 ### 🤖 Usage
 To see how to use the application, please refer to the user guide: [User guide](https://github.com/Lionk-Framework/Lionk-documentation/wiki/User-guide).
