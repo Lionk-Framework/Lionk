@@ -4,15 +4,12 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>1.0.2</Version>
+    <Version>1.1.0</Version>
     <Description>
 
 ## Change Log
-- Delete documentation to put it in own repo
-- Fix loading components/views from base assembly
-- Fix crash when dependency is missing
-- Deserialize component one by one to avoid data loss
-- Fix concurrency exception in cycle view
+- Fix: subscribe components to observable events
+- Feature: it is now possible to define the period for cyclic components directly inside the cyclic page
 
 # Lionk App
 
