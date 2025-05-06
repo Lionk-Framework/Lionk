@@ -116,20 +116,23 @@ public abstract class BaseExecutableComponent : BaseComponent, IExecutableCompon
             OnInitialize();
         }
 
-        _cancellationTokenSource = new CancellationTokenSource(); // Reset the token source for each execution
+        using (_cancellationTokenSource = new CancellationTokenSource())
+        {
+            // Reset the token source for each execution
 
-        try
-        {
-            OnExecute(_cancellationTokenSource.Token);
-        }
-        catch (Exception)
-        {
-            Abort(); // Abort the execution and mark as in error
-            throw; // Re-throw the exception to propagate the error
-        }
-        finally
-        {
-            OnTerminate(); // Ensure that termination logic is executed
+            try
+            {
+                OnExecute(_cancellationTokenSource.Token);
+            }
+            catch (Exception)
+            {
+                Abort(); // Abort the execution and mark as in error
+                throw; // Re-throw the exception to propagate the error
+            }
+            finally
+            {
+                OnTerminate(); // Ensure that termination logic is executed
+            }
         }
     }
 

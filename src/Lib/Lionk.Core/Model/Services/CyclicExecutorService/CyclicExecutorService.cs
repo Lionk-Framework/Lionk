@@ -3,7 +3,6 @@
 using System.Diagnostics;
 using Lionk.Core.Observable;
 using Lionk.Log;
-using Lionk.Notification;
 using Lionk.Utils;
 using Newtonsoft.Json;
 
@@ -20,15 +19,13 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
 
     private readonly IComponentService _componentService;
 
-    private readonly INotifier _notifier = new ServiceNotifier();
-
     private readonly object _stateLock = new();
 
     private readonly Stopwatch _cycleStopwatch = new();
 
     private CancellationTokenSource _cancellationTokenSource = new();
 
-    private Task _componentsTask = Task.CompletedTask;
+    private Task _executorTask = Task.CompletedTask;
 
     private CycleState _cycleState;
 
@@ -41,6 +38,9 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     private TimeSpan _lastExecutionTime;
 
     private long _nCycle;
+
+    private readonly Dictionary<Guid, Task> _componentsTask = [];
+
     #endregion
 
     #region constructors
@@ -157,7 +157,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
 
             _cancellationTokenSource = new CancellationTokenSource();
             State = CycleState.Running;
-            _componentsTask = Task.Run(Execute, _cancellationTokenSource.Token);
+            _executorTask = Task.Run(Execute, _cancellationTokenSource.Token);
         }
     }
 
@@ -174,7 +174,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
             State = CycleState.Stopping;
             _cancellationTokenSource.Cancel();
 
-            while (State != CycleState.Stopped && !_componentsTask.IsCompleted)
+            while (State != CycleState.Stopped && !_executorTask.IsCompleted)
             {
                 Thread.Sleep(10);
             }
@@ -210,7 +210,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
             {
                 _nCycle++;
                 _cycleStopwatch.Restart();
-                int nbExecutedComponents = await ExecuteComponents(combinedCancellation.Token);
+                int nbExecutedComponents = ExecuteComponents(combinedCancellation.Token);
                 _cycleStopwatch.Stop();
                 ManageTimeMeasurement(nbExecutedComponents);
             }
@@ -221,13 +221,6 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
                 if (watchdogCancellationSource.Token.IsCancellationRequested && !_cancellationTokenSource.Token.IsCancellationRequested)
                 {
                     Abort();
-
-                    Content content = new(Severity.Warning, "Watchdog timeout", "something caused a watchdog timeout.");
-
-                    var notification = new Notification.Notification(content, _notifier);
-
-                    // TODO CJS -> Uncomment when notification work
-                    // NotificationService.Send(notification);
                     LogService.LogApp(LogSeverity.Warning, "Watchdog timeout exceeded");
                 }
             }
@@ -268,31 +261,26 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     /// </summary>
     /// <param name="component">The cyclic component to execute.</param>
     /// <param name="combinedToken">A combined cancellation token that includes both the service's and the watchdog's cancellation tokens.</param>
-    private async Task ExecuteComponent(ICyclicComponent component, CancellationToken combinedToken)
+    private Task? StartComponent(ICyclicComponent component, CancellationToken combinedToken)
     {
         try
         {
-            if (combinedToken.IsCancellationRequested)
-            {
-                throw new TaskCanceledException("Watchdog timeout exceeded");
-            }
-
             var task = Task.Run(component.Execute, combinedToken);
 
-            while (!task.IsCompleted)
-            {
-                if (combinedToken.IsCancellationRequested)
+            task.ContinueWith(t =>
                 {
-                    throw new TaskCanceledException("Watchdog timeout exceeded");
-                }
+                    if (t is { IsFaulted: true, Exception: not null })
+                    {
+                        component.Abort();
+                        LogService.LogApp(LogSeverity.Error,
+                            $"{component.InstanceName} failed during execution : {t.Exception.InnerException?.Message}");
+                    }
 
-                await Task.Delay(1, combinedToken);
-            }
+                    _componentsTask.Remove(component.Id);
+                },
+                TaskScheduler.Default);
 
-            if (task.IsCanceled && !combinedToken.IsCancellationRequested)
-            {
-                throw new TaskCanceledException("Watchdog timeout exceeded");
-            }
+            return task;
         }
         catch (TaskCanceledException)
         {
@@ -301,16 +289,9 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
         catch (Exception ex)
         {
             component.Abort(); // Abort the component if an exception occurs
-
-            Content content = new(
-                Severity.Warning,
-                "Device crash during cycle execution",
-                $"The device : {component.InstanceName} has been aborted during the cycle execution, error message : {ex.Message}");
-
-            var notification = new Notification.Notification(content, _notifier);
-            NotificationService.Send(notification);
-
+            _componentsTask.Remove(component.Id);
             LogService.LogApp(LogSeverity.Error, $"{component.InstanceName} failed during execution: {ex.Message}");
+            return null;
         }
     }
 
@@ -318,7 +299,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     ///     Iterates through all cyclic components and executes those that are ready and not in error.
     /// </summary>
     /// <param name="combinedToken">A combined cancellation token that includes both the service's and the watchdog's cancellation tokens.</param>
-    private async Task<int> ExecuteComponents(CancellationToken combinedToken)
+    private int ExecuteComponents(CancellationToken combinedToken)
     {
         int counter = 0;
 
@@ -330,10 +311,24 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
             }
 
             if (component.NextExecution <= DateTime.Now
-                && component is { CanExecute: true, IsInError: false })
+                && component is { CanExecute: true, IsInError: false }
+                && !_componentsTask.ContainsKey(component.Id)
+                && !component.IsRunning)
             {
-                counter++;
-                await ExecuteComponent(component, combinedToken);
+                // Todo CJS -> Implement timeout management
+                bool isTimeOut = false;
+                if (isTimeOut) // Timed out component
+                {
+                    component.Abort();
+                }
+                else
+                {
+                    counter++;
+                    Task? task = StartComponent(component, combinedToken);
+
+                    if (task is not null)
+                        _componentsTask.Add(component.Id, task);
+                }
             }
         }
 
@@ -370,22 +365,6 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
 
         return null;
     }
+
     #endregion
-
-    private class ServiceNotifier : INotifier
-    {
-        #region properties
-
-        public Guid Id => Guid.NewGuid();
-
-        public string Name => "Cyclic executor service";
-
-        #endregion
-
-        #region public and override methods
-
-        public bool Equals(INotifier? obj) => obj is ServiceNotifier && obj.Id == Id;
-
-        #endregion
-    }
 }
