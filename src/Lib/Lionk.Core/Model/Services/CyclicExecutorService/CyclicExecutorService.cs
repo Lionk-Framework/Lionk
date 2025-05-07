@@ -39,7 +39,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
 
     private long _nCycle;
 
-    private readonly Dictionary<Guid, Task> _componentsTask = [];
+    private readonly Dictionary<Guid, DateTime> _componentsTimeout = [];
 
     #endregion
 
@@ -209,6 +209,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
             try
             {
                 _nCycle++;
+                CheckComponentsTimeout();
                 _cycleStopwatch.Restart();
                 int nbExecutedComponents = ExecuteComponents(combinedCancellation.Token);
                 _cycleStopwatch.Stop();
@@ -231,6 +232,26 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
             }
 
             await Task.Delay(10, _cancellationTokenSource.Token); // Delay between cycles
+        }
+    }
+
+    private void CheckComponentsTimeout()
+    {
+        var timedOutComponentIds
+            = (from kvp in _componentsTimeout
+                where DateTime.UtcNow > kvp.Value
+                select kvp.Key).ToList();
+
+        IEnumerable<ICyclicComponent> ComponentsTimedOut
+            = Components.Where(x => timedOutComponentIds.Contains(x.Id));
+
+        foreach (ICyclicComponent component in ComponentsTimedOut)
+        {
+            component.Abort();
+            _componentsTimeout.Remove(component.Id);
+
+            LogService.LogApp(LogSeverity.Warning,
+                $"Component {component.InstanceName} timed out and was aborted");
         }
     }
 
@@ -276,7 +297,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
                             $"{component.InstanceName} failed during execution : {t.Exception.InnerException?.Message}");
                     }
 
-                    _componentsTask.Remove(component.Id);
+                    _componentsTimeout.Remove(component.Id);
                 },
                 TaskScheduler.Default);
 
@@ -289,7 +310,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
         catch (Exception ex)
         {
             component.Abort(); // Abort the component if an exception occurs
-            _componentsTask.Remove(component.Id);
+            _componentsTimeout.Remove(component.Id);
             LogService.LogApp(LogSeverity.Error, $"{component.InstanceName} failed during execution: {ex.Message}");
             return null;
         }
@@ -310,30 +331,24 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
                 break;
             }
 
-            if (component.NextExecution <= DateTime.Now
-                && component is { CanExecute: true, IsInError: false }
-                && !_componentsTask.ContainsKey(component.Id)
-                && !component.IsRunning)
+            if (IsComponentReadyForNewExecution(component))
             {
-                // Todo CJS -> Implement timeout management
-                bool isTimeOut = false;
-                if (isTimeOut) // Timed out component
-                {
-                    component.Abort();
-                }
-                else
-                {
-                    counter++;
-                    Task? task = StartComponent(component, combinedToken);
+                counter++;
+                Task? task = StartComponent(component, combinedToken);
 
-                    if (task is not null)
-                        _componentsTask.Add(component.Id, task);
-                }
+                if (task is not null)
+                    _componentsTimeout.Add(component.Id, DateTime.Now + component.Timeout);
             }
         }
 
         return counter;
     }
+
+    private bool IsComponentReadyForNewExecution(ICyclicComponent component) =>
+        component.NextExecution <= DateTime.Now
+        && component is { CanExecute: true, IsInError: false }
+        && !_componentsTimeout.ContainsKey(component.Id)
+        && !component.IsRunning;
 
     private void SaveWatchDogTimeout(TimeSpan timeout)
     {

@@ -1,4 +1,5 @@
 ﻿// Copyright © 2024 Lionk Project
+
 using Lionk.Core.Component.Cyclic;
 
 namespace Lionk.Core.Component;
@@ -39,6 +40,13 @@ public interface ICyclicComponent : IExecutableComponent
     ///     Gets the starting date of the component.
     /// </summary>
     DateTime StartedDate { get; }
+
+    /// <summary>
+    ///     Gets or sets the timeout of the component
+    ///     It defines the max duration of the execution
+    ///     of the component.
+    /// </summary>
+    TimeSpan Timeout { get; set; }
 
     #endregion
 }
