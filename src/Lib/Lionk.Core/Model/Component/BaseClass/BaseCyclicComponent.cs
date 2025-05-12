@@ -24,6 +24,8 @@ public abstract class BaseCyclicComponent : BaseExecutableComponent, ICyclicComp
 
     private DateTime _startedDate;
 
+    private TimeSpan _timeout;
+
     #endregion
 
     #region properties
@@ -90,6 +92,16 @@ public abstract class BaseCyclicComponent : BaseExecutableComponent, ICyclicComp
     {
         get => _startedDate;
         private set => SetField(ref _startedDate, value);
+    }
+
+    /// <summary>
+    /// Gets or Sets the timeout of the component.
+    /// It defines the max duration of the execution.
+    /// </summary>
+    public TimeSpan Timeout
+    {
+        get => _timeout;
+        set => SetField(ref _timeout, value);
     }
 
     #endregion
