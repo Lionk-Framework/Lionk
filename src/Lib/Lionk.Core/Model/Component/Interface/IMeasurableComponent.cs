@@ -10,6 +10,15 @@ namespace Lionk.Core.Component;
 /// <typeparam name="T"> The type of the value. </typeparam>
 public interface IMeasurableComponent<T> : IComponent, IMeasurable
 {
+    #region delegate and events
+
+    /// <summary>
+    ///     Raised when a new value is available.
+    /// </summary>
+    event EventHandler<MeasureEventArgs<T>>? NewValueAvailable;
+
+    #endregion
+
 
     #region properties
 
@@ -27,14 +36,6 @@ public interface IMeasurableComponent<T> : IComponent, IMeasurable
 /// </summary>
 public interface IMeasurable
 {
-    #region delegate and events
-
-    /// <summary>
-    ///     Raised when a new value is available.
-    /// </summary>
-    event EventHandler<MeasureEventArgs<T>>? NewValueAvailable;
-
-    #endregion
 
     #region public and override methods
 
