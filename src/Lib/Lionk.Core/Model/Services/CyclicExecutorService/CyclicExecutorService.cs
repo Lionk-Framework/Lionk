@@ -1,9 +1,9 @@
 ﻿// Copyright © 2024 Lionk Project
 
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using Lionk.Core.Observable;
 using Lionk.Log;
-using Lionk.Utils;
 using Newtonsoft.Json;
 
 namespace Lionk.Core.Component.Cyclic;
@@ -29,8 +29,6 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
 
     private CycleState _cycleState;
 
-    private TimeSpan _watchdogTimeout;
-
     private TimeSpan _meanCycleTime;
 
     private TimeSpan _maxCycleTime;
@@ -39,7 +37,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
 
     private long _nCycle;
 
-    private readonly Dictionary<Guid, DateTime> _componentsTimeout = [];
+    private readonly ConcurrentDictionary<Guid, DateTime> _componentsTimeout = [];
 
     #endregion
 
@@ -52,8 +50,6 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     public CyclicExecutorService(IComponentService componentService)
     {
         _componentService = componentService;
-        WatchDogTimeout = LoadWatchDogTimeout() ?? TimeSpan.FromSeconds(1);
-
         State = CycleState.Stopped;
     }
 
@@ -62,25 +58,13 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     #region properties
 
     /// <inheritdoc />
-    public IEnumerable<ICyclicComponent> Components => _componentService.GetInstancesOfType<ICyclicComponent>();
+    public List<ICyclicComponent> Components => _componentService.GetInstancesOfType<ICyclicComponent>().ToList();
 
     /// <inheritdoc />
     public CycleState State
     {
         get => _cycleState;
         set => SetField(ref _cycleState, value);
-    }
-
-    /// <inheritdoc />
-    [JsonProperty]
-    public TimeSpan WatchDogTimeout
-    {
-        get => _watchdogTimeout;
-        set
-        {
-            SetField(ref _watchdogTimeout, value);
-            SaveWatchDogTimeout(_watchdogTimeout);
-        }
     }
 
     /// <inheritdoc />
@@ -142,6 +126,10 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
             {
                 State = CycleState.Running;
             }
+            else if (State == CycleState.Stopped)
+            {
+                InternalStart();
+            }
         }
     }
 
@@ -150,14 +138,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     {
         lock (_stateLock)
         {
-            if (State == CycleState.Running)
-            {
-                return;
-            }
-
-            _cancellationTokenSource = new CancellationTokenSource();
-            State = CycleState.Running;
-            _executorTask = Task.Run(Execute, _cancellationTokenSource.Token);
+            InternalStart();
         }
     }
 
@@ -195,11 +176,6 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     {
         while (!_cancellationTokenSource.Token.IsCancellationRequested)
         {
-            var watchdogCancellationSource = new CancellationTokenSource(WatchDogTimeout);
-            var combinedCancellation = CancellationTokenSource.CreateLinkedTokenSource(
-                _cancellationTokenSource.Token,
-                watchdogCancellationSource.Token);
-
             if (State == CycleState.Paused)
             {
                 await Task.Delay(100, _cancellationTokenSource.Token); // Sleep briefly while paused
@@ -211,24 +187,15 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
                 _nCycle++;
                 CheckComponentsTimeout();
                 _cycleStopwatch.Restart();
-                int nbExecutedComponents = ExecuteComponents(combinedCancellation.Token);
+                int nbExecutedComponents = ExecuteComponents(_cancellationTokenSource.Token);
                 _cycleStopwatch.Stop();
                 ManageTimeMeasurement(nbExecutedComponents);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-
-                if (watchdogCancellationSource.Token.IsCancellationRequested && !_cancellationTokenSource.Token.IsCancellationRequested)
-                {
-                    Abort();
-                    LogService.LogApp(LogSeverity.Warning, "Watchdog timeout exceeded");
-                }
-            }
-            finally
-            {
-                combinedCancellation.Dispose();
-                watchdogCancellationSource.Dispose();
+                Abort();
+                LogService.LogApp(LogSeverity.Warning, $"Exception thrown during execution {e.Message}");
             }
 
             await Task.Delay(10, _cancellationTokenSource.Token); // Delay between cycles
@@ -248,7 +215,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
         foreach (ICyclicComponent component in ComponentsTimedOut)
         {
             component.Abort();
-            _componentsTimeout.Remove(component.Id);
+            _componentsTimeout.Remove(component.Id, out _);
 
             LogService.LogApp(LogSeverity.Warning,
                 $"Component {component.InstanceName} timed out and was aborted");
@@ -281,12 +248,12 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     ///     If the execution fails or times out, the component is aborted.
     /// </summary>
     /// <param name="component">The cyclic component to execute.</param>
-    /// <param name="combinedToken">A combined cancellation token that includes both the service's and the watchdog's cancellation tokens.</param>
-    private Task? StartComponent(ICyclicComponent component, CancellationToken combinedToken)
+    /// <param name="token">A combined cancellation token that includes the service's token.</param>
+    private Task? StartComponent(ICyclicComponent component, CancellationToken token)
     {
         try
         {
-            var task = Task.Run(component.Execute, combinedToken);
+            var task = new Task(component.Execute, token);
 
             task.ContinueWith(t =>
                 {
@@ -297,7 +264,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
                             $"{component.InstanceName} failed during execution : {t.Exception.InnerException?.Message}");
                     }
 
-                    _componentsTimeout.Remove(component.Id);
+                    _componentsTimeout.Remove(component.Id, out _);
                 },
                 TaskScheduler.Default);
 
@@ -310,7 +277,7 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
         catch (Exception ex)
         {
             component.Abort(); // Abort the component if an exception occurs
-            _componentsTimeout.Remove(component.Id);
+            _componentsTimeout.Remove(component.Id, out _);
             LogService.LogApp(LogSeverity.Error, $"{component.InstanceName} failed during execution: {ex.Message}");
             return null;
         }
@@ -319,8 +286,8 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     /// <summary>
     ///     Iterates through all cyclic components and executes those that are ready and not in error.
     /// </summary>
-    /// <param name="combinedToken">A combined cancellation token that includes both the service's and the watchdog's cancellation tokens.</param>
-    private int ExecuteComponents(CancellationToken combinedToken)
+    /// <param name="token">A cancellation token that comes from the service.</param>
+    private int ExecuteComponents(CancellationToken token)
     {
         int counter = 0;
 
@@ -334,10 +301,12 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
             if (IsComponentReadyForNewExecution(component))
             {
                 counter++;
-                Task? task = StartComponent(component, combinedToken);
+                Task? task = StartComponent(component, token);
 
                 if (task is not null)
-                    _componentsTimeout.Add(component.Id, DateTime.Now + component.Timeout);
+                    _componentsTimeout.TryAdd(component.Id, DateTime.Now + component.Timeout);
+
+                task?.Start();
             }
         }
 
@@ -350,35 +319,16 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
         && !_componentsTimeout.ContainsKey(component.Id)
         && !component.IsRunning;
 
-    private void SaveWatchDogTimeout(TimeSpan timeout)
+    private void InternalStart()
     {
-        try
+        if (State == CycleState.Running)
         {
-            string json = JsonConvert.SerializeObject(timeout);
-            ConfigurationUtils.SaveFile(ConfigFileName, json, FolderType.Config);
-        }
-        catch (Exception ex)
-        {
-            LogService.LogApp(LogSeverity.Error, $"Failed to save WatchDogTimeout. Error: {ex.Message}");
-        }
-    }
-
-    private TimeSpan? LoadWatchDogTimeout()
-    {
-        try
-        {
-            if (ConfigurationUtils.FileExists(ConfigFileName, FolderType.Config))
-            {
-                string json = ConfigurationUtils.ReadFile(ConfigFileName, FolderType.Config);
-                return JsonConvert.DeserializeObject<TimeSpan>(json);
-            }
-        }
-        catch (Exception ex)
-        {
-            LogService.LogApp(LogSeverity.Warning, $"Failed to load WatchDogTimeout. Using default value. Error: {ex.Message}");
+            return;
         }
 
-        return null;
+        _cancellationTokenSource = new CancellationTokenSource();
+        State = CycleState.Running;
+        _executorTask = Task.Run(Execute, _cancellationTokenSource.Token);
     }
 
     #endregion

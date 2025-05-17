@@ -12,17 +12,12 @@ public interface ICyclicExecutorService
     /// <summary>
     ///     Gets the collection of cyclic components managed by the service.
     /// </summary>
-    IEnumerable<ICyclicComponent> Components { get; }
+    List<ICyclicComponent> Components { get; }
 
     /// <summary>
     ///     Gets the current state of the service.
     /// </summary>
     CycleState State { get; }
-
-    /// <summary>
-    ///     Gets or sets the watchdog timeout. If a component's execution exceeds this duration, the service will take appropriate action.
-    /// </summary>
-    TimeSpan WatchDogTimeout { get; set; }
 
     /// <summary>
     ///     Gets or sets the mean cycle time. This is the average time between the start of two consecutive cycles.

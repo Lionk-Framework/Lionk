@@ -51,10 +51,7 @@ public class CyclicExecutorServiceTests
     [Test]
     public async Task ExecuteComponent_WhenExecutionTimesOut_AbortsComponent()
     {
-        _service = new CyclicExecutorService(_componentServiceMock.Object)
-                   {
-                       WatchDogTimeout = TimeSpan.FromMilliseconds(500), // Set a short timeout
-                   };
+        _service = new CyclicExecutorService(_componentServiceMock.Object);
 
         _cyclicComponentMock.Setup(c => c.CanExecute).Returns(true);
         _cyclicComponentMock.Setup(c => c.IsInError).Returns(false);
