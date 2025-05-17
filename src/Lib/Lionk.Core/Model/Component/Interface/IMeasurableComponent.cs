@@ -8,7 +8,7 @@ namespace Lionk.Core.Component;
 ///     This interface defines a measurable component.
 /// </summary>
 /// <typeparam name="T"> The type of the value. </typeparam>
-public interface IMeasurableComponent<T> : IComponent
+public interface IMeasurableComponent<T> : IComponent, IMeasurable
 {
     #region delegate and events
 
@@ -36,4 +36,8 @@ public interface IMeasurableComponent<T> : IComponent
     void Measure();
 
     #endregion
+}
+
+public interface IMeasurable
+{
 }
