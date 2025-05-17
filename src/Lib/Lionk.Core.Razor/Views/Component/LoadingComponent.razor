@@ -6,18 +6,29 @@
 @using IComponent = Lionk.Core.Component.IComponent
 @inherits MudItem
 @namespace Lionk.Core.View
-<MudMenu ActivationEvent="@MouseEvent.RightClick">
-    <ActivatorContent>
-    <MudProgressCircular Color="Color.Primary" Size="Size.Small" Indeterminate="true" />
-    </ActivatorContent>
-    <ChildContent>
-        <MudMenuItem OnClick="DeleteClickedAsync">Delete item</MudMenuItem>
-    </ChildContent>
-</MudMenu>
-<MudPaper>
+<MudPaper Class="pa-4"
+          Style=" position: relative;
+                      height:inherit;
+                      width:inherit;
+                      min-height:200px;
+                      width:150px">
+    <div style="position: absolute;
+                    top: 5px;
+                    right: 5px;
+                    display: flex;
+                    flex-direction: column;">
+        <MudMenu Icon="@Icons.Material.Filled.MoreVert"
+                 Color="Color.Primary">
+            <MudMenuItem OnClick="DeleteClickedAsync">
+                <MudText Color="Color.Error">Delete Item</MudText>
+            </MudMenuItem>
+        </MudMenu>
+    </div>
+    <MudProgressCircular Color="Color.Primary" Size="Size.Small" Indeterminate="true"/>
 </MudPaper>
 
 @code {
+
     /// <summary>
     /// The component view model.
     /// </summary>
@@ -44,4 +55,5 @@
         DialogResult? result = await dialog.Result;
         return result?.Data as bool? ?? false;
     }
+
 }
