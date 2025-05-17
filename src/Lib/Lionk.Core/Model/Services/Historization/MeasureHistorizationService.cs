@@ -126,7 +126,7 @@ public class MeasureHistorizationService : IMeasureHistorizationService
             // Store the measures using the data storage service
             foreach (Measure<double> measure in e.Measures)
             {
-                _dataStorageService.StoreMeasure(component.Id, measure);
+                _dataStorageService.StoreMeasure(component.InstanceName, measure);
             }
 
             LogService.LogApp(LogSeverity.Debug,
