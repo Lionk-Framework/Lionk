@@ -1,6 +1,7 @@
 ﻿// Copyright © 2024 Lionk Project
 
 using Lionk.Core.DataModel;
+using Newtonsoft.Json;
 
 namespace Lionk.Core.Component;
 
@@ -25,6 +26,7 @@ public interface IMeasurableComponent<T> : IComponent, IMeasurable
     /// <summary>
     ///     Gets the measures of the component.
     /// </summary>
+    [JsonIgnore]
     List<Measure<T>> Measures { get; }
 
     #endregion
