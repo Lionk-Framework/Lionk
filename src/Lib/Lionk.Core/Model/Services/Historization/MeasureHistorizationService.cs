@@ -21,9 +21,7 @@ public class MeasureHistorizationService : IMeasureHistorizationService
 
     #endregion
 
-    #region constructors
-
-    /// <summary>
+    #region constructors    /// <summary>
     /// Initializes a new instance of the <see cref="MeasureHistorizationService"/> class.
     /// </summary>
     /// <param name="componentService">The component service.</param>
@@ -35,20 +33,24 @@ public class MeasureHistorizationService : IMeasureHistorizationService
 
         // Subscribe to component registration events
         _componentService.NewInstanceRegistered += OnNewComponentRegistered;
+        SubscribeToComponents();
     }
 
     #endregion
 
-    #region public and override methods
-
-    /// <inheritdoc />
+    #region public and override methods    /// <inheritdoc />
     public void SubscribeToComponents()
     {
         // Subscribe to existing measurable components
-        IEnumerable<IMeasurableComponent<double>> components = _componentService.GetInstances().OfType<IMeasurableComponent<double>>();
-        foreach (IMeasurableComponent<double> component in components)
+        IEnumerable<IComponent> components = _componentService.GetInstancesOfType<IMeasurableComponent<double>>();
+        int componentCount = components.Count();
+
+        LogService.LogApp(LogSeverity.Information,
+            $"MeasureHistorizationService: Found {componentCount} measurable components to subscribe to");
+
+        foreach (IComponent component in components)
         {
-            SubscribeComponent(component);
+            SubscribeComponent((IMeasurableComponent<double>)component);
         }
     }
 

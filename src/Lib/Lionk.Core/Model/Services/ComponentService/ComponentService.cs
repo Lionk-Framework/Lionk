@@ -190,6 +190,7 @@ public class ComponentService : IComponentService
         _componentInstances = DeserializeComponents(jsonObject);
         SubscribeObservableComponents();
         LinkComponents();
+        OnNewTypesAvailable();
     }
 
     private void LinkComponents()

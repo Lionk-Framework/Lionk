@@ -1,9 +1,11 @@
-// Copyright © 2024 Lionk Project
+// Copyright ï¿½ 2024 Lionk Project
 
 using Lionk.Auth.Abstraction;
 using Lionk.Auth.Identity;
+using Lionk.Core;
 using Lionk.Core.Component;
 using Lionk.Core.Component.Cyclic;
+using Lionk.Core.Razor;
 using Lionk.Core.Razor.Service;
 using Lionk.Core.View;
 using Lionk.Log;
@@ -78,6 +80,12 @@ static void ConfigureServices(IServiceCollection services)
 
     // Registers NotificationStateService as a singleton to share notification state across the application
     services.AddSingleton<NotificationStateService>();
+
+    // Registers historization and storage service
+    services.AddSingleton<IDataStorageService, InfluxStorageService>();
+    services.AddSingleton<IMeasureHistorizationService>(sp =>
+        new MeasureHistorizationService(sp.GetRequiredService<IComponentService>(), sp.GetRequiredService<IDataStorageService>()));
+    services.AddHostedService<MeasureHistorizationHostedService>();
 }
 
 static void ConfigureLogging(WebApplication app)
