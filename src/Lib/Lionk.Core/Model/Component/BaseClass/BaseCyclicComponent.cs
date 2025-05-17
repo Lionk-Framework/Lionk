@@ -24,7 +24,7 @@ public abstract class BaseCyclicComponent : BaseExecutableComponent, ICyclicComp
 
     private DateTime _startedDate;
 
-    private TimeSpan _timeout;
+    private TimeSpan _timeout = TimeSpan.FromSeconds(1);
 
     #endregion
 

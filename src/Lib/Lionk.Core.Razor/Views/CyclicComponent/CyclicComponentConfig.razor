@@ -12,8 +12,10 @@
         </MudTooltip>
     }
 </MudRadioGroup>
+<MudTextField @bind-Value="_timeout" Label="Execution timeout in s" T="int"/>
 
 @code {
+
     /// <summary>
     /// The cyclic component to configure.
     /// </summary>
@@ -32,6 +34,17 @@
         {
             if (Component is null) return;
             Component.Period = new TimeSpan(0, 0, value);
+        }
+    }
+
+    private int _timeout
+    {
+        get => Component?.Timeout.Seconds ?? 0;
+
+        set
+        {
+            if (Component is null) return;
+            Component.Timeout = new TimeSpan(0, 0, value);
         }
     }
 

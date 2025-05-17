@@ -1,0 +1,104 @@
+﻿@using Lionk.Core.View
+@using Lionk.Core.Component
+@using MudBlazor
+@using IComponent = Lionk.Core.Component.IComponent
+@namespace Lionk.TestComponent.CyclicCounter
+@attribute [ViewOf("Linking component view", typeof(ComponentLinking), typeof(ComponentLinkingView), ViewContext.Configuration)]
+@inject IComponentService ComponentService
+
+<MudCard Elevation="2" Class="pa-4 my-4">
+    <MudCardHeader>
+        <MudText Typo="Typo.h6">Component Linking Configuration</MudText>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudGrid>
+            <MudItem xs="12">
+                <MudSelect T="IComponent" Label="Select component to link" Value="@SelectedComponent" ValueChanged="OnComponentSelected"
+                           AdornmentIcon="@Icons.Material.Filled.Link" AdornmentColor="Color.Primary">
+                    @foreach (var component in AvailableComponents)
+                    {
+                        <MudSelectItem Value="@component">@component.InstanceName (@component.GetType().Name)</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+
+            <MudItem xs="12" Class="mt-4">
+                <MudText Typo="Typo.body1">
+                    <MudChip Color="@(Component?.LinkedComponent != null ? Color.Success : Color.Error)" T="IComponent"
+                             Size="Size.Small" Class="mr-2">
+                        @(Component?.LinkedComponent != null ? "Linked" : "Not Linked")
+                    </MudChip>
+                    @if (Component?.LinkedComponent != null)
+                    {
+                        <span>Linked to: <strong>@Component.LinkedComponent.InstanceName</strong></span>
+                    }
+                    else
+                    {
+                        <span>No component linked</span>
+                    }
+                </MudText>
+            </MudItem>
+        </MudGrid>
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Error"
+                   OnClick="@UnlinkComponent"
+                   Disabled="@(Component?.LinkedComponent == null)">
+            Unlink
+        </MudButton>
+    </MudCardActions>
+</MudCard>
+
+@code {
+    /// <summary>
+    /// The component being configured.
+    /// </summary>
+    [Parameter]
+    public ComponentLinking? Component { get; set; }
+
+    private IEnumerable<IComponent> AvailableComponents => GetAvailableComponents();
+    private IComponent? SelectedComponent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        // Find the currently linked component if any
+        if (Component?.LinkedComponent != null)
+        {
+            SelectedComponent = Component.LinkedComponent;
+        }
+    }
+
+    private IEnumerable<IComponent> GetAvailableComponents()
+    {
+        // Get all components except the current one
+        var components = ComponentService.GetInstances()
+            .Where(c => Component != null && c.Id != Component.Id)
+            .OrderBy(c => c.InstanceName);
+
+        return components;
+    }
+
+    private void OnComponentSelected(IComponent component)
+    {
+        if (Component != null && component != null)
+        {
+            Component.LinkedComponentId = component.Id;
+            Component.LinkedComponent = component;
+            Component.UpdateLinkedComponentName();
+            SelectedComponent = component;
+        }
+    }
+
+    private void UnlinkComponent()
+    {
+        if (Component != null)
+        {
+            Component.LinkedComponentId = Guid.Empty;
+            Component.LinkedComponent = null;
+            Component.UpdateLinkedComponentName();
+            SelectedComponent = null;
+        }
+    }
+}

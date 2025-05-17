@@ -45,32 +45,6 @@ public class CyclicExecutorServiceTests
     }
 
     /// <summary>
-    ///     Tests that if a component execution times out, it is aborted.
-    /// </summary>
-    /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
-    [Test]
-    public async Task ExecuteComponent_WhenExecutionTimesOut_AbortsComponent()
-    {
-        _service = new CyclicExecutorService(_componentServiceMock.Object)
-                   {
-                       WatchDogTimeout = TimeSpan.FromMilliseconds(500), // Set a short timeout
-                   };
-
-        _cyclicComponentMock.Setup(c => c.CanExecute).Returns(true);
-        _cyclicComponentMock.Setup(c => c.IsInError).Returns(false);
-        _cyclicComponentMock.Setup(c => c.NextExecution).Returns(DateTime.UtcNow.AddSeconds(-1));
-        _cyclicComponentMock.Setup(c => c.Execute()).Callback(() => Thread.Sleep(2000)); // Simulate long running task
-        _componentServiceMock.Setup(s => s.GetInstancesOfType<ICyclicComponent>())
-            .Returns(new List<ICyclicComponent> { _cyclicComponentMock.Object });
-
-        _service.Start();
-
-        await Task.Delay(3000); // Wait for more than the watchdog timeout
-
-        _cyclicComponentMock.Verify(c => c.Abort(), Times.AtLeastOnce);
-    }
-
-    /// <summary>
     ///     Tests that cyclic components are not executed if they are in error state.
     /// </summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>

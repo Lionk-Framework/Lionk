@@ -189,6 +189,41 @@ public class ComponentService : IComponentService
 
         _componentInstances = DeserializeComponents(jsonObject);
         SubscribeObservableComponents();
+        LinkComponents();
+    }
+
+    private void LinkComponents()
+    {
+        foreach (IComponent component in _componentInstances.Values)
+        {
+            Type type = component.GetType();
+            PropertyInfo[] properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach (PropertyInfo prop in properties)
+            {
+                IdIsAttribute? idIsAttr = prop.GetCustomAttribute<IdIsAttribute>();
+                if (idIsAttr == null)
+                    continue;
+
+                // Find the property that holds the GUID
+                PropertyInfo? idProp
+                    = type.GetProperty(idIsAttr.IdPropertyName, BindingFlags.Public | BindingFlags.Instance);
+
+                if (idProp == null || idProp.PropertyType != typeof(Guid))
+                    continue;
+
+                var guid = (Guid)(idProp.GetValue(component));
+
+                if (_componentInstances.TryGetValue(guid, out IComponent? linkedComponent))
+                {
+                    // Set the property to the linked component
+                    prop.SetValue(component, linkedComponent);
+                }
+                else
+                {
+                    LogService.LogApp(LogSeverity.Error, $"Could not find component with GUID: {guid}");
+                }
+            }
+        }
     }
 
     private void SubscribeObservableComponents()
@@ -251,10 +286,7 @@ public class ComponentService : IComponentService
     {
         try
         {
-            IComponent? component = token.ToObject<IComponent>(new JsonSerializer
-            {
-                TypeNameHandling = TypeNameHandling.All,
-            });
+            IComponent? component = token.ToObject<IComponent>(new JsonSerializer { TypeNameHandling = TypeNameHandling.All, });
 
             if (component == null)
             {
