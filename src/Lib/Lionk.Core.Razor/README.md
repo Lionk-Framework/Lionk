@@ -65,7 +65,7 @@ The library provides Blazor components for displaying views within MudBlazor dia
 
 @code {
     [CascadingParameter]
-    MudDialogInstance? MudDialog { get; set; }
+    IMudDialogInstance? MudDialog { get; set; }
 
     [Parameter]
     public object? Component { get; set; }
@@ -121,7 +121,7 @@ Another example of a dialog is a simpler setup for confirmation actions.
 
 @code {
     [CascadingParameter]
-    private MudDialogInstance? MudDialog { get; set; }
+    private IMudDialogInstance? MudDialog { get; set; }
 
     [Parameter]
     public string? ContentText { get; set; }
@@ -167,7 +167,7 @@ public void FindViews()
 {
     ITypesProvider typesProvider = new CustomTypesProvider(); // Implement ITypesProvider
     IViewLocatorService viewLocator = new ViewLocatorService(typesProvider);
-    
+
     var views = viewLocator.GetViewOf(typeof(ExampleComponent), ViewContext.Detail);
     foreach (var view in views)
     {
