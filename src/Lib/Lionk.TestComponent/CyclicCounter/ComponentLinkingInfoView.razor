@@ -1,0 +1,42 @@
+@using Lionk.Core.View
+@using MudBlazor
+@using IComponent = Lionk.Core.Component.IComponent
+@namespace Lionk.TestComponent.CyclicCounter
+@attribute [ViewOf("Linking component info", typeof(ComponentLinking), typeof(ComponentLinkingInfoView), ViewContext.Widget)]
+
+<MudPaper Elevation="2" Class="pa-4">
+    <MudText Typo="Typo.h6" Class="mb-4">Component Link Information</MudText>
+
+    @if (Component?.LinkedComponent != null)
+    {
+        <MudAlert Severity="Severity.Success" Variant="Variant.Filled" Class="mb-3">
+            Successfully linked to another component
+        </MudAlert>
+
+        <MudList Clickable="false" T="IComponent">
+            <MudListItem>
+                <MudText><b>Linked Component:</b> @Component.LinkedComponent.InstanceName</MudText>
+            </MudListItem>
+            <MudListItem>
+                <MudText><b>Component Type:</b> @Component.LinkedComponent.GetType().Name</MudText>
+            </MudListItem>
+            <MudListItem>
+                <MudText><b>Component ID:</b> @Component.LinkedComponent.Id</MudText>
+            </MudListItem>
+        </MudList>
+    }
+    else
+    {
+        <MudAlert Severity="Severity.Warning" Variant="Variant.Filled">
+            No component linked. Configure this component to link it to another component.
+        </MudAlert>
+    }
+</MudPaper>
+
+@code {
+    /// <summary>
+    /// The component to display info for.
+    /// </summary>
+    [Parameter]
+    public ComponentLinking? Component { get; set; }
+}
