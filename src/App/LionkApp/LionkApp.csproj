@@ -20,6 +20,7 @@ This is the Lionk App README file.
 </Description>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="InfluxDB3.Client" Version="1.2.0-dev.1512" />
     <PackageReference Include="MudBlazor" Version="7.6.0" />
   </ItemGroup>
   <ItemGroup>

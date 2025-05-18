@@ -18,14 +18,14 @@ public class InfluxDBConfig
     public string Organization { get; set; } = "lionk";
 
     /// <summary>
-    /// Gets or sets the prefix for component bucket names. Will be prepended to component names to create bucket names.
-    /// </summary>
-    public string ComponentBucketPrefix { get; set; } = "comp_";
-
-    /// <summary>
     /// Gets or sets the token for authentication with InfluxDB.
     /// </summary>
     public string Token { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the default database.
+    /// </summary>
+    public string DefaultDatabase { get; set; } = "lionk";
 
     /// <summary>
     /// Gets or sets the retention period for data in the InfluxDB bucket.

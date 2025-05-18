@@ -10,7 +10,7 @@
 </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="InfluxDB.Client" Version="4.18.0" />
+    <PackageReference Include="InfluxDB3.Client" Version="1.2.0-dev.1512" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <None Include="README.md" Pack="true" PackagePath="" />

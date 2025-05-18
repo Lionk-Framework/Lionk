@@ -26,7 +26,7 @@ public interface IDataStorageService
     /// <param name="startTime">The start time of the range to retrieve.</param>
     /// <param name="endTime">The end time of the range to retrieve.</param>
     /// <returns>An enumerable of measurements within the specified time range.</returns>
-    IEnumerable<Measure<T>> GetMeasures<T>(string componentName, DateTime startTime, DateTime endTime);
+    Task<IEnumerable<Measure<T>>> GetMeasuresAsync<T>(string componentName, DateTime startTime, DateTime endTime);
 
     /// <summary>
     /// Retrieves measurements for a specific measure in a component within a specified time range.
@@ -37,5 +37,5 @@ public interface IDataStorageService
     /// <param name="startTime">The start time of the range to retrieve.</param>
     /// <param name="endTime">The end time of the range to retrieve.</param>
     /// <returns>An enumerable of measurements within the specified time range.</returns>
-    IEnumerable<Measure<T>> GetMeasures<T>(string componentName, string measureName, DateTime startTime, DateTime endTime);
+    Task<IEnumerable<Measure<T>>> GetMeasuresAsync<T>(string componentName, string measureName, DateTime startTime, DateTime endTime);
 }
