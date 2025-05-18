@@ -15,7 +15,8 @@ public interface IDataStorageService
     /// <typeparam name="T">The type of the measurement value.</typeparam>
     /// <param name="componentName">The name of the component that produced the measurement.</param>
     /// <param name="measure">The measurement data to store.</param>
-    void StoreMeasure<T>(string componentName, Measure<T> measure);
+    /// <param name="retentionTime"> The retention time for this kind of measure.</param>
+    void StoreMeasure<T>(string componentName, Measure<T> measure, TimeSpan retentionTime);
 
     /// <summary>
     /// Retrieves measurements for a component within a specified time range.

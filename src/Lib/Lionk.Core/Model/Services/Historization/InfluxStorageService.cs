@@ -24,7 +24,7 @@ public class InfluxStorageService : IDataStorageService, IDisposable
     private readonly QueryApi _queryApi;
     private readonly BucketsApi _bucketsApi;
     private readonly OrganizationsApi _organizationsApi;
-    private readonly ConcurrentDictionary<string, bool> _initializedBuckets = new();
+    private readonly ConcurrentDictionary<string, TimeSpan> _bucketTtlCache = new();
 
     private bool _initialized = false;
     private bool _disposedValue;
@@ -63,7 +63,7 @@ public class InfluxStorageService : IDataStorageService, IDisposable
     #region public and override methods
 
     /// <inheritdoc />
-    public void StoreMeasure<T>(string componentName, Measure<T> measure)
+    public void StoreMeasure<T>(string componentName, Measure<T> measure, TimeSpan retentionTime)
     {
         if (!_initialized)
         {
@@ -77,24 +77,8 @@ public class InfluxStorageService : IDataStorageService, IDisposable
             string sanitizedMeasureName = SanitizeForInflux(measure.MeasureName);
             string componentBucketName = GetComponentBucketName(sanitizedComponentName);
 
-            // Determine retention period - try to find the component to get its retention period
-            TimeSpan? retentionPeriod = null;
-            try
-            {
-                // TODO: This requires a dependency on IComponentService, which would be a cleaner approach
-                // For now, we'll handle this by caching bucket creations and using the default retention period
-
-                // If we had access to the component:
-                // IMeasurableComponent measurable = _componentService.GetComponentByName(componentName);
-                // retentionPeriod = measurable?.HistoryDuration;
-            }
-            catch
-            {
-                // Fall back to default retention if component access fails
-            }
-
             // Ensure the bucket exists for this component
-            CreateBucketIfNotExists(componentName, componentBucketName, retentionPeriod).Wait();
+            CreateBucketIfNotExists(componentName, componentBucketName, retentionTime).Wait();
 
             // Use the measure name as the measurement (_measurement field)
             PointData point = PointData.Measurement(sanitizedMeasureName)
@@ -387,53 +371,76 @@ public class InfluxStorageService : IDataStorageService, IDisposable
     /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task CreateBucketIfNotExists(string componentName, string bucketName, TimeSpan? retentionPeriod = null)
     {
-        // If we've already checked this bucket, don't check again
-        if (_initializedBuckets.TryGetValue(bucketName, out bool exists) && exists)
+        TimeSpan desiredTtl = retentionPeriod ?? _config.RetentionPeriod;
+
+        // Check in local cache
+        if (_bucketTtlCache.TryGetValue(bucketName, out TimeSpan cachedTtl))
         {
-            return;
+            // Skip if TTL already matches
+            if (Math.Abs((cachedTtl - desiredTtl).TotalSeconds) < 1)
+                return;
         }
 
         try
         {
-            // Check if the bucket exists
+            // Retrieve bucket list
             List<Bucket> buckets = await _bucketsApi.FindBucketsAsync();
             Bucket? bucket = buckets.FirstOrDefault(b => b.Name == bucketName);
 
             if (bucket == null)
             {
-                // Use the provided retention period or fall back to the config default
-                TimeSpan ttl = retentionPeriod ?? _config.RetentionPeriod;
-
                 LogService.LogApp(
                     LogSeverity.Information,
-                    $"Creating bucket '{bucketName}' for component '{componentName}' with retention period {ttl.TotalDays} days");
+                    $"Creating bucket '{bucketName}' for component '{componentName}' with retention {desiredTtl.TotalDays} days");
 
                 var retentionRules = new List<BucketRetentionRules>
+            {
+                new()
+                {
+                    EverySeconds = (long)desiredTtl.TotalSeconds,
+                    Type = BucketRetentionRules.TypeEnum.Expire,
+                },
+            };
+
+                await _bucketsApi.CreateBucketAsync(new Bucket
+                {
+                    Name = bucketName,
+                    OrgID = _organizationId,
+                    RetentionRules = retentionRules,
+                });
+            }
+            else
+            {
+                BucketRetentionRules? currentRule = bucket.RetentionRules?.FirstOrDefault(r => r.Type == BucketRetentionRules.TypeEnum.Expire);
+                long currentTtlSeconds = currentRule?.EverySeconds ?? 0;
+
+                if (Math.Abs(currentTtlSeconds - desiredTtl.TotalSeconds) > 1)
+                {
+                    LogService.LogApp(
+                        LogSeverity.Information,
+                        $"Updating TTL for bucket '{bucketName}' to {desiredTtl.TotalDays} days (was {TimeSpan.FromSeconds(currentTtlSeconds).TotalDays})");
+
+                    bucket.RetentionRules = new List<BucketRetentionRules>
                 {
                     new()
                     {
-                        EverySeconds = (long)ttl.TotalSeconds,
+                        EverySeconds = (long)desiredTtl.TotalSeconds,
                         Type = BucketRetentionRules.TypeEnum.Expire,
                     },
                 };
 
-                await _bucketsApi.CreateBucketAsync(
-                                new Bucket
-                                {
-                                    Name = bucketName,
-                                    OrgID = _organizationId,
-                                    RetentionRules = retentionRules,
-                                });
+                    await _bucketsApi.UpdateBucketAsync(bucket);
+                }
             }
 
-            // Mark this bucket as initialized
-            _initializedBuckets[bucketName] = true;
+            // Update cache
+            _bucketTtlCache[bucketName] = desiredTtl;
         }
         catch (Exception ex)
         {
             LogService.LogApp(
                 LogSeverity.Error,
-                $"Error creating bucket '{bucketName}' for component '{componentName}': {ex.Message}");
+                $"Error creating/updating bucket '{bucketName}' for component '{componentName}': {ex.Message}");
         }
     }
 
