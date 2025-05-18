@@ -124,18 +124,16 @@ public class MeasureHistorizationService : IMeasureHistorizationService
         _subscribedComponents.TryRemove(measurable.Id, out _);
     }
 
-    // Event handler for measurable components
-    private void OnNewMeasureAvailable(object? sender, MeasureEventArgs<double> e)
+    private async void OnNewMeasureAvailable(object? sender, MeasureEventArgs<double> e)
     {
         if (sender is not IMeasurableComponent<double> component)
             return;
 
         try
         {
-            // Store the measures using the data storage service
             foreach (Measure<double> measure in e.Measures)
             {
-                _dataStorageService.StoreMeasure(component.InstanceName, measure);
+                await _dataStorageService.StoreMeasureAsync(component.InstanceName, measure, component.HistoryDuration);
             }
 
             LogService.LogApp(
@@ -146,7 +144,7 @@ public class MeasureHistorizationService : IMeasureHistorizationService
         {
             LogService.LogApp(
                 LogSeverity.Error,
-                $"Error storing measures from component {component?.InstanceName}: {ex.Message}");
+                $"Error storing measures from component {component.InstanceName}: {ex.Message}");
         }
     }
 

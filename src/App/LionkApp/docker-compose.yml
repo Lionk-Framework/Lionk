@@ -1,0 +1,12 @@
+version: "3"
+services:
+  influxdb3:
+    image: quay.io/influxdb/influxdb-community:latest
+    ports:
+      - "8086:8086"
+    environment:
+      INFLUXDB_DATABASE: lionk
+    volumes:
+      - influxdb3-data:/var/lib/influxdb3
+volumes:
+  influxdb3-data:

@@ -63,7 +63,7 @@ public class InfluxStorageService : IDataStorageService, IDisposable
     #region public and override methods
 
     /// <inheritdoc />
-    public void StoreMeasure<T>(string componentName, Measure<T> measure, TimeSpan retentionTime)
+    public async Task StoreMeasureAsync<T>(string componentName, Measure<T> measure, TimeSpan retentionTime)
     {
         if (!_initialized)
         {
@@ -78,7 +78,7 @@ public class InfluxStorageService : IDataStorageService, IDisposable
             string componentBucketName = GetComponentBucketName(sanitizedComponentName);
 
             // Ensure the bucket exists for this component
-            CreateBucketIfNotExists(componentName, componentBucketName, retentionTime).Wait();
+            await CreateBucketIfNotExists(componentName, componentBucketName, retentionTime);
 
             // Use the measure name as the measurement (_measurement field)
             PointData point = PointData.Measurement(sanitizedMeasureName)
@@ -86,7 +86,7 @@ public class InfluxStorageService : IDataStorageService, IDisposable
                 .Field("value", ConvertToDouble(measure.Value))
                 .Timestamp(measure.Time, WritePrecision.Ns);
 
-            _writeApi.WritePointAsync(point, componentBucketName, _config.Organization);
+            await _writeApi.WritePointAsync(point, componentBucketName, _config.Organization);
 
             LogService.LogApp(
                 LogSeverity.Debug,
@@ -383,9 +383,7 @@ public class InfluxStorageService : IDataStorageService, IDisposable
 
         try
         {
-            // Retrieve bucket list
-            List<Bucket> buckets = await _bucketsApi.FindBucketsAsync();
-            Bucket? bucket = buckets.FirstOrDefault(b => b.Name == bucketName);
+            Bucket? bucket = await _bucketsApi.FindBucketByNameAsync(bucketName);
 
             if (bucket == null)
             {
