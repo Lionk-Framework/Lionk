@@ -5,7 +5,6 @@ using System.Text.RegularExpressions;
 using InfluxDB.Client;
 using InfluxDB.Client.Api.Domain;
 using InfluxDB.Client.Writes;
-using Lionk.Core.Component;
 using Lionk.Core.DataModel;
 using Lionk.Log;
 
@@ -25,10 +24,11 @@ public class InfluxStorageService : IDataStorageService, IDisposable
     private readonly QueryApi _queryApi;
     private readonly BucketsApi _bucketsApi;
     private readonly OrganizationsApi _organizationsApi;
+    private readonly ConcurrentDictionary<string, bool> _initializedBuckets = new();
+
     private bool _initialized = false;
     private bool _disposedValue;
     private string _organizationId = string.Empty;
-    private readonly ConcurrentDictionary<string, bool> _initializedBuckets = new();
 
     #endregion
 
@@ -37,9 +37,12 @@ public class InfluxStorageService : IDataStorageService, IDisposable
     /// <summary>
     /// Initializes a new instance of the <see cref="InfluxStorageService"/> class.
     /// </summary>
-    public InfluxStorageService() : this(new InfluxDBConfig())
+    public InfluxStorageService()
+        : this(new InfluxDBConfig())
     {
-    }    /// <summary>
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="InfluxStorageService"/> class with specific configuration.
     /// </summary>
     /// <param name="config">The InfluxDB configuration.</param>
@@ -47,7 +50,7 @@ public class InfluxStorageService : IDataStorageService, IDisposable
     {
         _config = config ?? throw new ArgumentNullException(nameof(config));
 
-        var options = new InfluxDBClientOptions.Builder()
+        InfluxDBClientOptions options = new InfluxDBClientOptions.Builder()
             .Url(_config.Url)
             .AuthenticateToken(_config.Token.ToCharArray())
             .Org(_config.Organization)
@@ -65,7 +68,9 @@ public class InfluxStorageService : IDataStorageService, IDisposable
 
     #endregion
 
-    #region public and override methods    /// <inheritdoc />
+    #region public and override methods
+
+    /// <inheritdoc />
     public void StoreMeasure<T>(string componentName, Measure<T> measure)
     {
         if (!_initialized)
@@ -76,17 +81,17 @@ public class InfluxStorageService : IDataStorageService, IDisposable
 
         try
         {
-            var sanitizedComponentName = SanitizeForInflux(componentName);
-            var sanitizedMeasureName = SanitizeForInflux(measure.MeasureName);
-            var componentBucketName = GetComponentBucketName(sanitizedComponentName);
-            
+            string sanitizedComponentName = SanitizeForInflux(componentName);
+            string sanitizedMeasureName = SanitizeForInflux(measure.MeasureName);
+            string componentBucketName = GetComponentBucketName(sanitizedComponentName);
+
             // Determine retention period - try to find the component to get its retention period
             TimeSpan? retentionPeriod = null;
             try
             {
                 // TODO: This requires a dependency on IComponentService, which would be a cleaner approach
                 // For now, we'll handle this by caching bucket creations and using the default retention period
-                
+
                 // If we had access to the component:
                 // IMeasurableComponent measurable = _componentService.GetComponentByName(componentName);
                 // retentionPeriod = measurable?.HistoryDuration;
@@ -95,73 +100,81 @@ public class InfluxStorageService : IDataStorageService, IDisposable
             {
                 // Fall back to default retention if component access fails
             }
-            
+
             // Ensure the bucket exists for this component
             CreateBucketIfNotExists(componentName, componentBucketName, retentionPeriod).Wait();
-            
+
             // Use the measure name as the measurement (_measurement field)
-            var point = PointData.Measurement(sanitizedMeasureName)
+            PointData point = PointData.Measurement(sanitizedMeasureName)
                 .Tag("unit", measure.Unit)
                 .Field("value", ConvertToDouble(measure.Value))
                 .Timestamp(measure.Time, WritePrecision.Ns);
 
             _writeApi.WritePointAsync(point, componentBucketName, _config.Organization);
 
-            LogService.LogApp(LogSeverity.Debug,
+            LogService.LogApp(
+                LogSeverity.Debug,
                 $"Stored measure {measure.MeasureName} with value {measure.Value} for component {componentName} in bucket {componentBucketName}");
         }
         catch (Exception ex)
         {
-            LogService.LogApp(LogSeverity.Error,
+            LogService.LogApp(
+                LogSeverity.Error,
                 $"Error storing measure {measure.MeasureName} for component {componentName}: {ex.Message}");
         }
-    }/// <inheritdoc />
+    }
+
+    /// <inheritdoc />
     public IEnumerable<Measure<T>> GetMeasures<T>(string componentName, DateTime startTime, DateTime endTime)
     {
         if (!_initialized)
         {
-            LogService.LogApp(LogSeverity.Warning,
+            LogService.LogApp(
+                LogSeverity.Warning,
                 "InfluxStorageService not initialized yet, returning empty collection");
             return Enumerable.Empty<Measure<T>>();
         }
 
         try
         {
-            var sanitizedComponentName = SanitizeForInflux(componentName);
-            var componentBucketName = GetComponentBucketName(sanitizedComponentName);
+            string sanitizedComponentName = SanitizeForInflux(componentName);
+            string componentBucketName = GetComponentBucketName(sanitizedComponentName);
 
             // Query all measurements from the component's bucket
-            var flux = $@"
+            string flux = $@"
                 from(bucket: ""{componentBucketName}"")
                     |> range(start: {startTime:yyyy-MM-ddTHH:mm:ssZ}, stop: {endTime:yyyy-MM-ddTHH:mm:ssZ})
             ";
 
-            var tables = _queryApi.QueryAsync(flux, _config.Organization).Result;
+            List<InfluxDB.Client.Core.Flux.Domain.FluxTable> tables = _queryApi.QueryAsync(flux, _config.Organization).Result;
 
             var measures = new List<Measure<T>>();
 
-            foreach (var record in tables.SelectMany(table => table.Records))
+            foreach (InfluxDB.Client.Core.Flux.Domain.FluxRecord? record in tables.SelectMany(table => table.Records))
             {
                 // The measurement name is now the _measurement field
-                var measureName = record.GetMeasurement();
-                var unit = record.GetValueByKey("unit")?.ToString() ?? string.Empty;
-                var value = ConvertToType<T>(record.GetValue());
-                var time = record.GetTime()?.ToDateTimeUtc() ?? DateTime.UtcNow;
+                string measureName = record.GetMeasurement();
+                string unit = record.GetValueByKey("unit")?.ToString() ?? string.Empty;
+                T? value = ConvertToType<T>(record.GetValue());
+                DateTime time = record.GetTime()?.ToDateTimeUtc() ?? DateTime.UtcNow;
 
-                measures.Add(new Measure<T>(measureName,
+                measures.Add(new Measure<T>(
+                    measureName,
                     time,
                     unit,
                     value));
             }
 
-            LogService.LogApp(LogSeverity.Debug,
+            LogService.LogApp(
+                LogSeverity.Debug,
                 $"Retrieved {measures.Count} measures for component {componentName} from {startTime} to {endTime}");
 
             return measures;
         }
         catch (Exception ex)
         {
-            LogService.LogApp(LogSeverity.Error,
+            LogService.LogApp(
+                LogSeverity.Error,
                 $"Error retrieving measures for component {componentName}: {ex.Message}");
             return Enumerable.Empty<Measure<T>>();
         }
@@ -172,67 +185,55 @@ public class InfluxStorageService : IDataStorageService, IDisposable
     {
         if (!_initialized)
         {
-            LogService.LogApp(LogSeverity.Warning,
+            LogService.LogApp(
+                LogSeverity.Warning,
                 "InfluxStorageService not initialized yet, returning empty collection");
             return Enumerable.Empty<Measure<T>>();
         }
 
         try
         {
-            var sanitizedComponentName = SanitizeForInflux(componentName);
-            var sanitizedMeasureName = SanitizeForInflux(measureName);
-            var componentBucketName = GetComponentBucketName(sanitizedComponentName);
+            string sanitizedComponentName = SanitizeForInflux(componentName);
+            string sanitizedMeasureName = SanitizeForInflux(measureName);
+            string componentBucketName = GetComponentBucketName(sanitizedComponentName);
 
             // Query a specific measurement from the component's bucket
-            var flux = $@"
+            string flux = $@"
                 from(bucket: ""{componentBucketName}"")
                     |> range(start: {startTime:yyyy-MM-ddTHH:mm:ssZ}, stop: {endTime:yyyy-MM-ddTHH:mm:ssZ})
                     |> filter(fn: (r) => r._measurement == ""{sanitizedMeasureName}"")
             ";
 
-            var tables = _queryApi.QueryAsync(flux, _config.Organization).Result;
+            List<InfluxDB.Client.Core.Flux.Domain.FluxTable> tables = _queryApi.QueryAsync(flux, _config.Organization).Result;
 
             var measures = new List<Measure<T>>();
 
-            foreach (var record in tables.SelectMany(table => table.Records))
+            foreach (InfluxDB.Client.Core.Flux.Domain.FluxRecord? record in tables.SelectMany(table => table.Records))
             {
-                var unit = record.GetValueByKey("unit")?.ToString() ?? string.Empty;
-                var value = ConvertToType<T>(record.GetValue());
-                var time = record.GetTime()?.ToDateTimeUtc() ?? DateTime.UtcNow;
+                string unit = record.GetValueByKey("unit")?.ToString() ?? string.Empty;
+                T? value = ConvertToType<T>(record.GetValue());
+                DateTime time = record.GetTime()?.ToDateTimeUtc() ?? DateTime.UtcNow;
 
-                measures.Add(new Measure<T>(measureName,
+                measures.Add(new Measure<T>(
+                    measureName,
                     time,
                     unit,
                     value));
             }
 
-            LogService.LogApp(LogSeverity.Debug,
+            LogService.LogApp(
+                LogSeverity.Debug,
                 $"Retrieved {measures.Count} measures for component {componentName}, measure {measureName} from {startTime} to {endTime}");
 
             return measures;
         }
         catch (Exception ex)
         {
-            LogService.LogApp(LogSeverity.Error,
+            LogService.LogApp(
+                LogSeverity.Error,
                 $"Error retrieving measures for component {componentName}, measure {measureName}: {ex.Message}");
             return Enumerable.Empty<Measure<T>>();
         }
-    }    /// <inheritdoc/>
-    public IEnumerable<Measure<T>> GetMeasuresByPath<T>(string measurePath, DateTime startTime, DateTime endTime)
-    {
-        LogService.LogApp(LogSeverity.Warning,
-            "GetMeasuresByPath is deprecated in this InfluxDB version. Use GetMeasures<T>(componentName, measureName, startTime, endTime) instead.");
-            
-        // Extract component and measure from path if possible
-        string[] pathParts = measurePath.Split('/');
-        if (pathParts.Length >= 3)
-        {
-            string component = pathParts[1];
-            string measure = pathParts[2];
-            return GetMeasures<T>(component, measure, startTime, endTime);
-        }
-            
-        return Enumerable.Empty<Measure<T>>();
     }
 
     /// <summary>
@@ -267,7 +268,7 @@ public class InfluxStorageService : IDataStorageService, IDisposable
             float f => f,
             decimal m => (double)m,
             bool b => b ? 1 : 0,
-            _ => 0
+            _ => 0,
         };
     }
 
@@ -322,9 +323,11 @@ public class InfluxStorageService : IDataStorageService, IDisposable
             return "unnamed";
 
         // Remove problematic characters for InfluxDB, replace spaces with underscores
-        var sanitized = Regex.Replace(input, @"[^\w\d-_]", "_");
+        string sanitized = Regex.Replace(input, @"[^\w\d-_]", "_");
         return sanitized;
-    }    /// <summary>
+    }
+
+    /// <summary>
     /// Initializes the InfluxDB bucket and organization if they don't exist.
     /// </summary>
     private async Task InitializeAsync()
@@ -332,12 +335,13 @@ public class InfluxStorageService : IDataStorageService, IDisposable
         try
         {
             // Check if the organization exists, create it if it doesn't
-            var organizations = await _organizationsApi.FindOrganizationsAsync();
-            var organization = organizations.FirstOrDefault(o => o.Name == _config.Organization);
+            List<Organization> organizations = await _organizationsApi.FindOrganizationsAsync();
+            Organization? organization = organizations.FirstOrDefault(o => o.Name == _config.Organization);
 
             if (organization == null)
             {
-                LogService.LogApp(LogSeverity.Information,
+                LogService.LogApp(
+                    LogSeverity.Information,
                     $"Creating organization '{_config.Organization}' in InfluxDB");
 
                 organization = await _organizationsApi.CreateOrganizationAsync(
@@ -348,7 +352,8 @@ public class InfluxStorageService : IDataStorageService, IDisposable
             _organizationId = organization.Id;
 
             _initialized = true;
-            LogService.LogApp(LogSeverity.Information,
+            LogService.LogApp(
+                LogSeverity.Information,
                 $"InfluxDB initialized with organization '{_config.Organization}'");
         }
         catch (Exception ex)
@@ -372,26 +377,6 @@ public class InfluxStorageService : IDataStorageService, IDisposable
 
             _disposedValue = true;
         }
-    }    /// <summary>
-    /// Determines the component type based on the component name or other heuristics.
-    /// </summary>
-    /// <param name="componentName">The name of the component.</param>
-    /// <returns>The determined component type.</returns>
-    [Obsolete("This method is no longer used in the new architecture and will be removed in future versions.")]
-    private string DetermineComponentType(string componentName)
-    {
-        // Simple implementation based on component name
-        if (componentName.Contains("Counter"))
-            return "counter";
-        if (componentName.Contains("Sensor"))
-            return "sensor";
-        if (componentName.Contains("Timer"))
-            return "timer";
-        if (componentName.Contains("Monitor"))
-            return "monitor";
-
-        // Default type
-        return "generic";
     }
 
     /// <summary>
@@ -399,10 +384,7 @@ public class InfluxStorageService : IDataStorageService, IDisposable
     /// </summary>
     /// <param name="componentName">The component name.</param>
     /// <returns>The bucket name for the component.</returns>
-    private string GetComponentBucketName(string componentName)
-    {
-        return $"{_config.ComponentBucketPrefix}{componentName}";
-    }
+    private string GetComponentBucketName(string componentName) => $"{_config.ComponentBucketPrefix}{componentName}";
 
     /// <summary>
     /// Creates a bucket for a component if it doesn't exist yet.
@@ -410,10 +392,11 @@ public class InfluxStorageService : IDataStorageService, IDisposable
     /// <param name="componentName">The name of the component.</param>
     /// <param name="bucketName">The name of the bucket to create.</param>
     /// <param name="retentionPeriod">The retention period for data in the bucket.</param>
-    /// <returns>A task that represents the asynchronous operation.</returns>    private async Task CreateBucketIfNotExists(string componentName, string bucketName, TimeSpan? retentionPeriod = null)
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    private async Task CreateBucketIfNotExists(string componentName, string bucketName, TimeSpan? retentionPeriod = null)
     {
         // If we've already checked this bucket, don't check again
-        if (_initializedBuckets.TryGetValue(bucketName, out var exists) && exists)
+        if (_initializedBuckets.TryGetValue(bucketName, out bool exists) && exists)
         {
             return;
         }
@@ -421,40 +404,43 @@ public class InfluxStorageService : IDataStorageService, IDisposable
         try
         {
             // Check if the bucket exists
-            var buckets = await _bucketsApi.FindBucketsAsync();
-            var bucket = buckets.FirstOrDefault(b => b.Name == bucketName);
-            
+            List<Bucket> buckets = await _bucketsApi.FindBucketsAsync();
+            Bucket? bucket = buckets.FirstOrDefault(b => b.Name == bucketName);
+
             if (bucket == null)
             {
                 // Use the provided retention period or fall back to the config default
-                var ttl = retentionPeriod ?? _config.RetentionPeriod;
-                
-                LogService.LogApp(LogSeverity.Information, 
+                TimeSpan ttl = retentionPeriod ?? _config.RetentionPeriod;
+
+                LogService.LogApp(
+                    LogSeverity.Information,
                     $"Creating bucket '{bucketName}' for component '{componentName}' with retention period {ttl.TotalDays} days");
-                
+
                 var retentionRules = new List<BucketRetentionRules>
                 {
-                    new BucketRetentionRules
+                    new()
                     {
                         EverySeconds = (long)ttl.TotalSeconds,
-                        Type = BucketRetentionRules.TypeEnum.Expire
-                    }
+                        Type = BucketRetentionRules.TypeEnum.Expire,
+                    },
                 };
 
                 await _bucketsApi.CreateBucketAsync(
-                    new Bucket { 
-                        Name = bucketName, 
-                        OrgID = _organizationId, 
-                        RetentionRules = retentionRules 
-                    });
+                                new Bucket
+                                {
+                                    Name = bucketName,
+                                    OrgID = _organizationId,
+                                    RetentionRules = retentionRules,
+                                });
             }
-            
+
             // Mark this bucket as initialized
             _initializedBuckets[bucketName] = true;
         }
         catch (Exception ex)
         {
-            LogService.LogApp(LogSeverity.Error, 
+            LogService.LogApp(
+                LogSeverity.Error,
                 $"Error creating bucket '{bucketName}' for component '{componentName}': {ex.Message}");
         }
     }

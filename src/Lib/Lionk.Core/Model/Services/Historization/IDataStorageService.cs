@@ -15,7 +15,9 @@ public interface IDataStorageService
     /// <typeparam name="T">The type of the measurement value.</typeparam>
     /// <param name="componentName">The name of the component that produced the measurement.</param>
     /// <param name="measure">The measurement data to store.</param>
-    void StoreMeasure<T>(string componentName, Measure<T> measure);    /// <summary>
+    void StoreMeasure<T>(string componentName, Measure<T> measure);
+
+    /// <summary>
     /// Retrieves measurements for a component within a specified time range.
     /// </summary>
     /// <typeparam name="T">The type of the measurement value.</typeparam>
@@ -35,15 +37,4 @@ public interface IDataStorageService
     /// <param name="endTime">The end time of the range to retrieve.</param>
     /// <returns>An enumerable of measurements within the specified time range.</returns>
     IEnumerable<Measure<T>> GetMeasures<T>(string componentName, string measureName, DateTime startTime, DateTime endTime);
-
-    /// <summary>
-    /// Retrieves measurements for a specific path in the measurement hierarchy.
-    /// </summary>
-    /// <typeparam name="T">The type of the measurement value.</typeparam>
-    /// <param name="measurePath">The hierarchical path to retrieve measurements for.</param>
-    /// <param name="startTime">The start time of the range to retrieve.</param>
-    /// <param name="endTime">The end time of the range to retrieve.</param>
-    /// <returns>An enumerable of measurements within the specified path and time range.</returns>
-    [Obsolete("This method is deprecated and will be removed in future versions. Use GetMeasures with componentName and measureName instead.")]
-    IEnumerable<Measure<T>> GetMeasuresByPath<T>(string measurePath, DateTime startTime, DateTime endTime);
 }

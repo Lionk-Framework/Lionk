@@ -18,12 +18,6 @@ public class InfluxDBConfig
     public string Organization { get; set; } = "lionk";
 
     /// <summary>
-    /// Gets or sets the bucket name in InfluxDB.
-    /// </summary>
-    [Obsolete("This property is deprecated as buckets are now created per component. It is only kept for backward compatibility.")]
-    public string Bucket { get; set; } = "measurements";
-
-    /// <summary>
     /// Gets or sets the prefix for component bucket names. Will be prepended to component names to create bucket names.
     /// </summary>
     public string ComponentBucketPrefix { get; set; } = "comp_";

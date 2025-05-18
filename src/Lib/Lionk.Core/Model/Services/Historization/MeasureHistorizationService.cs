@@ -21,7 +21,9 @@ public class MeasureHistorizationService : IMeasureHistorizationService
 
     #endregion
 
-    #region constructors    /// <summary>
+    #region constructors
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="MeasureHistorizationService"/> class.
     /// </summary>
     /// <param name="componentService">The component service.</param>
@@ -39,13 +41,16 @@ public class MeasureHistorizationService : IMeasureHistorizationService
     #endregion
 
     #region public and override methods    /// <inheritdoc />
+
+    /// <inheritdoc/>
     public void SubscribeToComponents()
     {
         // Subscribe to existing measurable components
         IEnumerable<IComponent> components = _componentService.GetInstancesOfType<IMeasurableComponent<double>>();
         int componentCount = components.Count();
 
-        LogService.LogApp(LogSeverity.Information,
+        LogService.LogApp(
+            LogSeverity.Information,
             $"MeasureHistorizationService: Found {componentCount} measurable components to subscribe to");
 
         foreach (IComponent component in components)
@@ -101,7 +106,8 @@ public class MeasureHistorizationService : IMeasureHistorizationService
 
         component.NewValueAvailable += OnNewMeasureAvailable;
 
-        LogService.LogApp(LogSeverity.Information,
+        LogService.LogApp(
+            LogSeverity.Information,
             $"Subscribed to measurable component: {component.InstanceName} (ID: {component.Id})");
     }
 
@@ -110,7 +116,8 @@ public class MeasureHistorizationService : IMeasureHistorizationService
         // Unsubscribe from the NewValueAvailable event
         measurable.NewValueAvailable -= OnNewMeasureAvailable;
 
-        LogService.LogApp(LogSeverity.Information,
+        LogService.LogApp(
+            LogSeverity.Information,
             $"Unsubscribed from measurable component: {measurable.InstanceName} (ID: {measurable.Id})");
 
         // Remove the component from tracked components
@@ -131,12 +138,14 @@ public class MeasureHistorizationService : IMeasureHistorizationService
                 _dataStorageService.StoreMeasure(component.InstanceName, measure);
             }
 
-            LogService.LogApp(LogSeverity.Debug,
+            LogService.LogApp(
+                LogSeverity.Debug,
                 $"Stored {e.Measures.Count()} measures from component {component.InstanceName} (ID: {component.Id})");
         }
         catch (Exception ex)
         {
-            LogService.LogApp(LogSeverity.Error,
+            LogService.LogApp(
+                LogSeverity.Error,
                 $"Error storing measures from component {component?.InstanceName}: {ex.Message}");
         }
     }
