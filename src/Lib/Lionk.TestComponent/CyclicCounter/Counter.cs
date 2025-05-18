@@ -65,13 +65,15 @@ public class Counter : BaseCyclicComponent, IMeasurableComponent<double>
         double currentValue = (double)CounterValue;
         double squaredValue = Math.Pow(currentValue, 2);
 
-        // Create new measures
+        // Create new measures with hierarchical names
         DateTime currentTime = DateTime.Now;
-        var counterMeasure = new Measure<double>("CounterValue",
+        var counterMeasure = new Measure<double>(
+            "CounterValue",
             currentTime,
             "count",
             currentValue);
-        var squaredMeasure = new Measure<double>("SquaredValue",
+        var squaredMeasure = new Measure<double>(
+            "SquaredValue",
             currentTime,
             "count²",
             squaredValue);

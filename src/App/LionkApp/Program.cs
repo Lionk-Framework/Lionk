@@ -42,8 +42,9 @@ SetupDebugUser(app);
 
 app.Run();
 
-static void ConfigureServices(IServiceCollection services)
+static void ConfigureServices(WebApplicationBuilder builder)
 {
+    IServiceCollection services = builder.Services;
     services.AddRazorComponents().AddInteractiveServerComponents();
     services.AddMudServices();
 
@@ -81,8 +82,19 @@ static void ConfigureServices(IServiceCollection services)
     // Registers NotificationStateService as a singleton to share notification state across the application
     services.AddSingleton<NotificationStateService>();
 
-    // Registers historization and storage service
-    services.AddSingleton<IDataStorageService, InfluxStorageService>();
+    // Configure and register InfluxDB storage service
+    var influxConfig = new InfluxDBConfig
+    {
+        Url = builder.Configuration.GetValue<string>("InfluxDB:Url") ?? "http://localhost:8086",
+        Organization = builder.Configuration.GetValue<string>("InfluxDB:Organization") ?? "lionk",
+        Bucket = builder.Configuration.GetValue<string>("InfluxDB:Bucket") ?? "measurements",
+        Token = builder.Configuration.GetValue<string>("InfluxDB:Token") ?? string.Empty,
+        RetentionPeriod = TimeSpan.FromDays(builder.Configuration.GetValue<int>("InfluxDB:RetentionDays", 30))
+    };
+
+    services.AddSingleton<IDataStorageService>(sp => new InfluxStorageService(influxConfig));
+
+    // Register historization service
     services.AddSingleton<IMeasureHistorizationService>(sp =>
         new MeasureHistorizationService(sp.GetRequiredService<IComponentService>(), sp.GetRequiredService<IDataStorageService>()));
     services.AddHostedService<MeasureHistorizationHostedService>();

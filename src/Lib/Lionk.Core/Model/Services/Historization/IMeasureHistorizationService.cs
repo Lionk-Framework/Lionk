@@ -1,7 +1,5 @@
 // Copyright © 2024 Lionk Project
 
-using Lionk.Core.Component;
-
 namespace Lionk.Core;
 
 /// <summary>
