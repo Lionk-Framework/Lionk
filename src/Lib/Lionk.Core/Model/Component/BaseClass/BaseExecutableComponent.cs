@@ -119,7 +119,6 @@ public abstract class BaseExecutableComponent : BaseComponent, IExecutableCompon
         using (_cancellationTokenSource = new CancellationTokenSource())
         {
             // Reset the token source for each execution
-
             try
             {
                 OnExecute(_cancellationTokenSource.Token);

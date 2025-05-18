@@ -1,4 +1,4 @@
-// Copyright � 2024 Lionk Project
+// Copyright © 2024 Lionk Project
 
 using Lionk.Auth.Abstraction;
 using Lionk.Auth.Identity;
@@ -26,7 +26,7 @@ using Lionk.Auth.Utils;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
-ConfigureServices(builder.Services);
+ConfigureServices(builder);
 
 WebApplication app = builder.Build();
 
@@ -87,9 +87,8 @@ static void ConfigureServices(WebApplicationBuilder builder)
     {
         Url = builder.Configuration.GetValue<string>("InfluxDB:Url") ?? "http://localhost:8086",
         Organization = builder.Configuration.GetValue<string>("InfluxDB:Organization") ?? "lionk",
-        Bucket = builder.Configuration.GetValue<string>("InfluxDB:Bucket") ?? "measurements",
         Token = builder.Configuration.GetValue<string>("InfluxDB:Token") ?? string.Empty,
-        RetentionPeriod = TimeSpan.FromDays(builder.Configuration.GetValue<int>("InfluxDB:RetentionDays", 30))
+        RetentionPeriod = TimeSpan.FromDays(builder.Configuration.GetValue<int>("InfluxDB:RetentionDays", 30)),
     };
 
     services.AddSingleton<IDataStorageService>(sp => new InfluxStorageService(influxConfig));

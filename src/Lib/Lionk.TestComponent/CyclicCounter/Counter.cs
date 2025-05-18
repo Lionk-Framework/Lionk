@@ -47,6 +47,7 @@ public class Counter : BaseCyclicComponent, IMeasurableComponent<double>
     /// <inheritdoc />
     public event EventHandler<MeasureEventArgs<double>>? NewValueAvailable;
 
+    /// <inheritdoc />
     public List<Measure<double>> Measures { get; set; } = new();
 
     #endregion
@@ -109,9 +110,9 @@ public class Counter : BaseCyclicComponent, IMeasurableComponent<double>
     }
 
     /// <summary>
-    /// Raises the NewValueAvailable event
+    /// Raises the NewValueAvailable event.
     /// </summary>
-    /// <param name="measures">The measures to include in the event</param>
+    /// <param name="measures">The measures to include in the event.</param>
     private void OnNewValueAvailable(IEnumerable<Measure<double>> measures)
         => NewValueAvailable?.Invoke(this, new MeasureEventArgs<double>(measures));
 

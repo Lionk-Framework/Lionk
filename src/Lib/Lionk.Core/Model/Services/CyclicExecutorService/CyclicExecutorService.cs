@@ -4,7 +4,6 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using Lionk.Core.Observable;
 using Lionk.Log;
-using Newtonsoft.Json;
 
 namespace Lionk.Core.Component.Cyclic;
 
@@ -23,6 +22,8 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
 
     private readonly Stopwatch _cycleStopwatch = new();
 
+    private readonly ConcurrentDictionary<Guid, DateTime> _componentsTimeout = [];
+
     private CancellationTokenSource _cancellationTokenSource = new();
 
     private Task _executorTask = Task.CompletedTask;
@@ -36,9 +37,6 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     private TimeSpan _lastExecutionTime;
 
     private long _nCycle;
-
-    private readonly ConcurrentDictionary<Guid, DateTime> _componentsTimeout = [];
-
     #endregion
 
     #region constructors
@@ -206,18 +204,19 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
     {
         var timedOutComponentIds
             = (from kvp in _componentsTimeout
-                where DateTime.UtcNow > kvp.Value
-                select kvp.Key).ToList();
+               where DateTime.UtcNow > kvp.Value
+               select kvp.Key).ToList();
 
-        IEnumerable<ICyclicComponent> ComponentsTimedOut
+        IEnumerable<ICyclicComponent> componentsTimedOut
             = Components.Where(x => timedOutComponentIds.Contains(x.Id));
 
-        foreach (ICyclicComponent component in ComponentsTimedOut)
+        foreach (ICyclicComponent component in componentsTimedOut)
         {
             component.Abort();
             _componentsTimeout.Remove(component.Id, out _);
 
-            LogService.LogApp(LogSeverity.Warning,
+            LogService.LogApp(
+                LogSeverity.Warning,
                 $"Component {component.InstanceName} timed out and was aborted");
         }
     }
@@ -255,12 +254,14 @@ public class CyclicExecutorService : ObservableElement, ICyclicExecutorService
         {
             var task = new Task(component.Execute, token);
 
-            task.ContinueWith(t =>
+            task.ContinueWith(
+                t =>
                 {
                     if (t is { IsFaulted: true, Exception: not null })
                     {
                         component.Abort();
-                        LogService.LogApp(LogSeverity.Error,
+                        LogService.LogApp(
+                            LogSeverity.Error,
                             $"{component.InstanceName} failed during execution : {t.Exception.InnerException?.Message}");
                     }
 

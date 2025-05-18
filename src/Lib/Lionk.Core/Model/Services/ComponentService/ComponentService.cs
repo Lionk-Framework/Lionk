@@ -212,9 +212,9 @@ public class ComponentService : IComponentService
                 if (idProp == null || idProp.PropertyType != typeof(Guid))
                     continue;
 
-                var guid = (Guid)(idProp.GetValue(component));
+                var guid = (Guid?)idProp.GetValue(component);
 
-                if (_componentInstances.TryGetValue(guid, out IComponent? linkedComponent))
+                if (guid is not null && _componentInstances.TryGetValue((Guid)guid, out IComponent? linkedComponent))
                 {
                     // Set the property to the linked component
                     prop.SetValue(component, linkedComponent);

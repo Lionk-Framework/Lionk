@@ -19,7 +19,6 @@ public interface IMeasurableComponent<T> : IComponent, IMeasurable
 
     #endregion
 
-
     #region properties
 
     /// <summary>
@@ -42,9 +41,8 @@ public interface IMeasurable
     /// </summary>
     void Measure();
 
-
     /// <summary>
-    ///     Define the range of the measure retention.
+    ///     Gets or Sets the range of the measure retention.
     /// </summary>
     TimeSpan HistoryDuration { get; set; }
 
