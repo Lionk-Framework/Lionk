@@ -35,20 +35,12 @@ public class InfluxStorageService : IDataStorageService, IDisposable
     #region constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="InfluxStorageService"/> class.
-    /// </summary>
-    public InfluxStorageService()
-        : this(new InfluxDBConfig())
-    {
-    }
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="InfluxStorageService"/> class with specific configuration.
     /// </summary>
     /// <param name="config">The InfluxDB configuration.</param>
     public InfluxStorageService(InfluxDBConfig config)
     {
-        _config = config ?? throw new ArgumentNullException(nameof(config));
+        _config = config;
 
         InfluxDBClientOptions options = new InfluxDBClientOptions.Builder()
             .Url(_config.Url)
@@ -268,7 +260,7 @@ public class InfluxStorageService : IDataStorageService, IDisposable
             float f => f,
             decimal m => (double)m,
             bool b => b ? 1 : 0,
-            _ => 0,
+            _ => throw new NotImplementedException("Conversion for influx not implemented."),
         };
     }
 
@@ -308,7 +300,7 @@ public class InfluxStorageService : IDataStorageService, IDisposable
         }
         catch
         {
-            return default!;
+            throw new NotImplementedException("Conversion for influx not implemented.");
         }
     }
 
