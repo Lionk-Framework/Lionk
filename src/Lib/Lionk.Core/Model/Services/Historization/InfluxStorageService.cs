@@ -1,3 +1,5 @@
+// Copyright © 2024 Lionk Project
+
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 using InfluxDB3.Client;
@@ -15,18 +17,23 @@ public class InfluxStorageService : IDataStorageService, IDisposable
     private readonly ConcurrentDictionary<string, TimeSpan> _retentionCache = new();
     private bool _disposedValue;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InfluxStorageService"/> class.
+    /// </summary>
+    /// <param name="config">The config.</param>
     public InfluxStorageService(InfluxDBConfig config)
     {
         _client = new InfluxDBClient(
             host: config.Url,
             token: config.Token,
-            database: config.DefaultDatabase
-        );
+            database: config.DefaultDatabase);
 
-        LogService.LogApp(LogSeverity.Information,
+        LogService.LogApp(
+            LogSeverity.Information,
             $"InfluxStorageService initialized with URL: {config.Url}, Database: {config.DefaultDatabase}");
     }
 
+    /// <inheritdoc/>
     public async Task StoreMeasureAsync<T>(string componentName, Measure<T> measure, TimeSpan retentionTime)
     {
         try
@@ -34,7 +41,7 @@ public class InfluxStorageService : IDataStorageService, IDisposable
             string sanitizedComponentName = SanitizeForInflux(componentName);
             string sanitizedMeasureName = SanitizeForInflux(measure.MeasureName);
 
-            var point = PointData.Measurement(sanitizedMeasureName)
+            PointData point = PointData.Measurement(sanitizedMeasureName)
                 .SetTag("component", sanitizedComponentName)
                 .SetTag("unit", measure.Unit)
                 .SetField("value", ConvertToDouble(measure.Value))
@@ -54,6 +61,7 @@ public class InfluxStorageService : IDataStorageService, IDisposable
         }
     }
 
+    /// <inheritdoc/>
     public async Task<IEnumerable<Measure<T>>> GetMeasuresAsync<T>(string componentName, DateTime startTime, DateTime endTime)
     {
         try
@@ -71,21 +79,23 @@ public class InfluxStorageService : IDataStorageService, IDisposable
 
             var measures = new List<Measure<T>>();
 
-            await foreach (var row in _client.Query(query: sql, queryType: QueryType.SQL))
+            await foreach (object?[] row in _client.Query(query: sql, queryType: QueryType.SQL))
             {
                 // Accès aux colonnes par index
-                DateTime time = DateTime.Parse(row[0]?.ToString() ?? DateTime.UtcNow.ToString());
+                var time = DateTime.Parse(row[0]?.ToString() ?? DateTime.UtcNow.ToString());
                 string measureName = row[1]?.ToString() ?? string.Empty;
                 string unit = row[2]?.ToString() ?? string.Empty;
                 T value = ConvertToType<T>(row[3]);
 
-                measures.Add(new Measure<T>(measureName,
+                measures.Add(new Measure<T>(
+                    measureName,
                     time,
                     unit,
                     value));
             }
 
-            LogService.LogApp(LogSeverity.Debug,
+            LogService.LogApp(
+                LogSeverity.Debug,
                 $"Retrieved {measures.Count} measures for component {componentName} from {startTime} to {endTime}");
             return measures;
         }
@@ -96,7 +106,11 @@ public class InfluxStorageService : IDataStorageService, IDisposable
         }
     }
 
-    public async Task<IEnumerable<Measure<T>>> GetMeasuresAsync<T>(string componentName, string measureName, DateTime startTime,
+    /// <inheritdoc/>
+    public async Task<IEnumerable<Measure<T>>> GetMeasuresAsync<T>(
+        string componentName,
+        string measureName,
+        DateTime startTime,
         DateTime endTime)
     {
         try
@@ -115,37 +129,45 @@ public class InfluxStorageService : IDataStorageService, IDisposable
 
             var measures = new List<Measure<T>>();
 
-            await foreach (var row in _client.Query(query: sql, queryType: QueryType.SQL))
+            await foreach (object?[] row in _client.Query(query: sql, queryType: QueryType.SQL))
             {
                 // Accès aux colonnes par index
-                DateTime time = DateTime.Parse(row[0]?.ToString() ?? DateTime.UtcNow.ToString());
+                var time = DateTime.Parse(row[0]?.ToString() ?? DateTime.UtcNow.ToString());
                 string unit = row[1]?.ToString() ?? string.Empty;
                 T value = ConvertToType<T>(row[2]);
 
-                measures.Add(new Measure<T>(measureName,
+                measures.Add(new Measure<T>(
+                    measureName,
                     time,
                     unit,
                     value));
             }
 
-            LogService.LogApp(LogSeverity.Debug,
+            LogService.LogApp(
+                LogSeverity.Debug,
                 $"Retrieved {measures.Count} measures for component {componentName}, measure {measureName} from {startTime} to {endTime}");
             return measures;
         }
         catch (Exception ex)
         {
-            LogService.LogApp(LogSeverity.Error,
+            LogService.LogApp(
+                LogSeverity.Error,
                 $"Error retrieving measures for component {componentName}, measure {measureName}: {ex.Message}");
             return Enumerable.Empty<Measure<T>>();
         }
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
 
+    /// <summary>
+    /// Disposes the InfluxStorageService.
+    /// </summary>
+    /// <param name="disposing">bool disposing.</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposedValue)
