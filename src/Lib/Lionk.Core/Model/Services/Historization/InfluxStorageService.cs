@@ -68,7 +68,7 @@ public class InfluxStorageService : IDataStorageService, IDisposable
         {
             string sanitizedComponentName = SanitizeForInflux(componentName);
 
-            // Cette requête retourne les colonnes dans cet ordre: time, measurement, unit, value
+            // This query returns the columns in this order: time, measurement, unit, value
             string sql = $@"
             SELECT time, _measurement AS measurement, unit, value
             FROM _measurement
@@ -81,7 +81,7 @@ public class InfluxStorageService : IDataStorageService, IDisposable
 
             await foreach (object?[] row in _client.Query(query: sql, queryType: QueryType.SQL))
             {
-                // Accès aux colonnes par index
+                // Acces to columns by index
                 var time = DateTime.Parse(row[0]?.ToString() ?? DateTime.UtcNow.ToString());
                 string measureName = row[1]?.ToString() ?? string.Empty;
                 string unit = row[2]?.ToString() ?? string.Empty;
@@ -118,7 +118,7 @@ public class InfluxStorageService : IDataStorageService, IDisposable
             string sanitizedComponentName = SanitizeForInflux(componentName);
             string sanitizedMeasureName = SanitizeForInflux(measureName);
 
-            // Cette requête retourne les colonnes dans cet ordre: time, unit, value
+            // This query returns the columns in this order: time, unit, value
             string sql = $@"
             SELECT time, unit, value
             FROM {sanitizedMeasureName}
@@ -131,7 +131,7 @@ public class InfluxStorageService : IDataStorageService, IDisposable
 
             await foreach (object?[] row in _client.Query(query: sql, queryType: QueryType.SQL))
             {
-                // Accès aux colonnes par index
+                // Acces to columns by index
                 var time = DateTime.Parse(row[0]?.ToString() ?? DateTime.UtcNow.ToString());
                 string unit = row[1]?.ToString() ?? string.Empty;
                 T value = ConvertToType<T>(row[2]);
