@@ -30,7 +30,7 @@
                 {
                     <MudIconButton Icon="@Icons.Material.Filled.DeviceHub"
                                    Size="Size.Small"
-                                   OnClick="GoToComponentsPage" />
+                                   OnClick="GoToComponentsPage"/>
                 }
                 else
                 {
@@ -38,21 +38,21 @@
                     {
                         <MudIconButton Icon="@Icons.Material.Filled.Settings"
                                        Size="Size.Small"
-                                       OnClick="ConfigurableClickedAsync" />
+                                       OnClick="ConfigurableClickedAsync"/>
                     }
 
                     @if (_isDetailable)
                     {
                         <MudIconButton Icon="@Icons.Material.Filled.ListAlt"
                                        Size="Size.Small"
-                                       OnClick="DetailClickedAsync" />
+                                       OnClick="DetailClickedAsync"/>
                     }
 
                     @if (_isPageable)
                     {
                         <MudIconButton Icon="@Icons.Material.Filled.Fullscreen"
                                        Size="Size.Small"
-                                       OnClick="PageableClickedAsync" />
+                                       OnClick="PageableClickedAsync"/>
                     }
 
                     @if (_isExecutable && !_isCyclic)
@@ -60,11 +60,11 @@
                         <MudIconButton Icon="@Icons.Material.Filled.PlayArrow"
                                        Size="Size.Small"
                                        OnClick="ExecutableStartClickedAsync"
-                                       Disabled="!((IExecutableComponent?)Component)?.CanExecute ?? true" />
+                                       Disabled="!((IExecutableComponent?)Component)?.CanExecute ?? true"/>
                         <MudIconButton Icon="@Icons.Material.Filled.Stop"
                                        Size="Size.Small"
                                        OnClick="ExecutableStopClickedAsync"
-                                       Disabled="!((IExecutableComponent?)Component)?.CanExecute ?? true" />
+                                       Disabled="!((IExecutableComponent?)Component)?.CanExecute ?? true"/>
                     }
 
                     @if (_isExecutable)
@@ -72,13 +72,13 @@
                         <MudIconButton Icon="@Icons.Material.Filled.Refresh"
                                        Size="Size.Small"
                                        OnClick="ExecutableResetAsync"
-                                       Disabled="!((IExecutableComponent?)Component)?.IsInError ?? true" />
+                                       Disabled="!((IExecutableComponent?)Component)?.IsInError ?? true"/>
                         @if (((IExecutableComponent?)Component)?.IsInError ?? false)
                         {
                             <MudTooltip Text="Component is in error you must reset it to restart the component.">
                                 <MudIconButton Icon="@Icons.Material.Filled.Error"
                                                Size="Size.Small"
-                                               Color="Color.Error" />
+                                               Color="Color.Error"/>
                             </MudTooltip>
                         }
                     }
@@ -95,9 +95,8 @@
                 <MudText Typo="Typo.h6">
                     @Component?.InstanceName
                 </MudText>
-
-                <div style="margin-right:50px">
-                    <DynamicComponentWrapper Type="@_view" Parameters="@_parameters" />
+                <div>
+                    <DynamicComponentWrapper Type="@_view" Parameters="@_parameters"/>
                 </div>
             </div>
 
@@ -106,6 +105,7 @@
 </MudItem>
 
 @code {
+
     /// <summary>
     /// The component view model.
     /// </summary>
@@ -231,7 +231,7 @@
     }
 
     private void ExecutableResetAsync()
-        {
+    {
         if (Component is IExecutableComponent executableComponent)
         {
             executableComponent.Reset();
@@ -251,11 +251,11 @@
         var options = new DialogOptions { CloseOnEscapeKey = true, FullWidth = true };
         var parameters =
             new DialogParameters
-                                    {
+            {
                 { "Component", Component },
                 { "ViewDescriptions", views },
                 { "CurrentIndex", viewIndex },
-                                    };
+            };
 
         IDialogReference dialog = await DialogService.ShowAsync<ComponentDialog>("Configuration", parameters, options);
         DialogResult? result = await dialog.Result;

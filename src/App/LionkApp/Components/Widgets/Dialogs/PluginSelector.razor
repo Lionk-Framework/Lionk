@@ -18,7 +18,7 @@
     private string PluginName { get; set; } = "My Clock";
 
     [CascadingParameter]
-    private MudDialogInstance? MudDialog { get; set; }
+    private IMudDialogInstance? MudDialog { get; set; }
 
     private void Submit()
     {

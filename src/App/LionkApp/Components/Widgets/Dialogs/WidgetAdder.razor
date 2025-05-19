@@ -20,7 +20,7 @@
 
 @code {
     [CascadingParameter]
-    MudDialogInstance? MudDialog { get; set; }
+    IMudDialogInstance? MudDialog { get; set; }
 
     private List<IComponent> _components => ComponentService.GetInstancesOfType<IComponent>().ToList();
 

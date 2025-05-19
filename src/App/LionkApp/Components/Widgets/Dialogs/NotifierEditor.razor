@@ -26,7 +26,7 @@
     public Guid NotifierGuid { get; set; }
 
     [CascadingParameter]
-    private MudDialogInstance? MudDialog { get; set; }
+    private IMudDialogInstance? MudDialog { get; set; }
 
     private Dictionary<Guid, bool> _channelStates { get; set; } = new();
 
