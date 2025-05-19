@@ -20,7 +20,6 @@ public interface IMeasurableComponent<T> : IComponent, IMeasurable
 
     #endregion
 
-
     #region properties
 
     /// <summary>
@@ -30,7 +29,6 @@ public interface IMeasurableComponent<T> : IComponent, IMeasurable
     List<Measure<T>> Measures { get; }
 
     #endregion
-
 }
 
 /// <summary>
@@ -38,13 +36,17 @@ public interface IMeasurableComponent<T> : IComponent, IMeasurable
 /// </summary>
 public interface IMeasurable
 {
-
     #region public and override methods
 
     /// <summary>
     ///     This method processes the measures.
     /// </summary>
     void Measure();
+
+    /// <summary>
+    ///     Gets or Sets the range of the measure retention.
+    /// </summary>
+    TimeSpan HistoryDuration { get; set; }
 
     #endregion
 }

@@ -2,7 +2,6 @@
 
 using Lionk.Core;
 using Lionk.Core.Component;
-using System;
 
 namespace Lionk.TestComponent.CyclicCounter;
 

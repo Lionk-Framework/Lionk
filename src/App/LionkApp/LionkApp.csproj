@@ -21,6 +21,7 @@ This is the Lionk App README file.
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MudBlazor" Version="8.6.0" />
+    <PackageReference Include="InfluxDB3.Client" Version="1.2.0-dev.1512" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Lib\Lionk.Auth.Razor\Lionk.Auth.Razor.csproj" />
