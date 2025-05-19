@@ -4,7 +4,7 @@ services:
     container_name: influxdb3-core
     image: influxdb:3-core
     ports:
-      - 8181:8181
+      - "127.0.0.1:8181:8181"
     environment:
       - INFLUXDB3_AUTH_TOKEN=yourtoken
     command:
