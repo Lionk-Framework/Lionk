@@ -1,9 +1,11 @@
-// Copyright © 2024 Lionk Project
+// Copyright Â© 2024 Lionk Project
 
 using Lionk.Auth.Abstraction;
 using Lionk.Auth.Identity;
+using Lionk.Core;
 using Lionk.Core.Component;
 using Lionk.Core.Component.Cyclic;
+using Lionk.Core.Razor;
 using Lionk.Core.Razor.Service;
 using Lionk.Core.View;
 using Lionk.Log;
@@ -24,7 +26,7 @@ using Lionk.Auth.Utils;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
-ConfigureServices(builder.Services);
+ConfigureServices(builder);
 
 WebApplication app = builder.Build();
 
@@ -40,8 +42,9 @@ SetupDebugUser(app);
 
 app.Run();
 
-static void ConfigureServices(IServiceCollection services)
+static void ConfigureServices(WebApplicationBuilder builder)
 {
+    IServiceCollection services = builder.Services;
     services.AddRazorComponents().AddInteractiveServerComponents();
     services.AddMudServices();
 
@@ -78,6 +81,22 @@ static void ConfigureServices(IServiceCollection services)
 
     // Registers NotificationStateService as a singleton to share notification state across the application
     services.AddSingleton<NotificationStateService>();
+
+    // Configure and register InfluxDB storage service
+    var influxConfig = new InfluxDBConfig
+    {
+        Url = builder.Configuration.GetValue<string>("InfluxDB:Url") ?? "http://localhost:8086",
+        Organization = builder.Configuration.GetValue<string>("InfluxDB:Organization") ?? "lionk",
+        Token = builder.Configuration.GetValue<string>("InfluxDB:Token") ?? string.Empty,
+        RetentionPeriod = TimeSpan.FromDays(builder.Configuration.GetValue<int>("InfluxDB:RetentionDays", 30)),
+    };
+
+    services.AddSingleton<IDataStorageService>(sp => new InfluxStorageService(influxConfig));
+
+    // Register historization service
+    services.AddSingleton<IMeasureHistorizationService>(sp =>
+        new MeasureHistorizationService(sp.GetRequiredService<IComponentService>(), sp.GetRequiredService<IDataStorageService>()));
+    services.AddHostedService<MeasureHistorizationHostedService>();
 }
 
 static void ConfigureLogging(WebApplication app)

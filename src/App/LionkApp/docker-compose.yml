@@ -1,0 +1,15 @@
+# compose.yaml
+services:
+  influxdb3-core:
+    container_name: influxdb3-core
+    image: influxdb:3-core
+    ports:
+      - "127.0.0.1:8181:8181"
+    environment:
+      - INFLUXDB3_AUTH_TOKEN=yourtoken
+    command:
+      - influxdb3
+      - serve
+      - --node-id=node0
+      - --object-store=file
+      - --data-dir=/var/lib/influxdb3

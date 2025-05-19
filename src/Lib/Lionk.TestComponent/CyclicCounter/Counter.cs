@@ -2,18 +2,20 @@
 
 using Lionk.Core;
 using Lionk.Core.Component;
+using Lionk.Core.DataModel;
 
 namespace Lionk.TestComponent;
 
 /// <summary>
-///     Counter test component.
+///     Counter test component that also implements IMeasurableComponent to demonstrate measure historization.
 /// </summary>
-[NamedElement("Counter test", "test cyclic element")]
-public class Counter : BaseCyclicComponent
+[NamedElement("Counter test", "test cyclic element with measurements")]
+public class Counter : BaseCyclicComponent, IMeasurableComponent<double>
 {
     #region fields
 
     private int _counter;
+    private TimeSpan _historyDuration = TimeSpan.FromMinutes(10); // Default to 10 minutes of history
 
     #endregion
 
@@ -31,6 +33,23 @@ public class Counter : BaseCyclicComponent
         set => SetField(ref _counter, value);
     }
 
+    /// <inheritdoc />
+    public TimeSpan HistoryDuration
+    {
+        get => _historyDuration;
+        set => SetField(ref _historyDuration, value);
+    }
+
+    #endregion
+
+    #region delegate and events
+
+    /// <inheritdoc />
+    public event EventHandler<MeasureEventArgs<double>>? NewValueAvailable;
+
+    /// <inheritdoc />
+    public List<Measure<double>> Measures { get; set; } = new();
+
     #endregion
 
     #region public and override methods
@@ -39,6 +58,32 @@ public class Counter : BaseCyclicComponent
     /// abort behavior, terminates execution via cancellationToken
     /// and sets the component to error
     public override void Abort() => base.Abort();
+
+    /// <inheritdoc />
+    public void Measure()
+    {
+        // Create new measures with the current counter value and a calculated value
+        double currentValue = (double)CounterValue;
+        double squaredValue = Math.Pow(currentValue, 2);
+
+        // Create new measures with hierarchical names
+        DateTime currentTime = DateTime.Now;
+        var counterMeasure = new Measure<double>(
+            "CounterValue",
+            currentTime,
+            "count",
+            currentValue);
+        var squaredMeasure = new Measure<double>(
+            "SquaredValue",
+            currentTime,
+            "count²",
+            squaredValue);
+
+        Measures = [counterMeasure, squaredMeasure];
+
+        // Raise the event with these new measures directly
+        OnNewValueAvailable(new[] { counterMeasure, squaredMeasure });
+    }
 
     #endregion
 
@@ -51,6 +96,9 @@ public class Counter : BaseCyclicComponent
         // it's up to you to manage it the way you want if you need it
         base.OnExecute(ct);
         CounterValue++;
+
+        // Take measurements after updating the counter value
+        Measure();
     }
 
     /// <inheritdoc />
@@ -61,11 +109,12 @@ public class Counter : BaseCyclicComponent
         base.OnInitialize();
     }
 
-    /// <inheritdoc />
-    /// behavior at the end of execution
-    /// this means executing every cycle after the end of OnExecute
-    /// it's up to you to decide whether you want to use behavior, otherwise you won't even need an override
-    protected override void OnTerminate() => base.OnTerminate();
+    /// <summary>
+    /// Raises the NewValueAvailable event.
+    /// </summary>
+    /// <param name="measures">The measures to include in the event.</param>
+    private void OnNewValueAvailable(IEnumerable<Measure<double>> measures)
+        => NewValueAvailable?.Invoke(this, new MeasureEventArgs<double>(measures));
 
     #endregion
 }

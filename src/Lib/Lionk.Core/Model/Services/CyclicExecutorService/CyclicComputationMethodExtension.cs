@@ -17,15 +17,12 @@ public static class CyclicComputationMethodExtension
     /// <returns> The next execution time. </returns>
     public static DateTime GetNextExecution(this CyclicComputationMethod method, ICyclicComponent component)
     {
-        switch (method)
+        return method switch
         {
-            case CyclicComputationMethod.RelativeToLastExecution:
-                return component.LastExecution + component.Period;
-            case CyclicComputationMethod.RelativeToStartTime:
-                return component.StartedDate + (component.Period * component.NbCycle);
-            default:
-                throw new ArgumentOutOfRangeException(nameof(method), method, null);
-        }
+            CyclicComputationMethod.RelativeToLastExecution => component.LastExecution + component.Period,
+            CyclicComputationMethod.RelativeToStartTime => component.StartedDate + (component.Period * component.NbCycle),
+            _ => throw new ArgumentOutOfRangeException(nameof(method), method, null),
+        };
     }
 
     #endregion
